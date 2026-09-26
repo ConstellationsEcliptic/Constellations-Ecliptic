@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field, fields
 from datetime import date, datetime, time, timezone
 import math
@@ -13,6 +14,9 @@ from ce.foundation.status import BirthTimeState, CalculationStatus, ScenarioStat
 
 
 _TZ_VERSION_RE = re.compile(r"^\d{4}[a-z]$")
+_COMMIT_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+_SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+_RUNTIME_IMAGE_RE = re.compile(r"^sha256:[0-9a-fA-F]{64}$")
 
 
 def _nonempty_string(value: Any, field_name: str) -> str | None:
@@ -31,6 +35,12 @@ def _utc_instant(value: Any, field_name: str) -> tuple[datetime | None, str | No
     if parsed.tzinfo is None or parsed.utcoffset() != timezone.utc.utcoffset(parsed):
         return None, f"invalid:{field_name}:utc_required"
     return parsed, None
+
+
+def _is_finite_number(value: Any) -> bool:
+    if type(value) is int:
+        return True
+    return type(value) is float and math.isfinite(value)
 
 
 def _freeze(value: Any) -> Any:
@@ -60,7 +70,7 @@ class BirthInput:
     def validate(self) -> tuple[str, ...]:
         errors: list[str] = []
 
-        if not isinstance(self.birth_date, date):
+        if type(self.birth_date) is not date:
             errors.append("invalid:birth_date")
         if not isinstance(self.birth_time_state, BirthTimeState):
             errors.append("invalid:birth_time_state")
@@ -83,7 +93,7 @@ class BirthInput:
             ):
                 errors.append("invalid:timezone_version")
 
-        if self.birth_time is not None and not isinstance(self.birth_time, time):
+        if self.birth_time is not None and type(self.birth_time) is not time:
             errors.append("invalid:birth_time")
 
         return tuple(errors)
@@ -143,29 +153,24 @@ class ObjectState:
             return tuple(errors)
 
         if self.status is CalculationStatus.VALID:
-            if self.longitude_deg is None or not isinstance(self.longitude_deg, (int, float)) or not math.isfinite(self.longitude_deg):
+            if self.longitude_deg is None or not _is_finite_number(self.longitude_deg):
                 errors.append("valid_object_requires_finite_longitude")
             elif not 0.0 <= float(self.longitude_deg) < 360.0:
                 errors.append("valid_object_requires_normalized_longitude")
 
-            if self.speed_deg_per_day is not None:
-                if not isinstance(self.speed_deg_per_day, (int, float)) or not math.isfinite(self.speed_deg_per_day):
-                    errors.append("valid_object_speed_must_be_finite")
+            if self.speed_deg_per_day is not None and not _is_finite_number(self.speed_deg_per_day):
+                errors.append("valid_object_speed_must_be_finite")
         else:
-            if self.longitude_deg is not None and (
-                not isinstance(self.longitude_deg, (int, float)) or not math.isfinite(self.longitude_deg)
-            ):
+            if self.longitude_deg is not None and not _is_finite_number(self.longitude_deg):
                 errors.append("nonvalid_object_longitude_must_be_finite_or_none")
-            if self.speed_deg_per_day is not None and (
-                not isinstance(self.speed_deg_per_day, (int, float)) or not math.isfinite(self.speed_deg_per_day)
-            ):
+            if self.speed_deg_per_day is not None and not _is_finite_number(self.speed_deg_per_day):
                 errors.append("nonvalid_object_speed_must_be_finite_or_none")
 
         return tuple(errors)
 
     def __post_init__(self) -> None:
         errors = self.validate()
-        if self.status is CalculationStatus.VALID and errors:
+        if errors:
             raise ValueError(";".join(errors))
 
 
@@ -178,6 +183,51 @@ _REQUIRED_RESULT_PROVENANCE = (
     "runtime_image_digest",
     "calculation_version",
 )
+
+
+def _validate_result_provenance(provenance: Any) -> tuple[str, ...]:
+    errors: list[str] = []
+    if not isinstance(provenance, Mapping):
+        return ("invalid:provenance",)
+
+    shaped_fields = {
+        "source_commit": (provenance.get("source_commit"), _COMMIT_RE, "40-hex"),
+        "source_tree_sha256_v2": (
+            provenance.get("source_tree_sha256_v2"),
+            _SHA256_RE,
+            "64-hex",
+        ),
+        "dependency_lock_digest": (
+            provenance.get("dependency_lock_digest"),
+            _SHA256_RE,
+            "64-hex",
+        ),
+        "timezone_bundle_digest": (
+            provenance.get("timezone_bundle_digest"),
+            _SHA256_RE,
+            "64-hex",
+        ),
+        "ephemeris_bundle_digest": (
+            provenance.get("ephemeris_bundle_digest"),
+            _SHA256_RE,
+            "64-hex",
+        ),
+    }
+    for name, (value, pattern, description) in shaped_fields.items():
+        if not isinstance(value, str) or not pattern.fullmatch(value):
+            errors.append(f"malformed:provenance:{name}:{description}")
+
+    runtime_image_digest = provenance.get("runtime_image_digest")
+    if not isinstance(runtime_image_digest, str) or not _RUNTIME_IMAGE_RE.fullmatch(
+        runtime_image_digest
+    ):
+        errors.append("malformed:provenance:runtime_image_digest:sha256-prefixed")
+
+    calculation_version = provenance.get("calculation_version")
+    if not isinstance(calculation_version, str) or not calculation_version.strip():
+        errors.append("invalid:provenance:calculation_version")
+
+    return tuple(errors)
 
 
 @dataclass(frozen=True)
@@ -205,7 +255,7 @@ class CalculationResult:
             object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
 
         errors = self.validate()
-        if self.status is CalculationStatus.VALID and errors:
+        if errors:
             raise ValueError(";".join(errors))
 
         payload = {
@@ -248,16 +298,14 @@ class CalculationResult:
                 errors.append("valid_result_cannot_have_errors")
             if self.scenario_state is ScenarioState.NONE:
                 errors.append("valid_result_requires_scenario_state")
-            missing = [
-                name for name in _REQUIRED_RESULT_PROVENANCE
-                if name not in self.provenance or not isinstance(self.provenance[name], str) or not self.provenance[name]
-            ]
-            errors.extend(f"missing:provenance:{name}" for name in missing)
-        elif any(
-            isinstance(state, ObjectState) and state.status is CalculationStatus.VALID
-            for state in self.object_states
-        ):
-            errors.append("nonvalid_result_cannot_contain_valid_object_state")
+            provenance_errors = _validate_result_provenance(self.provenance)
+            errors.extend(provenance_errors)
+        else:
+            if any(
+                isinstance(state, ObjectState) and state.status is CalculationStatus.VALID
+                for state in self.object_states
+            ):
+                errors.append("nonvalid_result_cannot_contain_valid_object_state")
 
         return tuple(errors)
 
