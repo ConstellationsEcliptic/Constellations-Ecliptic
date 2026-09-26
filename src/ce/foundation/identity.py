@@ -48,12 +48,14 @@ class RuntimeIdentity:
             "ephemeris_bundle_digest": (self.ephemeris_bundle_digest, _SHA256_RE, "64-hex"),
         }
         for name, (value, pattern, description) in shaped_fields.items():
-            if value is not None and not pattern.fullmatch(value):
-                errors.append(f"malformed:{name}:{description}")
+            if value is not None:
+                if not isinstance(value, str) or not pattern.fullmatch(value):
+                    errors.append(f"malformed:{name}:{description}")
 
-        if self.runtime_image_digest is not None and not _RUNTIME_IMAGE_RE.fullmatch(
-            self.runtime_image_digest
-        ):
-            errors.append("malformed:runtime_image_digest:sha256-prefixed")
+        if self.runtime_image_digest is not None:
+            if not isinstance(self.runtime_image_digest, str) or not _RUNTIME_IMAGE_RE.fullmatch(
+                self.runtime_image_digest
+            ):
+                errors.append("malformed:runtime_image_digest:sha256-prefixed")
 
         return tuple(errors)
