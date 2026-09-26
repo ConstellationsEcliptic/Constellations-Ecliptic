@@ -50,5 +50,5 @@ class CalculationEngine:
             scenario_state=ScenarioState.NONE,
             normalized_time=None,
             errors=("authoritative_calculation_adapter_not_established",),
-            provenance={"runtime_authority": gate.authority.value},
+            provenance={},
         )
