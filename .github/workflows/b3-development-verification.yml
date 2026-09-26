@@ -12,15 +12,28 @@ permissions:
 jobs:
   verify:
     name: Development-only foundation verification
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
+      - name: Checkout exact verification identity
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          python-version: "3.13"
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify checkout identity
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          CHECKED_OUT_SHA="$(git rev-parse HEAD)"
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          echo "HEAD_SHA=$EXPECTED_HEAD_SHA"
+          echo "CHECKED_OUT_SHA=$CHECKED_OUT_SHA"
+          test "$CHECKED_OUT_SHA" = "$EXPECTED_HEAD_SHA"
+
+      - name: Set up Python 3.13.15
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13.15"
 
       - name: Print source-tree identity
         run: |
@@ -32,6 +45,8 @@ jobs:
           declared = Path("manifests/SOURCE_TREE_SHA256_V2.txt").read_text(encoding="utf-8").split()[0]
           print(f"DECLARED_SOURCE_TREE_SHA256_V2={declared}")
           print(f"ACTUAL_SOURCE_TREE_SHA256_V2={actual}")
+          if declared != actual:
+              raise SystemExit(1)
           PY
 
       - name: Run deterministic foundation verifier

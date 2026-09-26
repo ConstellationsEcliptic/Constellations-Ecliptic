@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from typing import Any
 
 
 def canonicalize(value: Any) -> Any:
-    if isinstance(value, dict):
+    if isinstance(value, Mapping):
         invalid_keys = [key for key in value if not isinstance(key, str)]
         if invalid_keys:
             raise TypeError(

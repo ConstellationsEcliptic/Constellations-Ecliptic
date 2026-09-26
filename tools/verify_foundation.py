@@ -24,15 +24,21 @@ REQUIRED = [
     "src/ce/calculation/time.py",
     "src/ce/ephemeris/adapter.py",
     "src/ce/runtime/gates.py",
+    "src/ce/signal/engine.py",
     "tests/test_geometry.py",
     "tests/test_serialization.py",
     "tests/test_runtime_gate.py",
     "tests/test_evidence.py",
     "tests/test_no_commercial_dependency.py",
+    "tests/test_contract_state_integrity.py",
+    "tests/test_schema_contracts.py",
     "build/build-definition.json",
     "build/dependency-lock.txt",
     "manifests/SOURCE_TREE_SHA256_V2.txt",
     "manifests/implementation_manifest.json",
+    "schemas/calculation_result.schema.json",
+    "schemas/evidence_packet.schema.json",
+    "schemas/signal_result.schema.json",
 ]
 
 
@@ -64,6 +70,16 @@ def main() -> int:
     run_checked("tools/verify_source_identity.py")
     run_checked("tools/run_tests.py")
     run_checked("build/check_build_inputs.py")
+
+    for schema_name in (
+        "calculation_result.schema.json",
+        "evidence_packet.schema.json",
+        "signal_result.schema.json",
+    ):
+        try:
+            json.loads((ROOT / "schemas" / schema_name).read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            fail(f"invalid schema JSON: {schema_name}: {exc}")
 
     data = json.loads(
         (ROOT / "manifests/implementation_manifest.json").read_text(encoding="utf-8")

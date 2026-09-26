@@ -1,1 +1,42 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"CE Evidence Packet","type":"object","required":["evidence_packet_id","execution_profile_id","calculation_version"],"properties":{"evidence_packet_id":{"type":"string"},"execution_profile_id":{"type":"string"},"calculation_version":{"type":"string"}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Evidence Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_packet_id",
+    "input_identity",
+    "profile_version",
+    "observation_instant_or_interval",
+    "timezone_context",
+    "execution_profile_id",
+    "calculation_version",
+    "object_records",
+    "geometry_records",
+    "kinematics",
+    "warnings",
+    "errors",
+    "numerical_tolerances",
+    "solver_metadata",
+    "actual_ephemeris_resolution",
+    "calculation_flags"
+  ],
+  "properties": {
+    "evidence_packet_id": {"type": "string", "minLength": 1},
+    "input_identity": {"type": "object"},
+    "profile_version": {"type": "object"},
+    "observation_instant_or_interval": {"type": "object"},
+    "timezone_context": {"type": "object"},
+    "execution_profile_id": {"type": "string", "const": "CE-CALC-V1-EP-001"},
+    "calculation_version": {"type": "string", "minLength": 1},
+    "object_records": {"type": "array"},
+    "geometry_records": {"type": "array"},
+    "kinematics": {"type": "array"},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "numerical_tolerances": {"type": "object"},
+    "solver_metadata": {"type": "object"},
+    "actual_ephemeris_resolution": {"type": "object"},
+    "calculation_flags": {"type": "object"}
+  }
+}

@@ -1,1 +1,31 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"CE Signal Result","type":"object","required":["status","canon_input_valid"],"properties":{"status":{"type":"string"},"canon_input_valid":{"type":"boolean"}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Signal Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "classification", "phase", "uncertainty_state", "evidence_packet_ref", "canon_input_valid", "provenance"],
+  "properties": {
+    "status": {"type": "string", "enum": ["VALID", "NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT", "CALCULATION_FAILURE"]},
+    "classification": {"type": ["string", "null"]},
+    "phase": {"type": ["string", "null"]},
+    "uncertainty_state": {"type": ["string", "null"]},
+    "evidence_packet_ref": {"type": ["string", "null"]},
+    "canon_input_valid": {"type": "boolean"},
+    "provenance": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "VALID"}}, "required": ["status"]},
+      "then": {
+        "required": ["classification", "phase", "uncertainty_state", "evidence_packet_ref"],
+        "properties": {
+          "classification": {"type": "string", "minLength": 1},
+          "phase": {"type": "string", "minLength": 1},
+          "uncertainty_state": {"type": "string", "minLength": 1},
+          "evidence_packet_ref": {"type": "string", "minLength": 1},
+          "canon_input_valid": {"const": true}
+        }
+      }
+    }
+  ]
+}

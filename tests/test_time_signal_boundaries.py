@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import os
 import sys
-import unittest
 from datetime import date, time
+import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
 from ce.calculation.time import resolve_exact_civil_time
 from ce.foundation.status import BirthTimeState, CalculationStatus
 from ce.signal.engine import SignalEngine
@@ -28,6 +29,13 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
         self.assertEqual(result.birth_time_state, BirthTimeState.ZERO_BIRTH_TIME)
+
+    def test_bad_timezone_version_is_rejected(self) -> None:
+        result = resolve_exact_civil_time(
+            date(2000, 1, 1), time(12, 0), "UTC", "bad",
+            authoritative_timezone_version="bad",
+        )
+        self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
 
     def test_signal_engine_does_not_invent_signal(self) -> None:
         result = SignalEngine().evaluate(object())
