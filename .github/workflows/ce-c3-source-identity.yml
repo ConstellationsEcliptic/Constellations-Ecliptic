@@ -15,7 +15,7 @@ jobs:
       - name: Checkout exact CE candidate commit
         uses: actions/checkout@v4
         with:
-          ref: 31402ca961a6d3c20bf5887ab797ab814eb14e2c
+          ref: 147e92922e980e03f5e723ad6b8ae3b1e74f8fd6
           fetch-depth: 1
 
       - name: Recompute CE source identity
