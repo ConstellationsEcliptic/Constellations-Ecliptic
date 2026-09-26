@@ -22,7 +22,7 @@ Malformed identity input is required to produce:
 
 ```text
 authority = NON_AUTHORIZED
-`
+```
 
 with deterministic reason codes, rather than raising an exception that a caller could mis-handle.
 
