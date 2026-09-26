@@ -13,6 +13,13 @@ class RuntimeGateResult:
 
 
 def authorize_runtime(identity: RuntimeIdentity) -> RuntimeGateResult:
+    """Fail-closed development boundary.
+
+    A non-empty RuntimeIdentity is not proof of authorization. Production
+    authorization requires a separately established and independently
+    verified authority mechanism that is intentionally not implemented in
+    this source foundation.
+    """
     missing: list[str] = []
     fields = {
         "source_commit": identity.source_commit,
@@ -29,6 +36,8 @@ def authorize_runtime(identity: RuntimeIdentity) -> RuntimeGateResult:
         missing.append("unrecognized:execution_profile_id")
     if identity.execution_profile_revision < 1:
         missing.append("invalid:execution_profile_revision")
-    if missing:
-        return RuntimeGateResult(RuntimeAuthority.NON_AUTHORIZED, tuple(missing))
-    return RuntimeGateResult(RuntimeAuthority.AUTHORIZED, ())
+
+    # Presence of identity values is never sufficient for runtime authority.
+    missing.append("source_authority_attestation_not_established")
+    missing.append("independent_runtime_identity_verification_not_established")
+    return RuntimeGateResult(RuntimeAuthority.NON_AUTHORIZED, tuple(missing))
