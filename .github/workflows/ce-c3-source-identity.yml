@@ -15,16 +15,21 @@ jobs:
       - name: Checkout exact CE reconciled candidate commit
         uses: actions/checkout@v4
         with:
-          ref: c9ef69bddd59a58f3611fea44b67843d22df2cd4
+          ref: 804036f843a56d0029ceea08af35247d28cbde7e
           fetch-depth: 1
 
-      - name: Recompute CE source identity
+      - name: Recompute and compare source identity
         shell: bash
         run: |
           set -euo pipefail
-          echo "CHECKED_OUT_COMMIT=$(git rev-parse HEAD)"
-          python3 build/build_source_tree_hash.py
-          echo "SOURCE_TREE_FILE=$(cat manifests/SOURCE_TREE_SHA256.txt 2>/dev/null || cat manifests/SOURCE_TREE_SHA256_V2.txt)"
+          checked_out="$(git rev-parse HEAD)"
+          echo "CHECKED_OUT_COMMIT=$checked_out"
+          actual="$(python3 build/build_source_tree_hash.py)"
+          declared="$(awk 'NF{print $1; exit}' manifests/SOURCE_TREE_SHA256_V2.txt)"
+          echo "ACTUAL_SOURCE_TREE_SHA256_V2=$actual"
+          echo "DECLARED_SOURCE_TREE_SHA256_V2=$declared"
+          test "$actual" = "$declared"
+
           echo "DEPENDENCY_LOCK_SHA256=$(sha256sum build/dependency-lock.txt | awk '{print $1}')"
           echo "BUILD_DEFINITION_SHA256=$(sha256sum build/build-definition.json | awk '{print $1}')"
 
