@@ -29,19 +29,13 @@ class CalculationResultExecutionProfileContractTests(unittest.TestCase):
         result = self._result(CANONICAL_EXECUTION_PROFILE_ID)
         self.assertEqual(result.validate(), ())
 
-    def test_alternate_profile_is_rejected(self) -> None:
-        result = self._result("CE-CALC-V1-EP-ALT")
-        self.assertIn(
-            "invalid:execution_profile_id:canonical_required",
-            result.validate(),
-        )
+    def test_alternate_profile_is_rejected_at_construction(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:execution_profile_id:canonical_required"):
+            self._result("CE-CALC-V1-EP-ALT")
 
-    def test_missing_profile_is_rejected(self) -> None:
-        result = self._result(None)
-        self.assertIn(
-            "invalid:execution_profile_id:canonical_required",
-            result.validate(),
-        )
+    def test_missing_profile_is_rejected_at_construction(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:execution_profile_id:canonical_required"):
+            self._result(None)
 
 
 if __name__ == "__main__":

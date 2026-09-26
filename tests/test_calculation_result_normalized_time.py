@@ -39,27 +39,29 @@ class CalculationResultNormalizedTimeTests(unittest.TestCase):
         )
         for value in invalid_values:
             with self.subTest(value=value):
-                errors = self._result(value).validate()
-                self.assertIn("invalid:normalized_time:utc_canonical_z_required", errors)
+                with self.assertRaisesRegex(
+                    ValueError, "invalid:normalized_time:utc_canonical_z_required"
+                ):
+                    self._result(value)
 
-    def test_invalid_calendar_date_is_rejected(self) -> None:
-        errors = self._result("2026-02-29T00:00:00Z").validate()
-        self.assertIn("invalid:normalized_time:utc_iso8601_invalid", errors)
+    def test_invalid_calendar_date_is_rejected_at_construction(self) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "invalid:normalized_time:utc_iso8601_invalid"
+        ):
+            self._result("2026-02-29T00:00:00Z")
 
     def test_direct_validation_reports_canonical_utc_requirement(self) -> None:
-        result = CalculationResult(
-            request_id="R-NORM-002",
-            status=CalculationStatus.INVALID_INPUT,
-            execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.NONE,
-            normalized_time="2026-01-01T00:00:00+00:00",
-            errors=("invalid input",),
-        )
-        errors = result.validate()
-        self.assertIn(
-            "invalid:normalized_time:utc_canonical_z_required",
-            errors,
-        )
+        with self.assertRaisesRegex(
+            ValueError, "invalid:normalized_time:utc_canonical_z_required"
+        ):
+            CalculationResult(
+                request_id="R-NORM-002",
+                status=CalculationStatus.INVALID_INPUT,
+                execution_profile_id="CE-CALC-V1-EP-001",
+                scenario_state=ScenarioState.NONE,
+                normalized_time="2026-01-01T00:00:00+00:00",
+                errors=("invalid input",),
+            )
 
 
 if __name__ == "__main__":

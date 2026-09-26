@@ -52,7 +52,11 @@ class UnavailableSwissEphemerisAdapter:
             EphemerisRequest(object_id, julian_day_ut, with_speed)
         except ValueError:
             return ObjectState(
-                object_id=object_id if isinstance(object_id, str) else "",
+                object_id=(
+                    object_id
+                    if isinstance(object_id, str) and object_id.strip()
+                    else "INVALID_INPUT"
+                ),
                 longitude_deg=None,
                 speed_deg_per_day=None,
                 status=CalculationStatus.INVALID_INPUT,

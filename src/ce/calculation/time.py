@@ -11,6 +11,14 @@ _TZ_VERSION_RE = re.compile(r"^\d{4}[a-z]$")
 _UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$")
 
 
+def _closed_timezone_id(value: object) -> str:
+    return value if isinstance(value, str) and value.strip() else "INVALID_INPUT"
+
+
+def _closed_timezone_version(value: object) -> str | None:
+    return value if isinstance(value, str) and _TZ_VERSION_RE.fullmatch(value) else None
+
+
 def _parse_utc_z(value: object) -> tuple[datetime | None, str | None]:
     if not isinstance(value, str) or not _UTC_RE.fullmatch(value):
         return None, "utc_canonical_z_required"
@@ -82,8 +90,8 @@ def resolve_exact_civil_time(
             status=CalculationStatus.INVALID_INPUT,
             birth_time_state=BirthTimeState.ZERO_BIRTH_TIME,
             resolved_instant_utc=None,
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
+            timezone_id=_closed_timezone_id(timezone_id),
+            timezone_version=_closed_timezone_version(timezone_version),
             error="invalid_birth_date",
         )
     if birth_time is None:
@@ -100,8 +108,8 @@ def resolve_exact_civil_time(
             status=CalculationStatus.INVALID_INPUT,
             birth_time_state=BirthTimeState.EXACT,
             resolved_instant_utc=None,
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
+            timezone_id="INVALID_INPUT",
+            timezone_version=_closed_timezone_version(timezone_version),
             error="invalid_timezone_id",
         )
     if timezone_version is not None and (
@@ -112,8 +120,8 @@ def resolve_exact_civil_time(
             status=CalculationStatus.INVALID_INPUT,
             birth_time_state=BirthTimeState.EXACT,
             resolved_instant_utc=None,
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
+            timezone_id=_closed_timezone_id(timezone_id),
+            timezone_version=None,
             error="invalid_timezone_version",
         )
     if authoritative_timezone_version is None or timezone_version != authoritative_timezone_version:
