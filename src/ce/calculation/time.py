@@ -8,6 +8,19 @@ from ce.foundation.status import BirthTimeState, CalculationStatus
 
 
 _TZ_VERSION_RE = re.compile(r"^\d{4}[a-z]$")
+_UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$")
+
+
+def _parse_utc_z(value: object) -> tuple[datetime | None, str | None]:
+    if not isinstance(value, str) or not _UTC_RE.fullmatch(value):
+        return None, "utc_canonical_z_required"
+    try:
+        parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError:
+        return None, "utc_iso8601_invalid"
+    if parsed.tzinfo is None or parsed.utcoffset() != timezone.utc.utcoffset(parsed):
+        return None, "utc_timezone_invalid"
+    return parsed, None
 
 
 @dataclass(frozen=True)
@@ -36,6 +49,10 @@ class TimeResolution:
         if self.status is CalculationStatus.VALID:
             if self.resolved_instant_utc is None:
                 errors.append("valid_time_requires_resolved_instant")
+            else:
+                _, utc_error = _parse_utc_z(self.resolved_instant_utc)
+                if utc_error:
+                    errors.append(f"invalid:resolved_instant_utc:{utc_error}")
             if self.error is not None:
                 errors.append("valid_time_cannot_have_error")
         else:
@@ -60,7 +77,7 @@ def resolve_exact_civil_time(
     *,
     authoritative_timezone_version: str | None,
 ) -> TimeResolution:
-    if not isinstance(birth_date, date):
+    if type(birth_date) is not date:
         return TimeResolution(
             status=CalculationStatus.INVALID_INPUT,
             birth_time_state=BirthTimeState.ZERO_BIRTH_TIME,
