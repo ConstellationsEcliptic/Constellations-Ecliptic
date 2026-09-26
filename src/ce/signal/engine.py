@@ -39,7 +39,7 @@ class SignalResult:
 
         object.__setattr__(self, "provenance", _freeze(self.provenance))
         errors = self.validate()
-        if self.status is CalculationStatus.VALID and errors:
+        if errors:
             raise ValueError(";".join(errors))
 
         payload = {
@@ -62,6 +62,17 @@ class SignalResult:
                     errors.append(f"valid_signal_requires:{name}")
             if not self.canon_input_valid:
                 errors.append("valid_signal_requires_canon_input_valid")
+        else:
+            for value, name in (
+                (self.classification, "classification"),
+                (self.phase, "phase"),
+                (self.uncertainty_state, "uncertainty_state"),
+                (self.evidence_packet_ref, "evidence_packet_ref"),
+            ):
+                if value is not None:
+                    errors.append(f"nonvalid_signal_requires_null:{name}")
+            if self.canon_input_valid:
+                errors.append("nonvalid_signal_requires_canon_input_false")
         return tuple(errors)
 
     def canonical_bytes(self) -> bytes:
