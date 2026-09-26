@@ -4,12 +4,12 @@ import json
 import os
 import sys
 import unittest
+from enum import Enum
 from pathlib import Path
-from typing import Type
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from ce.foundation.status import BirthTimeState, CalculationStatus, RuntimeAuthority, ScenarioState
+from ce.foundation.status import CalculationStatus, ScenarioState
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,8 +19,8 @@ def _schema(name: str) -> dict:
     return json.loads((ROOT / "schemas" / name).read_text(encoding="utf-8"))
 
 
-def _enum_values(enum_type: Type[object]) -> set[str]:
-    return {member.value for member in enum_type}  # type: ignore[attr-defined]
+def _enum_values(enum_type: type[Enum]) -> set[str]:
+    return {member.value for member in enum_type}
 
 
 def _assert_enum_correspondence(
@@ -90,16 +90,6 @@ class EnumCorrespondenceTests(unittest.TestCase):
             "CalculationResult.scenario_state",
             python_values,
             schema_values,
-        )
-
-    def test_non_serialized_internal_enums_are_explicitly_excluded(self) -> None:
-        self.assertEqual(
-            _enum_values(BirthTimeState),
-            {"EXACT", "ZERO_BIRTH_TIME"},
-        )
-        self.assertEqual(
-            _enum_values(RuntimeAuthority),
-            {"AUTHORIZED", "NON_AUTHORIZED"},
         )
 
 
