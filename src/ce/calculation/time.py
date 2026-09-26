@@ -48,7 +48,7 @@ class TimeResolution:
 
     def __post_init__(self) -> None:
         errors = self.validate()
-        if errors:
+        if self.status is CalculationStatus.VALID and errors:
             raise ValueError(";".join(errors))
 
 
