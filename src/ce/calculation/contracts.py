@@ -272,9 +272,8 @@ class CalculationResult:
         if error:
             errors.append(error)
 
-        error = _nonempty_string(self.execution_profile_id, "execution_profile_id")
-        if error:
-            errors.append(error)
+        if self.execution_profile_id != CANONICAL_EXECUTION_PROFILE_ID:
+            errors.append("invalid:execution_profile_id:canonical_required")
 
         if self.normalized_time is not None:
             _, normalized_error = _utc_instant(self.normalized_time, "normalized_time")
