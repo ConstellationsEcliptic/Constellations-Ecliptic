@@ -1,0 +1,3 @@
+# CE V1 Source Foundation R1 build-time lock
+# Runtime dependencies: none
+setuptools==82.0.1

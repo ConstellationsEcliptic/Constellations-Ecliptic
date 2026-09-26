@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"CE Calculation Result","type":"object","required":["request_id","status","execution_profile_id","scenario_state"],"properties":{"request_id":{"type":"string"},"status":{"type":"string"},"execution_profile_id":{"type":"string"},"scenario_state":{"type":"string"}}}
