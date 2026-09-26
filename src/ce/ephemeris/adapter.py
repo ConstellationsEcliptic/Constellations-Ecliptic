@@ -8,6 +8,12 @@ from ce.calculation.contracts import ObjectState
 from ce.foundation.status import CalculationStatus
 
 
+def _finite_number(value: object) -> bool:
+    if type(value) is int:
+        return True
+    return type(value) is float and math.isfinite(value)
+
+
 @dataclass(frozen=True)
 class EphemerisRequest:
     object_id: str
@@ -18,7 +24,7 @@ class EphemerisRequest:
         errors: list[str] = []
         if not isinstance(self.object_id, str) or not self.object_id.strip():
             errors.append("invalid:ephemeris.object_id")
-        if not isinstance(self.julian_day_ut, (int, float)) or not math.isfinite(self.julian_day_ut):
+        if not _finite_number(self.julian_day_ut):
             errors.append("invalid:ephemeris.julian_day_ut")
         if not isinstance(self.with_speed, bool):
             errors.append("invalid:ephemeris.with_speed")
