@@ -122,14 +122,30 @@ class SchemaContractTests(unittest.TestCase):
     def test_calculation_schema_is_strict_and_semantic(self) -> None:
         schema = self._schema("calculation_result.schema.json")
         self.assertFalse(schema["additionalProperties"])
+        calculation_status_values = {item.value for item in CalculationStatus}
         self.assertEqual(
             set(schema["properties"]["status"]["enum"]),
-            {item.value for item in CalculationStatus},
+            calculation_status_values,
+        )
+        self.assertEqual(
+            set(schema["properties"]["object_states"]["items"]["properties"]["status"]["enum"]),
+            calculation_status_values,
         )
         self.assertEqual(
             set(schema["properties"]["scenario_state"]["enum"]),
             {item.value for item in ScenarioState},
         )
+        signal_schema = self._schema("signal_result.schema.json")
+        self.assertEqual(
+            set(signal_schema["properties"]["status"]["enum"]),
+            calculation_status_values,
+        )
+        signal_nonvalid = {
+            value
+            for branch in signal_schema["allOf"]
+            for value in branch.get("if", {}).get("properties", {}).get("status", {}).get("enum", [])
+        }
+        self.assertTrue(signal_nonvalid.issubset(calculation_status_values))
         self.assertIn("provenance", schema["required"])
         self.assertEqual(
             schema["properties"]["provenance"]["properties"]["source_commit"]["pattern"],
