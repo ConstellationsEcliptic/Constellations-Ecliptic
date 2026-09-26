@@ -170,7 +170,7 @@ class ObjectState:
 
     def __post_init__(self) -> None:
         errors = self.validate()
-        if errors:
+        if self.status is CalculationStatus.VALID and errors:
             raise ValueError(";".join(errors))
 
 
@@ -255,7 +255,7 @@ class CalculationResult:
             object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
 
         errors = self.validate()
-        if errors:
+        if self.status is CalculationStatus.VALID and errors:
             raise ValueError(";".join(errors))
 
         payload = {
