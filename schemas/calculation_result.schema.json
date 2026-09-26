@@ -3,374 +3,103 @@
   "title": "CE Calculation Result",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "request_id",
-    "status",
-    "execution_profile_id",
-    "scenario_state",
-    "normalized_time",
-    "object_states",
-    "warnings",
-    "errors",
-    "provenance"
-  ],
+  "required": ["request_id", "status", "execution_profile_id", "scenario_state", "normalized_time", "object_states", "warnings", "errors", "provenance"],
   "properties": {
-    "request_id": {
-      "type": "string",
-      "minLength": 1
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "VALID",
-        "NOT_IMPLEMENTED",
-        "NON_AUTHORIZED",
-        "INVALID_INPUT",
-        "CALCULATION_FAILURE"
-      ]
-    },
-    "execution_profile_id": {
-      "type": "string",
-      "const": "CE-CALC-V1-EP-001"
-    },
-    "scenario_state": {
-      "type": "string",
-      "enum": [
-        "STABLE",
-        "VARIABLE",
-        "POSSIBLE",
-        "ROBUST",
-        "MIXED",
-        "NONE"
-      ]
-    },
-    "normalized_time": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
-    },
+    "request_id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["VALID", "NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT", "CALCULATION_FAILURE"]},
+    "execution_profile_id": {"type": "string", "const": "CE-CALC-V1-EP-001"},
+    "scenario_state": {"type": "string", "enum": ["STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"]},
+    "normalized_time": {"type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
     "object_states": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "object_id",
-          "longitude_deg",
-          "speed_deg_per_day",
-          "status"
-        ],
+        "required": ["object_id", "longitude_deg", "speed_deg_per_day", "status"],
         "properties": {
-          "object_id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "longitude_deg": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "minimum": 0,
-            "exclusiveMaximum": 360
-          },
-          "speed_deg_per_day": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "VALID",
-              "NOT_IMPLEMENTED",
-              "NON_AUTHORIZED",
-              "INVALID_INPUT",
-              "CALCULATION_FAILURE"
-            ]
-          }
+          "object_id": {"type": "string", "minLength": 1},
+          "longitude_deg": {"type": ["number", "null"], "minimum": 0, "exclusiveMaximum": 360},
+          "speed_deg_per_day": {"type": ["number", "null"]},
+          "status": {"type": "string", "enum": ["VALID", "NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT", "CALCULATION_FAILURE"]}
         }
       }
     },
-    "warnings": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "errors": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "errors": {"type": "array", "items": {"type": "string"}},
     "provenance": {
       "type": "object",
-      "additionalProperties": {
-        "type": [
-          "string",
-          "number",
-          "boolean",
-          "null"
-        ]
-      },
+      "additionalProperties": {"type": ["string", "number", "boolean", "null"]},
       "properties": {
-        "source_commit": {
-          "type": "string",
-          "pattern": "^[0-9a-fA-F]{40}$"
-        },
-        "source_tree_sha256_v2": {
-          "type": "string",
-          "pattern": "^[0-9a-fA-F]{64}$"
-        },
-        "dependency_lock_digest": {
-          "type": "string",
-          "pattern": "^[0-9a-fA-F]{64}$"
-        },
-        "timezone_bundle_digest": {
-          "type": "string",
-          "pattern": "^[0-9a-fA-F]{64}$"
-        },
-        "ephemeris_bundle_digest": {
-          "type": "string",
-          "pattern": "^[0-9a-fA-F]{64}$"
-        },
-        "runtime_image_digest": {
-          "type": "string",
-          "pattern": "^sha256:[0-9a-fA-F]{64}$"
-        },
-        "calculation_version": {
-          "type": "string",
-          "minLength": 1
-        }
+        "source_commit": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+        "source_tree_sha256_v2": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "dependency_lock_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "timezone_bundle_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "ephemeris_bundle_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "runtime_image_digest": {"type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$"},
+        "calculation_version": {"type": "string", "minLength": 1}
       }
     }
   },
   "allOf": [
     {
-      "if": {
-        "properties": {
-          "status": {
-            "const": "VALID"
-          }
-        },
-        "required": [
-          "status"
-        ]
-      },
+      "if": {"properties": {"status": {"const": "VALID"}}, "required": ["status"]},
       "then": {
-        "required": [
-          "normalized_time",
-          "object_states",
-          "provenance"
-        ],
+        "required": ["normalized_time", "object_states", "provenance"],
         "properties": {
-          "normalized_time": {
-            "type": "string",
-            "minLength": 1,
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
-          },
+          "normalized_time": {"type": "string", "minLength": 1, "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
           "object_states": {
             "minItems": 1,
             "items": {
               "properties": {
-                "status": {
-                  "const": "VALID"
-                },
-                "longitude_deg": {
-                  "type": "number"
-                },
-                "speed_deg_per_day": {
-                  "type": [
-                    "number",
-                    "null"
-                  ]
-                }
+                "status": {"const": "VALID"},
+                "longitude_deg": {"type": "number"},
+                "speed_deg_per_day": {"type": ["number", "null"]}
               }
             }
           },
-          "errors": {
-            "maxItems": 0
-          },
-          "scenario_state": {
-            "not": {
-              "const": "NONE"
-            }
-          },
+          "errors": {"maxItems": 0},
+          "scenario_state": {"not": {"const": "NONE"}},
           "provenance": {
-            "required": [
-              "source_commit",
-              "source_tree_sha256_v2",
-              "dependency_lock_digest",
-              "timezone_bundle_digest",
-              "ephemeris_bundle_digest",
-              "runtime_image_digest",
-              "calculation_version"
-            ],
+            "required": ["source_commit", "source_tree_sha256_v2", "dependency_lock_digest", "timezone_bundle_digest", "ephemeris_bundle_digest", "runtime_image_digest", "calculation_version"],
             "properties": {
-              "source_commit": {
-                "type": "string",
-                "pattern": "^[0-9a-fA-F]{40}$"
-              },
-              "source_tree_sha256_v2": {
-                "type": "string",
-                "pattern": "^[0-9a-fA-F]{64}$"
-              },
-              "dependency_lock_digest": {
-                "type": "string",
-                "pattern": "^[0-9a-fA-F]{64}$"
-              },
-              "timezone_bundle_digest": {
-                "type": "string",
-                "pattern": "^[0-9a-fA-F]{64}$"
-              },
-              "ephemeris_bundle_digest": {
-                "type": "string",
-                "pattern": "^[0-9a-fA-F]{64}$"
-              },
-              "runtime_image_digest": {
-                "type": "string",
-                "pattern": "^sha256:[0-9a-fA-F]{64}$"
-              },
-              "calculation_version": {
-                "type": "string",
-                "minLength": 1
-              }
+              "source_commit": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+              "source_tree_sha256_v2": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+              "dependency_lock_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+              "timezone_bundle_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+              "ephemeris_bundle_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+              "runtime_image_digest": {"type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$"},
+              "calculation_version": {"type": "string", "minLength": 1}
             }
           }
         }
       }
     },
     {
-      "if": {
-        "properties": {
-          "status": {
-            "enum": [
-              "NOT_IMPLEMENTED",
-              "NON_AUTHORIZED",
-              "INVALID_INPUT",
-              "CALCULATION_FAILURE"
-            ]
-          }
-        },
-        "required": [
-          "status"
-        ]
-      },
+      "if": {"properties": {"status": {"enum": ["NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT", "CALCULATION_FAILURE"]}}, "required": ["status"]},
       "then": {
         "not": {
           "properties": {
             "object_states": {
               "contains": {
                 "type": "object",
-                "required": [
-                  "status"
-                ],
-                "properties": {
-                  "status": {
-                    "const": "VALID"
-                  }
-                }
+                "required": ["status"],
+                "properties": {"status": {"const": "VALID"}}
               }
             }
           }
         },
         "allOf": [
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "source_commit"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "source_tree_sha256_v2"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "dependency_lock_digest"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "timezone_bundle_digest"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "ephemeris_bundle_digest"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "runtime_image_digest"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "calculation_version"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "not": {
-              "properties": {
-                "provenance": {
-                  "required": [
-                    "runtime_authority"
-                  ],
-                  "properties": {
-                    "runtime_authority": {
-                      "const": "AUTHORIZED"
-                    }
-                  }
-                }
-              }
-            }
-          }
+          {"not": {"properties": {"provenance": {"required": ["source_commit"]}}}},
+          {"not": {"properties": {"provenance": {"required": ["source_tree_sha256_v2"]}}}},
+          {"not": {"properties": {"provenance": {"required": ["dependency_lock_digest"]}}}},
+          {"not": {"properties": {"provenance": {"required": ["timezone_bundle_digest"]}}}},
+          {"not": {"properties": {"provenance": {"required": ["ephemeris_bundle_digest"]}}}},
+          {"not": {"properties": {"provenance": {"required": ["runtime_image_digest"]}}}},
+          {"not": {"properties": {"provenance": {"required": ["calculation_version"]}}}},
+          {"not": {"properties": {"provenance": {
+            "required": ["runtime_authority"],
+            "properties": {"runtime_authority": {"const": "AUTHORIZED"}}
+          }}}}
         ]
       }
     }
