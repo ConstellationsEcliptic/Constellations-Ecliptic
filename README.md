@@ -5,7 +5,7 @@ Authority: `NON_AUTHORITATIVE`
 Production Source Authority: `NOT_ESTABLISHED`
 Runtime Authorization: `NON_AUTHORIZED`
 
-This repository is the first real CE source-tree implementation foundation. It is not a production-authoritative release and must not be promoted to Trusted Build merely because its tests pass.
+This repository branch is a production-source candidate snapshot for human review. It is not a production-authoritative release and must not be promoted to Trusted Build merely because its tests pass.
 
 ## Governing rules
 
@@ -45,9 +45,9 @@ Not yet implemented:
 
 A missing implementation produces `NOT_IMPLEMENTED` or `NON_AUTHORIZED`; it never produces synthetic astronomical values.
 
-## Parent evidence
+## Evidence boundary
 
-The exact H8 R2 full-chain hardened package is retained under `evidence/parents/` and is bound by SHA-256 in `provenance/parent_chain.json`.
+Historical hardening and provenance evidence remain retained in Box. This Git repository contains the source candidate and verification tooling, not the historical evidence bundles.
 
 ## Test command
 
