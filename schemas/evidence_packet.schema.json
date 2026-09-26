@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"CE Evidence Packet","type":"object","required":["evidence_packet_id","execution_profile_id","calculation_version"],"properties":{"evidence_packet_id":{"type":"string"},"execution_profile_id":{"type":"string"},"calculation_version":{"type":"string"}}}
