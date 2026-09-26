@@ -40,6 +40,13 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             packet.input_identity["value"] = "mutated"
 
+    def test_packet_mapping_rejects_in_place_union(self) -> None:
+        packet = self._packet("x")
+        mapping = packet.input_identity
+        with self.assertRaises(TypeError):
+            mapping |= {"new": "value"}
+        self.assertEqual(mapping, {"value": "x"})
+
     def test_content_identity_is_stable_after_source_input_mutation(self) -> None:
         source = {"value": "x"}
         packet = EvidencePacket(

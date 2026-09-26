@@ -14,6 +14,7 @@ class FrozenDict(dict):
         raise TypeError("EvidencePacket mappings are immutable")
 
     __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = _blocked
+    __ior__ = _blocked
 
 
 def _freeze(value: Any) -> Any:
