@@ -69,17 +69,14 @@ class CalculationResultNormalizedTimeTests(unittest.TestCase):
             self._valid_result("2026-02-29T00:00:00Z")
 
     def test_direct_validation_reports_canonical_utc_requirement(self) -> None:
-        result = object.__new__(CalculationResult)
-        object.__setattr__(result, "request_id", "R-NORM-002")
-        object.__setattr__(result, "status", CalculationStatus.INVALID_INPUT)
-        object.__setattr__(result, "execution_profile_id", "CE-CALC-V1-EP-001")
-        object.__setattr__(result, "scenario_state", ScenarioState.NONE)
-        object.__setattr__(result, "normalized_time", "2026-01-01T00:00:00+00:00")
-        object.__setattr__(result, "object_states", ())
-        object.__setattr__(result, "warnings", ())
-        object.__setattr__(result, "errors", ("invalid input",))
-        object.__setattr__(result, "provenance", {})
-        object.__setattr__(result, "_canonical_bytes", b"")
+        result = CalculationResult(
+            request_id="R-NORM-002",
+            status=CalculationStatus.INVALID_INPUT,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            scenario_state=ScenarioState.NONE,
+            normalized_time="2026-01-01T00:00:00+00:00",
+            errors=("invalid input",),
+        )
         errors = result.validate()
         self.assertIn(
             "invalid:normalized_time:utc_canonical_z_required",
