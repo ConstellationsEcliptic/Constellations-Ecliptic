@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field, fields
 from typing import Any
 
 from ce.foundation.hashing import sha256_bytes
+from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID
 from ce.foundation.serialization import canonical_json
 
 
@@ -17,8 +19,36 @@ class FrozenDict(dict):
     __ior__ = _blocked
 
 
+_STRING_FIELDS = (
+    "evidence_packet_id",
+    "calculation_version",
+)
+
+_MAPPING_FIELDS = (
+    "input_identity",
+    "profile_version",
+    "observation_instant_or_interval",
+    "timezone_context",
+    "numerical_tolerances",
+    "solver_metadata",
+    "actual_ephemeris_resolution",
+    "calculation_flags",
+)
+
+_RECORD_FIELDS = (
+    "object_records",
+    "geometry_records",
+    "kinematics",
+)
+
+_MESSAGE_FIELDS = (
+    "warnings",
+    "errors",
+)
+
+
 def _freeze(value: Any) -> Any:
-    if isinstance(value, dict):
+    if isinstance(value, Mapping):
         return FrozenDict({key: _freeze(item) for key, item in value.items()})
     if isinstance(value, list):
         return tuple(_freeze(item) for item in value)
@@ -47,7 +77,49 @@ class EvidencePacket:
     calculation_flags: dict[str, Any]
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
 
+    def validate(self) -> tuple[str, ...]:
+        errors: list[str] = []
+
+        for field_name in _STRING_FIELDS:
+            value = getattr(self, field_name)
+            if not isinstance(value, str) or not value.strip():
+                errors.append(f"invalid:{field_name}")
+
+        execution_profile_id = self.execution_profile_id
+        if not isinstance(execution_profile_id, str) or not execution_profile_id.strip():
+            errors.append("invalid:execution_profile_id")
+        elif execution_profile_id != CANONICAL_EXECUTION_PROFILE_ID:
+            errors.append("unrecognized:execution_profile_id")
+
+        for field_name in _MAPPING_FIELDS:
+            if not isinstance(getattr(self, field_name), Mapping):
+                errors.append(f"invalid:{field_name}:mapping_required")
+
+        for field_name in _RECORD_FIELDS:
+            value = getattr(self, field_name)
+            if not isinstance(value, (list, tuple)):
+                errors.append(f"invalid:{field_name}:sequence_required")
+                continue
+            for index, item in enumerate(value):
+                if not isinstance(item, Mapping):
+                    errors.append(f"invalid:{field_name}[{index}]:mapping_required")
+
+        for field_name in _MESSAGE_FIELDS:
+            value = getattr(self, field_name)
+            if not isinstance(value, (list, tuple)):
+                errors.append(f"invalid:{field_name}:sequence_required")
+                continue
+            for index, item in enumerate(value):
+                if not isinstance(item, str):
+                    errors.append(f"invalid:{field_name}[{index}]:string_required")
+
+        return tuple(errors)
+
     def __post_init__(self) -> None:
+        errors = self.validate()
+        if errors:
+            raise ValueError(";".join(errors))
+
         for item in fields(self):
             if item.name == "_canonical_bytes":
                 continue

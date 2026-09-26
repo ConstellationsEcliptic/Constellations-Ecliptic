@@ -9,8 +9,8 @@ from ce.calculation.evidence import EvidencePacket
 
 
 class EvidenceTests(unittest.TestCase):
-    def _packet(self, value: str) -> EvidencePacket:
-        return EvidencePacket(
+    def _packet(self, value: str, **overrides: object) -> EvidencePacket:
+        values = dict(
             evidence_packet_id="E-001",
             input_identity={"value": value},
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 2},
@@ -28,6 +28,8 @@ class EvidenceTests(unittest.TestCase):
             actual_ephemeris_resolution={"status": "NOT_ESTABLISHED"},
             calculation_flags={},
         )
+        values.update(overrides)
+        return EvidencePacket(**values)
 
     def test_same_payload_same_hash(self) -> None:
         self.assertEqual(self._packet("x").content_sha256(), self._packet("x").content_sha256())
@@ -71,3 +73,50 @@ class EvidenceTests(unittest.TestCase):
         source["value"] = "changed-outside-packet"
         self.assertEqual(packet.content_sha256(), original_hash)
         self.assertEqual(packet.input_identity["value"], "x")
+
+    def test_invalid_scalar_fields_are_rejected(self) -> None:
+        for field_name, value, token in (
+            ("evidence_packet_id", 123, "invalid:evidence_packet_id"),
+            ("evidence_packet_id", "   ", "invalid:evidence_packet_id"),
+            ("calculation_version", 123, "invalid:calculation_version"),
+            ("calculation_version", "", "invalid:calculation_version"),
+        ):
+            with self.assertRaisesRegex(ValueError, token):
+                self._packet("x", **{field_name: value})
+
+    def test_noncanonical_execution_profile_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "unrecognized:execution_profile_id"):
+            self._packet("x", execution_profile_id="CE-CALC-V1-EP-ALT")
+
+    def test_mapping_fields_require_mapping_values(self) -> None:
+        for field_name in (
+            "input_identity",
+            "profile_version",
+            "observation_instant_or_interval",
+            "timezone_context",
+            "numerical_tolerances",
+            "solver_metadata",
+            "actual_ephemeris_resolution",
+            "calculation_flags",
+        ):
+            with self.assertRaisesRegex(ValueError, f"invalid:{field_name}:mapping_required"):
+                self._packet("x", **{field_name: ("not-a-mapping",)})
+
+    def test_record_fields_require_mapping_members(self) -> None:
+        for field_name in ("object_records", "geometry_records", "kinematics"):
+            with self.assertRaisesRegex(ValueError, f"invalid:{field_name}\\[0\\]:mapping_required"):
+                self._packet("x", **{field_name: (1,)})
+
+    def test_message_fields_require_string_members(self) -> None:
+        for field_name in ("warnings", "errors"):
+            with self.assertRaisesRegex(ValueError, f"invalid:{field_name}\\[0\\]:string_required"):
+                self._packet("x", **{field_name: (123,)})
+
+    def test_empty_record_and_message_sequences_remain_valid(self) -> None:
+        packet = self._packet("x")
+        self.assertEqual(packet.object_records, ())
+        self.assertEqual(packet.geometry_records, ())
+        self.assertEqual(packet.kinematics, ())
+        self.assertEqual(packet.warnings, ())
+        self.assertEqual(packet.errors, ())
+
