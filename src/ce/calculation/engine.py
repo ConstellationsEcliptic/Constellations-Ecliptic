@@ -40,7 +40,7 @@ class CalculationEngine:
                 scenario_state=ScenarioState.NONE,
                 normalized_time=None,
                 errors=gate.reasons,
-                provenance={"runtime_authority": gate.authority.value},
+                provenance={},
             )
 
         return CalculationResult(

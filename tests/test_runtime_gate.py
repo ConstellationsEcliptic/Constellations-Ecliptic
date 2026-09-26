@@ -132,6 +132,7 @@ class RuntimeGateTests(unittest.TestCase):
             result.errors,
             ("authoritative_calculation_adapter_not_established",),
         )
+        self.assertEqual(result.provenance, {})
 
     def test_authorized_path_rejects_request_profile_mismatch(self) -> None:
         identity = RuntimeIdentity(

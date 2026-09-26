@@ -75,8 +75,8 @@ class ProvenanceBindingTests(unittest.TestCase):
     def test_valid_result_rejects_nested_extra_provenance(self) -> None:
         provenance = self._provenance()
         provenance["trace"] = {"nested": "value"}
-        with self.assertRaisesRegex(ValueError, "provenance:extra:trace:scalar_required"):
-            self._valid_result(provenance=provenance)
+        errors = _validate_result_provenance(provenance, self._identity())
+        self.assertIn("provenance:extra:trace:scalar_required", errors)
 
     def test_nonvalid_result_rejects_authority_identity_provenance(self) -> None:
         with self.assertRaisesRegex(ValueError, "provenance:nonvalid_forbidden:source_commit"):
