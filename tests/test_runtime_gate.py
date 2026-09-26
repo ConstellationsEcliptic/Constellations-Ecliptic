@@ -10,6 +10,7 @@ from ce.calculation.engine import CalculationEngine
 from ce.ephemeris.adapter import UnavailableSwissEphemerisAdapter
 from ce.foundation.identity import RuntimeIdentity
 from ce.foundation.status import BirthTimeState, CalculationStatus, ScenarioState
+from ce.runtime.gates import authorize_runtime
 from datetime import date, time
 
 
@@ -48,3 +49,20 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertIn("source_authority_attestation_not_established", result.errors)
         self.assertIn("independent_runtime_identity_verification_not_established", result.errors)
         self.assertIsNone(result.normalized_time)
+
+    def test_malformed_identity_fails_closed_without_exception(self) -> None:
+        result = authorize_runtime(object())
+        self.assertEqual(result.authority, RuntimeAuthority.NON_AUTHORIZED)
+        self.assertEqual(result.reasons[0], "invalid:runtime_identity_type")
+        self.assertIn("source_authority_attestation_not_established", result.reasons)
+        self.assertIn("independent_runtime_identity_verification_not_established", result.reasons)
+
+    def test_wrong_revision_type_fails_closed(self) -> None:
+        identity = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", "2",  # type: ignore[arg-type]
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
+        )
+        result = authorize_runtime(identity)
+        self.assertEqual(result.authority, RuntimeAuthority.NON_AUTHORIZED)
+        self.assertIn("invalid:execution_profile_revision_type", result.reasons)
