@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
-from datetime import date, time
+from datetime import date, datetime, time
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -22,6 +22,13 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         self.assertEqual(result.birth_time_state, BirthTimeState.EXACT)
         self.assertIsNone(result.resolved_instant_utc)
 
+    def test_datetime_birth_date_is_rejected(self) -> None:
+        result = resolve_exact_civil_time(
+            datetime(2000, 1, 1, 0, 0), time(12, 0), "UTC", "2026d",
+            authoritative_timezone_version="2026d",
+        )
+        self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
+
     def test_zero_birth_time_is_explicit(self) -> None:
         result = resolve_exact_civil_time(
             date(2000, 1, 1), None, "UTC", "2026d",
@@ -29,6 +36,18 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
         self.assertEqual(result.birth_time_state, BirthTimeState.ZERO_BIRTH_TIME)
+
+    def test_valid_time_resolution_accepts_only_canonical_utc(self) -> None:
+        from ce.calculation.time import TimeResolution
+        with self.assertRaises(ValueError):
+            TimeResolution(
+                CalculationStatus.VALID, BirthTimeState.EXACT,
+                "2026-01-01T00:00:00+00:00", "UTC", "2026d", None
+            )
+        TimeResolution(
+            CalculationStatus.VALID, BirthTimeState.EXACT,
+            "2026-01-01T00:00:00Z", "UTC", "2026d", None
+        )
 
     def test_bad_timezone_version_is_rejected(self) -> None:
         result = resolve_exact_civil_time(
