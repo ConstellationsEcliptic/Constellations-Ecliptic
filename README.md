@@ -16,6 +16,7 @@ This repository branch is a production-source candidate snapshot for human revie
 - Unknown/missing/mismatched runtime identity fails closed.
 - Evidence is deterministic and content-addressed.
 - Calculation layer does not define interpretation.
+- Non-empty identity fields are never treated as proof of runtime authority.
 
 ## Current implementation scope
 
@@ -26,7 +27,7 @@ Implemented:
 - source/evidence hashing helpers;
 - circular-angle geometry;
 - explicit birth-time states including zero-birth-time;
-- runtime authorization gate;
+- runtime fail-closed boundary;
 - fail-closed Swiss Ephemeris adapter boundary;
 - immutable-style Evidence Packet issuance contract;
 - deterministic test runner.
@@ -41,7 +42,8 @@ Not yet implemented:
 - Personal Window solver;
 - complete Signal Engine;
 - trusted production toolchain/image;
-- production Source Authority.
+- production Source Authority;
+- independently verified runtime-identity authorization mechanism.
 
 A missing implementation produces `NOT_IMPLEMENTED` or `NON_AUTHORIZED`; it never produces synthetic astronomical values.
 
