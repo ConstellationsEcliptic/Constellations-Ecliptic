@@ -6,7 +6,11 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from ce.calculation.contracts import CalculationResult, ObjectState
+from ce.calculation.contracts import (
+    CalculationResult,
+    ObjectState,
+    _validate_result_provenance,
+)
 from ce.foundation.identity import RuntimeIdentity
 from ce.foundation.status import CalculationStatus, ScenarioState
 
@@ -36,18 +40,6 @@ class ProvenanceBindingTests(unittest.TestCase):
             "calculation_version": "0.1.0",
         }
 
-    def _valid_result(self, *, provenance=None, runtime_identity=None) -> CalculationResult:
-        return CalculationResult(
-            "R",
-            CalculationStatus.VALID,
-            "CE-CALC-V1-EP-001",
-            ScenarioState.STABLE,
-            "2026-01-01T00:00:00Z",
-            (ObjectState("sun", 12.5, 0.9, CalculationStatus.VALID),),
-            provenance=self._provenance() if provenance is None else provenance,
-            _runtime_identity=self._identity() if runtime_identity is None else runtime_identity,
-        )
-
     def _nonvalid_result(self, provenance) -> CalculationResult:
         return CalculationResult(
             "R",
@@ -58,23 +50,15 @@ class ProvenanceBindingTests(unittest.TestCase):
             provenance=provenance,
         )
 
-    def test_valid_result_requires_runtime_identity_binding(self) -> None:
-        with self.assertRaisesRegex(ValueError, "provenance:binding_required"):
-            CalculationResult(
-                "R",
-                CalculationStatus.VALID,
-                "CE-CALC-V1-EP-001",
-                ScenarioState.STABLE,
-                "2026-01-01T00:00:00Z",
-                (ObjectState("sun", 12.5, 0.9, CalculationStatus.VALID),),
-                provenance=self._provenance(),
-            )
+    def test_valid_provenance_requires_runtime_identity_binding(self) -> None:
+        errors = _validate_result_provenance(self._provenance(), None)
+        self.assertIn("provenance:binding_required", errors)
 
-    def test_valid_result_accepts_exact_runtime_identity_binding(self) -> None:
-        result = self._valid_result()
-        self.assertEqual(result.validate(), ())
+    def test_valid_provenance_accepts_exact_runtime_identity_binding(self) -> None:
+        errors = _validate_result_provenance(self._provenance(), self._identity())
+        self.assertEqual(errors, ())
 
-    def test_valid_result_rejects_well_formed_unrelated_identity(self) -> None:
+    def test_valid_provenance_rejects_well_formed_unrelated_identity(self) -> None:
         for field_name, alternate in (
             ("source_commit", "9" * 40),
             ("source_tree_sha256_v2", "9" * 64),
@@ -85,8 +69,8 @@ class ProvenanceBindingTests(unittest.TestCase):
         ):
             provenance = self._provenance()
             provenance[field_name] = alternate
-            with self.assertRaisesRegex(ValueError, f"provenance:mismatch:{field_name}"):
-                self._valid_result(provenance=provenance)
+            errors = _validate_result_provenance(provenance, self._identity())
+            self.assertIn(f"provenance:mismatch:{field_name}", errors)
 
     def test_valid_result_rejects_nested_extra_provenance(self) -> None:
         provenance = self._provenance()

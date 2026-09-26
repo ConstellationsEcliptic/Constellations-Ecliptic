@@ -314,7 +314,9 @@ class CalculationResult:
             object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
 
         errors = self.validate()
-        if self.status is CalculationStatus.VALID and errors:
+        if any(error.startswith("provenance:") for error in errors) or (
+            self.status is CalculationStatus.VALID and errors
+        ):
             raise ValueError(";".join(errors))
 
         payload = {

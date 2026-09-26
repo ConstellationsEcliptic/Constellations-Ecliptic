@@ -58,10 +58,19 @@ def _validate_schema_instance(schema: dict[str, Any], instance: Any, path: str =
 
     if isinstance(instance, dict):
         properties = schema.get("properties", {})
-        if schema.get("additionalProperties") is False:
+        additional_properties = schema.get("additionalProperties")
+        if additional_properties is False:
             for name in instance:
                 if name not in properties:
                     errors.append(f"{path}.unexpected:{name}")
+        elif isinstance(additional_properties, dict):
+            for name, value in instance.items():
+                if name not in properties:
+                    errors.extend(
+                        _validate_schema_instance(
+                            additional_properties, value, f"{path}.{name}"
+                        )
+                    )
         for name, child in properties.items():
             if name in instance:
                 errors.extend(_validate_schema_instance(child, instance[name], f"{path}.{name}"))
