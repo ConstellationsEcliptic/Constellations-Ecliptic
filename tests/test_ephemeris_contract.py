@@ -15,6 +15,10 @@ class EphemerisContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             EphemerisRequest("sun", float("nan"), True)
 
+    def test_ephemeris_request_rejects_bool_as_julian_day(self) -> None:
+        with self.assertRaises(ValueError):
+            EphemerisRequest("sun", True, True)
+
     def test_unavailable_adapter_returns_invalid_input_for_bad_request(self) -> None:
         result = UnavailableSwissEphemerisAdapter().calculate_object("", float("inf"), True)
         self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
