@@ -26,6 +26,18 @@
           "canon_input_valid": {"const": true}
         }
       }
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT", "CALCULATION_FAILURE"]}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "classification": {"const": null},
+          "phase": {"const": null},
+          "uncertainty_state": {"const": null},
+          "evidence_packet_ref": {"const": null},
+          "canon_input_valid": {"const": false}
+        }
+      }
     }
   ]
 }
