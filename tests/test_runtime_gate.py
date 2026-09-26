@@ -28,7 +28,7 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
         self.assertEqual(result.scenario_state, ScenarioState.NONE)
 
-    def test_complete_identity_still_does_not_fake_calculation(self) -> None:
+    def test_complete_identity_still_fails_closed(self) -> None:
         identity = RuntimeIdentity(
             "CE-CALC-V1-EP-001", 2,
             "a" * 40, "b" * 64, "sha256:" + "c" * 64,
@@ -43,5 +43,8 @@ class RuntimeGateTests(unittest.TestCase):
             execution_profile_id="CE-CALC-V1-EP-001",
         )
         result = engine.calculate(request)
-        self.assertEqual(result.status, CalculationStatus.NOT_IMPLEMENTED)
+        self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
+        self.assertEqual(result.scenario_state, ScenarioState.NONE)
+        self.assertIn("source_authority_attestation_not_established", result.errors)
+        self.assertIn("independent_runtime_identity_verification_not_established", result.errors)
         self.assertIsNone(result.normalized_time)
