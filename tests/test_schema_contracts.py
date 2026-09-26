@@ -10,6 +10,7 @@ from typing import Any
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+from ce.calculation.evidence import EvidencePacket
 from ce.foundation.status import CalculationStatus, ScenarioState
 
 
@@ -214,3 +215,49 @@ class SchemaContractTests(unittest.TestCase):
             "provenance": self._provenance(),
         }
         self.assertTrue(_validate_schema_instance(schema, invalid))
+
+    def test_evidence_packet_python_and_schema_contracts_align_for_established_semantics(self) -> None:
+        schema = self._schema("evidence_packet.schema.json")
+        packet_kwargs = {
+            "evidence_packet_id": "E-REG-001",
+            "input_identity": {"value": "x"},
+            "profile_version": {"id": "CE-CALC-V1-EP-001", "revision": 2},
+            "observation_instant_or_interval": {"start": "2000-01-01T00:00:00Z"},
+            "timezone_context": {"id": "UTC", "version": "NOT_ESTABLISHED"},
+            "execution_profile_id": "CE-CALC-V1-EP-001",
+            "calculation_version": "0.1.0",
+            "object_records": ({"object_id": "sun"},),
+            "geometry_records": ({"kind": "angular_separation"},),
+            "kinematics": ({"object_id": "sun"},),
+            "warnings": ("warning",),
+            "errors": (),
+            "numerical_tolerances": {"exact_tolerance_deg": 1e-4},
+            "solver_metadata": {},
+            "actual_ephemeris_resolution": {"status": "NOT_ESTABLISHED"},
+            "calculation_flags": {},
+        }
+        valid_packet = EvidencePacket(**packet_kwargs)
+        valid_instance = json.loads(valid_packet.canonical_bytes().decode("utf-8"))
+        self.assertEqual(_validate_schema_instance(schema, valid_instance), [])
+
+        invalid_cases = (
+            ("evidence_packet_id", 123),
+            ("execution_profile_id", "CE-CALC-V1-EP-ALT"),
+            ("calculation_version", 123),
+            ("input_identity", []),
+            ("object_records", [1]),
+            ("geometry_records", ["not-an-object"]),
+            ("kinematics", [None]),
+            ("warnings", [123]),
+            ("errors", [False]),
+        )
+        for field_name, invalid_value in invalid_cases:
+            instance = dict(valid_instance)
+            instance[field_name] = invalid_value
+            self.assertTrue(_validate_schema_instance(schema, instance), field_name)
+
+            python_kwargs = dict(packet_kwargs)
+            python_kwargs[field_name] = invalid_value
+            with self.assertRaises(ValueError, msg=field_name):
+                EvidencePacket(**python_kwargs)
+
