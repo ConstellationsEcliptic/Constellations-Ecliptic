@@ -55,11 +55,51 @@ class ContractStateIntegrityTests(unittest.TestCase):
                 "2026-01-01T00:00:00Z", (self._valid_object(),), provenance={}
             )
 
+    def test_nonvalid_calculation_rejects_invalid_request_id(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:request_id"):
+            CalculationResult(
+                "", CalculationStatus.NON_AUTHORIZED, "CE-CALC-V1-EP-001",
+                ScenarioState.NONE, None
+            )
+
+    def test_nonvalid_calculation_rejects_noncanonical_execution_profile(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:execution_profile_id:canonical_required"):
+            CalculationResult(
+                "R", CalculationStatus.NON_AUTHORIZED, "OTHER-PROFILE",
+                ScenarioState.NONE, None
+            )
+
+    def test_nonvalid_calculation_rejects_malformed_normalized_time(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:normalized_time"):
+            CalculationResult(
+                "R", CalculationStatus.NON_AUTHORIZED, "CE-CALC-V1-EP-001",
+                ScenarioState.NONE, "2026-01-01T00:00:00+00:00"
+            )
+
+    def test_nonvalid_calculation_rejects_valid_object_state(self) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "nonvalid_result_cannot_contain_valid_object_state"
+        ):
+            CalculationResult(
+                "R", CalculationStatus.NON_AUTHORIZED, "CE-CALC-V1-EP-001",
+                ScenarioState.NONE, None, (self._valid_object(),)
+            )
+
     def test_valid_signal_requires_minimum_state(self) -> None:
         with self.assertRaises(ValueError):
             SignalResult(
                 CalculationStatus.VALID, None, None, None, None, False
             )
+
+    def test_nonvalid_object_constructor_closes_invalid_object_id(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:object_id"):
+            ObjectState("", None, None, CalculationStatus.NON_AUTHORIZED)
+
+    def test_nonvalid_object_constructor_closes_invalid_numeric_shape(self) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "nonvalid_object_longitude_must_be_finite_or_none"
+        ):
+            ObjectState("sun", math.nan, None, CalculationStatus.NON_AUTHORIZED)
 
     def test_valid_object_rejects_bool_as_numeric(self) -> None:
         with self.assertRaises(ValueError):
@@ -67,27 +107,30 @@ class ContractStateIntegrityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ObjectState("sun", 12.5, True, CalculationStatus.VALID)
 
-    def test_birth_input_rejects_datetime_as_date(self) -> None:
-        birth = BirthInput(
-            datetime(2000, 1, 1, 0, 0), time(12, 0), BirthTimeState.EXACT,
-            "Test City", "UTC", "2026d"
-        )
-        self.assertIn("invalid:birth_date", birth.validate())
+    def test_birth_input_constructor_closes_invalid_state(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:birth_date"):
+            BirthInput(
+                datetime(2000, 1, 1, 0, 0), time(12, 0), BirthTimeState.EXACT,
+                "Test City", "UTC", "2026d"
+            )
 
-    def test_birth_input_rejects_contradiction(self) -> None:
-        birth = BirthInput(
-            date(2000, 1, 1), None, BirthTimeState.EXACT, "Test City", "UTC", "2026d"
-        )
-        self.assertIn("inconsistent:birth_time_exact_requires_value", birth.validate())
+    def test_birth_input_constructor_closes_contradiction(self) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "inconsistent:birth_time_exact_requires_value"
+        ):
+            BirthInput(
+                date(2000, 1, 1), None, BirthTimeState.EXACT, "Test City", "UTC", "2026d"
+            )
 
-    def test_request_rejects_bad_interval(self) -> None:
+    def test_request_constructor_closes_bad_interval(self) -> None:
         birth = BirthInput(
             date(2000, 1, 1), time(12, 0), BirthTimeState.EXACT, "Test City", "UTC", "2026d"
         )
-        request = CalculationRequest(
-            "R", birth, "2026-01-02T00:00:00Z", "2026-01-01T00:00:00Z", "CE-CALC-V1-EP-001"
-        )
-        self.assertIn("invalid:target_interval_order", request.validate())
+        with self.assertRaisesRegex(ValueError, "invalid:target_interval_order"):
+            CalculationRequest(
+                "R", birth, "2026-01-02T00:00:00Z", "2026-01-01T00:00:00Z",
+                "CE-CALC-V1-EP-001"
+            )
 
     def test_nonvalid_signal_rejects_semantic_payload(self) -> None:
         with self.assertRaises(ValueError):

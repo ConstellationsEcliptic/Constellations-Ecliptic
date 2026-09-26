@@ -90,32 +90,25 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
         self.assertIn("unrecognized:execution_profile_revision", result.errors)
 
-    def test_authorized_path_validates_request_before_authorization(self) -> None:
-        identity = RuntimeIdentity(
-            "CE-CALC-V1-EP-001", 2,
-            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
-            "d" * 64, "e" * 64, "f" * 64,
+    def test_invalid_request_components_are_constructor_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid:birth_city"):
+            BirthInput(
+                date(2000, 1, 1), time(12, 0), BirthTimeState.EXACT,
+                "", "UTC", "2026d"
+            )
+
+        birth = BirthInput(
+            date(2000, 1, 1), time(12, 0), BirthTimeState.EXACT,
+            "Test City", "UTC", "2026d"
         )
-        engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
-        invalid_birth = BirthInput(
-            date(2000, 1, 1), None, BirthTimeState.EXACT, "", "UTC", "2026d"
-        )
-        invalid_request = CalculationRequest(
-            "T-VALIDATE-FIRST",
-            invalid_birth,
-            "2000-01-02T00:00:00Z",
-            "2000-01-01T00:00:00Z",
-            "CE-CALC-V1-EP-001",
-        )
-        authorized = RuntimeGateResult(RuntimeAuthority.AUTHORIZED, ())
-        with patch(
-            "ce.calculation.engine.authorize_runtime",
-            side_effect=AssertionError("authorize_runtime must not be reached"),
-        ):
-            result = engine.calculate(invalid_request)
-        self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
-        self.assertIn("invalid:birth_city", result.errors)
-        self.assertIn("invalid:target_interval_order", result.errors)
+        with self.assertRaisesRegex(ValueError, "invalid:target_interval_order"):
+            CalculationRequest(
+                "T-VALIDATE-FIRST",
+                birth,
+                "2000-01-02T00:00:00Z",
+                "2000-01-01T00:00:00Z",
+                "CE-CALC-V1-EP-001",
+            )
 
     def test_authorized_path_reaches_downstream_boundary_when_request_is_valid(self) -> None:
         identity = RuntimeIdentity(
@@ -136,7 +129,7 @@ class RuntimeGateTests(unittest.TestCase):
 
     def test_authorized_path_rejects_request_profile_mismatch(self) -> None:
         identity = RuntimeIdentity(
-            "CE-CALC-V1-EP-001", 2,
+            "OTHER-PROFILE", 2,
             "a" * 40, "b" * 64, "sha256:" + "c" * 64,
             "d" * 64, "e" * 64, "f" * 64,
         )

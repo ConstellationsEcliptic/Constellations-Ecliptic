@@ -49,6 +49,25 @@ class TimeSignalBoundaryTests(unittest.TestCase):
             "2026-01-01T00:00:00Z", "UTC", "2026d", None
         )
 
+    def test_nonvalid_time_resolution_constructor_closes_resolved_instant(self) -> None:
+        from ce.calculation.time import TimeResolution
+        with self.assertRaisesRegex(
+            ValueError, "nonvalid_time_requires_no_resolved_instant"
+        ):
+            TimeResolution(
+                CalculationStatus.NON_AUTHORIZED, BirthTimeState.EXACT,
+                "2026-01-01T00:00:00Z", "UTC", "2026d",
+                "not-authorized"
+            )
+
+    def test_nonvalid_time_resolution_constructor_requires_error(self) -> None:
+        from ce.calculation.time import TimeResolution
+        with self.assertRaisesRegex(ValueError, "nonvalid_time_requires_error"):
+            TimeResolution(
+                CalculationStatus.NON_AUTHORIZED, BirthTimeState.EXACT,
+                None, "UTC", "2026d", None
+            )
+
     def test_bad_timezone_version_is_rejected(self) -> None:
         result = resolve_exact_civil_time(
             date(2000, 1, 1), time(12, 0), "UTC", "bad",

@@ -99,6 +99,11 @@ class BirthInput:
 
         return tuple(errors)
 
+    def __post_init__(self) -> None:
+        errors = self.validate()
+        if errors:
+            raise ValueError(";".join(errors))
+
 
 @dataclass(frozen=True)
 class CalculationRequest:
@@ -115,7 +120,10 @@ class CalculationRequest:
         if error:
             errors.append(error)
 
-        errors.extend(self.birth.validate())
+        if not isinstance(self.birth, BirthInput):
+            errors.append("invalid:birth")
+        else:
+            errors.extend(self.birth.validate())
 
         start, start_error = _utc_instant(
             self.target_interval_start_utc, "target_interval_start_utc"
@@ -135,6 +143,11 @@ class CalculationRequest:
             errors.append(error)
 
         return tuple(errors)
+
+    def __post_init__(self) -> None:
+        errors = self.validate()
+        if errors:
+            raise ValueError(";".join(errors))
 
 
 @dataclass(frozen=True)
@@ -171,9 +184,7 @@ class ObjectState:
 
     def __post_init__(self) -> None:
         errors = self.validate()
-        if any(error.startswith("provenance:") for error in errors) or (
-            self.status is CalculationStatus.VALID and errors
-        ):
+        if errors:
             raise ValueError(";".join(errors))
 
 
@@ -314,9 +325,7 @@ class CalculationResult:
             object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
 
         errors = self.validate()
-        if any(error.startswith("provenance:") for error in errors) or (
-            self.status is CalculationStatus.VALID and errors
-        ):
+        if errors:
             raise ValueError(";".join(errors))
 
         payload = {

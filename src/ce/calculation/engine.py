@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ce.calculation.contracts import CalculationRequest, CalculationResult
 from ce.ephemeris.adapter import EphemerisAdapter
-from ce.foundation.identity import RuntimeIdentity
+from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, RuntimeIdentity
 from ce.foundation.status import CalculationStatus, ScenarioState
 from ce.runtime.gates import authorize_runtime
 
@@ -13,10 +13,15 @@ class CalculationEngine:
         self._ephemeris = ephemeris
 
     def _invalid_request(self, request: CalculationRequest, errors: tuple[str, ...]) -> CalculationResult:
+        request_id = (
+            request.request_id
+            if isinstance(request.request_id, str) and request.request_id.strip()
+            else "INVALID_INPUT"
+        )
         return CalculationResult(
-            request_id=request.request_id if isinstance(request.request_id, str) else "",
+            request_id=request_id,
             status=CalculationStatus.INVALID_INPUT,
-            execution_profile_id=request.execution_profile_id if isinstance(request.execution_profile_id, str) else "",
+            execution_profile_id=CANONICAL_EXECUTION_PROFILE_ID,
             scenario_state=ScenarioState.NONE,
             normalized_time=None,
             errors=errors,
