@@ -1,0 +1,47 @@
+name: CE B3 Development Verification
+
+on:
+  push:
+    branches:
+      - "development/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Development-only foundation verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Print source-tree identity
+        run: |
+          python -B - <<'PY'
+          import runpy
+          from pathlib import Path
+          ns = runpy.run_path("build/build_source_tree_hash.py")
+          actual = ns["digest"]()
+          declared = Path("manifests/SOURCE_TREE_SHA256_V2.txt").read_text(encoding="utf-8").split()[0]
+          print(f"DECLARED_SOURCE_TREE_SHA256_V2={declared}")
+          print(f"ACTUAL_SOURCE_TREE_SHA256_V2={actual}")
+          PY
+
+      - name: Run deterministic foundation verifier
+        run: python -B tools/verify_foundation.py
+
+      - name: Explicit source identity verification
+        run: python -B tools/verify_source_identity.py
+
+      - name: Verify generated-artifact hygiene after tests
+        run: python -B build/check_build_inputs.py
+
+      - name: Notice
+        run: echo "CI evidence is DEVELOPMENT evidence only; it is not Source Authority or Trusted Build."

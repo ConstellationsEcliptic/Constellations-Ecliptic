@@ -5,8 +5,8 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-from ce.foundation.serialization import canonical_json
 from ce.foundation.hashing import sha256_bytes
+from ce.foundation.serialization import canonical_json
 
 
 class SerializationTests(unittest.TestCase):
@@ -18,3 +18,15 @@ class SerializationTests(unittest.TestCase):
     def test_bytes_hash_is_deterministic(self) -> None:
         payload = canonical_json({"a": [1, 2, 3]})
         self.assertEqual(sha256_bytes(payload), sha256_bytes(payload))
+
+    def test_non_string_object_key_is_rejected(self) -> None:
+        with self.assertRaises(TypeError):
+            canonical_json({1: "not-a-canonical-json-object"})
+
+    def test_unsupported_value_type_is_rejected(self) -> None:
+        with self.assertRaises(TypeError):
+            canonical_json({"value": object()})
+
+    def test_nested_nonfinite_float_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            canonical_json({"nested": [1.0, float("nan")]})

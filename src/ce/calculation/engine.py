@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from ce.calculation.contracts import CalculationRequest, CalculationResult
 from ce.ephemeris.adapter import EphemerisAdapter
+from ce.foundation.identity import RuntimeIdentity
 from ce.foundation.status import CalculationStatus, ScenarioState
 from ce.runtime.gates import authorize_runtime
-from ce.foundation.identity import RuntimeIdentity
 
 
 class CalculationEngine:
@@ -24,6 +24,18 @@ class CalculationEngine:
                 errors=gate.reasons,
                 provenance={"runtime_authority": gate.authority.value},
             )
+
+        if request.execution_profile_id != self._runtime_identity.execution_profile_id:
+            return CalculationResult(
+                request_id=request.request_id,
+                status=CalculationStatus.INVALID_INPUT,
+                execution_profile_id=request.execution_profile_id,
+                scenario_state=ScenarioState.NONE,
+                normalized_time=None,
+                errors=("request_execution_profile_mismatch",),
+                provenance={"runtime_authority": gate.authority.value},
+            )
+
         # No astronomical calculation is permitted in this foundation until the
         # authoritative native Swiss Ephemeris binding is installed and verified.
         return CalculationResult(
