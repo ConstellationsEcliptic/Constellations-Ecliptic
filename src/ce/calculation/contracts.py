@@ -8,7 +8,7 @@ import re
 from typing import Any
 
 from ce.foundation.hashing import sha256_bytes
-from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID
+from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, RuntimeIdentity
 from ce.foundation.serialization import canonical_json
 from ce.foundation.status import BirthTimeState, CalculationStatus, ScenarioState
 
@@ -171,25 +171,47 @@ class ObjectState:
 
     def __post_init__(self) -> None:
         errors = self.validate()
-        if self.status is CalculationStatus.VALID and errors:
+        if any(error.startswith("provenance:") for error in errors) or (
+            self.status is CalculationStatus.VALID and errors
+        ):
             raise ValueError(";".join(errors))
 
 
-_REQUIRED_RESULT_PROVENANCE = (
+_PROVENANCE_IDENTITY_FIELDS = (
     "source_commit",
     "source_tree_sha256_v2",
     "dependency_lock_digest",
     "timezone_bundle_digest",
     "ephemeris_bundle_digest",
     "runtime_image_digest",
-    "calculation_version",
 )
 
+_REQUIRED_RESULT_PROVENANCE = _PROVENANCE_IDENTITY_FIELDS + ("calculation_version",)
 
-def _validate_result_provenance(provenance: Any) -> tuple[str, ...]:
-    errors: list[str] = []
+
+def _is_provenance_scalar(value: Any) -> bool:
+    if value is None or isinstance(value, (str, bool)):
+        return True
+    if type(value) is int:
+        return True
+    return type(value) is float and math.isfinite(value)
+
+
+def _validate_provenance_scalar_domain(provenance: Mapping[str, Any]) -> tuple[str, ...]:
+    return tuple(
+        f"provenance:extra:{name}:scalar_required"
+        for name, value in provenance.items()
+        if name not in _REQUIRED_RESULT_PROVENANCE and not _is_provenance_scalar(value)
+    )
+
+
+def _validate_result_provenance(
+    provenance: Any, runtime_identity: RuntimeIdentity | None
+) -> tuple[str, ...]:
     if not isinstance(provenance, Mapping):
-        return ("invalid:provenance",)
+        return ("provenance:invalid",)
+
+    errors: list[str] = list(_validate_provenance_scalar_domain(provenance))
 
     shaped_fields = {
         "source_commit": (provenance.get("source_commit"), _COMMIT_RE, "40-hex"),
@@ -216,17 +238,50 @@ def _validate_result_provenance(provenance: Any) -> tuple[str, ...]:
     }
     for name, (value, pattern, description) in shaped_fields.items():
         if not isinstance(value, str) or not pattern.fullmatch(value):
-            errors.append(f"malformed:provenance:{name}:{description}")
+            errors.append(f"provenance:malformed:{name}:{description}")
 
     runtime_image_digest = provenance.get("runtime_image_digest")
     if not isinstance(runtime_image_digest, str) or not _RUNTIME_IMAGE_RE.fullmatch(
         runtime_image_digest
     ):
-        errors.append("malformed:provenance:runtime_image_digest:sha256-prefixed")
+        errors.append("provenance:malformed:runtime_image_digest:sha256-prefixed")
 
     calculation_version = provenance.get("calculation_version")
     if not isinstance(calculation_version, str) or not calculation_version.strip():
-        errors.append("invalid:provenance:calculation_version")
+        errors.append("provenance:invalid:calculation_version")
+
+    if runtime_identity is None:
+        errors.append("provenance:binding_required")
+        return tuple(errors)
+
+    for identity_error in runtime_identity.validate_shape():
+        errors.append(f"provenance:runtime_identity:{identity_error}")
+
+    for name in _PROVENANCE_IDENTITY_FIELDS:
+        identity_value = getattr(runtime_identity, name)
+        if identity_value is None:
+            errors.append(f"provenance:missing_runtime_identity:{name}")
+        elif provenance.get(name) != identity_value:
+            errors.append(f"provenance:mismatch:{name}")
+
+    if provenance.get("execution_profile_id") is not None:
+        errors.append("provenance:execution_profile_id_must_not_be_nested")
+
+    return tuple(errors)
+
+
+def _validate_nonvalid_result_provenance(provenance: Any) -> tuple[str, ...]:
+    if not isinstance(provenance, Mapping):
+        return ("provenance:invalid",)
+
+    errors: list[str] = list(_validate_provenance_scalar_domain(provenance))
+    for name in _REQUIRED_RESULT_PROVENANCE:
+        if name in provenance:
+            errors.append(f"provenance:nonvalid_forbidden:{name}")
+
+    runtime_authority = provenance.get("runtime_authority")
+    if runtime_authority is not None and runtime_authority != "NON_AUTHORIZED":
+        errors.append("provenance:nonvalid_runtime_authority_must_be_non_authorized")
 
     return tuple(errors)
 
@@ -242,6 +297,9 @@ class CalculationResult:
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
+    _runtime_identity: RuntimeIdentity | None = field(
+        default=None, repr=False, compare=False, kw_only=True
+    )
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
@@ -251,7 +309,7 @@ class CalculationResult:
             raise ValueError("invalid:scenario_state")
 
         for item in fields(self):
-            if item.name == "_canonical_bytes":
+            if item.name in {"_runtime_identity", "_canonical_bytes"}:
                 continue
             object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
 
@@ -262,7 +320,7 @@ class CalculationResult:
         payload = {
             item.name: getattr(self, item.name)
             for item in fields(self)
-            if item.name != "_canonical_bytes"
+            if item.name not in {"_runtime_identity", "_canonical_bytes"}
         }
         object.__setattr__(self, "_canonical_bytes", canonical_json(payload))
 
@@ -298,9 +356,16 @@ class CalculationResult:
                 errors.append("valid_result_cannot_have_errors")
             if self.scenario_state is ScenarioState.NONE:
                 errors.append("valid_result_requires_scenario_state")
-            provenance_errors = _validate_result_provenance(self.provenance)
+            if self._runtime_identity is None:
+                errors.append("provenance:binding_required")
+            elif self.execution_profile_id != self._runtime_identity.execution_profile_id:
+                errors.append("provenance:execution_profile_mismatch")
+            provenance_errors = _validate_result_provenance(
+                self.provenance, self._runtime_identity
+            )
             errors.extend(provenance_errors)
         else:
+            errors.extend(_validate_nonvalid_result_provenance(self.provenance))
             if any(
                 isinstance(state, ObjectState) and state.status is CalculationStatus.VALID
                 for state in self.object_states

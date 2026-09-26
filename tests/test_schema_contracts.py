@@ -153,6 +153,77 @@ class SchemaContractTests(unittest.TestCase):
         )
         self.assertTrue(any("if" in branch and "then" in branch for branch in schema["allOf"]))
 
+    def test_nonvalid_calculation_schema_rejects_authority_looking_provenance(self) -> None:
+        schema = self._schema("calculation_result.schema.json")
+        base = {
+            "request_id": "R1",
+            "status": "NON_AUTHORIZED",
+            "execution_profile_id": "CE-CALC-V1-EP-001",
+            "scenario_state": "NONE",
+            "normalized_time": None,
+            "object_states": [],
+            "warnings": [],
+            "errors": ["not-authorized"],
+            "provenance": {},
+        }
+        self.assertEqual(_validate_schema_instance(schema, base), [])
+
+        for field_name in (
+            "source_commit",
+            "source_tree_sha256_v2",
+            "dependency_lock_digest",
+            "timezone_bundle_digest",
+            "ephemeris_bundle_digest",
+            "runtime_image_digest",
+            "calculation_version",
+        ):
+            invalid = {**base, "provenance": {field_name: "a" * 64}}
+            self.assertTrue(_validate_schema_instance(schema, invalid), field_name)
+
+        authorized_metadata = {
+            **base,
+            "provenance": {"runtime_authority": "AUTHORIZED"},
+        }
+        self.assertTrue(_validate_schema_instance(schema, authorized_metadata))
+
+        non_authorized_metadata = {
+            **base,
+            "provenance": {"runtime_authority": "NON_AUTHORIZED"},
+        }
+        self.assertEqual(_validate_schema_instance(schema, non_authorized_metadata), [])
+
+    def test_provenance_extra_values_match_scalar_schema_domain(self) -> None:
+        schema = self._schema("calculation_result.schema.json")
+        valid = {
+            "request_id": "R1",
+            "status": "VALID",
+            "execution_profile_id": "CE-CALC-V1-EP-001",
+            "scenario_state": "STABLE",
+            "normalized_time": "2026-01-01T00:00:00Z",
+            "object_states": [{
+                "object_id": "sun",
+                "longitude_deg": 12.5,
+                "speed_deg_per_day": 0.9,
+                "status": "VALID",
+            }],
+            "warnings": [],
+            "errors": [],
+            "provenance": {
+                **self._provenance(),
+                "trace": "runtime-check",
+            },
+        }
+        self.assertEqual(_validate_schema_instance(schema, valid), [])
+
+        nested_extra = {
+            **valid,
+            "provenance": {
+                **self._provenance(),
+                "trace": {"nested": "value"},
+            },
+        }
+        self.assertTrue(_validate_schema_instance(schema, nested_extra))
+
     def test_signal_schema_excludes_semantic_payload_from_nonvalid_states(self) -> None:
         schema = self._schema("signal_result.schema.json")
         result = {
