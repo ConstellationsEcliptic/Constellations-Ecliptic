@@ -17,6 +17,7 @@ _TZ_VERSION_RE = re.compile(r"^\d{4}[a-z]$")
 _COMMIT_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 _RUNTIME_IMAGE_RE = re.compile(r"^sha256:[0-9a-fA-F]{64}$")
+_UTC_RE = re.compile(r"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$")
 
 
 def _nonempty_string(value: Any, field_name: str) -> str | None:
@@ -26,14 +27,14 @@ def _nonempty_string(value: Any, field_name: str) -> str | None:
 
 
 def _utc_instant(value: Any, field_name: str) -> tuple[datetime | None, str | None]:
-    if not isinstance(value, str) or not value.endswith("Z"):
-        return None, f"invalid:{field_name}:utc_z_required"
+    if not isinstance(value, str) or not _UTC_RE.fullmatch(value):
+        return None, f"invalid:{field_name}:utc_canonical_z_required"
     try:
         parsed = datetime.fromisoformat(value[:-1] + "+00:00")
     except ValueError:
-        return None, f"invalid:{field_name}:iso8601"
+        return None, f"invalid:{field_name}:utc_iso8601_invalid"
     if parsed.tzinfo is None or parsed.utcoffset() != timezone.utc.utcoffset(parsed):
-        return None, f"invalid:{field_name}:utc_required"
+        return None, f"invalid:{field_name}:utc_timezone_invalid"
     return parsed, None
 
 
