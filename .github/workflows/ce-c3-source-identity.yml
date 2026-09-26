@@ -1,0 +1,29 @@
+name: CE C3 candidate source identity recomputation
+
+on:
+  push:
+    branches:
+      - verification/c3-source-identity-2026-09-26
+
+permissions:
+  contents: read
+
+jobs:
+  recompute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact CE candidate commit
+        uses: actions/checkout@v4
+        with:
+          ref: 31402ca961a6d3c20bf5887ab797ab814eb14e2c
+          fetch-depth: 1
+
+      - name: Recompute CE source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CHECKED_OUT_COMMIT=$(git rev-parse HEAD)"
+          python3 build/build_source_tree_hash.py
+          echo "SOURCE_TREE_FILE=$(cat manifests/SOURCE_TREE_SHA256_V2.txt)"
+          echo "DEPENDENCY_LOCK_SHA256=$(sha256sum build/dependency-lock.txt | awk '{print $1}')"
+          echo "BUILD_DEFINITION_SHA256=$(sha256sum build/build-definition.json | awk '{print $1}')"
