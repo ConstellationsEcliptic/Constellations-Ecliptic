@@ -11,41 +11,23 @@ from ce.foundation.status import CalculationStatus, ScenarioState
 
 
 class CalculationResultNormalizedTimeTests(unittest.TestCase):
-    def _valid_result(self, normalized_time: str) -> CalculationResult:
+    def _result(self, normalized_time: str) -> CalculationResult:
         return CalculationResult(
             request_id="R-NORM-001",
-            status=CalculationStatus.VALID,
+            status=CalculationStatus.NON_AUTHORIZED,
             execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.STABLE,
+            scenario_state=ScenarioState.NONE,
             normalized_time=normalized_time,
-            object_states=(
-                ObjectState(
-                    object_id="TEST-OBJECT",
-                    longitude_deg=120.0,
-                    speed_deg_per_day=1.0,
-                    status=CalculationStatus.VALID,
-                ),
-            ),
-            warnings=(),
-            errors=(),
-            provenance={
-                "source_commit": "a" * 40,
-                "source_tree_sha256_v2": "b" * 64,
-                "dependency_lock_digest": "c" * 64,
-                "timezone_bundle_digest": "d" * 64,
-                "ephemeris_bundle_digest": "e" * 64,
-                "runtime_image_digest": "sha256:" + "f" * 64,
-                "calculation_version": "0.1.0",
-            },
+            errors=("not authoritative",),
         )
 
     def test_canonical_utc_without_fraction_is_accepted(self) -> None:
-        result = self._valid_result("2026-01-01T00:00:00Z")
-        self.assertEqual(result.normalized_time, "2026-01-01T00:00:00Z")
+        result = self._result("2026-01-01T00:00:00Z")
+        self.assertNotIn("invalid:normalized_time:utc_canonical_z_required", result.validate())
 
     def test_canonical_utc_with_six_fraction_digits_is_accepted(self) -> None:
-        result = self._valid_result("2026-01-01T00:00:00.123456Z")
-        self.assertEqual(result.normalized_time, "2026-01-01T00:00:00.123456Z")
+        result = self._result("2026-01-01T00:00:00.123456Z")
+        self.assertNotIn("invalid:normalized_time:utc_canonical_z_required", result.validate())
 
     def test_noncanonical_utc_forms_are_rejected(self) -> None:
         invalid_values = (
@@ -57,16 +39,12 @@ class CalculationResultNormalizedTimeTests(unittest.TestCase):
         )
         for value in invalid_values:
             with self.subTest(value=value):
-                with self.assertRaisesRegex(
-                    ValueError, r"invalid:normalized_time:utc_canonical_z_required"
-                ):
-                    self._valid_result(value)
+                errors = self._result(value).validate()
+                self.assertIn("invalid:normalized_time:utc_canonical_z_required", errors)
 
     def test_invalid_calendar_date_is_rejected(self) -> None:
-        with self.assertRaisesRegex(
-            ValueError, r"invalid:normalized_time:utc_iso8601_invalid"
-        ):
-            self._valid_result("2026-02-29T00:00:00Z")
+        errors = self._result("2026-02-29T00:00:00Z").validate()
+        self.assertIn("invalid:normalized_time:utc_iso8601_invalid", errors)
 
     def test_direct_validation_reports_canonical_utc_requirement(self) -> None:
         result = CalculationResult(
