@@ -72,6 +72,11 @@ No changes were made to:
 
 ## Verification requirement
 
+Verification execution status:
+
+- remediation content fixed;
+- source-tree identity rebinding pending measured CI output.
+
 Before closure:
 
 - source-tree identity must be recomputed from the exact post-remediation bytes;
