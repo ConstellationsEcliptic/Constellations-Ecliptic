@@ -4,7 +4,7 @@ import math
 import os
 import sys
 import unittest
-from datetime import date, time
+from datetime import date, datetime, time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
@@ -39,6 +39,15 @@ class ContractStateIntegrityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ObjectState("sun", 361.0, 0.1, CalculationStatus.VALID)
 
+    def test_valid_calculation_rejects_malformed_provenance_identity(self) -> None:
+        provenance = self._provenance()
+        provenance["source_commit"] = "not-a-commit"
+        with self.assertRaises(ValueError):
+            CalculationResult(
+                "R", CalculationStatus.VALID, "CE-CALC-V1-EP-001", ScenarioState.STABLE,
+                "2026-01-01T00:00:00Z", (self._valid_object(),), provenance=provenance
+            )
+
     def test_valid_calculation_requires_complete_provenance(self) -> None:
         with self.assertRaises(ValueError):
             CalculationResult(
@@ -51,6 +60,19 @@ class ContractStateIntegrityTests(unittest.TestCase):
             SignalResult(
                 CalculationStatus.VALID, None, None, None, None, False
             )
+
+    def test_valid_object_rejects_bool_as_numeric(self) -> None:
+        with self.assertRaises(ValueError):
+            ObjectState("sun", True, 0.1, CalculationStatus.VALID)
+        with self.assertRaises(ValueError):
+            ObjectState("sun", 12.5, True, CalculationStatus.VALID)
+
+    def test_birth_input_rejects_datetime_as_date(self) -> None:
+        birth = BirthInput(
+            datetime(2000, 1, 1, 0, 0), time(12, 0), BirthTimeState.EXACT,
+            "Test City", "UTC", "2026d"
+        )
+        self.assertIn("invalid:birth_date", birth.validate())
 
     def test_birth_input_rejects_contradiction(self) -> None:
         birth = BirthInput(
@@ -66,6 +88,23 @@ class ContractStateIntegrityTests(unittest.TestCase):
             "R", birth, "2026-01-02T00:00:00Z", "2026-01-01T00:00:00Z", "CE-CALC-V1-EP-001"
         )
         self.assertIn("invalid:target_interval_order", request.validate())
+
+    def test_nonvalid_signal_rejects_semantic_payload(self) -> None:
+        with self.assertRaises(ValueError):
+            SignalResult(
+                CalculationStatus.NON_AUTHORIZED, "classification", None, None, None, False
+            )
+
+    def test_valid_time_resolution_requires_canonical_utc(self) -> None:
+        with self.assertRaises(ValueError):
+            TimeResolution(
+                CalculationStatus.VALID, BirthTimeState.EXACT,
+                "2026-01-01T00:00:00+00:00", "UTC", "2026d", None
+            )
+        TimeResolution(
+            CalculationStatus.VALID, BirthTimeState.EXACT,
+            "2026-01-01T00:00:00Z", "UTC", "2026d", None
+        )
 
     def test_time_resolution_requires_consistent_state(self) -> None:
         with self.assertRaises(ValueError):
