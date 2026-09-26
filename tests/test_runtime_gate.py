@@ -117,6 +117,22 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertIn("invalid:birth_city", result.errors)
         self.assertIn("invalid:target_interval_order", result.errors)
 
+    def test_authorized_path_reaches_downstream_boundary_when_request_is_valid(self) -> None:
+        identity = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 2,
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
+        )
+        engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
+        authorized = RuntimeGateResult(RuntimeAuthority.AUTHORIZED, ())
+        with patch("ce.calculation.engine.authorize_runtime", return_value=authorized):
+            result = engine.calculate(self._request("T-AUTH-VALID"))
+        self.assertEqual(result.status, CalculationStatus.NOT_IMPLEMENTED)
+        self.assertEqual(
+            result.errors,
+            ("authoritative_calculation_adapter_not_established",),
+        )
+
     def test_authorized_path_rejects_request_profile_mismatch(self) -> None:
         identity = RuntimeIdentity(
             "CE-CALC-V1-EP-001", 2,
