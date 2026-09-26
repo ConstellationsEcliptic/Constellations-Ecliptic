@@ -136,6 +136,6 @@ class RuntimeGateTests(unittest.TestCase):
         engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
         authorized = RuntimeGateResult(RuntimeAuthority.AUTHORIZED, ())
         with patch("ce.calculation.engine.authorize_runtime", return_value=authorized):
-            result = engine.calculate(self._request("T-005", profile_id="OTHER-PROFILE"))
+            result = engine.calculate(self._request("T-005"))
         self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
         self.assertEqual(result.errors, ("request_execution_profile_mismatch",))
