@@ -46,7 +46,9 @@ class B4Item11IntegrityTests(unittest.TestCase):
             {"nested": {"unsupported"}},
             {"nested": datetime(2026, 1, 1)},
             {"nested": {"custom": object()}},
+            {"nested": {"value": float("nan")}},
             {"nested": {"value": float("inf")}},
+            {"nested": {"value": float("-inf")}},
         )
         for invalid in cases:
             with self.subTest(invalid=repr(invalid)):
