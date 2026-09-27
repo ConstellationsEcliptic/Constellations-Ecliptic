@@ -348,8 +348,17 @@ class CalculationResult:
         payload = {
             item.name: getattr(self, item.name)
             for item in fields(self)
-            if item.name not in {"_runtime_identity", "_evidence_packet", "_canonical_bytes"}
+            if item.name not in {"_runtime_identity", "_evidence_packet", "_canonical_bytes", "evidence_packet_ref"}
         }
+        payload["object_states"] = [
+            {
+                "object_id": state.object_id,
+                "longitude_deg": state.longitude_deg,
+                "speed_deg_per_day": state.speed_deg_per_day,
+                "status": state.status.value,
+            }
+            for state in self.object_states
+        ]
         payload["evidence_packet_ref"] = (
             self.evidence_packet_ref.as_dict()
             if self.evidence_packet_ref is not None
