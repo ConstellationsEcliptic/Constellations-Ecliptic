@@ -171,6 +171,7 @@ class SchemaContractTests(unittest.TestCase):
             "scenario_state": "NONE",
             "normalized_time": None,
             "object_states": [],
+            "evidence_packet_ref": None,
             "warnings": [],
             "errors": ["not-authorized"],
             "provenance": {},
@@ -299,6 +300,71 @@ class SchemaContractTests(unittest.TestCase):
             }],
         }
         self.assertTrue(_validate_schema_instance(schema, nonvalid_with_valid_object))
+
+    def test_evidence_reference_schema_requires_compound_identity(self) -> None:
+        calculation = self._schema("calculation_result.schema.json")
+        signal = self._schema("signal_result.schema.json")
+        compound_ref = {
+            "evidence_packet_id": "E-SCHEMA-001",
+            "content_sha256": "a" * 64,
+        }
+        valid_calculation = {
+            "request_id": "R1",
+            "status": "VALID",
+            "execution_profile_id": "CE-CALC-V1-EP-001",
+            "scenario_state": "STABLE",
+            "normalized_time": "2026-01-01T00:00:00Z",
+            "object_states": [{
+                "object_id": "sun",
+                "longitude_deg": 12.5,
+                "speed_deg_per_day": 0.9,
+                "status": "VALID",
+            }],
+            "warnings": [],
+            "errors": [],
+            "evidence_packet_ref": compound_ref,
+            "provenance": self._provenance(),
+        }
+        self.assertEqual(_validate_schema_instance(calculation, valid_calculation), [])
+
+        valid_signal = {
+            "status": "VALID",
+            "classification": "classification",
+            "phase": "phase",
+            "uncertainty_state": "uncertain",
+            "evidence_packet_ref": compound_ref,
+            "canon_input_valid": True,
+            "provenance": {},
+        }
+        self.assertEqual(_validate_schema_instance(signal, valid_signal), [])
+
+        malformed_ref = dict(compound_ref)
+        malformed_ref["content_sha256"] = "not-a-sha256"
+        self.assertTrue(
+            _validate_schema_instance(
+                signal,
+                {**valid_signal, "evidence_packet_ref": malformed_ref},
+            )
+        )
+
+        partial_ref = {"evidence_packet_id": "E-SCHEMA-001"}
+        self.assertTrue(
+            _validate_schema_instance(
+                calculation,
+                {**valid_calculation, "evidence_packet_ref": partial_ref},
+            )
+        )
+
+        nonvalid_signal = {
+            **valid_signal,
+            "status": "NON_AUTHORIZED",
+            "classification": None,
+            "phase": None,
+            "uncertainty_state": None,
+            "evidence_packet_ref": None,
+            "canon_input_valid": False,
+        }
+        self.assertEqual(_validate_schema_instance(signal, nonvalid_signal), [])
 
     def test_schema_instance_verifier_rejects_bool_as_number(self) -> None:
         schema = self._schema("calculation_result.schema.json")
