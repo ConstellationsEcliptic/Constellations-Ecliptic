@@ -2,22 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field, fields
+from types import MappingProxyType
 import re
 from typing import Any
 
 from ce.foundation.hashing import sha256_bytes
 from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID
 from ce.foundation.serialization import canonical_json
-
-
-class FrozenDict(dict):
-    """Dict-shaped mapping that rejects all in-place mutation."""
-
-    def _blocked(self, *args: Any, **kwargs: Any) -> None:
-        raise TypeError("EvidencePacket mappings are immutable")
-
-    __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = _blocked
-    __ior__ = _blocked
 
 
 _SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
@@ -89,7 +80,7 @@ _MESSAGE_FIELDS = (
 
 def _freeze(value: Any) -> Any:
     if isinstance(value, Mapping):
-        return FrozenDict({key: _freeze(item) for key, item in value.items()})
+        return MappingProxyType({key: _freeze(item) for key, item in value.items()})
     if isinstance(value, list):
         return tuple(_freeze(item) for item in value)
     if isinstance(value, tuple):
