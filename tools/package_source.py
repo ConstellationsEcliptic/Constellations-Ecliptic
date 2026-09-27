@@ -48,7 +48,7 @@ def build_archive(output: Path = OUT) -> Path:
     ) as z:
         for p in files():
             add(z, p)
-        z.comment = f"{PACKAGE_COMMENT_PREFIX}{tree_identity}\\n".encode("ascii")
+        z.comment = f"{PACKAGE_COMMENT_PREFIX}{tree_identity}\n".encode("ascii")
     return output
 
 

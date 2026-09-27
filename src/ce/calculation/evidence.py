@@ -108,8 +108,10 @@ def _canonical_domain_errors(value: Any, path: str) -> tuple[str, ...]:
             errors.extend(_canonical_domain_errors(item, f"{path}[{index}]"))
         return tuple(errors)
 
-    if isinstance(value, float) and not math.isfinite(value):
-        return (f"invalid:{path}:finite_number_required",)
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            return (f"invalid:{path}:finite_number_required",)
+        return ()
 
     if value is None or isinstance(value, (str, int, bool)):
         return ()
