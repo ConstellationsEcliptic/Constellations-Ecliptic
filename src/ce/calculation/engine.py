@@ -12,10 +12,11 @@ class CalculationEngine:
         self._runtime_identity = runtime_identity
         self._ephemeris = ephemeris
 
-    def _invalid_request(self, request: CalculationRequest, errors: tuple[str, ...]) -> CalculationResult:
+    def _invalid_request(self, request: object, errors: tuple[str, ...]) -> CalculationResult:
+        request_id_value = getattr(request, "request_id", None)
         request_id = (
-            request.request_id
-            if isinstance(request.request_id, str) and request.request_id.strip()
+            request_id_value
+            if isinstance(request_id_value, str) and request_id_value.strip()
             else "INVALID_INPUT"
         )
         return CalculationResult(
@@ -29,6 +30,9 @@ class CalculationEngine:
         )
 
     def calculate(self, request: CalculationRequest) -> CalculationResult:
+        if not isinstance(request, CalculationRequest):
+            return self._invalid_request(request, ("invalid_request_type",))
+
         request_errors = request.validate()
         if request_errors:
             return self._invalid_request(request, request_errors)
