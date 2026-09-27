@@ -7,6 +7,7 @@ import math
 import re
 from typing import Any
 
+from ce.calculation.evidence import EvidencePacket, EvidencePacketRef
 from ce.foundation.hashing import sha256_bytes
 from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, RuntimeIdentity
 from ce.foundation.serialization import canonical_json
@@ -308,7 +309,13 @@ class CalculationResult:
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
+    evidence_packet_ref: EvidencePacketRef | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
     _runtime_identity: RuntimeIdentity | None = field(
+        default=None, repr=False, compare=False, kw_only=True
+    )
+    _evidence_packet: EvidencePacket | None = field(
         default=None, repr=False, compare=False, kw_only=True
     )
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
@@ -319,8 +326,18 @@ class CalculationResult:
         if not isinstance(self.scenario_state, ScenarioState):
             raise ValueError("invalid:scenario_state")
 
+        if self._evidence_packet is not None and not isinstance(self._evidence_packet, EvidencePacket):
+            raise ValueError("invalid:evidence_packet")
+
+        evidence_packet_ref = (
+            EvidencePacketRef.from_packet(self._evidence_packet)
+            if self._evidence_packet is not None
+            else None
+        )
+        object.__setattr__(self, "evidence_packet_ref", evidence_packet_ref)
+
         for item in fields(self):
-            if item.name in {"_runtime_identity", "_canonical_bytes"}:
+            if item.name in {"_runtime_identity", "_evidence_packet", "_canonical_bytes", "evidence_packet_ref"}:
                 continue
             object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
 
@@ -331,8 +348,13 @@ class CalculationResult:
         payload = {
             item.name: getattr(self, item.name)
             for item in fields(self)
-            if item.name not in {"_runtime_identity", "_canonical_bytes"}
+            if item.name not in {"_runtime_identity", "_evidence_packet", "_canonical_bytes"}
         }
+        payload["evidence_packet_ref"] = (
+            self.evidence_packet_ref.as_dict()
+            if self.evidence_packet_ref is not None
+            else None
+        )
         object.__setattr__(self, "_canonical_bytes", canonical_json(payload))
 
     def validate(self) -> tuple[str, ...]:
@@ -356,6 +378,14 @@ class CalculationResult:
                 continue
             errors.extend(f"object_states[{index}]:{e}" for e in state.validate())
 
+        if self._evidence_packet is not None:
+            packet_errors = self._evidence_packet.validate()
+            errors.extend(f"evidence_packet:{e}" for e in packet_errors)
+            if self.evidence_packet_ref is None:
+                errors.append("evidence_packet:reference_missing")
+            elif not self.evidence_packet_ref.matches(self._evidence_packet):
+                errors.append("evidence_packet:reference_mismatch")
+
         if self.status is CalculationStatus.VALID:
             if not self.object_states:
                 errors.append("valid_result_requires_object_states")
@@ -371,11 +401,17 @@ class CalculationResult:
                 errors.append("provenance:binding_required")
             elif self.execution_profile_id != self._runtime_identity.execution_profile_id:
                 errors.append("provenance:execution_profile_mismatch")
+            if self._evidence_packet is None:
+                errors.append("evidence_packet:binding_required")
+            elif self.evidence_packet_ref is None:
+                errors.append("evidence_packet:reference_required")
             provenance_errors = _validate_result_provenance(
                 self.provenance, self._runtime_identity
             )
             errors.extend(provenance_errors)
         else:
+            if self._evidence_packet is not None or self.evidence_packet_ref is not None:
+                errors.append("nonvalid_result_evidence_packet_requires_null")
             errors.extend(_validate_nonvalid_result_provenance(self.provenance))
             if any(
                 isinstance(state, ObjectState) and state.status is CalculationStatus.VALID
