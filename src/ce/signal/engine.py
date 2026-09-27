@@ -3,9 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field, fields
 from typing import Any
 
+from ce.calculation.contracts import (
+    _validate_nonvalid_result_provenance,
+    _validate_result_provenance,
+)
 from ce.calculation.evidence import EvidencePacket, EvidencePacketRef
 from ce.foundation.hashing import sha256_bytes
 from ce.foundation.serialization import canonical_json
+from ce.foundation.identity import RuntimeIdentity
 from ce.foundation.status import CalculationStatus
 
 
@@ -33,6 +38,9 @@ class SignalResult:
     evidence_packet_ref: EvidencePacketRef | None = field(
         default=None, init=False, repr=False, compare=False
     )
+    _runtime_identity: RuntimeIdentity | None = field(
+        default=None, repr=False, compare=False, kw_only=True
+    )
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
@@ -58,7 +66,7 @@ class SignalResult:
         payload = {
             item.name: getattr(self, item.name)
             for item in fields(self)
-            if item.name not in {"evidence_packet", "evidence_packet_ref", "_canonical_bytes"}
+            if item.name not in {"evidence_packet", "evidence_packet_ref", "_runtime_identity", "_canonical_bytes"}
         }
         payload["evidence_packet_ref"] = (
             self.evidence_packet_ref.as_dict()
@@ -94,6 +102,14 @@ class SignalResult:
                 errors.append("valid_signal_requires_evidence_packet")
             elif self.evidence_packet_ref is None:
                 errors.append("valid_signal_requires_evidence_packet_ref")
+            else:
+                packet_version = self.evidence_packet.calculation_version
+                provenance_version = self.provenance.get("calculation_version")
+                if provenance_version != packet_version:
+                    errors.append("evidence_packet:calculation_version_mismatch")
+            errors.extend(
+                _validate_result_provenance(self.provenance, self._runtime_identity)
+            )
         else:
             for value, name in (
                 (self.classification, "classification"),
@@ -107,6 +123,7 @@ class SignalResult:
                 errors.append("nonvalid_signal_requires_canon_input_false")
             if self.evidence_packet is not None or self.evidence_packet_ref is not None:
                 errors.append("nonvalid_signal_requires_null_evidence_packet")
+            errors.extend(_validate_nonvalid_result_provenance(self.provenance))
         return tuple(errors)
 
     def canonical_bytes(self) -> bytes:
