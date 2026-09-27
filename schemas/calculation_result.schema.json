@@ -3,13 +3,22 @@
   "title": "CE Calculation Result",
   "type": "object",
   "additionalProperties": false,
-  "required": ["request_id", "status", "execution_profile_id", "scenario_state", "normalized_time", "object_states", "warnings", "errors", "provenance"],
+  "required": ["request_id", "status", "execution_profile_id", "scenario_state", "normalized_time", "object_states", "evidence_packet_ref", "warnings", "errors", "provenance"],
   "properties": {
     "request_id": {"type": "string", "minLength": 1},
     "status": {"type": "string", "enum": ["VALID", "NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT", "CALCULATION_FAILURE"]},
     "execution_profile_id": {"type": "string", "const": "CE-CALC-V1-EP-001"},
     "scenario_state": {"type": "string", "enum": ["STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"]},
     "normalized_time": {"type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
+    "evidence_packet_ref": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["evidence_packet_id", "content_sha256"],
+      "properties": {
+        "evidence_packet_id": {"type": "string", "minLength": 1},
+        "content_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"}
+      }
+    },
     "object_states": {
       "type": "array",
       "items": {
@@ -44,7 +53,7 @@
     {
       "if": {"properties": {"status": {"const": "VALID"}}, "required": ["status"]},
       "then": {
-        "required": ["normalized_time", "object_states", "provenance"],
+        "required": ["normalized_time", "object_states", "evidence_packet_ref", "provenance"],
         "properties": {
           "normalized_time": {"type": "string", "minLength": 1, "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
           "object_states": {
@@ -55,6 +64,15 @@
                 "longitude_deg": {"type": "number"},
                 "speed_deg_per_day": {"type": ["number", "null"]}
               }
+            }
+          },
+          "evidence_packet_ref": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["evidence_packet_id", "content_sha256"],
+            "properties": {
+              "evidence_packet_id": {"type": "string", "minLength": 1},
+              "content_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"}
             }
           },
           "errors": {"maxItems": 0},
@@ -77,6 +95,9 @@
     {
       "if": {"properties": {"status": {"enum": ["NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT", "CALCULATION_FAILURE"]}}, "required": ["status"]},
       "then": {
+        "properties": {
+          "evidence_packet_ref": {"const": null}
+        },
         "not": {
           "properties": {
             "object_states": {
