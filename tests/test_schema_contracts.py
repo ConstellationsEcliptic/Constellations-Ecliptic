@@ -334,7 +334,7 @@ class SchemaContractTests(unittest.TestCase):
             "uncertainty_state": "uncertain",
             "evidence_packet_ref": compound_ref,
             "canon_input_valid": True,
-            "provenance": {},
+            "provenance": self._provenance(),
         }
         self.assertEqual(_validate_schema_instance(signal, valid_signal), [])
 
