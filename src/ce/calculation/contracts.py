@@ -282,6 +282,69 @@ def _validate_result_provenance(
     return tuple(errors)
 
 
+def _validate_string_sequence(value: Any, field_name: str) -> tuple[str, ...]:
+    if not isinstance(value, (list, tuple)):
+        return (f"invalid:{field_name}:sequence_required",)
+    return tuple(
+        f"invalid:{field_name}[{index}]:string_required"
+        for index, item in enumerate(value)
+        if not isinstance(item, str)
+    )
+
+
+def _validate_evidence_packet_context(
+    packet: EvidencePacket,
+    *,
+    result_time: str,
+    execution_profile_id: str,
+    calculation_version: str,
+) -> tuple[str, ...]:
+    errors: list[str] = []
+
+    if packet.execution_profile_id != execution_profile_id:
+        errors.append("evidence_packet:execution_profile_mismatch")
+
+    if packet.calculation_version != calculation_version:
+        errors.append("evidence_packet:calculation_version_mismatch")
+
+    observation = packet.observation_instant_or_interval
+    if not isinstance(observation, Mapping):
+        errors.append("evidence_packet:observation_context_invalid")
+        return tuple(errors)
+
+    start_raw = observation.get("start")
+    if start_raw is None:
+        errors.append("evidence_packet:observation_start_required")
+        return tuple(errors)
+
+    start, start_error = _utc_instant(start_raw, "evidence_packet_observation_start")
+    if start_error:
+        errors.append(start_error)
+
+    end_raw = observation.get("end")
+    end = None
+    if end_raw is not None:
+        end, end_error = _utc_instant(end_raw, "evidence_packet_observation_end")
+        if end_error:
+            errors.append(end_error)
+
+    result_dt, result_error = _utc_instant(result_time, "normalized_time")
+    if result_error:
+        errors.append(result_error)
+
+    if start is not None and end is not None and end < start:
+        errors.append("evidence_packet:observation_interval_order_invalid")
+
+    if start is not None and result_dt is not None:
+        if end is None:
+            if result_dt != start:
+                errors.append("evidence_packet:observation_context_mismatch")
+        elif not start <= result_dt <= end:
+            errors.append("evidence_packet:observation_context_mismatch")
+
+    return tuple(errors)
+
+
 def _validate_nonvalid_result_provenance(provenance: Any) -> tuple[str, ...]:
     if not isinstance(provenance, Mapping):
         return ("provenance:invalid",)
@@ -387,6 +450,9 @@ class CalculationResult:
                 continue
             errors.extend(f"object_states[{index}]:{e}" for e in state.validate())
 
+        errors.extend(_validate_string_sequence(self.warnings, "warnings"))
+        errors.extend(_validate_string_sequence(self.errors, "errors"))
+
         if self._evidence_packet is not None:
             packet_errors = self._evidence_packet.validate()
             errors.extend(f"evidence_packet:{e}" for e in packet_errors)
@@ -394,6 +460,20 @@ class CalculationResult:
                 errors.append("evidence_packet:reference_missing")
             elif not self.evidence_packet_ref.matches(self._evidence_packet):
                 errors.append("evidence_packet:reference_mismatch")
+
+        if self.status is CalculationStatus.VALID and self._evidence_packet is not None:
+            calculation_version = self.provenance.get("calculation_version")
+            if not isinstance(calculation_version, str) or not calculation_version.strip():
+                errors.append("evidence_packet:calculation_version_binding_required")
+            else:
+                errors.extend(
+                    _validate_evidence_packet_context(
+                        self._evidence_packet,
+                        result_time=self.normalized_time or "",
+                        execution_profile_id=self.execution_profile_id,
+                        calculation_version=calculation_version,
+                    )
+                )
 
         if self.status is CalculationStatus.VALID:
             if not self.object_states:
