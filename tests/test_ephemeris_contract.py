@@ -20,9 +20,16 @@ class EphemerisContractTests(unittest.TestCase):
             EphemerisRequest("sun", True, True)
 
     def test_unavailable_adapter_returns_invalid_input_for_bad_request(self) -> None:
-        result = UnavailableSwissEphemerisAdapter().calculate_object("", float("inf"), True)
+        result = UnavailableSwissEphemerisAdapter().calculate_object(object())  # type: ignore[arg-type]
         self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
 
+    def test_unavailable_adapter_rejects_raw_arguments_at_interface_boundary(self) -> None:
+        with self.assertRaises(TypeError):
+            UnavailableSwissEphemerisAdapter().calculate_object(
+                "sun", 2451545.0, True
+            )  # type: ignore[arg-type]
+
     def test_valid_request_stays_non_authorized_until_binding_exists(self) -> None:
-        result = UnavailableSwissEphemerisAdapter().calculate_object("sun", 2451545.0, True)
+        request = EphemerisRequest("sun", 2451545.0, True)
+        result = UnavailableSwissEphemerisAdapter().calculate_object(request)
         self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
