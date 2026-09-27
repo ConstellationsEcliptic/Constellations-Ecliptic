@@ -48,6 +48,7 @@ class PackagingDeterminismTests(unittest.TestCase):
 
 
     def test_package_scope_and_identity_are_bound_to_source_tree_identity(self) -> None:
+        (ROOT / "dist").mkdir(exist_ok=True)
         expected = [
             p.relative_to(ROOT).as_posix()
             for p in build_source_tree_hash.iter_files()
