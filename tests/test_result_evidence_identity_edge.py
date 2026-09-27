@@ -153,6 +153,8 @@ class ResultEvidenceIdentityEdgeTests(unittest.TestCase):
             "uncertain",
             packet,
             True,
+            provenance=self._provenance(),
+            _runtime_identity=self._identity(),
         )
         expected = EvidencePacketRef.from_packet(packet)
         self.assertEqual(result.evidence_packet_ref, expected)
