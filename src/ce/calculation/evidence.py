@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field, fields
+import re
 from typing import Any
 
 from ce.foundation.hashing import sha256_bytes
@@ -19,10 +20,49 @@ class FrozenDict(dict):
     __ior__ = _blocked
 
 
+_SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+
 _STRING_FIELDS = (
     "evidence_packet_id",
     "calculation_version",
 )
+
+
+@dataclass(frozen=True)
+class EvidencePacketRef:
+    """Immutable compound identity binding a result to one EvidencePacket issuance."""
+
+    evidence_packet_id: str
+    content_sha256: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.evidence_packet_id, str) or not self.evidence_packet_id.strip():
+            raise ValueError("invalid:evidence_packet_ref:evidence_packet_id")
+        if not isinstance(self.content_sha256, str) or _SHA256_RE.fullmatch(self.content_sha256) is None:
+            raise ValueError("invalid:evidence_packet_ref:content_sha256")
+
+    @classmethod
+    def from_packet(cls, packet: "EvidencePacket") -> "EvidencePacketRef":
+        if not isinstance(packet, EvidencePacket):
+            raise TypeError("evidence_packet_required")
+        return cls(
+            evidence_packet_id=packet.evidence_packet_id,
+            content_sha256=packet.content_sha256(),
+        )
+
+    def matches(self, packet: "EvidencePacket") -> bool:
+        if not isinstance(packet, EvidencePacket):
+            return False
+        return (
+            self.evidence_packet_id == packet.evidence_packet_id
+            and self.content_sha256 == packet.content_sha256()
+        )
+
+    def as_dict(self) -> dict[str, str]:
+        return {
+            "evidence_packet_id": self.evidence_packet_id,
+            "content_sha256": self.content_sha256,
+        }
 
 _MAPPING_FIELDS = (
     "input_identity",
