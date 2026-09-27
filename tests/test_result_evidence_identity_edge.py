@@ -44,7 +44,7 @@ class ResultEvidenceIdentityEdgeTests(unittest.TestCase):
             evidence_packet_id=packet_id,
             input_identity={"value": value},
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 2},
-            observation_instant_or_interval={"start": "2000-01-01T00:00:00Z"},
+            observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
             timezone_context={"id": "UTC", "version": "NOT_ESTABLISHED"},
             execution_profile_id="CE-CALC-V1-EP-001",
             calculation_version="0.1.0",
@@ -181,6 +181,8 @@ class ResultEvidenceIdentityEdgeTests(unittest.TestCase):
             "uncertain",
             packet,
             True,
+            provenance=self._provenance(),
+            _runtime_identity=self._identity(),
         )
         replacement = self._packet("changed", "E-SIGNAL-SWAP")
         object.__setattr__(result, "evidence_packet", replacement)
@@ -203,7 +205,7 @@ class ResultEvidenceIdentityEdgeTests(unittest.TestCase):
             evidence_packet_id="E-STABLE",
             input_identity=source,
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 2},
-            observation_instant_or_interval={"start": "2000-01-01T00:00:00Z"},
+            observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
             timezone_context={"id": "UTC", "version": "NOT_ESTABLISHED"},
             execution_profile_id="CE-CALC-V1-EP-001",
             calculation_version="0.1.0",
