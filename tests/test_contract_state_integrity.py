@@ -154,3 +154,11 @@ class ContractStateIntegrityTests(unittest.TestCase):
             TimeResolution(
                 CalculationStatus.VALID, BirthTimeState.EXACT, None, "UTC", "2026d", None
             )
+
+    def test_calculation_engine_rejects_wrong_runtime_identity_type(self) -> None:
+        from ce.calculation.engine import CalculationEngine
+        from ce.ephemeris.adapter import UnavailableSwissEphemerisAdapter
+
+        with self.assertRaisesRegex(ValueError, "invalid:runtime_identity:type_required"):
+            CalculationEngine(object(), UnavailableSwissEphemerisAdapter())  # type: ignore[arg-type]
+
