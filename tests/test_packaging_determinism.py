@@ -9,7 +9,8 @@ from zipfile import ZipFile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from tools.package_source import add
+from build import build_source_tree_hash
+from tools.package_source import add, build_archive, package_identity, files
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,3 +45,39 @@ class PackagingDeterminismTests(unittest.TestCase):
 
             with ZipFile(left_zip, "r") as z:
                 self.assertEqual(z.infolist()[0].external_attr, 0o100644 << 16)
+
+
+    def test_package_scope_and_identity_are_bound_to_source_tree_identity(self) -> None:
+        expected = [
+            p.relative_to(ROOT).as_posix()
+            for p in build_source_tree_hash.iter_files()
+        ]
+        packaged = [p.relative_to(ROOT).as_posix() for p in files()]
+        self.assertEqual(packaged, expected)
+
+        with tempfile.TemporaryDirectory(dir=ROOT / "dist") as temp:
+            left = Path(temp) / "left.zip"
+            right = Path(temp) / "right.zip"
+            build_archive(left)
+            build_archive(right)
+
+            self.assertEqual(left.read_bytes(), right.read_bytes())
+
+            with ZipFile(left, "r") as z:
+                self.assertEqual(sorted(z.namelist()), expected)
+                comment = z.comment.decode("ascii")
+
+            self.assertEqual(
+                comment,
+                f"CE_SOURCE_TREE_SHA256_V2={build_source_tree_hash.digest()}\n",
+            )
+
+            identity = package_identity(left)
+            self.assertEqual(
+                identity["source_tree_sha256_v2"],
+                build_source_tree_hash.digest(),
+            )
+            self.assertRegex(
+                identity["package_artifact_sha256"],
+                r"^[0-9a-f]{64}$",
+            )

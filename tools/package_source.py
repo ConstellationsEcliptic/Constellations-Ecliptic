@@ -1,26 +1,29 @@
 from __future__ import annotations
 
+from hashlib import sha256
 from pathlib import Path
+import sys
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from build.build_source_tree_hash import (  # noqa: E402
+    EXCLUDED_DIRS,
+    EXCLUDED_NAMES as SOURCE_EXCLUDED_NAMES,
+    digest as source_tree_digest,
+    iter_files as source_tree_files,
+)
+
 OUT = ROOT.parent / "CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
-EXCLUDED_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "dist"}
-EXCLUDED_NAMES = {OUT.name, "SHA256SUMS.txt", "PACKAGE_ARTIFACT_MANIFEST.txt"}
+EXCLUDED_NAMES = set(SOURCE_EXCLUDED_NAMES) | {OUT.name}
 DETERMINISTIC_FILE_MODE = 0o100644
+PACKAGE_COMMENT_PREFIX = "CE_SOURCE_TREE_SHA256_V2="
 
 
 def files() -> list[Path]:
-    out = []
-    for p in ROOT.rglob("*"):
-        rel = p.relative_to(ROOT)
-        if any(x in EXCLUDED_DIRS for x in rel.parts):
-            continue
-        if p.is_symlink():
-            raise RuntimeError(f"SYMLINK_PRESENT:{rel.as_posix()}")
-        if p.is_file() and p.name not in EXCLUDED_NAMES:
-            out.append(p)
-    return sorted(out, key=lambda x: x.relative_to(ROOT).as_posix().encode())
+    return list(source_tree_files())
 
 
 def add(z: ZipFile, p: Path, *, root: Path = ROOT) -> None:
@@ -34,8 +37,42 @@ def add(z: ZipFile, p: Path, *, root: Path = ROOT) -> None:
     z.writestr(zi, data)
 
 
-if __name__ == "__main__":
-    with ZipFile(OUT, "w", compression=ZIP_DEFLATED, compresslevel=9, allowZip64=True) as z:
+def build_archive(output: Path = OUT) -> Path:
+    tree_identity = source_tree_digest()
+    with ZipFile(
+        output,
+        "w",
+        compression=ZIP_DEFLATED,
+        compresslevel=9,
+        allowZip64=True,
+    ) as z:
         for p in files():
             add(z, p)
-    print(OUT)
+        z.comment = f"{PACKAGE_COMMENT_PREFIX}{tree_identity}\\n".encode("ascii")
+    return output
+
+
+def package_artifact_sha256(path: Path) -> str:
+    return sha256(path.read_bytes()).hexdigest()
+
+
+def package_identity(path: Path) -> dict[str, str]:
+    with ZipFile(path, "r") as z:
+        comment = z.comment.decode("ascii")
+
+    prefix = PACKAGE_COMMENT_PREFIX
+    if not comment.startswith(prefix) or not comment.endswith("\\n"):
+        raise ValueError("package_source_identity_comment_invalid")
+
+    return {
+        "source_tree_sha256_v2": comment[len(prefix):-1],
+        "package_artifact_sha256": package_artifact_sha256(path),
+    }
+
+
+if __name__ == "__main__":
+    output = build_archive()
+    identity = package_identity(output)
+    print(output)
+    print(f"SOURCE_TREE_SHA256_V2={identity['source_tree_sha256_v2']}")
+    print(f"PACKAGE_ARTIFACT_SHA256={identity['package_artifact_sha256']}")
