@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import sys
 import unittest
+from datetime import datetime
+from decimal import Decimal
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from ce.calculation.evidence import EvidencePacket
@@ -119,4 +121,25 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(packet.kinematics, ())
         self.assertEqual(packet.warnings, ())
         self.assertEqual(packet.errors, ())
+
+
+    def test_nested_canonical_domain_rejects_non_string_mapping_key(self) -> None:
+        with self.assertRaisesRegex(ValueError, "mapping_key_string_required"):
+            self._packet("x", input_identity={"nested": {1: "invalid"}})
+
+    def test_nested_canonical_domain_rejects_set(self) -> None:
+        with self.assertRaisesRegex(ValueError, "canonical_json_value_required"):
+            self._packet("x", input_identity={"nested": {"unsupported"}})
+
+    def test_nested_canonical_domain_rejects_datetime_and_decimal(self) -> None:
+        for value in (
+            {"nested": datetime(2026, 1, 1)},
+            {"nested": Decimal("1.25")},
+        ):
+            with self.assertRaisesRegex(ValueError, "canonical_json_value_required"):
+                self._packet("x", input_identity=value)
+
+    def test_nested_canonical_domain_rejects_nonfinite_float(self) -> None:
+        with self.assertRaisesRegex(ValueError, "finite_number_required"):
+            self._packet("x", input_identity={"nested": {"value": float("inf")}})
 

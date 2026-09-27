@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field, fields
+import math
 from types import MappingProxyType
 import re
 from typing import Any
@@ -87,6 +88,36 @@ def _freeze(value: Any) -> Any:
         return tuple(_freeze(item) for item in value)
     return value
 
+def _canonical_domain_errors(value: Any, path: str) -> tuple[str, ...]:
+    if isinstance(value, Mapping):
+        errors: list[str] = []
+        for key, item in value.items():
+            if not isinstance(key, str):
+                errors.append(
+                    f"invalid:{path}:mapping_key_string_required:{type(key).__name__}"
+                )
+                child_path = f"{path}.<nonstring-key>"
+            else:
+                child_path = f"{path}.{key}"
+            errors.extend(_canonical_domain_errors(item, child_path))
+        return tuple(errors)
+
+    if isinstance(value, (list, tuple)):
+        errors: list[str] = []
+        for index, item in enumerate(value):
+            errors.extend(_canonical_domain_errors(item, f"{path}[{index}]"))
+        return tuple(errors)
+
+    if isinstance(value, float) and not math.isfinite(value):
+        return (f"invalid:{path}:finite_number_required",)
+
+    if value is None or isinstance(value, (str, int, bool)):
+        return ()
+
+    return (f"invalid:{path}:canonical_json_value_required",)
+
+
+
 
 @dataclass(frozen=True)
 class EvidencePacket:
@@ -143,6 +174,20 @@ class EvidencePacket:
             for index, item in enumerate(value):
                 if not isinstance(item, str):
                     errors.append(f"invalid:{field_name}[{index}]:string_required")
+
+        for field_name in _MAPPING_FIELDS:
+            value = getattr(self, field_name)
+            if isinstance(value, Mapping):
+                errors.extend(_canonical_domain_errors(value, field_name))
+
+        for field_name in _RECORD_FIELDS:
+            value = getattr(self, field_name)
+            if isinstance(value, (list, tuple)):
+                for index, item in enumerate(value):
+                    if isinstance(item, Mapping):
+                        errors.extend(
+                            _canonical_domain_errors(item, f"{field_name}[{index}]")
+                        )
 
         return tuple(errors)
 
