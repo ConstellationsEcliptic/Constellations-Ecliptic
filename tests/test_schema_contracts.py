@@ -363,8 +363,40 @@ class SchemaContractTests(unittest.TestCase):
             "uncertainty_state": None,
             "evidence_packet_ref": None,
             "canon_input_valid": False,
+            "provenance": {},
         }
         self.assertEqual(_validate_schema_instance(signal, nonvalid_signal), [])
+
+    def test_signal_schema_valid_requires_complete_provenance(self) -> None:
+        schema = self._schema("signal_result.schema.json")
+        valid = {
+            "status": "VALID",
+            "classification": "classification",
+            "phase": "phase",
+            "uncertainty_state": "uncertain",
+            "evidence_packet_ref": {
+                "evidence_packet_id": "E-SCHEMA-001",
+                "content_sha256": "a" * 64,
+            },
+            "canon_input_valid": True,
+            "provenance": self._provenance(),
+        }
+        self.assertEqual(_validate_schema_instance(schema, valid), [])
+
+        missing = {**valid, "provenance": {}}
+        self.assertTrue(_validate_schema_instance(schema, missing))
+
+        authorized_nonvalid = {
+            **valid,
+            "status": "NON_AUTHORIZED",
+            "classification": None,
+            "phase": None,
+            "uncertainty_state": None,
+            "evidence_packet_ref": None,
+            "canon_input_valid": False,
+            "provenance": {"runtime_authority": "AUTHORIZED"},
+        }
+        self.assertTrue(_validate_schema_instance(schema, authorized_nonvalid))
 
     def test_schema_instance_verifier_rejects_bool_as_number(self) -> None:
         schema = self._schema("calculation_result.schema.json")
