@@ -55,6 +55,8 @@ class TimeResolution:
             errors.append("invalid:timezone_version")
 
         if self.status is CalculationStatus.VALID:
+            if self.birth_time_state is BirthTimeState.ZERO_BIRTH_TIME:
+                errors.append("valid_time_cannot_have_zero_birth_time_state")
             if self.resolved_instant_utc is None:
                 errors.append("valid_time_requires_resolved_instant")
             else:
@@ -93,6 +95,15 @@ def resolve_exact_civil_time(
             timezone_id=_closed_timezone_id(timezone_id),
             timezone_version=_closed_timezone_version(timezone_version),
             error="invalid_birth_date",
+        )
+    if birth_time is not None and type(birth_time) is not time:
+        return TimeResolution(
+            status=CalculationStatus.INVALID_INPUT,
+            birth_time_state=BirthTimeState.EXACT,
+            resolved_instant_utc=None,
+            timezone_id=_closed_timezone_id(timezone_id),
+            timezone_version=_closed_timezone_version(timezone_version),
+            error="invalid_birth_time",
         )
     if birth_time is None:
         return TimeResolution(
