@@ -155,7 +155,7 @@ class SchemaContractTests(unittest.TestCase):
             for value in branch.get("if", {}).get("properties", {}).get("status", {}).get("enum", [])
         }
         self.assertTrue(signal_nonvalid.issubset(calculation_status_values))
-        self.assertIn("provenance", schema["required"])
+        self.assertIn("evidence_packet_ref", schema["required"])
         self.assertEqual(
             schema["properties"]["provenance"]["properties"]["source_commit"]["pattern"],
             "^[0-9a-fA-F]{40}$",
@@ -217,6 +217,10 @@ class SchemaContractTests(unittest.TestCase):
             }],
             "warnings": [],
             "errors": [],
+            "evidence_packet_ref": {
+                "evidence_packet_id": "E-REG-001",
+                "content_sha256": "a" * 64,
+            },
             "provenance": {
                 **self._provenance(),
                 "trace": "runtime-check",
@@ -262,6 +266,10 @@ class SchemaContractTests(unittest.TestCase):
             }],
             "warnings": [],
             "errors": [],
+            "evidence_packet_ref": {
+                "evidence_packet_id": "E-REG-001",
+                "content_sha256": "a" * 64,
+            },
             "provenance": self._provenance(),
         }
         self.assertEqual(_validate_schema_instance(schema, valid), [])
@@ -308,6 +316,10 @@ class SchemaContractTests(unittest.TestCase):
             }],
             "warnings": [],
             "errors": [],
+            "evidence_packet_ref": {
+                "evidence_packet_id": "E-REG-001",
+                "content_sha256": "a" * 64,
+            },
             "provenance": self._provenance(),
         }
         self.assertTrue(_validate_schema_instance(schema, invalid))
