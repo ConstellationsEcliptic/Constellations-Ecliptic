@@ -35,6 +35,15 @@ jobs:
         with:
           python-version: "3.13.15"
 
+      - name: Probe predecessor source-tree identity
+        env:
+          TARGET_SOURCE_SHA: "809e21c38deefb873d413a0d6686cb600fce1f42"
+        run: |
+          set -euo pipefail
+          git worktree add --detach /tmp/ce-source-probe "$TARGET_SOURCE_SHA"
+          cd /tmp/ce-source-probe
+          python -B build/build_source_tree_hash.py
+
       - name: Print source-tree identity
         run: |
           python -B - <<'PY'
