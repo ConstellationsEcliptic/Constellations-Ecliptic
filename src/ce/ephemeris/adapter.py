@@ -37,7 +37,7 @@ class EphemerisRequest:
 
 
 class EphemerisAdapter(Protocol):
-    def calculate_object(self, object_id: str, julian_day_ut: float, with_speed: bool) -> ObjectState: ...
+    def calculate_object(self, request: EphemerisRequest) -> ObjectState: ...
 
 
 @dataclass(frozen=True)
@@ -47,22 +47,30 @@ class UnavailableSwissEphemerisAdapter:
     library_version: str = "NOT_ESTABLISHED"
     data_bundle_sha256: str | None = None
 
-    def calculate_object(self, object_id: str, julian_day_ut: float, with_speed: bool) -> ObjectState:
-        try:
-            EphemerisRequest(object_id, julian_day_ut, with_speed)
-        except ValueError:
+    def calculate_object(self, request: EphemerisRequest) -> ObjectState:
+        if not isinstance(request, EphemerisRequest):
+            return ObjectState(
+                object_id="INVALID_INPUT",
+                longitude_deg=None,
+                speed_deg_per_day=None,
+                status=CalculationStatus.INVALID_INPUT,
+            )
+
+        errors = request.validate()
+        if errors:
             return ObjectState(
                 object_id=(
-                    object_id
-                    if isinstance(object_id, str) and object_id.strip()
+                    request.object_id
+                    if isinstance(request.object_id, str) and request.object_id.strip()
                     else "INVALID_INPUT"
                 ),
                 longitude_deg=None,
                 speed_deg_per_day=None,
                 status=CalculationStatus.INVALID_INPUT,
             )
+
         return ObjectState(
-            object_id=object_id,
+            object_id=request.object_id,
             longitude_deg=None,
             speed_deg_per_day=None,
             status=CalculationStatus.NON_AUTHORIZED,
