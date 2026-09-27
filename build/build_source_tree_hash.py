@@ -10,8 +10,6 @@ EXCLUDED_DIRS = {
     "dist",
     ".mypy_cache",
     ".ruff_cache",
-    "evidence",
-    "provenance",
 }
 EXCLUDED_NAMES = {"SOURCE_TREE_SHA256_V2.txt"}
 ROOT = Path(__file__).resolve().parents[1]
