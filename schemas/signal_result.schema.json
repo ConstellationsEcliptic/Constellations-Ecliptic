@@ -19,7 +19,19 @@
       }
     },
     "canon_input_valid": {"type": "boolean"},
-    "provenance": {"type": "object"}
+    "provenance": {
+      "type": "object",
+      "additionalProperties": {"type": ["string", "number", "boolean", "null"]},
+      "properties": {
+        "source_commit": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+        "source_tree_sha256_v2": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "dependency_lock_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "timezone_bundle_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "ephemeris_bundle_digest": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "runtime_image_digest": {"type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$"},
+        "calculation_version": {"type": "string", "minLength": 1}
+      }
+    }
   },
   "allOf": [
     {
@@ -39,7 +51,10 @@
               "content_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"}
             }
           },
-          "canon_input_valid": {"const": true}
+          "canon_input_valid": {"const": true},
+          "provenance": {
+            "required": ["source_commit", "source_tree_sha256_v2", "dependency_lock_digest", "timezone_bundle_digest", "ephemeris_bundle_digest", "runtime_image_digest", "calculation_version"]
+          }
         }
       }
     },
@@ -51,7 +66,19 @@
           "phase": {"const": null},
           "uncertainty_state": {"const": null},
           "evidence_packet_ref": {"const": null},
-          "canon_input_valid": {"const": false}
+          "canon_input_valid": {"const": false},
+          "provenance": {
+            "allOf": [
+              {"not": {"required": ["source_commit"]}},
+              {"not": {"required": ["source_tree_sha256_v2"]}},
+              {"not": {"required": ["dependency_lock_digest"]}},
+              {"not": {"required": ["timezone_bundle_digest"]}},
+              {"not": {"required": ["ephemeris_bundle_digest"]}},
+              {"not": {"required": ["runtime_image_digest"]}},
+              {"not": {"required": ["calculation_version"]}},
+              {"not": {"required": ["runtime_authority"], "properties": {"runtime_authority": {"const": "AUTHORIZED"}}}}
+            ]
+          }
         }
       }
     }
