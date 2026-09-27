@@ -9,6 +9,8 @@ from ce.runtime.gates import authorize_runtime
 
 class CalculationEngine:
     def __init__(self, runtime_identity: RuntimeIdentity, ephemeris: EphemerisAdapter) -> None:
+        if not isinstance(runtime_identity, RuntimeIdentity):
+            raise ValueError("invalid:runtime_identity:type_required")
         self._runtime_identity = runtime_identity
         self._ephemeris = ephemeris
 
