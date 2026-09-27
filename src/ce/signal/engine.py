@@ -83,10 +83,11 @@ class SignalResult:
                 (self.classification, "classification"),
                 (self.phase, "phase"),
                 (self.uncertainty_state, "uncertainty_state"),
-                (self.evidence_packet_ref, "evidence_packet_ref"),
             ):
                 if not isinstance(value, str) or not value:
                     errors.append(f"valid_signal_requires:{name}")
+            if self.evidence_packet_ref is None:
+                errors.append("valid_signal_requires:evidence_packet_ref")
             if not self.canon_input_valid:
                 errors.append("valid_signal_requires_canon_input_valid")
             if self.evidence_packet is None:
