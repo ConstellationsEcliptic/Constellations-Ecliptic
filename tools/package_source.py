@@ -61,7 +61,7 @@ def package_identity(path: Path) -> dict[str, str]:
         comment = z.comment.decode("ascii")
 
     prefix = PACKAGE_COMMENT_PREFIX
-    if not comment.startswith(prefix) or not comment.endswith("\\n"):
+    if not comment.startswith(prefix) or not comment.endswith("\n"):
         raise ValueError("package_source_identity_comment_invalid")
 
     return {
