@@ -112,7 +112,7 @@ def _canonical_domain_errors(value: Any, path: str) -> tuple[str, ...]:
     if isinstance(value, float) and not math.isfinite(value):
         return (f"invalid:{path}:finite_number_required",)
 
-    if value is None or isinstance(value, (str, int, bool)):
+    if value is None or isinstance(value, (str, int, float, bool)):
         return ()
 
     return (f"invalid:{path}:canonical_json_value_required",)
