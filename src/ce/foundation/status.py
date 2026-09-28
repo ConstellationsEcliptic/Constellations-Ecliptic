@@ -16,9 +16,19 @@ class RuntimeAuthority(str, Enum):
     NON_AUTHORIZED = "NON_AUTHORIZED"
 
 
-class BirthTimeState(str, Enum):
-    EXACT = "EXACT"
+class NatalBirthState(str, Enum):
+    """V1 Personal Sky natal input state.
+
+    CE V1 does not accept an exact user-supplied birth time.
+    """
     ZERO_BIRTH_TIME = "ZERO_BIRTH_TIME"
+    INVALID = "INVALID"
+
+
+class ObservationTimeState(str, Enum):
+    """Time-state for explicit observation/evaluation calculations."""
+    EXACT = "EXACT"
+    INVALID = "INVALID"
 
 
 class ScenarioState(str, Enum):
