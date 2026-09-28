@@ -1,20 +1,23 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, time
+from datetime import date
 from typing import Any
 
-from ce.foundation.status import BirthTimeState, CalculationStatus, ScenarioState
+from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
 
 
 @dataclass(frozen=True)
 class BirthInput:
+    """V1 Personal Sky natal input.
+
+    Exact birth time is intentionally absent from this contract.
+    """
     birth_date: date
-    birth_time: time | None
-    birth_time_state: BirthTimeState
     birth_city: str
     timezone_id: str
     timezone_version: str | None
+    natal_birth_state: NatalBirthState = NatalBirthState.ZERO_BIRTH_TIME
 
 
 @dataclass(frozen=True)
