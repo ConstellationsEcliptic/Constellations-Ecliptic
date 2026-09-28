@@ -48,6 +48,41 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertIn("unsupported_calendar_policy", result.errors)
         self.assertIsNone(result.normalized_time)
 
+    def test_calendar_policy_precedes_invalid_natal_state(self) -> None:
+        identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
+        engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
+        request = CalculationRequest(
+            request_id="T-CALENDAR-PRECEDENCE-001",
+            birth=BirthInput(
+                date(2000, 1, 1),
+                "Test City",
+                "UTC",
+                None,
+                NatalBirthState.INVALID,
+            ),
+            target_interval_start_utc="2000-01-01T00:00:00Z",
+            target_interval_end_utc="2000-01-02T00:00:00Z",
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calendar_policy_id="CE-V1-CALENDAR-UNSUPPORTED",
+        )
+        result = engine.calculate(request)
+        self.assertEqual(result.status, CalculationStatus.INPUT_UNSUPPORTED)
+        self.assertIn("unsupported_calendar_policy", result.errors)
+
+    def test_supported_calendar_policy_reaches_runtime_gate(self) -> None:
+        identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
+        engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
+        request = CalculationRequest(
+            request_id="T-CALENDAR-SUPPORTED-001",
+            birth=BirthInput(date(2000, 1, 1), "Test City", "UTC", None),
+            target_interval_start_utc="2000-01-01T00:00:00Z",
+            target_interval_end_utc="2000-01-02T00:00:00Z",
+            execution_profile_id="CE-CALC-V1-EP-001",
+        )
+        result = engine.calculate(request)
+        self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
+        self.assertNotIn("unsupported_calendar_policy", result.errors)
+
     def test_invalid_natal_state_fails_before_runtime_gate(self) -> None:
         identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
         engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
@@ -75,12 +110,7 @@ class RuntimeGateTests(unittest.TestCase):
         engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
         request = CalculationRequest(
             request_id="T-001",
-            birth=BirthInput(
-                date(2000, 1, 1),
-                "Test City",
-                "UTC",
-                None,
-            ),
+            birth=BirthInput(date(2000, 1, 1), "Test City", "UTC", None),
             target_interval_start_utc="2000-01-01T00:00:00Z",
             target_interval_end_utc="2000-01-02T00:00:00Z",
             execution_profile_id="CE-CALC-V1-EP-001",
@@ -98,12 +128,7 @@ class RuntimeGateTests(unittest.TestCase):
         engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
         request = CalculationRequest(
             request_id="T-002",
-            birth=BirthInput(
-                date(2000, 1, 1),
-                "Test City",
-                "UTC",
-                None,
-            ),
+            birth=BirthInput(date(2000, 1, 1), "Test City", "UTC", None),
             target_interval_start_utc="2000-01-01T00:00:00Z",
             target_interval_end_utc="2000-01-02T00:00:00Z",
             execution_profile_id="CE-CALC-V1-EP-001",
