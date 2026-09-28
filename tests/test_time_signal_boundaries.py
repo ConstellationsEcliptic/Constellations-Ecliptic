@@ -15,6 +15,28 @@ from ce.signal.engine import SignalEngine
 
 
 class TimeSignalBoundaryTests(unittest.TestCase):
+    def test_zero_birth_interval_rejects_unsupported_calendar_policy(self) -> None:
+        result = resolve_zero_birth_interval(
+            date(2000, 1, 1), "UTC", "2026d",
+            authoritative_timezone_version="2026d",
+            calendar_policy_id="CE-V1-CALENDAR-UNSUPPORTED",
+        )
+        self.assertEqual(result.status, CalculationStatus.INPUT_UNSUPPORTED)
+        self.assertEqual(result.natal_birth_state, NatalBirthState.ZERO_BIRTH_TIME)
+        self.assertIsNone(result.resolved_utc_interval_start)
+        self.assertEqual(result.error, "unsupported_calendar_policy")
+
+    def test_observation_time_rejects_unsupported_calendar_policy(self) -> None:
+        result = resolve_observation_civil_time(
+            date(2000, 1, 1), time(12, 0), "UTC", "2026d",
+            authoritative_timezone_version="2026d",
+            calendar_policy_id="CE-V1-CALENDAR-UNSUPPORTED",
+        )
+        self.assertEqual(result.status, CalculationStatus.INPUT_UNSUPPORTED)
+        self.assertEqual(result.observation_time_state, ObservationTimeState.INVALID)
+        self.assertIsNone(result.resolved_instant_utc)
+        self.assertEqual(result.error, "unsupported_calendar_policy")
+
     def test_observation_timezone_identity_missing_fails_closed(self) -> None:
         result = resolve_observation_civil_time(
             date(2000, 1, 1), time(12, 0), "UTC", None,
