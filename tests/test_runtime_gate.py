@@ -24,6 +24,23 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertEqual(birth.natal_birth_state, NatalBirthState.ZERO_BIRTH_TIME)
         self.assertFalse(hasattr(birth, "birth_time"))
 
+    def test_unsupported_calendar_policy_fails_before_runtime_gate(self) -> None:
+        identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
+        engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
+        request = CalculationRequest(
+            request_id="T-CALENDAR-001",
+            birth=BirthInput(date(2000, 1, 1), "Test City", "UTC", None),
+            target_interval_start_utc="2000-01-01T00:00:00Z",
+            target_interval_end_utc="2000-01-02T00:00:00Z",
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calendar_policy_id="CE-V1-CALENDAR-UNSUPPORTED",
+        )
+        result = engine.calculate(request)
+        self.assertEqual(result.status, CalculationStatus.INPUT_UNSUPPORTED)
+        self.assertEqual(result.scenario_state, ScenarioState.NONE)
+        self.assertIn("unsupported_calendar_policy", result.errors)
+        self.assertIsNone(result.normalized_time)
+
     def test_missing_identity_fails_closed(self) -> None:
         identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
         engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
