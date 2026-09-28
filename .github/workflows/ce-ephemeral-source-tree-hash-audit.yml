@@ -27,6 +27,10 @@ jobs:
               f.write(digest + "\n")
           PY
 
+      - name: Verify CE source identity
+        shell: bash
+        run: python tools/verify_source_identity.py
+
       - name: Publish hash to job summary
         shell: bash
         run: |
