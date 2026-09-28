@@ -1,51 +1,138 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, time
+from datetime import date, time, timedelta
 
-from ce.foundation.status import BirthTimeState, CalculationStatus
+from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, NatalBirthState, ObservationTimeState
 
 
 @dataclass(frozen=True)
-class TimeResolution:
+class ZeroBirthIntervalResolution:
     status: CalculationStatus
-    birth_time_state: BirthTimeState
+    natal_birth_state: NatalBirthState
+    local_interval_start: str
+    local_interval_end: str
+    timezone_id: str
+    timezone_version: str | None
+    resolved_utc_interval_start: str | None
+    resolved_utc_interval_end: str | None
+    error: str | None
+
+
+@dataclass(frozen=True)
+class ObservationTimeResolution:
+    status: CalculationStatus
+    observation_time_state: ObservationTimeState
     resolved_instant_utc: str | None
     timezone_id: str
     timezone_version: str | None
     error: str | None
 
 
-def resolve_exact_civil_time(
+def resolve_zero_birth_interval(
     birth_date: date,
-    birth_time: time | None,
     timezone_id: str,
     timezone_version: str | None,
     *,
     authoritative_timezone_version: str | None,
-) -> TimeResolution:
-    if birth_time is None:
-        return TimeResolution(
-            status=CalculationStatus.INVALID_INPUT,
-            birth_time_state=BirthTimeState.ZERO_BIRTH_TIME,
+    calendar_policy_id: str = CALENDAR_POLICY_GREGORIAN_ONLY,
+) -> ZeroBirthIntervalResolution:
+    """Represent the natal state as the full local civil day.
+
+    This function deliberately does not choose noon, midnight, a midpoint,
+    or any other representative natal instant. UTC conversion remains blocked
+    until the authoritative TZif dataset is established.
+    """
+    if calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
+        next_day = birth_date + timedelta(days=1)
+        return ZeroBirthIntervalResolution(
+            status=CalculationStatus.INPUT_UNSUPPORTED,
+            natal_birth_state=NatalBirthState.ZERO_BIRTH_TIME,
+            local_interval_start=f"{birth_date.isoformat()}T00:00:00",
+            local_interval_end=f"{next_day.isoformat()}T00:00:00",
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            resolved_utc_interval_start=None,
+            resolved_utc_interval_end=None,
+            error="unsupported_calendar_policy",
+        )
+
+    next_day = birth_date + timedelta(days=1)
+    start = f"{birth_date.isoformat()}T00:00:00"
+    end = f"{next_day.isoformat()}T00:00:00"
+
+    if authoritative_timezone_version is None or timezone_version != authoritative_timezone_version:
+        return ZeroBirthIntervalResolution(
+            status=CalculationStatus.NON_AUTHORIZED,
+            natal_birth_state=NatalBirthState.ZERO_BIRTH_TIME,
+            local_interval_start=start,
+            local_interval_end=end,
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            resolved_utc_interval_start=None,
+            resolved_utc_interval_end=None,
+            error="authoritative_timezone_identity_not_established",
+        )
+
+    return ZeroBirthIntervalResolution(
+        status=CalculationStatus.NON_AUTHORIZED,
+        natal_birth_state=NatalBirthState.ZERO_BIRTH_TIME,
+        local_interval_start=start,
+        local_interval_end=end,
+        timezone_id=timezone_id,
+        timezone_version=timezone_version,
+        resolved_utc_interval_start=None,
+        resolved_utc_interval_end=None,
+        error="authoritative_tzif_bundle_not_established",
+    )
+
+
+def resolve_observation_civil_time(
+    observation_date: date,
+    observation_time: time | None,
+    timezone_id: str,
+    timezone_version: str | None,
+    *,
+    authoritative_timezone_version: str | None,
+    calendar_policy_id: str = CALENDAR_POLICY_GREGORIAN_ONLY,
+) -> ObservationTimeResolution:
+    """Resolve an explicit observation/evaluation time.
+
+    Observation time is intentionally separate from natal birth time.
+    """
+    if calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
+        return ObservationTimeResolution(
+            status=CalculationStatus.INPUT_UNSUPPORTED,
+            observation_time_state=ObservationTimeState.INVALID,
             resolved_instant_utc=None,
             timezone_id=timezone_id,
             timezone_version=timezone_version,
-            error="exact_civil_time_required_for_exact_resolution",
+            error="unsupported_calendar_policy",
         )
+
+    if observation_time is None:
+        return ObservationTimeResolution(
+            status=CalculationStatus.INVALID_INPUT,
+            observation_time_state=ObservationTimeState.INVALID,
+            resolved_instant_utc=None,
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            error="explicit_observation_time_required",
+        )
+
     if authoritative_timezone_version is None or timezone_version != authoritative_timezone_version:
-        return TimeResolution(
+        return ObservationTimeResolution(
             status=CalculationStatus.NON_AUTHORIZED,
-            birth_time_state=BirthTimeState.EXACT,
+            observation_time_state=ObservationTimeState.EXACT,
             resolved_instant_utc=None,
             timezone_id=timezone_id,
             timezone_version=timezone_version,
             error="authoritative_timezone_identity_not_established",
         )
-    # Host zoneinfo is deliberately not used as an authority in this foundation.
-    return TimeResolution(
+
+    return ObservationTimeResolution(
         status=CalculationStatus.NON_AUTHORIZED,
-        birth_time_state=BirthTimeState.EXACT,
+        observation_time_state=ObservationTimeState.EXACT,
         resolved_instant_utc=None,
         timezone_id=timezone_id,
         timezone_version=timezone_version,

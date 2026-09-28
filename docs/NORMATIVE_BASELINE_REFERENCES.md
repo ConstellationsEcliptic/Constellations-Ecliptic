@@ -1,14 +1,15 @@
 # CE V1 Source Foundation — Normative Baseline References
 
-This implementation foundation is derived from the current CE normative stack already established before this source tree was created.
+This implementation foundation is derived from the current CE normative and controlled implementation stack.
 
 Primary implementation references:
 
-- Calculation Constitution: CE-CALC-2026-V1.8
+- Product Constitution v1.6.1 — harmonized V1 birth/calendar input boundary
+- Calculation Constitution v1.9 — zero-birth-time interval semantics
 - Signal Engine Core V1 specification
-- Technical Contracts V1
-- Canonical Calculation Execution Profile: CE-CALC-V1-EP-001
+- Technical Contracts v1.1 — harmonized natal/observation-time separation
+- Canonical Calculation Execution Profile v1.3, revision 4 — Gregorian-only policy and Data Lock revision 4 binding
 - Evidence / AI / Output Validation specification
-- Product Constitution and Master Product Specification
+- Implementation Plan v1.3.1 — harmonized V1 product/input bridge
 
-The foundation does not change any normative rule. Where an exact rule is not present in the available evidence, the implementation remains unimplemented/fail-closed rather than inventing a value.
+The foundation does not invent astronomical or product facts. Exact birth time is not part of the V1 Personal Sky input contract. Observation/evaluation time remains a separate calculation concept. Where an exact rule or production identity is not established, the implementation remains unimplemented or fail-closed rather than inventing a value.

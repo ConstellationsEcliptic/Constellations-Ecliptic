@@ -1,1 +1,50 @@
-{"status":"DEVELOPMENT_ONLY_NON_AUTHORITATIVE","execution_profile_id":"CE-CALC-V1-EP-001","execution_profile_revision":2,"runtime":{"language":"python","version":"3.13","authority":"development_only"},"source":{"commit":"NOT_ESTABLISHED","source_tree_sha256_v2":"NOT_ESTABLISHED"},"ephemeris":{"library":"Swiss Ephemeris","version":"2.10.03","data_bundle_sha256":"NOT_ESTABLISHED","authority":"NOT_ESTABLISHED"},"timezone":{"database":"IANA","version":"2026d","derived_tzif_bundle_sha256":"NOT_ESTABLISHED"},"build":{"dependency_lock_digest":"NOT_ESTABLISHED","runtime_image_digest":"NOT_ESTABLISHED","toolchain_identity":"NOT_ESTABLISHED"}}
+{
+  "status": "DEVELOPMENT_ONLY_NON_AUTHORITATIVE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "runtime": {
+    "language": "python",
+    "version": "3.13",
+    "authority": "development_only"
+  },
+  "product_input_boundary": {
+    "birth_date": "USED",
+    "birth_city": "USED",
+    "birth_time_user_input": "NOT_USED",
+    "calendar_policy": "GREGORIAN_ONLY"
+  },
+  "natal_engine_state": "ZERO_BIRTH_TIME",
+  "observation_time": "SEPARATE_EXPLICIT_FEATURE_INPUT",
+  "source": {
+    "commit": "NOT_ESTABLISHED",
+    "source_tree_sha256_v2": "NOT_ESTABLISHED_AFTER_HARDENING"
+  },
+  "ephemeris": {
+    "library": "Swiss Ephemeris",
+    "version": "2.10.03",
+    "data_bundle_sha256": "NOT_ESTABLISHED",
+    "authority": "NOT_ESTABLISHED"
+  },
+  "timezone": {
+    "database": "IANA",
+    "version": "2026d",
+    "derived_tzif_bundle_sha256": "NOT_ESTABLISHED"
+  },
+  "calendar": {
+    "policy_id": "CE-V1-CALENDAR-GREGORIAN-ONLY",
+    "policy_revision": 1
+  },
+  "build": {
+    "dependency_lock_digest": "NOT_ESTABLISHED",
+    "runtime_image_digest": "NOT_ESTABLISHED",
+    "toolchain_identity": "NOT_ESTABLISHED"
+  },
+  "execution_profile_version": "1.3",
+  "implementation_plan_version": "1.3.1",
+  "technical_contracts_version": "1.1",
+  "canonical_data_lock": {
+    "id": "CE-V1-CANONICAL-DATA-2026D-SE-V2.10.3BFINAL",
+    "revision": 4,
+    "status": "SEAL_CANDIDATE_RUNTIME_COVERAGE_AND_HUMAN_REVIEW_PENDING"
+  }
+}

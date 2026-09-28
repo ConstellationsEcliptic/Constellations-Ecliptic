@@ -1,1 +1,31 @@
-{"artifact_id":"CE-V1-SOURCE-FOUNDATION-R1","version":"0.1.0","status":"DEVELOPMENT_CANDIDATE","authority":"NON_AUTHORITATIVE","production_source_authority":"NOT_ESTABLISHED","trusted_build":"BLOCKED","seal":"NO","authorization":"NON_AUTHORIZED","fail_closed":true,"canonical_profile_id":"CE-CALC-V1-EP-001","canonical_profile_revision":2}
+{
+  "artifact_id": "CE-V1-SOURCE-FOUNDATION-R1",
+  "version": "0.1.1",
+  "version_type": "artifact",
+  "source_package_version": "0.1.0",
+  "status": "DEVELOPMENT_CANDIDATE",
+  "authority": "NON_AUTHORITATIVE",
+  "production_source_authority": "NOT_ESTABLISHED",
+  "trusted_build": "BLOCKED",
+  "seal": "NO",
+  "authorization": "NON_AUTHORIZED",
+  "fail_closed": true,
+  "canonical_profile_id": "CE-CALC-V1-EP-001",
+  "canonical_profile_revision": 4,
+  "product_input_boundary": {
+    "birth_date": "USED",
+    "birth_city": "USED",
+    "birth_time_user_input": "NOT_USED",
+    "calendar_policy": "GREGORIAN_ONLY"
+  },
+  "natal_engine_state": "ZERO_BIRTH_TIME",
+  "source_tree_sha256_v2": "NOT_ESTABLISHED_AFTER_HARDENING",
+  "execution_profile_version": "1.3",
+  "implementation_plan_version": "1.3.1",
+  "technical_contracts_version": "1.1",
+  "canonical_data_lock": {
+    "id": "CE-V1-CANONICAL-DATA-2026D-SE-V2.10.3BFINAL",
+    "revision": 4,
+    "status": "SEAL_CANDIDATE_RUNTIME_COVERAGE_AND_HUMAN_REVIEW_PENDING"
+  }
+}
