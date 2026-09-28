@@ -37,14 +37,45 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         self.assertIsNone(result.resolved_instant_utc)
         self.assertEqual(result.error, "unsupported_calendar_policy")
 
-    def test_observation_timezone_identity_missing_fails_closed(self) -> None:
+    def test_observation_time_missing_is_invalid_input(self) -> None:
         result = resolve_observation_civil_time(
-            date(2000, 1, 1), time(12, 0), "UTC", None,
-            authoritative_timezone_version=None,
+            date(2000, 1, 1), None, "UTC", "2026d",
+            authoritative_timezone_version="2026d",
+        )
+        self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
+        self.assertEqual(result.observation_time_state, ObservationTimeState.INVALID)
+        self.assertIsNone(result.resolved_instant_utc)
+        self.assertEqual(result.error, "explicit_observation_time_required")
+
+    def test_observation_timezone_version_mismatch_fails_closed(self) -> None:
+        result = resolve_observation_civil_time(
+            date(2000, 1, 1), time(12, 0), "UTC", "2025a",
+            authoritative_timezone_version="2026d",
         )
         self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
         self.assertEqual(result.observation_time_state, ObservationTimeState.EXACT)
         self.assertIsNone(result.resolved_instant_utc)
+        self.assertEqual(result.error, "authoritative_timezone_identity_not_established")
+
+    def test_zero_birth_time_timezone_version_mismatch_fails_closed(self) -> None:
+        result = resolve_zero_birth_interval(
+            date(2000, 1, 1), "UTC", "2025a",
+            authoritative_timezone_version="2026d",
+        )
+        self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
+        self.assertEqual(result.natal_birth_state, NatalBirthState.ZERO_BIRTH_TIME)
+        self.assertIsNone(result.resolved_utc_interval_start)
+        self.assertIsNone(result.resolved_utc_interval_end)
+        self.assertEqual(result.error, "authoritative_timezone_identity_not_established")
+
+    def test_zero_birth_interval_handles_gregorian_leap_day_boundary(self) -> None:
+        result = resolve_zero_birth_interval(
+            date(2000, 2, 29), "UTC", "2026d",
+            authoritative_timezone_version=None,
+        )
+        self.assertEqual(result.local_interval_start, "2000-02-29T00:00:00")
+        self.assertEqual(result.local_interval_end, "2000-03-01T00:00:00")
+        self.assertIsNone(result.resolved_utc_interval_start)
 
     def test_zero_birth_time_is_engine_interval_not_exact_time(self) -> None:
         result = resolve_zero_birth_interval(
