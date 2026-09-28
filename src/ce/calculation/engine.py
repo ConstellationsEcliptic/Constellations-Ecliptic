@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ce.calculation.contracts import CalculationRequest, CalculationResult
 from ce.ephemeris.adapter import EphemerisAdapter
-from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, ScenarioState
+from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, NatalBirthState, ScenarioState
 from ce.runtime.gates import authorize_runtime
 from ce.foundation.identity import RuntimeIdentity
 
@@ -22,6 +22,17 @@ class CalculationEngine:
                 normalized_time=None,
                 errors=("unsupported_calendar_policy",),
                 provenance={"calendar_policy_id": request.calendar_policy_id},
+            )
+
+        if request.birth.natal_birth_state != NatalBirthState.ZERO_BIRTH_TIME:
+            return CalculationResult(
+                request_id=request.request_id,
+                status=CalculationStatus.INVALID_INPUT,
+                execution_profile_id=request.execution_profile_id,
+                scenario_state=ScenarioState.NONE,
+                normalized_time=None,
+                errors=("invalid_natal_birth_state",),
+                provenance={"natal_birth_state": request.birth.natal_birth_state.value},
             )
 
         gate = authorize_runtime(self._runtime_identity)
