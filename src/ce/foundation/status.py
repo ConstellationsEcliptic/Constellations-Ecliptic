@@ -5,11 +5,13 @@ from enum import Enum
 
 class CalculationStatus(str, Enum):
     VALID = "VALID"
+    KNOWN_UNAVAILABLE = "KNOWN_UNAVAILABLE"
+    CALCULATION_FAILURE = "CALCULATION_FAILURE"
+    INPUT_UNSUPPORTED = "INPUT_UNSUPPORTED"
+    NATAL_EVIDENCE_VARIABLE = "NATAL_EVIDENCE_VARIABLE"
     NOT_IMPLEMENTED = "NOT_IMPLEMENTED"
     NON_AUTHORIZED = "NON_AUTHORIZED"
     INVALID_INPUT = "INVALID_INPUT"
-    CALCULATION_FAILURE = "CALCULATION_FAILURE"
-    INPUT_UNSUPPORTED = "INPUT_UNSUPPORTED"
 
 
 CALENDAR_POLICY_GREGORIAN_ONLY = "CE-V1-CALENDAR-GREGORIAN-ONLY"
@@ -25,12 +27,14 @@ class NatalBirthState(str, Enum):
 
     CE V1 does not accept an exact user-supplied birth time.
     """
+
     ZERO_BIRTH_TIME = "ZERO_BIRTH_TIME"
     INVALID = "INVALID"
 
 
 class ObservationTimeState(str, Enum):
     """Time-state for explicit observation/evaluation calculations."""
+
     EXACT = "EXACT"
     INVALID = "INVALID"
 
