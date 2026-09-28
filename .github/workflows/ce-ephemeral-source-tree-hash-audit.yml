@@ -12,12 +12,16 @@ jobs:
       - name: Checkout exact PR5 candidate
         uses: actions/checkout@v4
         with:
-          ref: 7c9b3d044488125f53902774eb0d53f5f51d6b5f
+          ref: 3db976fd7293f0d4c5d367a81fc87489a97ba900
           fetch-depth: 0
 
       - name: Remove ephemeral workflow from audited worktree
         shell: bash
         run: rm -f .github/workflows/ce-ephemeral-source-tree-hash-audit.yml
+
+      - name: Verify CE source identity
+        shell: bash
+        run: python tools/verify_source_identity.py
 
       - name: Compute CE source-tree SHA-256
         shell: bash
@@ -34,6 +38,6 @@ jobs:
       - name: Publish hash to job summary
         shell: bash
         run: |
-          echo "Target commit: 7c9b3d044488125f53902774eb0d53f5f51d6b5f" >> "$GITHUB_STEP_SUMMARY"
+          echo "Target commit: 3db976fd7293f0d4c5d367a81fc87489a97ba900" >> "$GITHUB_STEP_SUMMARY"
           echo "Source-tree SHA-256:" >> "$GITHUB_STEP_SUMMARY"
           grep -E '^[0-9a-f]{64}$' ce-source-tree-hash.txt >> "$GITHUB_STEP_SUMMARY"
