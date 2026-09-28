@@ -1,1 +1,20 @@
-{"artifact_id":"CE-V1-SOURCE-FOUNDATION-R1","version":"0.1.0","status":"DEVELOPMENT_CANDIDATE","authority":"NON_AUTHORITATIVE","production_source_authority":"NOT_ESTABLISHED","trusted_build":"BLOCKED","seal":"NO","authorization":"NON_AUTHORIZED","fail_closed":true,"canonical_profile_id":"CE-CALC-V1-EP-001","canonical_profile_revision":2}
+{
+  "artifact_id":"CE-V1-SOURCE-FOUNDATION-R1",
+  "version":"0.1.1",
+  "status":"DEVELOPMENT_CANDIDATE",
+  "authority":"NON_AUTHORITATIVE",
+  "production_source_authority":"NOT_ESTABLISHED",
+  "trusted_build":"BLOCKED",
+  "seal":"NO",
+  "authorization":"NON_AUTHORIZED",
+  "fail_closed":true,
+  "canonical_profile_id":"CE-CALC-V1-EP-001",
+  "canonical_profile_revision":4,
+  "product_input_boundary":{
+    "birth_date":"USED",
+    "birth_city":"USED",
+    "birth_time_user_input":"NOT_USED",
+    "calendar_policy":"GREGORIAN_ONLY"
+  },
+  "natal_engine_state":"ZERO_BIRTH_TIME"
+}
