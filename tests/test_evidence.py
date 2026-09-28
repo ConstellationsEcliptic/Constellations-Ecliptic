@@ -13,7 +13,7 @@ class EvidenceTests(unittest.TestCase):
         return EvidencePacket(
             evidence_packet_id="E-001",
             input_identity={"value": value},
-            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 2},
+            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
             observation_instant_or_interval={"start": "2000-01-01T00:00:00Z"},
             timezone_context={"id": "UTC", "version": "NOT_ESTABLISHED"},
             execution_profile_id="CE-CALC-V1-EP-001",
