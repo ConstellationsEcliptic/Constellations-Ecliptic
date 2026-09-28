@@ -31,6 +31,16 @@ class RuntimeGateTests(unittest.TestCase):
             "NATAL_EVIDENCE_VARIABLE",
         )
 
+    def test_calculation_request_defaults_to_gregorian_only_policy(self) -> None:
+        request = CalculationRequest(
+            request_id="T-CALENDAR-DEFAULT-001",
+            birth=BirthInput(date(2000, 1, 1), "Test City", "UTC", None),
+            target_interval_start_utc="2000-01-01T00:00:00Z",
+            target_interval_end_utc="2000-01-02T00:00:00Z",
+            execution_profile_id="CE-CALC-V1-EP-001",
+        )
+        self.assertEqual(request.calendar_policy_id, "CE-V1-CALENDAR-GREGORIAN-ONLY")
+
     def test_unsupported_calendar_policy_fails_before_runtime_gate(self) -> None:
         identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
         engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
