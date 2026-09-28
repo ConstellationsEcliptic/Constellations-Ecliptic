@@ -9,7 +9,7 @@ from ce.calculation.contracts import BirthInput, CalculationRequest
 from ce.calculation.engine import CalculationEngine
 from ce.ephemeris.adapter import UnavailableSwissEphemerisAdapter
 from ce.foundation.identity import RuntimeIdentity
-from ce.foundation.status import NatalBirthState, CalculationStatus, ScenarioState
+from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
 from datetime import date
 
 
@@ -23,6 +23,13 @@ class RuntimeGateTests(unittest.TestCase):
         )
         self.assertEqual(birth.natal_birth_state, NatalBirthState.ZERO_BIRTH_TIME)
         self.assertFalse(hasattr(birth, "birth_time"))
+
+    def test_contract_statuses_are_materialized(self) -> None:
+        self.assertEqual(CalculationStatus.KNOWN_UNAVAILABLE.value, "KNOWN_UNAVAILABLE")
+        self.assertEqual(
+            CalculationStatus.NATAL_EVIDENCE_VARIABLE.value,
+            "NATAL_EVIDENCE_VARIABLE",
+        )
 
     def test_unsupported_calendar_policy_fails_before_runtime_gate(self) -> None:
         identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
@@ -39,6 +46,28 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertEqual(result.status, CalculationStatus.INPUT_UNSUPPORTED)
         self.assertEqual(result.scenario_state, ScenarioState.NONE)
         self.assertIn("unsupported_calendar_policy", result.errors)
+        self.assertIsNone(result.normalized_time)
+
+    def test_invalid_natal_state_fails_before_runtime_gate(self) -> None:
+        identity = RuntimeIdentity("CE-CALC-V1-EP-001", 4, None, None, None, None, None, None)
+        engine = CalculationEngine(identity, UnavailableSwissEphemerisAdapter())
+        request = CalculationRequest(
+            request_id="T-NATAL-INVALID-001",
+            birth=BirthInput(
+                date(2000, 1, 1),
+                "Test City",
+                "UTC",
+                None,
+                NatalBirthState.INVALID,
+            ),
+            target_interval_start_utc="2000-01-01T00:00:00Z",
+            target_interval_end_utc="2000-01-02T00:00:00Z",
+            execution_profile_id="CE-CALC-V1-EP-001",
+        )
+        result = engine.calculate(request)
+        self.assertEqual(result.status, CalculationStatus.INVALID_INPUT)
+        self.assertEqual(result.scenario_state, ScenarioState.NONE)
+        self.assertIn("invalid_natal_birth_state", result.errors)
         self.assertIsNone(result.normalized_time)
 
     def test_missing_identity_fails_closed(self) -> None:
