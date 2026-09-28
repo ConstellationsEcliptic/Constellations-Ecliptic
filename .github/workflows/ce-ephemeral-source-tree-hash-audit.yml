@@ -1,0 +1,35 @@
+name: CE ephemeral source-tree hash audit
+
+on:
+  push:
+    branches:
+      - "audit/source-tree-hash-pr5-2026-09-28"
+
+jobs:
+  source-tree-hash:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR5 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: 7c9b3d044488125f53902774eb0d53f5f51d6b5f
+          fetch-depth: 0
+
+      - name: Compute CE source-tree SHA-256
+        shell: bash
+        run: |
+          python - <<'PY'
+          import runpy
+          ns = runpy.run_path("build/build_source_tree_hash.py")
+          digest = ns["digest"]()
+          print(f"CURRENT_TARGET_SOURCE_TREE_SHA256={digest}")
+          with open("ce-source-tree-hash.txt", "w", encoding="utf-8") as f:
+              f.write(digest + "\n")
+          PY
+
+      - name: Publish hash to job summary
+        shell: bash
+        run: |
+          echo "Target commit: 7c9b3d044488125f53902774eb0d53f5f51d6b5f" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source-tree SHA-256:" >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^[0-9a-f]{64}$' ce-source-tree-hash.txt >> "$GITHUB_STEP_SUMMARY"
