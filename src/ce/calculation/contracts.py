@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
-from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
+from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, NatalBirthState, ScenarioState
 
 
 @dataclass(frozen=True)
@@ -27,6 +27,7 @@ class CalculationRequest:
     target_interval_start_utc: str
     target_interval_end_utc: str
     execution_profile_id: str
+    calendar_policy_id: str = CALENDAR_POLICY_GREGORIAN_ONLY
 
 
 @dataclass(frozen=True)
