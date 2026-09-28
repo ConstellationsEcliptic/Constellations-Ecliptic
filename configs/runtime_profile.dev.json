@@ -17,7 +17,7 @@
   "observation_time": "SEPARATE_EXPLICIT_FEATURE_INPUT",
   "source": {
     "commit": "NOT_ESTABLISHED",
-    "source_tree_sha256_v2": "NOT_ESTABLISHED"
+    "source_tree_sha256_v2": "NOT_ESTABLISHED_AFTER_HARDENING"
   },
   "ephemeris": {
     "library": "Swiss Ephemeris",
