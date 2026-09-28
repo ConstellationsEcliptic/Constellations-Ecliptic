@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, time, timedelta
 
-from ce.foundation.status import CalculationStatus, NatalBirthState, ObservationTimeState
+from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, NatalBirthState, ObservationTimeState
 
 
 @dataclass(frozen=True)
@@ -35,6 +35,7 @@ def resolve_zero_birth_interval(
     timezone_version: str | None,
     *,
     authoritative_timezone_version: str | None,
+    calendar_policy_id: str = CALENDAR_POLICY_GREGORIAN_ONLY,
 ) -> ZeroBirthIntervalResolution:
     """Represent the natal state as the full local civil day.
 
@@ -42,6 +43,20 @@ def resolve_zero_birth_interval(
     or any other representative natal instant. UTC conversion remains blocked
     until the authoritative TZif dataset is established.
     """
+    if calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
+        next_day = birth_date + timedelta(days=1)
+        return ZeroBirthIntervalResolution(
+            status=CalculationStatus.INPUT_UNSUPPORTED,
+            natal_birth_state=NatalBirthState.ZERO_BIRTH_TIME,
+            local_interval_start=f"{birth_date.isoformat()}T00:00:00",
+            local_interval_end=f"{next_day.isoformat()}T00:00:00",
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            resolved_utc_interval_start=None,
+            resolved_utc_interval_end=None,
+            error="unsupported_calendar_policy",
+        )
+
     next_day = birth_date + timedelta(days=1)
     start = f"{birth_date.isoformat()}T00:00:00"
     end = f"{next_day.isoformat()}T00:00:00"
@@ -79,11 +94,22 @@ def resolve_observation_civil_time(
     timezone_version: str | None,
     *,
     authoritative_timezone_version: str | None,
+    calendar_policy_id: str = CALENDAR_POLICY_GREGORIAN_ONLY,
 ) -> ObservationTimeResolution:
     """Resolve an explicit observation/evaluation time.
 
     Observation time is intentionally separate from natal birth time.
     """
+    if calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
+        return ObservationTimeResolution(
+            status=CalculationStatus.INPUT_UNSUPPORTED,
+            observation_time_state=ObservationTimeState.INVALID,
+            resolved_instant_utc=None,
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            error="unsupported_calendar_policy",
+        )
+
     if observation_time is None:
         return ObservationTimeResolution(
             status=CalculationStatus.INVALID_INPUT,
