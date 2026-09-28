@@ -12,7 +12,7 @@ jobs:
       - name: Checkout exact PR5 candidate
         uses: actions/checkout@v4
         with:
-          ref: 7c9b3d044488125f53902774eb0d53f5f51d6b5f
+          ref: 3db976fd7293f0d4c5d367a81fc87489a97ba900
           fetch-depth: 0
 
       - name: Compute CE source-tree SHA-256
