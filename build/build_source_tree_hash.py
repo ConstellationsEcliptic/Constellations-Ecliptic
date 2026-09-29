@@ -14,7 +14,9 @@ EXCLUDED_DIRS = {
     "evidence",
     "provenance",
 }
-EXCLUDED_NAMES = {"SOURCE_TREE_SHA256_V2.txt"}
+EXCLUDED_RELATIVE_PATHS = {
+    "manifests/SOURCE_TREE_SHA256_V2.txt",
+}
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "manifests" / "SOURCE_TREE_SHA256_V2.txt"
 
@@ -27,7 +29,7 @@ def iter_files() -> list[Path]:
             continue
         if p.is_symlink():
             raise RuntimeError(f"SYMLINK_PRESENT: {rel.as_posix()}")
-        if not p.is_file() or p.name in EXCLUDED_NAMES:
+        if not p.is_file() or rel.as_posix() in EXCLUDED_RELATIVE_PATHS:
             continue
         files.append(p)
     return sorted(files, key=lambda p: p.relative_to(ROOT).as_posix().encode())
