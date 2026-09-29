@@ -48,6 +48,8 @@ def main() -> int:
         raise SystemExit("PIP_VERSION_MISMATCH")
     if lock["build_backend"]["setuptools_version"] != "82.0.1":
         raise SystemExit("SETUPTOOLS_VERSION_MISMATCH")
+    if lock["build_policy"]["dependency_installation"] != "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS":
+        raise SystemExit("DEPENDENCY_INSTALLATION_POLICY_MISMATCH")
 
     if not DEP_LOCK.is_file():
         raise SystemExit("TRUSTED_BUILD_DEPENDENCY_LOCK_MISSING")
