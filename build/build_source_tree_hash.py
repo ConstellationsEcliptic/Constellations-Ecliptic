@@ -4,13 +4,14 @@ import argparse
 import hashlib
 from pathlib import Path
 
-EXCLUDED_DIRS = {
+EXCLUDED_DIR_NAMES = {
     ".git",
     "__pycache__",
     ".pytest_cache",
-    "dist",
     ".mypy_cache",
     ".ruff_cache",
+}
+EXCLUDED_ROOT_DIRS = {
     "evidence",
     "provenance",
 }
@@ -25,7 +26,9 @@ def iter_files() -> list[Path]:
     files = []
     for p in ROOT.rglob("*"):
         rel = p.relative_to(ROOT)
-        if any(part in EXCLUDED_DIRS for part in rel.parts):
+        if rel.parts and rel.parts[0] in EXCLUDED_ROOT_DIRS:
+            continue
+        if any(part in EXCLUDED_DIR_NAMES for part in rel.parts):
             continue
         if p.is_symlink():
             raise RuntimeError(f"SYMLINK_PRESENT: {rel.as_posix()}")
@@ -46,11 +49,11 @@ def digest() -> str:
             + str(mode).encode()
             + b" "
             + str(len(data)).encode()
-            + b"\n"
+            + b"\\n"
             + rel
-            + b"\n"
+            + b"\\n"
             + data
-            + b"\n"
+            + b"\\n"
         )
     return h.hexdigest()
 
