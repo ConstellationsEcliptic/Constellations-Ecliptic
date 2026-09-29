@@ -1,7 +1,7 @@
 {
   "schema_version": "CE-V1-TBP-3",
   "status": "CANDIDATE_NON_AUTHORIZED",
-  "source_tree_sha256": "a0a29019b6fa53f25ead235374a061f552ae69229195ae47f9f1813db5d7310c",
+  "source_tree_sha256": "62e86c9fce99e8a6cc6d12e10b3edfbc4c72579ef591e5b2dffd7ccd68cf070d",
   "build_environment": {
     "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
     "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
@@ -21,8 +21,8 @@
     "dependency_lock_sha256": "708f9230ce520ffdfa0d0b02da5a6871d439e533e814c8722f0a89e84a0c6f8e"
   },
   "build_control_records": {
-    "trusted_build_lock_sha256": "565125d02757847efd8e9e382455e376e88812c574b099f1aa376098e7dd6fd4",
-    "environment_record_sha256": "e6193d48353d1d755223197d08f136f57ac29ba1eb61024c8660df1d1323152b"
+    "trusted_build_lock_sha256": "6f9ef3a29b69a8aa81a34b2cec7d85b6cf04b915bc8c535f8eee9e6fc6799b7c",
+    "environment_record_sha256": "5321acb42c949a5b82f679a7c26dfa84f3435103ecda0bcbbd063f262fa1da75"
   },
   "build_policy": {
     "runtime_dependencies": [],
@@ -41,8 +41,8 @@
     "wheel_reproducible": true,
     "wheel_sha256": "8f5616e3835e73adcb58c50f9c6983a6ae3d011d2f2607d58cddb3339786513a",
     "source_package_reproducible": true,
-    "source_package_sha256": "b435f89724305bdd37018a6ccac22755133c0003f54170c942f60c51139a5b29",
-    "latest_external_audit_reference": "GitHub Actions audit evidence is recorded separately; this provenance file is excluded from source-tree identity and source-package content."
+    "source_package_sha256": "d7c36a3cafa75a3a52867e2476d754f33ff6623bd7a619f4a302f79794ad6abc",
+    "latest_external_audit_reference": "GitHub Actions run 36509957635; this evidence pointer is not included in source-tree or source-package identity."
   },
   "governance": {
     "source_authority_model": "SOLO_OWNER",
