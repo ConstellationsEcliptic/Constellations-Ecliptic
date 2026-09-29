@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='e8f2c6a0cddcc7d6b60b31a2cd9f4a3d4e7b7c50'
+          CANDIDATE_SHA='54d8265374c15cbafbded593ddb9b4d306e409f7'
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
@@ -175,7 +175,7 @@ jobs:
           IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
           cd "$RUNNER_TEMP/ce-source"
           printf '%s\n' '--- CE_TB_R3_RECHECK_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=e8f2c6a0cddcc7d6b60b31a2cd9f4a3d4e7b7c50\n'
+          printf 'CANDIDATE_COMMIT=54d8265374c15cbafbded593ddb9b4d306e409f7\n'
           printf 'SOURCE_TREE_SHA256='; python build/build_source_tree_hash.py
           printf 'ENVIRONMENT_IMAGE=%s\n' "$IMAGE"
           printf 'PYTHON_VERSION_IN_CONTAINER='; docker run --rm --network none "$IMAGE" python --version
