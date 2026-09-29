@@ -92,7 +92,7 @@ jobs:
                 python -m venv /tmp/ce-venv
                 /tmp/ce-venv/bin/python -m pip install --force-reinstall --no-index --require-hashes --no-cache-dir --find-links /wheels -r build/trusted-build-dependency-lock.txt
                 /tmp/ce-venv/bin/python -m pip --version
-                /tmp/ce-venv/bin/python -c "import setuptools; assert setuptools.__version__=='82.0.1'; print('SETUPTOOLS_VERSION='+setuptools.__version__)"
+                /tmp/ce-venv/bin/python -c "import setuptools; assert setuptools.__version__==\"82.0.1\"; print(\"SETUPTOOLS_VERSION=\"+setuptools.__version__)"
                 /tmp/ce-venv/bin/python -m pip wheel . --no-deps --no-build-isolation --no-index --find-links /wheels --wheel-dir /wheelout
                 /tmp/ce-venv/bin/python tools/run_tests.py
                 /tmp/ce-venv/bin/python tools/package_source.py
