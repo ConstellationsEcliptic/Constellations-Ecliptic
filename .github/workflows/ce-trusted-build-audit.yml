@@ -1,0 +1,123 @@
+name: CE V1 Trusted Build Gate Audit (ephemeral)
+
+on:
+  push:
+    branches:
+      - audit/trusted-build/2026-09-29-r1
+
+permissions:
+  contents: read
+
+jobs:
+  trusted-build-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Audit exact parent commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_SHA="$(git rev-parse HEAD^)"
+          EXPECTED_SHA="3db976fd7293f0d4c5d367a81fc87489a97ba900"
+          test "$TARGET_SHA" = "$EXPECTED_SHA"
+          git --version
+          uname -a
+          printf 'TARGET_SHA=%s\n' "$TARGET_SHA"
+
+      - name: Materialize exact target tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_SHA="$(git rev-parse HEAD^)"
+          for n in source tests build1 build2 pkg1 pkg2; do
+            mkdir -p "$RUNNER_TEMP/ce-$n"
+            git archive "$TARGET_SHA" | tar -x -C "$RUNNER_TEMP/ce-$n"
+          done
+
+      - name: Verify source-tree identity and clean inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/ce-source"
+          python3.13 build/check_build_inputs.py
+          ACTUAL="$(python3.13 build/build_source_tree_hash.py)"
+          EXPECTED="$(cut -d' ' -f1 manifests/SOURCE_TREE_SHA256_V2.txt)"
+          test "$ACTUAL" = "$EXPECTED"
+          test "$ACTUAL" = "3ff8c6fdd8e78a8466c4b556912de0a70b62624222d1ab52a990d7e648600898"
+          printf 'SOURCE_TREE_SHA256=%s\n' "$ACTUAL"
+
+      - name: Run V1 test suite under Python 3.13
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/ce-tests"
+          python3.13 tools/run_tests.py
+
+      - name: Prepare pinned build-time dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3.13 -m venv "$RUNNER_TEMP/ce-venv"
+          "$RUNNER_TEMP/ce-venv/bin/python" -m pip install --no-cache-dir --disable-pip-version-check "setuptools==82.0.1"
+          "$RUNNER_TEMP/ce-venv/bin/python" - <<'PY'
+          import sys
+          import setuptools
+          print("PYTHON_VERSION=" + sys.version.replace("\n", " "))
+          print("SETUPTOOLS_VERSION=" + setuptools.__version__)
+          assert setuptools.__version__ == "82.0.1"
+          PY
+          cd "$RUNNER_TEMP/ce-source"
+          printf 'DEPENDENCY_LOCK_SHA256='
+          sha256sum build/dependency-lock.txt | cut -d' ' -f1
+
+      - name: Build wheel #1 and #2 from pristine target tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH=0
+          PY="$RUNNER_TEMP/ce-venv/bin/python"
+          "$PY" -m pip --version
+          for n in 1 2; do
+            cd "$RUNNER_TEMP/ce-build$n"
+            "$PY" -m pip wheel . --no-deps --no-build-isolation --wheel-dir "$RUNNER_TEMP/wheel$n"
+            test "$(find "$RUNNER_TEMP/wheel$n" -maxdepth 1 -type f -name '*.whl' | wc -l)" -eq 1
+            sha256sum "$RUNNER_TEMP/wheel$n"/*.whl
+          done
+          W1="$(sha256sum "$RUNNER_TEMP/wheel1"/*.whl | cut -d' ' -f1)"
+          W2="$(sha256sum "$RUNNER_TEMP/wheel2"/*.whl | cut -d' ' -f1)"
+          test "$W1" = "$W2"
+          printf 'WHEEL_SHA256=%s\n' "$W1"
+
+      - name: Build source package #1 and #2 with fixed packaging timestamp
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in 1 2; do
+            cd "$RUNNER_TEMP/ce-pkg$n"
+            python3.13 tools/package_source.py
+            test -f "$RUNNER_TEMP/ce-pkg$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
+            sha256sum "$RUNNER_TEMP/ce-pkg$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
+          done
+          P1="$(sha256sum "$RUNNER_TEMP/ce-pkg1/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip" | cut -d' ' -f1)"
+          P2="$(sha256sum "$RUNNER_TEMP/ce-pkg2/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip" | cut -d' ' -f1)"
+          test "$P1" = "$P2"
+          printf 'SOURCE_PACKAGE_SHA256=%s\n' "$P1"
+
+      - name: Final machine-readable gate record
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/ce-source"
+          printf '%s\n' '--- CE_TRUSTED_BUILD_AUDIT_BEGIN ---'
+          printf 'TARGET_COMMIT=3db976fd7293f0d4c5d367a81fc87489a97ba900\n'
+          printf 'SOURCE_TREE_SHA256=3ff8c6fdd8e78a8466c4b556912de0a70b62624222d1ab52a990d7e648600898\n'
+          printf 'PYTHON_EXECUTABLE=%s\n' "$(command -v python3.13)"
+          printf 'PYTHON_VERSION='; python3.13 --version
+          printf 'SETUPTOOLS_VERSION=82.0.1\n'
+          printf 'DEPENDENCY_LOCK_SHA256='; sha256sum build/dependency-lock.txt | cut -d' ' -f1
+          printf 'WHEEL_REPRODUCIBLE=TRUE\n'
+          printf 'SOURCE_PACKAGE_REPRODUCIBLE=TRUE\n'
+          printf 'RUNTIME_DEPENDENCIES=NONE\n'
+          printf 'CURRENT_REPO_TRUSTED_BUILD_STATUS=NOT_ESTABLISHED\n'
+          printf 'AUDIT_SCOPE=EPHEMERAL_EXTERNAL_TO_PR5\n'
+          printf '%s\n' '--- CE_TRUSTED_BUILD_AUDIT_END ---'
