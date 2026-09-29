@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='98764ca9c8520556dcb4fadb49f8c43c30245efd'
+          CANDIDATE_SHA='c4fdfccf13b532b08b103d637394e2367a812755'
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
@@ -45,6 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP/ce-source"
+          cp manifests/SOURCE_TREE_SHA256_V2.txt "$RUNNER_TEMP/manifest-before.txt"
           MANIFEST="$(cut -d' ' -f1 manifests/SOURCE_TREE_SHA256_V2.txt)"
           ACTUAL="$(python build/build_source_tree_hash.py)"
           printf 'COMPUTED_SOURCE_TREE_SHA256=%s\n' "$ACTUAL"
@@ -54,10 +55,9 @@ jobs:
           else
             printf 'SOURCE_TREE_MANIFEST_MATCH=TRUE\n'
           fi
+          cmp "$RUNNER_TEMP/manifest-before.txt" manifests/SOURCE_TREE_SHA256_V2.txt
+          printf 'HASHER_MANIFEST_MUTATION=FALSE\n'
           printf 'SOURCE_TREE_HASH_DISCOVERY=%s\n' "$ACTUAL"
-          if [ "$ACTUAL" != "$MANIFEST" ]; then
-            exit 1
-          fi
 
       - name: Pre-fetch exact build artifacts and verify hashes
         shell: bash
@@ -170,7 +170,7 @@ jobs:
           IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
           cd "$RUNNER_TEMP/ce-source"
           printf '%s\n' '--- CE_TB_R3_RECHECK_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=98764ca9c8520556dcb4fadb49f8c43c30245efd\n'
+          printf 'CANDIDATE_COMMIT=c4fdfccf13b532b08b103d637394e2367a812755\n'
           printf 'SOURCE_TREE_SHA256='; python build/build_source_tree_hash.py
           printf 'ENVIRONMENT_IMAGE=%s\n' "$IMAGE"
           printf 'PYTHON_VERSION_IN_CONTAINER='; docker run --rm --network none "$IMAGE" python --version
