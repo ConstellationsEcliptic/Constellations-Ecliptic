@@ -1,7 +1,6 @@
 {
   "schema_version": "CE-V1-TBP-2",
   "status": "CANDIDATE_NON_AUTHORIZED",
-  "candidate_commit": "36ab3f034bcbe9c83ea92ba351152f7e0acd65fc",
   "source_tree_sha256": "87cb57c612e55573910183918014cdc5c3c38fbe78876399f1bbef6ad62d7909",
   "build_environment": {
     "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
@@ -42,5 +41,6 @@
     "authorization": "NON_AUTHORIZED",
     "fail_closed": true
   },
-  "note": "This provenance record is stored under the source-tree hash tool's excluded provenance/ directory. It is evidence, not a source-tree identity input."
+  "note": "This provenance record is stored under the source-tree hash tool's excluded provenance/ directory. It is evidence, not a source-tree identity input.",
+  "candidate_ref": "candidate/trusted-build-hardening/2026-09-29-r2"
 }
