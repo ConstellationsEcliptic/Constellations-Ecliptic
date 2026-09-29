@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='54d8265374c15cbafbded593ddb9b4d306e409f7'
+          CANDIDATE_SHA='32bc101aa136da4fc5f645a779b2e81fc0af627f'
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
@@ -52,6 +52,7 @@ jobs:
           printf 'MANIFEST_SOURCE_TREE_SHA256=%s\n' "$MANIFEST"
           if [ "$ACTUAL" != "$MANIFEST" ]; then
             printf 'SOURCE_TREE_MANIFEST_MATCH=FALSE\n'
+            exit 1
           else
             printf 'SOURCE_TREE_MANIFEST_MATCH=TRUE\n'
           fi
@@ -152,15 +153,22 @@ jobs:
           from pathlib import Path
           p=json.loads(Path("provenance/CE_V1_TRUSTED_BUILD_PROVENANCE_R3.json").read_text(encoding="utf-8"))
           assert p["status"] == "CANDIDATE_NON_AUTHORIZED"
-          assert p["source_tree_sha256"] == "538fc61e19e14022f00d91bb4e280e09c45f03c9887b4d3411f3cfc7d5074645"
+          import hashlib
+          def file_sha256(path):
+              return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+          actual_source_tree = __import__("subprocess").check_output(["python", "build/build_source_tree_hash.py"], text=True).strip()
+          assert p["source_tree_sha256"] == actual_source_tree
           assert p["build_environment"]["digest"] == "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a"
           assert p["dependency_artifacts"]["pip_26_2_1_sha256"] == "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e"
           assert p["dependency_artifacts"]["setuptools_82_0_1_sha256"] == "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb"
-          assert p["build_control_records"]["trusted_build_lock_sha256"] == "6f9ef3a29b69a8aa81a34b2cec7d85b6cf04b915bc8c535f8eee9e6fc6799b7c"
-          assert p["build_control_records"]["environment_record_sha256"] == "5321acb42c949a5b82f679a7c26dfa84f3435103ecda0bcbbd063f262fa1da75"
+          assert p["build_control_records"]["trusted_build_lock_sha256"] == file_sha256("build/trusted-build-lock.json")
+          assert p["build_control_records"]["environment_record_sha256"] == file_sha256("build/trusted-build-environment.json")
+          assert p["verification"]["source_package_sha256"] is not None
+          assert p["verification"]["wheel_sha256"] is not None
           assert p["build_policy"]["dependency_installation"] == "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS"
           assert p["build_policy"]["network_during_build"] is False
           assert p["build_policy"]["source_date_epoch"] == 0
+          assert file_sha256("build/trusted-build-dependency-lock.txt") == "708f9230ce520ffdfa0d0b02da5a6871d439e533e814c8722f0a89e84a0c6f8e"
           actual_wheel = Path(os.environ["RUNNER_TEMP"] + "/wheel-sha256.txt").read_text().strip()
           actual_pkg = Path(os.environ["RUNNER_TEMP"] + "/source-package-sha256.txt").read_text().strip()
           assert p["verification"]["wheel_sha256"] == actual_wheel
@@ -175,7 +183,7 @@ jobs:
           IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
           cd "$RUNNER_TEMP/ce-source"
           printf '%s\n' '--- CE_TB_R3_RECHECK_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=54d8265374c15cbafbded593ddb9b4d306e409f7\n'
+          printf 'CANDIDATE_COMMIT=32bc101aa136da4fc5f645a779b2e81fc0af627f\n'
           printf 'SOURCE_TREE_SHA256='; python build/build_source_tree_hash.py
           printf 'ENVIRONMENT_IMAGE=%s\n' "$IMAGE"
           printf 'PYTHON_VERSION_IN_CONTAINER='; docker run --rm --network none "$IMAGE" python --version
