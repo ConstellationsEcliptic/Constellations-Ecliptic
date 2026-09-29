@@ -1,0 +1,157 @@
+name: CE V1 Trusted Build Container R2 Audit (ephemeral)
+
+on:
+  push:
+    branches:
+      - audit/trusted-build-container-r2/2026-09-29-r1
+
+permissions:
+  contents: read
+
+jobs:
+  container-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Pull exact content-addressed build image
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
+          docker pull "$IMAGE"
+          REPO_DIGEST="$(docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}')"
+          IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
+          test "$REPO_DIGEST" = "$IMAGE"
+          docker run --rm --network none "$IMAGE" python --version
+          printf 'CONTENT_ADDRESSED_IMAGE=%s\n' "$REPO_DIGEST"
+          printf 'LOCAL_IMAGE_ID=%s\n' "$IMAGE_ID"
+
+      - name: Materialize exact candidate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANDIDATE_SHA='20b553e618093ec1eae7260dd90bf1998ff552bd'
+          git init audit-worktree
+          cd audit-worktree
+          git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          git fetch --no-tags origin "candidate/trusted-build-hardening/2026-09-29-r2"
+          git cat-file -e "$CANDIDATE_SHA^{commit}"
+          mkdir -p "$RUNNER_TEMP/ce-source"
+          git archive "$CANDIDATE_SHA" | tar -x -C "$RUNNER_TEMP/ce-source"
+          printf 'CANDIDATE_COMMIT=%s\n' "$CANDIDATE_SHA"
+
+      - name: Compute candidate source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/ce-source"
+          python - <<'PY'
+          import sys
+          print("HOST_PYTHON=" + sys.version.replace("\n", " "))
+          PY
+          ACTUAL="$(python build/build_source_tree_hash.py)"
+          MANIFEST="$(cut -d' ' -f1 manifests/SOURCE_TREE_SHA256_V2.txt)"
+          printf 'COMPUTED_SOURCE_TREE_SHA256=%s\n' "$ACTUAL"
+          printf 'MANIFEST_SOURCE_TREE_SHA256=%s\n' "$MANIFEST"
+          if [ "$ACTUAL" != "$MANIFEST" ]; then
+            printf 'SOURCE_TREE_MANIFEST_MATCH=FALSE\n'
+          else
+            printf 'SOURCE_TREE_MANIFEST_MATCH=TRUE\n'
+          fi
+
+      - name: Pre-fetch exact build artifacts outside build container
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
+          mkdir -p "$RUNNER_TEMP/wheels"
+          docker run --rm -v "$RUNNER_TEMP/ce-source:/src:ro" -v "$RUNNER_TEMP/wheels:/wheels" "$IMAGE"             sh -c 'python -m pip download --no-deps --only-binary=:all: --dest /wheels "pip==26.2.1" "setuptools==82.0.1"'
+          printf 'DOWNLOADED_BUILD_ARTIFACTS_SHA256_BEGIN\n'
+          sha256sum "$RUNNER_TEMP/wheels"/* | sort
+          printf 'DOWNLOADED_BUILD_ARTIFACTS_SHA256_END\n'
+
+      - name: Verify and build wheel twice inside immutable container
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
+          for n in 1 2; do
+            mkdir -p "$RUNNER_TEMP/build-$n" "$RUNNER_TEMP/wheel-$n"
+            cp -a "$RUNNER_TEMP/ce-source/." "$RUNNER_TEMP/build-$n/"
+            docker run --rm --network none               -v "$RUNNER_TEMP/build-$n:/work"               -v "$RUNNER_TEMP/wheels:/wheels:ro"               -v "$RUNNER_TEMP/wheel-$n:/out"               "$IMAGE" sh -c '
+                set -eu
+                cd /work
+                python build/check_build_inputs.py
+                python -m venv /tmp/ce-venv
+                /tmp/ce-venv/bin/python -m pip install --no-index --require-hashes --no-cache-dir --find-links /wheels -r build/trusted-build-dependency-lock.txt
+                /tmp/ce-venv/bin/python -m pip --version
+                /tmp/ce-venv/bin/python -c "import setuptools; print(setuptools.__version__); assert setuptools.__version__ == \"82.0.1\""
+                export SOURCE_DATE_EPOCH=0
+                /tmp/ce-venv/bin/python -m pip wheel . --no-deps --no-build-isolation --no-index --find-links /wheels --wheel-dir /out
+              '
+            test "$(find "$RUNNER_TEMP/wheel-$n" -maxdepth 1 -name '*.whl' -type f | wc -l)" -eq 1
+          done
+          W1="$(sha256sum "$RUNNER_TEMP/wheel-1"/*.whl | cut -d' ' -f1)"
+          W2="$(sha256sum "$RUNNER_TEMP/wheel-2"/*.whl | cut -d' ' -f1)"
+          test "$W1" = "$W2"
+          printf 'WHEEL_REPRODUCIBLE=TRUE\n'
+          printf 'WHEEL_SHA256=%s\n' "$W1"
+
+      - name: Run V1 test suite inside immutable container
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
+          mkdir -p "$RUNNER_TEMP/test-repo"
+          cp -a "$RUNNER_TEMP/ce-source/." "$RUNNER_TEMP/test-repo/"
+          docker run --rm --network none -v "$RUNNER_TEMP/test-repo:/work" "$IMAGE" sh -c '
+            set -eu
+            cd /work
+            python tools/run_tests.py
+          '
+
+      - name: Build source package twice inside immutable container
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
+          for n in 1 2; do
+            mkdir -p "$RUNNER_TEMP/pkg-$n"
+            cp -a "$RUNNER_TEMP/ce-source/." "$RUNNER_TEMP/pkg-$n/"
+            docker run --rm --network none               -v "$RUNNER_TEMP/pkg-$n:/work"               -v "$RUNNER_TEMP/pkg-out-$n:/out"               "$IMAGE" sh -c '
+                set -eu
+                cd /work
+                python tools/package_source.py
+                cp /CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip /out/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip
+              '
+          done
+          P1="$(sha256sum "$RUNNER_TEMP/pkg-out-1/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip" | cut -d' ' -f1)"
+          P2="$(sha256sum "$RUNNER_TEMP/pkg-out-2/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip" | cut -d' ' -f1)"
+          test "$P1" = "$P2"
+          printf 'SOURCE_PACKAGE_REPRODUCIBLE=TRUE\n'
+          printf 'SOURCE_PACKAGE_SHA256=%s\n' "$P1"
+
+      - name: Final machine-readable environment provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
+          REPO_DIGEST="$(docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}')"
+          IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
+          cd "$RUNNER_TEMP/ce-source"
+          printf '%s\n' '--- CE_TRUSTED_BUILD_CONTAINER_R2_BEGIN ---'
+          printf 'CANDIDATE_COMMIT=20b553e618093ec1eae7260dd90bf1998ff552bd\n'
+          printf 'SOURCE_TREE_SHA256_COMPUTED='; python build/build_source_tree_hash.py
+          printf 'ENVIRONMENT_IMAGE=%s\n' "$REPO_DIGEST"
+          printf 'LOCAL_IMAGE_ID=%s\n' "$IMAGE_ID"
+          printf 'PYTHON_VERSION_IN_CONTAINER='
+          docker run --rm --network none "$IMAGE" python --version
+          printf 'DEPENDENCY_LOCK_SHA256='; sha256sum build/trusted-build-dependency-lock.txt | cut -d' ' -f1
+          printf 'TRUSTED_BUILD_LOCK_SHA256='; sha256sum build/trusted-build-lock.json | cut -d' ' -f1
+          printf 'NETWORK_DURING_BUILD=FALSE\n'
+          printf 'WHEEL_REPRODUCIBLE=TRUE\n'
+          printf 'SOURCE_PACKAGE_REPRODUCIBLE=TRUE\n'
+          printf 'FORMAL_TRUSTED_BUILD=NOT_ESTABLISHED\n'
+          printf 'PRODUCTION_RUNTIME=NOT_AUTHORIZED\n'
+          printf 'FAIL_CLOSED=TRUE\n'
+          printf '%s\n' '--- CE_TRUSTED_BUILD_CONTAINER_R2_END ---'
