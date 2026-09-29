@@ -84,6 +84,12 @@ jobs:
           printf 'DEPENDENCY_LOCK_SHA256='
           sha256sum build/dependency-lock.txt | cut -d' ' -f1
 
+          mkdir -p "$RUNNER_TEMP/build-downloads"
+          python -m pip download --no-deps --only-binary=:all: --dest "$RUNNER_TEMP/build-downloads" "pip==26.2.1" "setuptools==82.0.1"
+          printf 'PINNED_BUILD_ARTIFACT_SHA256_BEGIN\n'
+          sha256sum "$RUNNER_TEMP/build-downloads"/* | sort
+          printf 'PINNED_BUILD_ARTIFACT_SHA256_END\n'
+
       - name: Build wheel #1 and #2 from pristine target tree
         shell: bash
         run: |
