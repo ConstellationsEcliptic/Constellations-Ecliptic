@@ -32,7 +32,7 @@ The GitHub-hosted runner, Docker engine, and host kernel remain external executi
 
 ## Evidence boundary
 
-The `evidence/` and `provenance/` trees are audit/governance evidence, not source implementation. Excluding them from the source package prevents evidence updates from changing the reproducible source artifact.
+The root-relative `evidence/` and `provenance/` trees are audit/governance evidence, not source implementation. Their exclusions are scoped to those exact root-relative directories; unrelated nested directories with the same names remain covered by source identity/package rules.
 
 Source-tree identity already excludes the same directories plus the source hash manifest.
 
