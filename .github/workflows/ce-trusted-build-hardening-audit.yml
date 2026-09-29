@@ -79,7 +79,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m venv "$RUNNER_TEMP/ce-venv"
-          "$RUNNER_TEMP/ce-venv/bin/python" -m pip install --no-index --no-cache-dir --require-hashes --find-links "$RUNNER_TEMP/build-downloads" "pip==26.2.1" "setuptools==82.0.1"
+          cd "$GITHUB_WORKSPACE/audit-worktree"
+          "$RUNNER_TEMP/ce-venv/bin/python" -m pip install --no-index --no-cache-dir --require-hashes --find-links "$RUNNER_TEMP/build-downloads" -r build/trusted-build-dependency-lock.txt
           "$RUNNER_TEMP/ce-venv/bin/python" -m pip --version
           "$RUNNER_TEMP/ce-venv/bin/python" - <<'PY'
           import setuptools
@@ -110,7 +111,7 @@ jobs:
           set -euo pipefail
           for n in 1 2; do
             cd "$RUNNER_TEMP/ce-pkg$n/repo"
-            python tools/build_source_tree_hash.py >/dev/null
+            python build/build_source_tree_hash.py >/dev/null
             python tools/package_source.py
             test -f "$RUNNER_TEMP/ce-pkg$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
           done
