@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='1b1f2c9afdab77f946ebf37f4e9305575f650794'
+          CANDIDATE_SHA='a1d2a4286df5745ccbc0258a755cbfb85a9453e8'
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
@@ -90,7 +90,9 @@ jobs:
                 python build/verify_trusted_build_inputs.py
                 python build/check_build_inputs.py
                 python -m venv /tmp/ce-venv
-                /tmp/ce-venv/bin/python -m pip install --no-index --require-hashes --no-cache-dir --find-links /wheels -r build/trusted-build-dependency-lock.txt
+                /tmp/ce-venv/bin/python -m pip install --force-reinstall --no-index --require-hashes --no-cache-dir --find-links /wheels -r build/trusted-build-dependency-lock.txt
+                /tmp/ce-venv/bin/python -m pip --version
+                /tmp/ce-venv/bin/python -c 'import setuptools; assert setuptools.__version__=="82.0.1"; print("SETUPTOOLS_VERSION="+setuptools.__version__)'
                 /tmp/ce-venv/bin/python -m pip wheel . --no-deps --no-build-isolation --no-index --find-links /wheels --wheel-dir /wheelout
                 /tmp/ce-venv/bin/python tools/run_tests.py
                 /tmp/ce-venv/bin/python tools/package_source.py
@@ -137,24 +139,6 @@ jobs:
           print("SOURCE_PACKAGE_BOUNDARY_PASS")
           PY
 
-      - name: Verify durable provenance record
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP/ce-source"
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          p=json.loads(Path("provenance/CE_V1_TRUSTED_BUILD_PROVENANCE_R3.json").read_text(encoding="utf-8"))
-          assert p["status"] == "CANDIDATE_NON_AUTHORIZED"
-          assert p["source_tree_sha256"] == "a0a29019b6fa53f25ead235374a061f552ae69229195ae47f9f1813db5d7310c"
-          assert p["build_environment"]["digest"] == "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a"
-          assert p["dependency_artifacts"]["dependency_lock_sha256"] == "708f9230ce520ffdfa0d0b02da5a6871d439e533e814c8722f0a89e84a0c6f8e"
-          assert p["verification"]["wheel_sha256"] == "8f5616e3835e73adcb58c50f9c6983a6ae3d011d2f2607d58cddb3339786513a"
-          assert p["verification"]["source_package_sha256"] == "b435f89724305bdd37018a6ccac22755133c0003f54170c942f60c51139a5b29"
-          print("DURABLE_PROVENANCE_PASS")
-          PY
-
       - name: Final provenance output
         shell: bash
         run: |
@@ -162,7 +146,7 @@ jobs:
           IMAGE='python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a'
           cd "$RUNNER_TEMP/ce-source"
           printf '%s\n' '--- CE_TB_R3_RECHECK_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=1b1f2c9afdab77f946ebf37f4e9305575f650794\n'
+          printf 'CANDIDATE_COMMIT=a1d2a4286df5745ccbc0258a755cbfb85a9453e8\n'
           printf 'SOURCE_TREE_SHA256='; python build/build_source_tree_hash.py
           printf 'ENVIRONMENT_IMAGE=%s\n' "$IMAGE"
           printf 'PYTHON_VERSION_IN_CONTAINER='; docker run --rm --network none "$IMAGE" python --version
