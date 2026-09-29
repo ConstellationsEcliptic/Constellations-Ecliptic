@@ -1,7 +1,7 @@
 {
   "schema_version": "CE-V1-TBP-3",
   "status": "CANDIDATE_NON_AUTHORIZED",
-  "source_tree_sha256": "538fc61e19e14022f00d91bb4e280e09c45f03c9887b4d3411f3cfc7d5074645",
+  "source_tree_sha256": "1d626487c0f30f390243cfbae42d441fd8626e54e5d46a9d06de8f4902ddf903",
   "build_environment": {
     "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
     "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
@@ -42,7 +42,7 @@
     "wheel_reproducible": true,
     "wheel_sha256": "8f5616e3835e73adcb58c50f9c6983a6ae3d011d2f2607d58cddb3339786513a",
     "source_package_reproducible": true,
-    "source_package_sha256": "46f02817cb4bc8e38b635ffd2092e90ba2b99852aa624ee84c0d737f699a0a1b",
+    "source_package_sha256": "d34fc88dfa8a49d9a8a18840527d6ce295a5ff48319d103a9d0451d9af2014ec",
     "note": "Audit execution is external evidence and is referenced by the human-gate attestation/report, not embedded in the durable candidate provenance, preventing stale or circular run identifiers."
   },
   "governance": {
