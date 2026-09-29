@@ -6,10 +6,12 @@
     "version": "3.13.15",
     "architecture": "x86_64"
   },
-  "runner": {
-    "platform": "ubuntu-24.04",
-    "observed_os_version": "24.04.5",
-    "observed_runner_image_version": "20260920.314.1"
+  "environment": {
+    "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
+    "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "platform": "linux/amd64",
+    "digest": "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "host_substrate": "GitHub-hosted ubuntu-24.04 runner; external to immutable container identity"
   },
   "workflow_action": {
     "name": "actions/setup-python",
@@ -27,12 +29,8 @@
   "build_policy": {
     "source_date_epoch": 0,
     "network_during_build": false,
-    "runtime_dependencies": []
-  },
-  "environment_identity": {
-    "classification": "VERSIONED_HOSTED_RUNNER",
-    "immutable_digest": null,
-    "note": "The observed GitHub-hosted runner image is versioned but not content-addressed in this candidate."
+    "runtime_dependencies": [],
+    "bytecode_generation": false
   },
   "authorization": {
     "trusted_build": "NOT_ESTABLISHED",
