@@ -20,9 +20,9 @@ jobs:
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
-          git fetch --no-tags --depth=2 origin "$GITHUB_SHA" "$GITHUB_EVENT_BEFORE"
+          git fetch --no-tags --depth=2 origin "$GITHUB_SHA"
           git checkout --detach "$GITHUB_SHA"
-          TARGET_SHA="$GITHUB_EVENT_BEFORE"
+          TARGET_SHA="$(git rev-parse "$GITHUB_SHA^")"
           EXPECTED_SHA="3db976fd7293f0d4c5d367a81fc87489a97ba900"
           test "$TARGET_SHA" = "$EXPECTED_SHA"
           git --version
