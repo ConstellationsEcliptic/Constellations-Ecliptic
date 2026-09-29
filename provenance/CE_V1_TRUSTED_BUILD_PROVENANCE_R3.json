@@ -42,7 +42,7 @@
     "wheel_reproducible": true,
     "wheel_sha256": "8f5616e3835e73adcb58c50f9c6983a6ae3d011d2f2607d58cddb3339786513a",
     "source_package_reproducible": true,
-    "source_package_sha256": "d7c36a3cafa75a3a52867e2476d754f33ff6623bd7a619f4a302f79794ad6abc",
+    "source_package_sha256": "d123c73a733949328fbae70c3b78d7e6d08da9a37349477722db5184ccf158ed",
     "note": "Audit execution is external evidence and is referenced by the human-gate attestation/report, not embedded in the durable candidate provenance, preventing stale or circular run identifiers."
   },
   "governance": {
