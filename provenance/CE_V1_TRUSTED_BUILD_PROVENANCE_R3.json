@@ -42,7 +42,7 @@
     "wheel_sha256": "8f5616e3835e73adcb58c50f9c6983a6ae3d011d2f2607d58cddb3339786513a",
     "source_package_reproducible": true,
     "source_package_sha256": "d7c36a3cafa75a3a52867e2476d754f33ff6623bd7a619f4a302f79794ad6abc",
-    "latest_external_audit_reference": "GitHub Actions run 36510047924; this evidence pointer is not included in source-tree or source-package identity."
+    "note": "Audit execution is external evidence and is referenced by the human-gate attestation/report, not embedded in the durable candidate provenance, preventing stale or circular run identifiers."
   },
   "governance": {
     "source_authority_model": "SOLO_OWNER",
