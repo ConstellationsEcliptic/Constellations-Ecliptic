@@ -21,7 +21,7 @@ jobs:
           docker pull "$IMAGE"
           REPO_DIGEST="$(docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}')"
           IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
-          test "$REPO_DIGEST" = "$IMAGE"
+          test "$REPO_DIGEST" = "docker.io/library/python@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a"
           docker run --rm --network none "$IMAGE" python --version
           printf 'CONTENT_ADDRESSED_IMAGE=%s\n' "$REPO_DIGEST"
           printf 'LOCAL_IMAGE_ID=%s\n' "$IMAGE_ID"
