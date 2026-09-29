@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='20b553e618093ec1eae7260dd90bf1998ff552bd'
+          CANDIDATE_SHA='36ab3f034bcbe9c83ea92ba351152f7e0acd65fc'
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
@@ -49,8 +49,8 @@ jobs:
           import sys
           print("HOST_PYTHON=" + sys.version.replace("\n", " "))
           PY
-          ACTUAL="$(python build/build_source_tree_hash.py)"
           MANIFEST="$(cut -d' ' -f1 manifests/SOURCE_TREE_SHA256_V2.txt)"
+          ACTUAL="$(python build/build_source_tree_hash.py)"
           printf 'COMPUTED_SOURCE_TREE_SHA256=%s\n' "$ACTUAL"
           printf 'MANIFEST_SOURCE_TREE_SHA256=%s\n' "$MANIFEST"
           if [ "$ACTUAL" != "$MANIFEST" ]; then
@@ -140,7 +140,7 @@ jobs:
           IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
           cd "$RUNNER_TEMP/ce-source"
           printf '%s\n' '--- CE_TRUSTED_BUILD_CONTAINER_R2_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=20b553e618093ec1eae7260dd90bf1998ff552bd\n'
+          printf 'CANDIDATE_COMMIT=36ab3f034bcbe9c83ea92ba351152f7e0acd65fc\n'
           printf 'SOURCE_TREE_SHA256_COMPUTED='; python build/build_source_tree_hash.py
           printf 'ENVIRONMENT_IMAGE=%s\n' "$REPO_DIGEST"
           printf 'LOCAL_IMAGE_ID=%s\n' "$IMAGE_ID"
