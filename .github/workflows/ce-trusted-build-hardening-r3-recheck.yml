@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - audit/trusted-build-hardening-r3/2026-09-29-r1
+  pull_request:
+    branches:
+      - audit/trusted-build-hardening-r3/2026-09-29-r1
 
 permissions:
   contents: read
@@ -174,7 +177,9 @@ jobs:
           assert p["verification"]["wheel_sha256"] is not None
           assert p["build_policy"]["runtime_dependencies"] == env["build_policy"]["runtime_dependencies"] == lock["build_policy"]["runtime_dependencies"] == []
           assert p["build_policy"]["dependency_installation"] == env["build_policy"]["dependency_installation"] == lock["build_policy"]["dependency_installation"] == "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS"
-          assert p["build_policy"]["network_during_build"] is False == env["build_policy"]["network_during_build"] == lock["build_policy"]["network_during_build"]
+          assert p["build_policy"]["network_during_build"] is False
+          assert env["build_policy"]["network_during_build"] is False
+          assert lock["build_policy"]["network_during_build"] is False
           assert p["build_policy"]["source_date_epoch"] == 0
           assert p["build_policy"]["runtime_dependencies"] == env["build_policy"]["runtime_dependencies"] == []
           assert p["build_policy"]["source_package_excludes"] == env["build_policy"]["source_package_excludes"] == ["evidence/", "provenance/"]
