@@ -35,12 +35,10 @@ def main() -> int:
     lock_env = lock["environment"]
     env_identity = env["environment_identity"]
 
-    for obj in (lock_env, env_identity):
-        if obj["kind"] != "CONTENT_ADDRESSED_CONTAINER_IMAGE":
-            raise SystemExit("ENVIRONMENT_KIND_MISMATCH")
-        if obj["digest"] != EXPECTED_IMAGE_DIGEST and obj.get("base_image_digest") != EXPECTED_IMAGE_DIGEST:
-            raise SystemExit("ENVIRONMENT_DIGEST_MISMATCH")
-
+    if lock_env["kind"] != "CONTENT_ADDRESSED_CONTAINER_IMAGE":
+        raise SystemExit("LOCK_ENVIRONMENT_KIND_MISMATCH")
+    if env_identity["kind"] != "CONTENT_ADDRESSED_CONTAINER_IMAGE":
+        raise SystemExit("ENVIRONMENT_KIND_MISMATCH")
     if lock_env["digest"] != EXPECTED_IMAGE_DIGEST:
         raise SystemExit("LOCK_ENVIRONMENT_DIGEST_MISMATCH")
     if env_identity["base_image_digest"] != EXPECTED_IMAGE_DIGEST:
