@@ -23,6 +23,7 @@
   "build_policy": {
     "runtime_dependencies": [],
     "dependency_acquisition": "PREFETCH_OUTSIDE_BUILD_NETWORK",
+    "dependency_installation": "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS",
     "network_during_build": false,
     "source_date_epoch": 0,
     "bytecode_generation": false,
