@@ -20,9 +20,27 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+EXPECTED_DEPENDENCY_LOCK_SHA256 = "708f9230ce520ffdfa0d0b02da5a6871d439e533e814c8722f0a89e84a0c6f8e"
+EXPECTED_TRUSTED_BUILD_LOCK_SHA256 = "6f9ef3a29b69a8aa81a34b2cec7d85b6cf04b915bc8c535f8eee9e6fc6799b7c"
+EXPECTED_ENVIRONMENT_RECORD_SHA256 = "5321acb42c949a5b82f679a7c26dfa84f3435103ecda0bcbbd063f262fa1da75"
+
+EXPECTED_TRUSTED_BUILD_DEPENDENCY_LOCK = """# CE V1 Trusted Build candidate dependency lock
+# Install only from pre-fetched artifacts using --no-index --require-hashes.
+pip==26.2.1 \\
+    --hash=sha256:71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e
+setuptools==82.0.1 \\
+    --hash=sha256:a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb
+"""
+
 def main() -> int:
     lock = json.loads(LOCK.read_text(encoding="utf-8"))
     env = json.loads(ENV.read_text(encoding="utf-8"))
+    if sha256(LOCK) != EXPECTED_TRUSTED_BUILD_LOCK_SHA256:
+        raise SystemExit("TRUSTED_BUILD_LOCK_SHA256_MISMATCH")
+    if sha256(ENV) != EXPECTED_ENVIRONMENT_RECORD_SHA256:
+        raise SystemExit("ENVIRONMENT_RECORD_SHA256_MISMATCH")
+    if sha256(DEP_LOCK) != EXPECTED_DEPENDENCY_LOCK_SHA256:
+        raise SystemExit("DEPENDENCY_LOCK_SHA256_MISMATCH")
 
     actual_py = ".".join(map(str, sys.version_info[:3]))
     if actual_py != EXPECTED_PYTHON or lock["python"]["version"] != actual_py:
@@ -88,6 +106,8 @@ def main() -> int:
         raise SystemExit("ENVIRONMENT_AUTHORIZATION_MISMATCH")
 
     dep_text = DEP_LOCK.read_text(encoding="utf-8")
+    if dep_text != EXPECTED_TRUSTED_BUILD_DEPENDENCY_LOCK:
+        raise SystemExit("TRUSTED_BUILD_DEPENDENCY_LOCK_CONTENT_MISMATCH")
     if "pip==26.2.1" not in dep_text or "sha256:71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e" not in dep_text:
         raise SystemExit("DEPENDENCY_LOCK_PIP_ENTRY_MISMATCH")
     if "setuptools==82.0.1" not in dep_text or "sha256:a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb" not in dep_text:
