@@ -27,7 +27,7 @@ jobs:
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
-          CANDIDATE_SHA="8e3ffd424dfe5d291e5183fa57ac65a293117a62"
+          CANDIDATE_SHA="48e1a31895cb27e6aebeda7feda1639c65b27426"
           git fetch --no-tags origin "candidate/trusted-build-hardening/2026-09-29-r1"
           git cat-file -e "$CANDIDATE_SHA^{commit}"
           git archive "$CANDIDATE_SHA" | tar -x
@@ -127,7 +127,7 @@ jobs:
           set -euo pipefail
           cd "$GITHUB_WORKSPACE/audit-worktree"
           printf '%s\n' '--- CE_TRUSTED_BUILD_HARDENING_AUDIT_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=8e3ffd424dfe5d291e5183fa57ac65a293117a62\n'
+          printf 'CANDIDATE_COMMIT=48e1a31895cb27e6aebeda7feda1639c65b27426\n'
           printf 'SOURCE_TREE_SHA256='; cut -d' ' -f1 manifests/SOURCE_TREE_SHA256_V2.txt
           printf 'PYTHON_VERSION='; python --version
           printf 'PIP_VERSION='; "$RUNNER_TEMP/ce-venv/bin/python" -m pip --version
