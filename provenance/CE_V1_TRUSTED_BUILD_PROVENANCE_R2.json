@@ -1,0 +1,46 @@
+{
+  "schema_version": "CE-V1-TBP-2",
+  "status": "CANDIDATE_NON_AUTHORIZED",
+  "candidate_commit": "36ab3f034bcbe9c83ea92ba351152f7e0acd65fc",
+  "source_tree_sha256": "87cb57c612e55573910183918014cdc5c3c38fbe78876399f1bbef6ad62d7909",
+  "build_environment": {
+    "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
+    "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "platform": "linux/amd64",
+    "digest": "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "local_image_id_observed": "sha256:915835de46a63f9598442159437904042f1c69a9b41c4965fba1db9ceab66578"
+  },
+  "toolchain": {
+    "python": "3.13.15",
+    "pip": "26.2.1",
+    "setuptools": "82.0.1"
+  },
+  "dependency_artifacts": {
+    "pip_26_2_1_sha256": "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e",
+    "setuptools_82_0_1_sha256": "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb"
+  },
+  "build_policy": {
+    "runtime_dependencies": [],
+    "network_during_build": false,
+    "source_date_epoch": 0,
+    "bytecode_generation": false
+  },
+  "verification": {
+    "test_suite_count": 27,
+    "test_suite_result": "PASS",
+    "wheel_reproducible": true,
+    "wheel_sha256": "8f5616e3835e73adcb58c50f9c6983a6ae3d011d2f2607d58cddb3339786513a",
+    "source_package_reproducible": true,
+    "source_package_sha256": "b7609a49548e94be63058df86294c59f6dcb2d817616e810b04d6c9f795970a9",
+    "audit_workflow_run": 36508030064
+  },
+  "governance": {
+    "source_authority_model": "SOLO_OWNER",
+    "trusted_build": "NOT_ESTABLISHED",
+    "production_runtime": "NOT_AUTHORIZED",
+    "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
+    "fail_closed": true
+  },
+  "note": "This provenance record is stored under the source-tree hash tool's excluded provenance/ directory. It is evidence, not a source-tree identity input."
+}
