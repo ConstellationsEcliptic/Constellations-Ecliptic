@@ -44,15 +44,15 @@ jobs:
           cd "$GITHUB_WORKSPACE/audit-worktree"
           TARGET_SHA="3db976fd7293f0d4c5d367a81fc87489a97ba900"
           for n in source tests build1 build2 pkg1 pkg2; do
-            mkdir -p "$RUNNER_TEMP/ce-$n"
-            git archive "$TARGET_SHA" | tar -x -C "$RUNNER_TEMP/ce-$n"
+            mkdir -p "$RUNNER_TEMP/ce-$n/repo"
+            git archive "$TARGET_SHA" | tar -x -C "$RUNNER_TEMP/ce-$n/repo"
           done
 
       - name: Verify source-tree identity and clean inputs
         shell: bash
         run: |
           set -euo pipefail
-          cd "$RUNNER_TEMP/ce-source"
+          cd "$RUNNER_TEMP/ce-source/repo"
           python build/check_build_inputs.py
           ACTUAL="$(python build/build_source_tree_hash.py)"
           EXPECTED="$(cut -d' ' -f1 manifests/SOURCE_TREE_SHA256_V2.txt)"
@@ -64,7 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cd "$RUNNER_TEMP/ce-tests"
+          cd "$RUNNER_TEMP/ce-tests/repo"
           python tools/run_tests.py
 
       - name: Prepare pinned build-time dependency
@@ -80,7 +80,7 @@ jobs:
           print("SETUPTOOLS_VERSION=" + setuptools.__version__)
           assert setuptools.__version__ == "82.0.1"
           PY
-          cd "$RUNNER_TEMP/ce-source"
+          cd "$RUNNER_TEMP/ce-source/repo"
           printf 'DEPENDENCY_LOCK_SHA256='
           sha256sum build/dependency-lock.txt | cut -d' ' -f1
 
@@ -92,7 +92,7 @@ jobs:
           PY="$RUNNER_TEMP/ce-venv/bin/python"
           "$PY" -m pip --version
           for n in 1 2; do
-            cd "$RUNNER_TEMP/ce-build$n"
+            cd "$RUNNER_TEMP/ce-build$n/repo"
             "$PY" -m pip wheel . --no-deps --no-build-isolation --wheel-dir "$RUNNER_TEMP/wheel$n"
             test "$(find "$RUNNER_TEMP/wheel$n" -maxdepth 1 -type f -name '*.whl' | wc -l)" -eq 1
             sha256sum "$RUNNER_TEMP/wheel$n"/*.whl
@@ -107,7 +107,7 @@ jobs:
         run: |
           set -euo pipefail
           for n in 1 2; do
-            cd "$RUNNER_TEMP/ce-pkg$n"
+            cd "$RUNNER_TEMP/ce-pkg$n/repo"
             python tools/package_source.py
             test -f "$RUNNER_TEMP/ce-pkg$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
             sha256sum "$RUNNER_TEMP/ce-pkg$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
@@ -121,7 +121,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cd "$RUNNER_TEMP/ce-source"
+          cd "$RUNNER_TEMP/ce-source/repo"
           printf '%s\n' '--- CE_TRUSTED_BUILD_AUDIT_BEGIN ---'
           printf 'TARGET_COMMIT=3db976fd7293f0d4c5d367a81fc87489a97ba900\n'
           printf 'SOURCE_TREE_SHA256=3ff8c6fdd8e78a8466c4b556912de0a70b62624222d1ab52a990d7e648600898\n'
