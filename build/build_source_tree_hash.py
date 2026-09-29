@@ -49,11 +49,11 @@ def digest() -> str:
             + str(mode).encode()
             + b" "
             + str(len(data)).encode()
-            + b"\\n"
+            + b"\n"
             + rel
-            + b"\\n"
+            + b"\n"
             + data
-            + b"\\n"
+            + b"\n"
         )
     return h.hexdigest()
 
