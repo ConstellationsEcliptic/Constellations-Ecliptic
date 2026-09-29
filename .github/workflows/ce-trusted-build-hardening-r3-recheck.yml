@@ -33,7 +33,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='87ffce1a554418c7bb47bc5530c4548204f03984'
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CANDIDATE_SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            CANDIDATE_SHA="$(git ls-remote "https://github.com/$GITHUB_REPOSITORY.git" "refs/heads/candidate/trusted-build-hardening/2026-09-29-r3" | cut -f1)"
+          fi
+          test -n "$CANDIDATE_SHA"
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
