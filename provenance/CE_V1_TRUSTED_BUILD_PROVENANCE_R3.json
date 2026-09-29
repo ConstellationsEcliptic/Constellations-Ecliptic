@@ -1,7 +1,7 @@
 {
   "schema_version": "CE-V1-TBP-3",
   "status": "CANDIDATE_NON_AUTHORIZED",
-  "source_tree_sha256": "288784cbfde3ba2a558b23a98efbb213806c8d9a70c9a0d8a0768d225297eae5",
+  "source_tree_sha256": "538fc61e19e14022f00d91bb4e280e09c45f03c9887b4d3411f3cfc7d5074645",
   "build_environment": {
     "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
     "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
