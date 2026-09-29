@@ -1,5 +1,5 @@
 {
-  "schema_version": "CE-V1-TBL-1",
+  "schema_version": "CE-V1-TBL-2",
   "status": "CANDIDATE_NON_AUTHORIZED",
   "python": {
     "distribution": "CPython",
@@ -11,12 +11,7 @@
     "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
     "platform": "linux/amd64",
     "digest": "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
-    "host_substrate": "GitHub-hosted ubuntu-24.04 runner; external to immutable container identity"
-  },
-  "workflow_action": {
-    "name": "actions/setup-python",
-    "major": "v7",
-    "commit": "5fda3b95a4ea91299a34e894583c3862153e4b97"
+    "host_substrate": "GitHub-hosted ubuntu-24.04 runner; external execution substrate only"
   },
   "build_frontend": {
     "pip_version": "26.2.1",
@@ -30,12 +25,16 @@
     "source_date_epoch": 0,
     "network_during_build": false,
     "runtime_dependencies": [],
-    "bytecode_generation": false
+    "source_package_excludes": [
+      "evidence/",
+      "provenance/"
+    ]
   },
   "authorization": {
     "trusted_build": "NOT_ESTABLISHED",
     "production_runtime": "NOT_AUTHORIZED",
     "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
     "fail_closed": true
   }
 }
