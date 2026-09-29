@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='6dd3866ff65626942a71337c2d921c8a9afd2960'
+          CANDIDATE_SHA='c22c0bdb663c899302fcbbddef7e1f5540ff0c7a'
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
@@ -155,7 +155,7 @@ jobs:
           IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
           cd "$RUNNER_TEMP/ce-source"
           printf '%s\n' '--- CE_TRUSTED_BUILD_CONTAINER_R2_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=6dd3866ff65626942a71337c2d921c8a9afd2960\n'
+          printf 'CANDIDATE_COMMIT=c22c0bdb663c899302fcbbddef7e1f5540ff0c7a\n'
           printf 'SOURCE_TREE_SHA256_COMPUTED='; python build/build_source_tree_hash.py
           printf 'ENVIRONMENT_IMAGE=%s\n' "$REPO_DIGEST"
           printf 'LOCAL_IMAGE_ID=%s\n' "$IMAGE_ID"
