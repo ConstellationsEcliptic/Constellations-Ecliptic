@@ -33,7 +33,8 @@
     "source_package_excludes": [
       "evidence/",
       "provenance/"
-    ]
+    ],
+    "dependency_installation": "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS"
   },
   "verification": {
     "test_suite_count": 27,
