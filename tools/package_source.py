@@ -6,7 +6,11 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT.parent / "CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
 EXCLUDED_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "dist", "evidence", "provenance"}
-EXCLUDED_NAMES = {OUT.name, "SHA256SUMS.txt", "PACKAGE_ARTIFACT_MANIFEST.txt"}
+EXCLUDED_RELATIVE_PATHS = {
+    "SHA256SUMS.txt",
+    "PACKAGE_ARTIFACT_MANIFEST.txt",
+}
+
 
 def files() -> list[Path]:
     out=[]
@@ -16,9 +20,10 @@ def files() -> list[Path]:
             continue
         if p.is_symlink():
             raise RuntimeError(f"SYMLINK_PRESENT:{rel.as_posix()}")
-        if p.is_file() and p.name not in EXCLUDED_NAMES:
+        if p.is_file() and rel.as_posix() not in EXCLUDED_RELATIVE_PATHS:
             out.append(p)
     return sorted(out, key=lambda x: x.relative_to(ROOT).as_posix().encode())
+
 
 def add(z: ZipFile, p: Path) -> None:
     rel=p.relative_to(ROOT).as_posix()
@@ -30,6 +35,7 @@ def add(z: ZipFile, p: Path) -> None:
     zi.external_attr = ((0o100000 | mode) << 16)
     zi.flag_bits=0x800
     z.writestr(zi, data)
+
 
 if __name__ == "__main__":
     with ZipFile(OUT, "w", compression=ZIP_DEFLATED, compresslevel=9, allowZip64=True) as z:
