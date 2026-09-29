@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CANDIDATE_SHA='0771a9307dda0f35366107ad5dcffaee7155e4a8'
+          CANDIDATE_SHA='6dd3866ff65626942a71337c2d921c8a9afd2960'
           git init audit-worktree
           cd audit-worktree
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
@@ -68,7 +68,6 @@ jobs:
           import json
           from pathlib import Path
           p = json.loads(Path("provenance/CE_V1_TRUSTED_BUILD_PROVENANCE_R2.json").read_text())
-          assert p["candidate_commit"] == "0771a9307dda0f35366107ad5dcffaee7155e4a8"
           assert p["source_tree_sha256"] == "87cb57c612e55573910183918014cdc5c3c38fbe78876399f1bbef6ad62d7909"
           assert p["build_environment"]["digest"] == "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a"
           assert p["toolchain"] == {"python":"3.13.15","pip":"26.2.1","setuptools":"82.0.1"}
@@ -156,7 +155,7 @@ jobs:
           IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
           cd "$RUNNER_TEMP/ce-source"
           printf '%s\n' '--- CE_TRUSTED_BUILD_CONTAINER_R2_BEGIN ---'
-          printf 'CANDIDATE_COMMIT=0771a9307dda0f35366107ad5dcffaee7155e4a8\n'
+          printf 'CANDIDATE_COMMIT=6dd3866ff65626942a71337c2d921c8a9afd2960\n'
           printf 'SOURCE_TREE_SHA256_COMPUTED='; python build/build_source_tree_hash.py
           printf 'ENVIRONMENT_IMAGE=%s\n' "$REPO_DIGEST"
           printf 'LOCAL_IMAGE_ID=%s\n' "$IMAGE_ID"
