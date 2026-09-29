@@ -5,7 +5,8 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT.parent / "CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
-EXCLUDED_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "dist", "evidence", "provenance"}
+EXCLUDED_DIR_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
+EXCLUDED_ROOT_DIRS = {"evidence", "provenance", "dist"}
 EXCLUDED_RELATIVE_PATHS = {
     "SHA256SUMS.txt",
     "PACKAGE_ARTIFACT_MANIFEST.txt",
@@ -16,7 +17,9 @@ def files() -> list[Path]:
     out=[]
     for p in ROOT.rglob("*"):
         rel=p.relative_to(ROOT)
-        if any(x in EXCLUDED_DIRS for x in rel.parts):
+        if rel.parts and rel.parts[0] in EXCLUDED_ROOT_DIRS:
+            continue
+        if any(x in EXCLUDED_DIR_NAMES for x in rel.parts):
             continue
         if p.is_symlink():
             raise RuntimeError(f"SYMLINK_PRESENT:{rel.as_posix()}")
