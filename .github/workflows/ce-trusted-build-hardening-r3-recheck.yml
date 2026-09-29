@@ -95,8 +95,16 @@ jobs:
                 /tmp/ce-venv/bin/python tools/package_source.py
                 cp /CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip /pkgout/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip
               '
-            test "$(find "$RUNNER_TEMP/wheel-$n" -maxdepth 1 -name '*.whl' -type f | wc -l)" -eq 1
-            test -f "$RUNNER_TEMP/pkgout-$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
+            echo "WHEEL_FILES_$n:"
+            find "$RUNNER_TEMP/wheel-$n" -maxdepth 1 -type f -printf '%f\n' | sort
+            echo "PACKAGE_FILES_$n:"
+            find "$RUNNER_TEMP/pkgout-$n" -maxdepth 1 -type f -printf '%f\n' | sort
+            WHEEL_COUNT="$(find "$RUNNER_TEMP/wheel-$n" -maxdepth 1 -name '*.whl' -type f | wc -l)"
+            PACKAGE_COUNT="$(find "$RUNNER_TEMP/pkgout-$n" -maxdepth 1 -name 'CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip' -type f | wc -l)"
+            echo "WHEEL_COUNT_$n=$WHEEL_COUNT"
+            echo "PACKAGE_COUNT_$n=$PACKAGE_COUNT"
+            test "$WHEEL_COUNT" -eq 1
+            test "$PACKAGE_COUNT" -eq 1
           done
 
           W1="$(sha256sum "$RUNNER_TEMP/wheel-1"/*.whl | cut -d' ' -f1)"
