@@ -43,6 +43,55 @@ def main() -> int:
         raise SystemExit("LOCK_ENVIRONMENT_DIGEST_MISMATCH")
     if env_identity["base_image_digest"] != EXPECTED_IMAGE_DIGEST:
         raise SystemExit("ENVIRONMENT_BASE_DIGEST_MISMATCH")
+    if env_identity["image_ref"].rsplit("@", 1)[-1] != EXPECTED_IMAGE_DIGEST:
+        raise SystemExit("ENVIRONMENT_IMAGE_REF_DIGEST_MISMATCH")
+    if lock_env["image_ref"].rsplit("@", 1)[-1] != EXPECTED_IMAGE_DIGEST:
+        raise SystemExit("LOCK_IMAGE_REF_DIGEST_MISMATCH")
+    if env["toolchain"] != {
+        "python": EXPECTED_PYTHON,
+        "architecture": EXPECTED_ARCH,
+        "pip": "26.2.1",
+        "setuptools": "82.0.1",
+    }:
+        raise SystemExit("ENVIRONMENT_TOOLCHAIN_MISMATCH")
+    if lock["build_frontend"]["pip_wheel_sha256"] != "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e":
+        raise SystemExit("LOCK_PIP_HASH_MISMATCH")
+    if lock["build_backend"]["setuptools_wheel_sha256"] != "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb":
+        raise SystemExit("LOCK_SETUPTOOLS_HASH_MISMATCH")
+    if env["dependency_artifacts"] != {
+        "pip_26_2_1_sha256": "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e",
+        "setuptools_82_0_1_sha256": "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb",
+    }:
+        raise SystemExit("ENVIRONMENT_DEPENDENCY_HASH_MISMATCH")
+    policy_expected = {
+        "runtime_dependencies": [],
+        "dependency_acquisition": "PREFETCH_OUTSIDE_BUILD_NETWORK",
+        "dependency_installation": "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS",
+        "network_during_build": False,
+        "source_date_epoch": 0,
+        "bytecode_generation": False,
+        "source_package_excludes": ["evidence/", "provenance/"],
+    }
+    if lock["build_policy"] != {"source_date_epoch": 0, "dependency_installation": "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS", "network_during_build": False, "runtime_dependencies": [], "source_package_excludes": ["evidence/", "provenance/"]}:
+        raise SystemExit("LOCK_BUILD_POLICY_MISMATCH")
+    if env["build_policy"] != policy_expected:
+        raise SystemExit("ENVIRONMENT_BUILD_POLICY_MISMATCH")
+    if lock["authorization"] != {
+        "trusted_build": "NOT_ESTABLISHED",
+        "production_runtime": "NOT_AUTHORIZED",
+        "seal": "NO",
+        "authorization": "NON_AUTHORIZED",
+        "fail_closed": True,
+    }:
+        raise SystemExit("LOCK_AUTHORIZATION_MISMATCH")
+    if env["authorization"] != lock["authorization"]:
+        raise SystemExit("ENVIRONMENT_AUTHORIZATION_MISMATCH")
+
+    dep_text = DEP_LOCK.read_text(encoding="utf-8")
+    if "pip==26.2.1" not in dep_text or "sha256:71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e" not in dep_text:
+        raise SystemExit("DEPENDENCY_LOCK_PIP_ENTRY_MISMATCH")
+    if "setuptools==82.0.1" not in dep_text or "sha256:a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb" not in dep_text:
+        raise SystemExit("DEPENDENCY_LOCK_SETUPTOOLS_ENTRY_MISMATCH")
 
     if lock["build_frontend"]["pip_version"] != "26.2.1":
         raise SystemExit("PIP_VERSION_MISMATCH")
