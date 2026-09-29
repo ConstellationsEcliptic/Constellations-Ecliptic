@@ -17,11 +17,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TARGET_SHA="$(git rev-parse HEAD^)"
+          git init audit-worktree
+          cd audit-worktree
+          git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          git fetch --no-tags --depth=2 origin "$GITHUB_SHA" "$GITHUB_EVENT_BEFORE"
+          git checkout --detach "$GITHUB_SHA"
+          TARGET_SHA="$GITHUB_EVENT_BEFORE"
           EXPECTED_SHA="3db976fd7293f0d4c5d367a81fc87489a97ba900"
           test "$TARGET_SHA" = "$EXPECTED_SHA"
           git --version
           uname -a
+          printf 'AUDIT_COMMIT=%s\n' "$GITHUB_SHA"
           printf 'TARGET_SHA=%s\n' "$TARGET_SHA"
 
       - name: Materialize exact target tree
