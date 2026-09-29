@@ -86,6 +86,7 @@ jobs:
             docker run --rm --network none               -v "$RUNNER_TEMP/work-$n:/work"               -v "$RUNNER_TEMP/wheels:/wheels:ro"               -v "$RUNNER_TEMP/wheel-$n:/wheelout"               -v "$RUNNER_TEMP/pkgout-$n:/pkgout"               "$IMAGE" sh -eu -c '
                 cd /work
                 export PYTHONDONTWRITEBYTECODE=1
+                export SOURCE_DATE_EPOCH=0
                 python build/verify_trusted_build_inputs.py
                 python build/check_build_inputs.py
                 python -m venv /tmp/ce-venv
