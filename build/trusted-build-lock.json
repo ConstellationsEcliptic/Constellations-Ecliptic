@@ -23,6 +23,7 @@
   },
   "build_policy": {
     "source_date_epoch": 0,
+    "dependency_installation": "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS",
     "network_during_build": false,
     "runtime_dependencies": [],
     "source_package_excludes": [
