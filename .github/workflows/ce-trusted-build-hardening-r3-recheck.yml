@@ -152,16 +152,18 @@ jobs:
           import os
           from pathlib import Path
           p=json.loads(Path("provenance/CE_V1_TRUSTED_BUILD_PROVENANCE_R3.json").read_text(encoding="utf-8"))
+          env=json.loads(Path("build/trusted-build-environment.json").read_text(encoding="utf-8"))
+          lock=json.loads(Path("build/trusted-build-lock.json").read_text(encoding="utf-8"))
           assert p["status"] == "CANDIDATE_NON_AUTHORIZED"
           import hashlib
           def file_sha256(path):
               return hashlib.sha256(Path(path).read_bytes()).hexdigest()
           actual_source_tree = __import__("subprocess").check_output(["python", "build/build_source_tree_hash.py"], text=True).strip()
           assert p["source_tree_sha256"] == actual_source_tree
-          assert p["build_environment"] == env["environment_identity"] | {"local_image_id_observed": p["build_environment"]["local_image_id_observed"]} if False else p["build_environment"]["kind"] == env["environment_identity"]["kind"]
-          assert p["build_environment"]["image_ref"] == env["environment_identity"]["image_ref"]
-          assert p["build_environment"]["platform"] == env["environment_identity"]["platform"]
-          assert p["build_environment"]["digest"] == env["environment_identity"]["base_image_digest"]
+          assert p["build_environment"]["kind"] == env["environment_identity"]["kind"] == lock["environment"]["kind"]
+          assert p["build_environment"]["image_ref"] == env["environment_identity"]["image_ref"] == lock["environment"]["image_ref"]
+          assert p["build_environment"]["platform"] == env["environment_identity"]["platform"] == lock["environment"]["platform"]
+          assert p["build_environment"]["digest"] == env["environment_identity"]["base_image_digest"] == lock["environment"]["digest"]
           assert p["toolchain"] == env["toolchain"] == {"python":"3.13.15","architecture":"x86_64","pip":"26.2.1","setuptools":"82.0.1"}
           assert p["dependency_artifacts"]["pip_26_2_1_sha256"] == env["dependency_artifacts"]["pip_26_2_1_sha256"] == "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e"
           assert p["dependency_artifacts"]["setuptools_82_0_1_sha256"] == env["dependency_artifacts"]["setuptools_82_0_1_sha256"] == "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb"
@@ -170,8 +172,9 @@ jobs:
           assert p["build_control_records"]["environment_record_sha256"] == file_sha256("build/trusted-build-environment.json")
           assert p["verification"]["source_package_sha256"] is not None
           assert p["verification"]["wheel_sha256"] is not None
-          assert p["build_policy"] == env["build_policy"] == lock["build_policy"] | {"dependency_acquisition": "PREFETCH_OUTSIDE_BUILD_NETWORK", "bytecode_generation": False} if False else p["build_policy"]["dependency_installation"] == env["build_policy"]["dependency_installation"]
-          assert p["build_policy"]["network_during_build"] is False
+          assert p["build_policy"]["runtime_dependencies"] == env["build_policy"]["runtime_dependencies"] == lock["build_policy"]["runtime_dependencies"] == []
+          assert p["build_policy"]["dependency_installation"] == env["build_policy"]["dependency_installation"] == lock["build_policy"]["dependency_installation"] == "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS"
+          assert p["build_policy"]["network_during_build"] is False == env["build_policy"]["network_during_build"] == lock["build_policy"]["network_during_build"]
           assert p["build_policy"]["source_date_epoch"] == 0
           assert p["build_policy"]["runtime_dependencies"] == env["build_policy"]["runtime_dependencies"] == []
           assert p["build_policy"]["source_package_excludes"] == env["build_policy"]["source_package_excludes"] == ["evidence/", "provenance/"]
