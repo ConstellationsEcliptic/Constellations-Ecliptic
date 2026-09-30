@@ -10,7 +10,7 @@ Set-Content -LiteralPath (Join-Path $build 'libswe.dll') -Value 'synthetic-nativ
 try {
     $resolved = & $script $build $out
     if (-not (Test-Path -LiteralPath $out -PathType Leaf)) { throw 'N-HIGH-07 FAIL: fresh output file was not created' }
-    if (-not (Test-Path -LiteralPath (Split-Path -LiteralPath $out -Parent) -PathType Container)) { throw 'N-HIGH-07 FAIL: output parent directory was not created' }
+    if (-not (Test-Path -LiteralPath ([System.IO.Path]::GetDirectoryName((Resolve-Path -LiteralPath $out).Path)) -PathType Container)) { throw 'N-HIGH-07 FAIL: output parent directory was not created' }
     if ($resolved -ne (Resolve-Path -LiteralPath $out).Path) { throw 'N-HIGH-07 FAIL: returned output path is not the created file' }
     $payload = Get-Content -LiteralPath $out -Raw | ConvertFrom-Json
     if ($payload.fresh_output_parent_created -ne $true) { throw 'N-HIGH-07 FAIL: fresh-parent flag missing' }
