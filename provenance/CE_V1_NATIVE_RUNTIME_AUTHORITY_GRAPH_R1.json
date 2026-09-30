@@ -1,0 +1,61 @@
+{
+  "schema_version": "CE-V1-NATIVE-RUNTIME-AUTHORITY-GRAPH-1",
+  "status": "EVIDENCE_BOUND_NON_AUTHORIZED",
+  "candidate": {
+    "branch": "candidate/trusted-build-hardening/2026-09-29-r3",
+    "commit": "033e90cfd29e047578e70bbd20183e48682d7614",
+    "source_tree_sha256": "da6a1d622940a4674a54d98656a940aee90aa32ec149ec9b0e8800e467a90ad9"
+  },
+  "native_runtime_artifact": {
+    "name": "libswe.dll",
+    "sha256": "04aedc75191ce7d257a20d6141ab889073a1cb6a501ecad98faa6305b24861f2",
+    "size_bytes": 841728,
+    "pe_architecture": "x64",
+    "required_exports": [
+      "swe_calc_ut",
+      "swe_version",
+      "swe_set_ephe_path"
+    ]
+  },
+  "swiss_source": {
+    "repository": "https://github.com/aloistr/swisseph.git",
+    "tag": "v2.10.3bfinal",
+    "commit": "f4dcd18e8005dde95fd8a8d2312ed12f9accd1b0",
+    "tree": "f06fbd2b4608e87f7874e67e732bbc444abccba1",
+    "worktree": "CLEAN"
+  },
+  "canonical_data": {
+    "lock_id": "CE-V1-CANONICAL-DATA-2026D-SE-V2.10.3BFINAL",
+    "revision": 4,
+    "lock_sha256": "0309a9d9385925f2c5eda478e2a7704e8600cf10abf258a8bcc9c4bdcb7689a2",
+    "aggregate_sha256": "0cfc76a9dc51296f2241492e3376f1e71d13dd4f36b476253d4b82df57dfc990"
+  },
+  "native_build_provenance": {
+    "recipe_record_box_id": "2496185384915",
+    "toolchain_record_box_id": "2496192433653",
+    "final_dll_reproducibility": "R3_R4_BYTE_IDENTICAL",
+    "object_reproducibility": "NOT_ESTABLISHED"
+  },
+  "hardened_runtime_derivative": {
+    "name": "CE_Calculation_Core_V1_Implementation_Native_Runtime_v0.2.2_HARDENED_NCRIT06.zip",
+    "sha256": "a1f591d64dfd01a0bc86e2bfb2aab300b4b18b5edec2ca9e38a1cbd71c843e29",
+    "ncrit06_remediation": "CLOSED_VALIDATED",
+    "runtime_adoption": "NOT_ESTABLISHED"
+  },
+  "edges": [
+    {"from":"candidate","to":"native_runtime_artifact","binding":"candidate_to_dll_identity"},
+    {"from":"native_runtime_artifact","to":"swiss_source","binding":"artifact_build_source_identity"},
+    {"from":"native_runtime_artifact","to":"canonical_data","binding":"artifact_build_input_identity"},
+    {"from":"native_runtime_artifact","to":"native_build_provenance","binding":"artifact_recipe_and_toolchain_identity"},
+    {"from":"native_runtime_artifact","to":"hardened_runtime_derivative","binding":"runtime_package_artifact_identity"}
+  ],
+  "authorization": {
+    "source_authority": "EVIDENCE_BOUND",
+    "trusted_build": "NOT_ESTABLISHED",
+    "production_runtime": "NOT_AUTHORIZED",
+    "dual_approval": "NOT_ESTABLISHED",
+    "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
+    "fail_closed": true
+  }
+}
