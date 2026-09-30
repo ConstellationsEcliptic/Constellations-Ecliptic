@@ -1,0 +1,22 @@
+name: CE N-HIGH-07 Native Evidence Capture Path Recheck
+
+on:
+  push:
+    branches:
+      - 'audit/native-evidence-capture-nhigh07/2026-09-30-r1'
+
+jobs:
+  windows-self-test:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: PowerShell version
+        shell: pwsh
+        run: |
+          $PSVersionTable.PSVersion
+          [Environment]::OSVersion.VersionString
+      - name: N-HIGH-07 self-test
+        shell: pwsh
+        run: ./tests/native_evidence_capture_nhigh07.ps1
