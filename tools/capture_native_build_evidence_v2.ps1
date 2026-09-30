@@ -14,7 +14,7 @@ function Resolve-NewOutputPath {
     }
 
     $fullOutput = [System.IO.Path]::GetFullPath($LiteralOutput)
-    $parent = Split-Path -LiteralPath $fullOutput -Parent
+    $parent = [System.IO.Path]::GetDirectoryName($fullOutput)
 
     # N-HIGH-07 fix: create and resolve the parent directory, never the future output file.
     if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
