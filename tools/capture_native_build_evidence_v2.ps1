@@ -1,8 +1,6 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory=$true)]
     [string]$BuildRoot,
-    [Parameter(Mandatory=$true)]
     [string]$Output
 )
 
@@ -10,31 +8,51 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 function Resolve-NewOutputPath {
-    param([Parameter(Mandatory=$true)][string]$LiteralOutput)
+    param([string]$LiteralOutput)
+
+    if ([string]::IsNullOrWhiteSpace($LiteralOutput)) {
+        throw 'FAIL-CLOSED: output path is empty'
+    }
+
     $fullOutput = [System.IO.Path]::GetFullPath($LiteralOutput)
     $parent = Split-Path -LiteralPath $fullOutput -Parent
+
+    # N-HIGH-07 fix: create and resolve the parent directory, never the future output file.
     if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
         New-Item -ItemType Directory -Path $parent -Force | Out-Null
     }
+
     $resolvedParent = (Resolve-Path -LiteralPath $parent).Path
-    Join-Path $resolvedParent ([System.IO.Path]::GetFileName($fullOutput))
+    return (Join-Path $resolvedParent ([System.IO.Path]::GetFileName($fullOutput)))
 }
 
 function Write-NativeBuildEvidence {
     param(
-        [Parameter(Mandatory=$true)][string]$NativeBuildRoot,
-        [Parameter(Mandatory=$true)][string]$OutputPath
+        [string]$NativeBuildRoot,
+        [string]$OutputPath
     )
+
+    if ([string]::IsNullOrWhiteSpace($NativeBuildRoot)) {
+        throw 'FAIL-CLOSED: native build root is empty'
+    }
+    if ([string]::IsNullOrWhiteSpace($OutputPath)) {
+        throw 'FAIL-CLOSED: output path is empty'
+    }
+
     if (-not (Test-Path -LiteralPath $NativeBuildRoot -PathType Container)) {
         throw "FAIL-CLOSED: native build root not found: $NativeBuildRoot"
     }
+
     $resolvedBuildRoot = (Resolve-Path -LiteralPath $NativeBuildRoot).Path
-    $resolvedOutput = Resolve-NewOutputPath -LiteralOutput $OutputPath
+    $resolvedOutput = Resolve-NewOutputPath $OutputPath
+
     $dll = Join-Path $resolvedBuildRoot 'libswe.dll'
     if (-not (Test-Path -LiteralPath $dll -PathType Leaf)) {
         throw "FAIL-CLOSED: native DLL not found: $dll"
     }
+
     $dllHash = (Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash.ToLowerInvariant()
+
     $record = [ordered]@{
         capture_status = 'MACHINE_GENERATED'
         captured_at_utc = (Get-Date).ToUniversalTime().ToString('o')
@@ -44,11 +62,15 @@ function Write-NativeBuildEvidence {
         output_path = $resolvedOutput
         fresh_output_parent_created = $true
     }
-    $record | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $resolvedOutput -Encoding utf8NoBOM
+
+    $record | ConvertTo-Json -Depth 5 |
+        Set-Content -LiteralPath $resolvedOutput -Encoding utf8NoBOM
+
     if (-not (Test-Path -LiteralPath $resolvedOutput -PathType Leaf)) {
         throw "FAIL-CLOSED: evidence output was not created: $resolvedOutput"
     }
-    $resolvedOutput
+
+    return $resolvedOutput
 }
 
-Write-NativeBuildEvidence -NativeBuildRoot $BuildRoot -OutputPath $Output
+Write-NativeBuildEvidence $BuildRoot $Output
