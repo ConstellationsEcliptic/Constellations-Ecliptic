@@ -1,4 +1,3 @@
-[CmdletBinding()]
 param(
     [string]$BuildRoot,
     [string]$OutputPath
