@@ -9,7 +9,7 @@ $script = Join-Path $PSScriptRoot '..\tools\capture_native_build_evidence_v2.ps1
 New-Item -ItemType Directory -Path $build -Force | Out-Null
 Set-Content -LiteralPath (Join-Path $build 'libswe.dll') -Value 'synthetic-native-artifact' -NoNewline
 try {
-    $resolved = & $script -BuildRoot $build -Output $out
+    $resolved = & $script -BuildRoot $build -OutputPath $out
     if (-not (Test-Path -LiteralPath $out -PathType Leaf)) { throw 'N-HIGH-07 FAIL: fresh output file was not created' }
     if (-not (Test-Path -LiteralPath (Split-Path -LiteralPath $out -Parent) -PathType Container)) { throw 'N-HIGH-07 FAIL: output parent directory was not created' }
     if ($resolved -ne (Resolve-Path -LiteralPath $out).Path) { throw 'N-HIGH-07 FAIL: returned output path is not the created file' }
