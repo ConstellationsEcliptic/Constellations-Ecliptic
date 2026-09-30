@@ -1,5 +1,6 @@
 [CmdletBinding()]
 param()
+# N-HIGH-07 final Windows verification trigger: current OutputPath implementation.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = Join-Path $env:RUNNER_TEMP ('ce-native-evidence-nhigh07-' + [guid]::NewGuid().ToString('N'))
