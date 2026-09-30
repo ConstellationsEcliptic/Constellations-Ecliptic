@@ -1,0 +1,17 @@
+name: CE Native Authority Graph Reconciliation
+
+on:
+  push:
+    branches:
+      - 'audit/pre-human-gate-reconciliation/2026-09-30-r1'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify native authority graph
+        run: python3 tools/verify_native_authority_graph.py
+      - name: Run graph regression test
+        run: python3 -m unittest discover -s tests -p 'test_native_authority_graph.py' -v
