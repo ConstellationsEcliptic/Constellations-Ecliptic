@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$BuildRoot,
-    [string]$Output
+    [string]$OutputPath
 )
 
 Set-StrictMode -Version Latest
@@ -73,4 +73,4 @@ function Write-NativeBuildEvidence {
     return $resolvedOutput
 }
 
-Write-NativeBuildEvidence $BuildRoot $Output
+Write-NativeBuildEvidence $BuildRoot $OutputPath
