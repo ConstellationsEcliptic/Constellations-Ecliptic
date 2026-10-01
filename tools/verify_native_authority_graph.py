@@ -17,7 +17,7 @@ EXPECTED = {
     "canonical_data.revision": 4,
     "canonical_data.lock_sha256": "0309a9d9385925f2c5eda478e2a7704e8600cf10abf258a8bcc9c4bdcb7689a2",
     "canonical_data.aggregate_sha256": "0cfc76a9dc51296f2241492e3376f1e71d13dd4f36b476253d4b82df57dfc990",
-    "hardened_runtime_derivative.sha256": "a1f591d64dfd01a0bc86e2bfb2aab300b4b18b5edec2ca9e38a1cbd71c843e29",
+    "hardened_runtime_derivative.sha256": "A0604B7143B3FB508596DDA3E84D0FD9AA3FE32E52603791094F735A3561B2AE",
 }
 
 def get(doc: dict, path: str):

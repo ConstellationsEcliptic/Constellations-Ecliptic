@@ -37,8 +37,8 @@
     "object_reproducibility": "NOT_ESTABLISHED"
   },
   "hardened_runtime_derivative": {
-    "name": "CE_Calculation_Core_V1_Implementation_Native_Runtime_v0.2.2_HARDENED_NCRIT06.zip",
-    "sha256": "a1f591d64dfd01a0bc86e2bfb2aab300b4b18b5edec2ca9e38a1cbd71c843e29",
+    "name": "CE_Calculation_Core_V1_Implementation_Native_Runtime_v0.2.2_HARDENED_NCRIT06_RECONCILED_R1.zip",
+    "sha256": "A0604B7143B3FB508596DDA3E84D0FD9AA3FE32E52603791094F735A3561B2AE",
     "ncrit06_remediation": "CLOSED_VALIDATED",
     "runtime_adoption": "NOT_ESTABLISHED"
   },
