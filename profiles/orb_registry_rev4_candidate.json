@@ -1,0 +1,32 @@
+{
+  "artifact_id": "CE-V1-ORB-REGISTRY-REV4-CANDIDATE",
+  "status": "CONTROLLED_CURRENT_CANDIDATE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "profiles": {
+    "A": {
+      "CONJUNCTION": 2.5,
+      "SEXTILE": 1.5,
+      "SQUARE": 2.0,
+      "TRINE": 2.0,
+      "OPPOSITION": 2.5
+    },
+    "B": {
+      "CONJUNCTION": 1.5,
+      "SEXTILE": 1.0,
+      "SQUARE": 1.5,
+      "TRINE": 1.5,
+      "OPPOSITION": 1.5
+    }
+  },
+  "object_profile_assignment": {
+    "A": ["SUN", "MOON", "MERCURY", "VENUS", "MARS"],
+    "B": ["JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "CHIRON", "TRUE_NODE", "MEAN_LILITH"]
+  },
+  "source_basis": {
+    "historical_stage_b3_archive_sha256": "2eb0d3b152b4d7d0cf026abeb7d3b1ecf10d03f15b820856555003c161e0d9c5",
+    "historical_profile_revision": 2,
+    "current_target_revision": 4
+  },
+  "authority": "NOT_ESTABLISHED"
+}
