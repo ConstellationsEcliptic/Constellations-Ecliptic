@@ -90,6 +90,8 @@ class EvidenceContractR1Tests(unittest.TestCase):
         result = CalculationResult(
             request_id="R-001",
             status=CalculationStatus.VALID,
+            calculation_id="C-001",
+            observation_interval=("2026-01-01T00:00:00Z", "2026-01-01T01:00:00Z"),
             execution_profile_id="CE-CALC-V1-EP-001",
             scenario_state=ScenarioState.STABLE,
             normalized_time="2026-01-01T00:00:00Z",
