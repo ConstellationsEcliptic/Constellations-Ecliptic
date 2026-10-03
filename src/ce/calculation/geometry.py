@@ -41,6 +41,11 @@ def normalize_longitude_deg(value: float) -> float:
     return float(value) % 360.0
 
 
+def circular_span_deg(start: float, end: float) -> float:
+    """Shortest positive circular span from start to end in degrees."""
+    return (normalize_longitude_deg(end) - normalize_longitude_deg(start)) % 360.0
+
+
 def circular_separation_deg(a: float, b: float) -> float:
     a_n = normalize_longitude_deg(a)
     b_n = normalize_longitude_deg(b)
