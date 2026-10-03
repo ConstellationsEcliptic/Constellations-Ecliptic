@@ -188,7 +188,12 @@ class CalculationResult:
     execution_profile_id: str
     scenario_state: ScenarioState
     normalized_time: str | None
+    calculation_id: str | None = None
+    observation_interval: tuple[str, str] | None = None
     object_states: tuple[ObjectState, ...] = field(default_factory=tuple)
+    geometry_records: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    event_records: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
@@ -229,6 +234,8 @@ class CalculationResult:
             "execution_profile_id": self.execution_profile_id,
             "scenario_state": self.scenario_state.value,
             "normalized_time": self.normalized_time,
+            "calculation_id": self.calculation_id,
+            "observation_interval": list(self.observation_interval) if self.observation_interval is not None else None,
             "object_states": [
                 {
                     "object_id": item.object_id,
@@ -238,6 +245,9 @@ class CalculationResult:
                 }
                 for item in self.object_states
             ],
+            "geometry_records": list(self.geometry_records),
+            "event_records": list(self.event_records),
+            "window_segments": list(self.window_segments),
             "warnings": list(self.warnings),
             "errors": list(self.errors),
             "provenance": self.provenance,
@@ -264,6 +274,30 @@ class CalculationResult:
             else:
                 errors.extend(f"object_states[{index}]:{e}" for e in state.validate())
 
+        for name, required, utc_keys in (
+            ("geometry_records", ("transit_object", "natal_object_or_scenario", "aspect", "directed_branch", "signed_deviation", "absolute_deviation", "effective_orb", "qualification_state", "kinematic_state"), ("event_time_utc",)),
+            ("event_records", ("event_time_utc", "residual"), ("event_time_utc",)),
+            ("window_segments", ("entry_utc", "exact_events_utc", "exit_utc"), ("entry_utc", "exit_utc")),
+        ):
+            records = getattr(self, name)
+            if not isinstance(records, (tuple, list)):
+                errors.append(f"invalid:{name}:sequence_required")
+                continue
+            for index, record in enumerate(records):
+                if not isinstance(record, Mapping):
+                    errors.append(f"invalid:{name}[{index}]:mapping_required")
+                    continue
+                for key in required:
+                    if key not in record:
+                        errors.append(f"invalid:{name}[{index}]:missing:{key}")
+                for key in utc_keys:
+                    if record.get(key) is not None and not _valid_utc(record.get(key)):
+                        errors.append(f"invalid:{name}[{index}]:{key}:utc_required")
+                if name == "window_segments" and record.get("exact_events_utc") is not None:
+                    events = record.get("exact_events_utc")
+                    if not isinstance(events, (tuple, list)) or any(not _valid_utc(v) for v in events):
+                        errors.append(f"invalid:{name}[{index}]:exact_events_utc")
+
         for field_name in ("warnings", "errors"):
             value = getattr(self, field_name)
             if not isinstance(value, (tuple, list)):
@@ -272,6 +306,14 @@ class CalculationResult:
                 errors.append(f"invalid:{field_name}:string_required")
 
         if self.status is CalculationStatus.VALID:
+            if self.calculation_id is None or not isinstance(self.calculation_id, str) or not self.calculation_id.strip():
+                errors.append("valid_result_requires_calculation_id")
+            if self.observation_interval is None or len(self.observation_interval) != 2:
+                errors.append("valid_result_requires_observation_interval")
+            elif not _valid_utc(self.observation_interval[0]) or not _valid_utc(self.observation_interval[1]):
+                errors.append("valid_result_requires_valid_observation_interval")
+            elif datetime.fromisoformat(self.observation_interval[1][:-1] + "+00:00") < datetime.fromisoformat(self.observation_interval[0][:-1] + "+00:00"):
+                errors.append("valid_result_observation_interval_order")
             if self.normalized_time is None:
                 errors.append("valid_result_requires_normalized_time")
             if not self.object_states:
