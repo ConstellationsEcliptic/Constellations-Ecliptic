@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import tempfile
 import unittest
 
@@ -14,6 +15,16 @@ class SourceTreeIdentityR1Tests(unittest.TestCase):
                 (root / "src").mkdir()
                 (root / "src" / "x.py").write_text("print('x')\n", encoding="utf-8")
             self.assertEqual(source_tree_sha256(Path(a)), source_tree_sha256(Path(b)))
+
+    def test_filesystem_mode_is_not_identity_bearing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "src").mkdir()
+            path = root / "src" / "x.py"
+            path.write_text("x\\n", encoding="utf-8")
+            first = source_tree_sha256(root)
+            os.chmod(path, 0o600)
+            self.assertEqual(first, source_tree_sha256(root))
 
     def test_path_and_content_are_identity_bearing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
