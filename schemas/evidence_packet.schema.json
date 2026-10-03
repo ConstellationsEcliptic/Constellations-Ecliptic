@@ -13,24 +13,25 @@
     "calculation_version",
     "object_records",
     "geometry_records",
+    "effective_orb_records",
     "kinematics",
+    "exact_events",
+    "window_segments",
+    "scenario_stability_state",
+    "actual_ephemeris_resolution",
+    "calculation_flags",
     "warnings",
     "errors",
     "numerical_tolerances",
-    "solver_metadata",
-    "actual_ephemeris_resolution",
-    "calculation_flags"
+    "solver_metadata"
   ],
   "properties": {
     "evidence_packet_id": {"type": "string", "minLength": 1},
-    "input_identity": {"type": "object"},
+    "input_identity": {"type": "object", "additionalProperties": true},
     "profile_version": {
       "type": "object",
       "required": ["id", "revision"],
-      "properties": {
-        "id": {"const": "CE-CALC-V1-EP-001"},
-        "revision": {"const": 4}
-      },
+      "properties": {"id": {"const": "CE-CALC-V1-EP-001"}, "revision": {"const": 4}},
       "additionalProperties": true
     },
     "observation_instant_or_interval": {
@@ -42,17 +43,107 @@
       },
       "additionalProperties": true
     },
-    "timezone_context": {"type": "object"},
+    "timezone_context": {"type": "object", "additionalProperties": true},
     "execution_profile_id": {"const": "CE-CALC-V1-EP-001"},
     "calculation_version": {"type": "string", "minLength": 1},
-    "object_records": {"type": "array", "items": {"type": "object"}},
-    "geometry_records": {"type": "array", "items": {"type": "object"}},
-    "kinematics": {"type": "array", "items": {"type": "object"}},
+    "object_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["object_id"],
+        "properties": {
+          "object_id": {"type": "string", "minLength": 1},
+          "longitude": {"type": ["number", "null"]},
+          "latitude": {"type": ["number", "null"]},
+          "distance": {"type": ["number", "null"]},
+          "speed": {"type": ["number", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "geometry_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "transit_object", "natal_object_or_scenario", "aspect", "directed_branch",
+          "signed_deviation", "absolute_deviation", "effective_orb",
+          "qualification_state", "kinematic_state"
+        ],
+        "properties": {
+          "transit_object": {"type": "string", "minLength": 1},
+          "natal_object_or_scenario": {"type": "string", "minLength": 1},
+          "aspect": {"type": "string", "enum": ["CONJUNCTION","SEXTILE","SQUARE","TRINE","OPPOSITION"]},
+          "directed_branch": {"type": "number"},
+          "signed_deviation": {"type": "number"},
+          "absolute_deviation": {"type": "number", "minimum": 0},
+          "effective_orb": {"type": "number", "exclusiveMinimum": 0},
+          "qualification_state": {"type": "string", "minLength": 1},
+          "kinematic_state": {"type": "string", "enum": ["EXACT","APPLYING","SEPARATING","NEAR_STATIONARY"]},
+          "transit_speed": {"type": ["number","null"]},
+          "event_time_utc": {"type": ["string","null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "effective_orb_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["transit_object", "aspect", "effective_orb"],
+        "properties": {
+          "transit_object": {"type": "string", "minLength": 1},
+          "aspect": {"type": "string", "enum": ["CONJUNCTION","SEXTILE","SQUARE","TRINE","OPPOSITION"]},
+          "effective_orb": {"type": "number", "exclusiveMinimum": 0}
+        },
+        "additionalProperties": true
+      }
+    },
+    "kinematics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["transit_object","aspect","kinematic_state"],
+        "properties": {
+          "transit_object": {"type": "string", "minLength": 1},
+          "aspect": {"type": "string", "minLength": 1},
+          "kinematic_state": {"type": "string", "enum": ["EXACT","APPLYING","SEPARATING","NEAR_STATIONARY"]},
+          "transit_speed": {"type": ["number","null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "exact_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_time_utc","residual"],
+        "properties": {
+          "event_time_utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
+          "residual": {"type": "number", "minimum": 0}
+        },
+        "additionalProperties": true
+      }
+    },
+    "window_segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entry_utc","exact_events_utc","exit_utc"],
+        "properties": {
+          "entry_utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
+          "exact_events_utc": {"type": "array", "items": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"}},
+          "exit_utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "scenario_stability_state": {"type": "string", "enum": ["STABLE","VARIABLE","POSSIBLE","ROBUST","MIXED","NONE"]},
+    "actual_ephemeris_resolution": {"type": "object", "additionalProperties": true},
+    "calculation_flags": {"type": "object", "additionalProperties": true},
     "warnings": {"type": "array", "items": {"type": "string"}},
     "errors": {"type": "array", "items": {"type": "string"}},
-    "numerical_tolerances": {"type": "object"},
-    "solver_metadata": {"type": "object"},
-    "actual_ephemeris_resolution": {"type": "object"},
-    "calculation_flags": {"type": "object"}
+    "numerical_tolerances": {"type": "object", "additionalProperties": true},
+    "solver_metadata": {"type": "object", "additionalProperties": true}
   }
 }
