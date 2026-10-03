@@ -61,7 +61,7 @@ class ConvergentSolverScenarioTests(unittest.TestCase):
             (
                 ((10.0, 20.0),),
                 ((15.0, 25.0),),
-                ((30.0, 40.0),),
+                ((10.0, 20.0),),
             )
         )
         self.assertIs(state, ScenarioState.MIXED)
