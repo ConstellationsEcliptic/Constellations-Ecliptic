@@ -208,7 +208,7 @@ class EvidencePacket:
         errors.extend(_record_errors(
             self.object_records,
             path="object_records",
-            required_keys=("object_id",),
+            required_keys=("object_id", "object_status", "requested_flags", "actual_flags"),
             numeric_keys=("longitude", "latitude", "distance", "speed"),
         ))
         errors.extend(_record_errors(
@@ -223,7 +223,7 @@ class EvidencePacket:
         errors.extend(_record_errors(
             self.effective_orb_records,
             path="effective_orb_records",
-            required_keys=("transit_object", "aspect", "effective_orb"),
+            required_keys=("transit_object", "natal_object_or_scenario", "aspect", "effective_orb"),
             numeric_keys=("effective_orb",),
         ))
         errors.extend(_record_errors(
