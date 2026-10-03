@@ -112,7 +112,7 @@ class CalculationRequest:
                 errors.append("invalid:target_interval_order")
         if self.execution_profile_id != CANONICAL_EXECUTION_PROFILE_ID:
             errors.append("invalid:execution_profile_id:canonical_required")
-        if self.calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
+        if not isinstance(self.calendar_policy_id, str) or not self.calendar_policy_id.strip():
             errors.append("invalid:calendar_policy_id")
         return tuple(errors)
 
