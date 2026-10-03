@@ -1,1 +1,58 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"CE Evidence Packet","type":"object","required":["evidence_packet_id","execution_profile_id","calculation_version"],"properties":{"evidence_packet_id":{"type":"string"},"execution_profile_id":{"type":"string"},"calculation_version":{"type":"string"}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE V1 Evidence Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_packet_id",
+    "input_identity",
+    "profile_version",
+    "observation_instant_or_interval",
+    "timezone_context",
+    "execution_profile_id",
+    "calculation_version",
+    "object_records",
+    "geometry_records",
+    "kinematics",
+    "warnings",
+    "errors",
+    "numerical_tolerances",
+    "solver_metadata",
+    "actual_ephemeris_resolution",
+    "calculation_flags"
+  ],
+  "properties": {
+    "evidence_packet_id": {"type": "string", "minLength": 1},
+    "input_identity": {"type": "object"},
+    "profile_version": {
+      "type": "object",
+      "required": ["id", "revision"],
+      "properties": {
+        "id": {"const": "CE-CALC-V1-EP-001"},
+        "revision": {"const": 4}
+      },
+      "additionalProperties": true
+    },
+    "observation_instant_or_interval": {
+      "type": "object",
+      "required": ["start"],
+      "properties": {
+        "start": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
+        "end": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"}
+      },
+      "additionalProperties": true
+    },
+    "timezone_context": {"type": "object"},
+    "execution_profile_id": {"const": "CE-CALC-V1-EP-001"},
+    "calculation_version": {"type": "string", "minLength": 1},
+    "object_records": {"type": "array", "items": {"type": "object"}},
+    "geometry_records": {"type": "array", "items": {"type": "object"}},
+    "kinematics": {"type": "array", "items": {"type": "object"}},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "numerical_tolerances": {"type": "object"},
+    "solver_metadata": {"type": "object"},
+    "actual_ephemeris_resolution": {"type": "object"},
+    "calculation_flags": {"type": "object"}
+  }
+}
