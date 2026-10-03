@@ -8,7 +8,27 @@ class RegistryValidationError(ValueError):
     """Registry data violates the current CE V1 contract."""
 
 
-EXPECTED_OBJECT_COUNT = 13
+EXPECTED_OBJECTS = {
+    "SUN": 0,
+    "MOON": 1,
+    "MERCURY": 2,
+    "VENUS": 3,
+    "MARS": 4,
+    "JUPITER": 5,
+    "SATURN": 6,
+    "URANUS": 7,
+    "NEPTUNE": 8,
+    "PLUTO": 9,
+    "CHIRON": 15,
+    "TRUE_NODE": 11,
+    "MEAN_LILITH": 12,
+}
+EXPECTED_OBJECT_COUNT = len(EXPECTED_OBJECTS)
+EXPECTED_OBJECT_PROFILES = {
+    "SUN": "A", "MOON": "A", "MERCURY": "A", "VENUS": "A", "MARS": "A",
+    "JUPITER": "B", "SATURN": "B", "URANUS": "B", "NEPTUNE": "B",
+    "PLUTO": "B", "CHIRON": "B", "TRUE_NODE": "B", "MEAN_LILITH": "B",
+}
 EXPECTED_ASPECTS = {
     "CONJUNCTION": 0.0,
     "SEXTILE": 60.0,
@@ -25,8 +45,7 @@ def validate_object_registry(payload: Mapping[str, Any]) -> None:
         raise RegistryValidationError("objects_sequence_required")
     if len(objects) != EXPECTED_OBJECT_COUNT:
         raise RegistryValidationError("object_count_mismatch")
-    ids: set[str] = set()
-    swiss_ids: set[int] = set()
+    observed_objects: dict[str, int] = {}
     for item in objects:
         if not isinstance(item, Mapping):
             raise RegistryValidationError("object_entry_mapping_required")
@@ -35,16 +54,19 @@ def validate_object_registry(payload: Mapping[str, Any]) -> None:
         profile = item.get("object_profile")
         if not isinstance(object_id, str) or not object_id.strip():
             raise RegistryValidationError("object_id_invalid")
-        if object_id in ids:
+        if object_id in observed_objects:
             raise RegistryValidationError("duplicate_object_id")
-        ids.add(object_id)
         if type(swiss_id) is not int or swiss_id < 0:
             raise RegistryValidationError("swiss_object_id_invalid")
-        if swiss_id in swiss_ids:
-            raise RegistryValidationError("duplicate_swiss_object_id")
-        swiss_ids.add(swiss_id)
         if profile not in REQUIRED_ORB_PROFILES:
             raise RegistryValidationError("object_profile_invalid")
+        if object_id not in EXPECTED_OBJECTS or EXPECTED_OBJECTS[object_id] != swiss_id:
+            raise RegistryValidationError("object_set_or_swiss_id_mismatch")
+        if EXPECTED_OBJECT_PROFILES[object_id] != profile:
+            raise RegistryValidationError("object_profile_assignment_mismatch")
+        observed_objects[object_id] = swiss_id
+    if observed_objects != EXPECTED_OBJECTS:
+        raise RegistryValidationError("object_set_mismatch")
 
 
 def validate_aspect_registry(payload: Mapping[str, Any]) -> None:
@@ -69,6 +91,13 @@ def validate_aspect_registry(payload: Mapping[str, Any]) -> None:
         observed[aspect_id] = float(angle)
         if not all(type(v) in (int, float) for v in branches):
             raise RegistryValidationError("aspect_branch_value_invalid")
+        expected_branches = {
+            "CONJUNCTION": (0.0,), "SEXTILE": (60.0, -60.0),
+            "SQUARE": (90.0, -90.0), "TRINE": (120.0, -120.0),
+            "OPPOSITION": (180.0,),
+        }[aspect_id] if aspect_id in EXPECTED_ASPECTS else ()
+        if tuple(float(v) for v in branches) != expected_branches:
+            raise RegistryValidationError("aspect_branch_set_mismatch")
     if observed != EXPECTED_ASPECTS:
         raise RegistryValidationError("aspect_set_mismatch")
 
