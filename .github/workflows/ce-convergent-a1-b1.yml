@@ -1,0 +1,23 @@
+name: CE Convergent A1 B1 Tests
+
+on:
+  push:
+    branches:
+      - "development/convergent-a1-b1/**"
+  pull_request:
+    branches:
+      - "development/convergent-a1-b1/**"
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python version
+        run: python --version
+      - name: Compile source and tests
+        run: python -m compileall -q src tests
+      - name: Run test suite
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
