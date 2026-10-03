@@ -51,6 +51,21 @@ def validate_execution_profile(profile: Mapping[str, Any]) -> None:
     if timezone.get("version") != CANONICAL_TZ_VERSION:
         raise ExecutionProfileValidationError("timezone_version_mismatch")
 
+    if profile.get("execution_profile_version") != "1.3":
+        raise ExecutionProfileValidationError("execution_profile_version_mismatch")
+    if profile.get("implementation_plan_version") != "1.3.1":
+        raise ExecutionProfileValidationError("implementation_plan_version_mismatch")
+    if profile.get("technical_contracts_version") != "1.1":
+        raise ExecutionProfileValidationError("technical_contracts_version_mismatch")
+
+    ephemeris = profile.get("ephemeris")
+    if not isinstance(ephemeris, Mapping):
+        raise ExecutionProfileValidationError("ephemeris_missing")
+    if ephemeris.get("version") != "2.10.03":
+        raise ExecutionProfileValidationError("ephemeris_version_mismatch")
+    if ephemeris.get("library") != "Swiss Ephemeris":
+        raise ExecutionProfileValidationError("ephemeris_library_mismatch")
+
     canonical_lock = profile.get("canonical_data_lock")
     if not isinstance(canonical_lock, Mapping):
         raise ExecutionProfileValidationError("canonical_data_lock_missing")
