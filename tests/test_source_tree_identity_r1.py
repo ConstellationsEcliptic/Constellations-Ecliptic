@@ -39,3 +39,15 @@ class SourceTreeIdentityR1Tests(unittest.TestCase):
             
 if __name__ == "__main__":
     unittest.main()
+
+    def test_source_digest_manifest_is_not_self_referential(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "src").mkdir()
+            (root / "manifests").mkdir()
+            (root / "src" / "x.py").write_text("x\n", encoding="utf-8")
+            first = source_tree_sha256(root)
+            (root / "manifests" / "SOURCE_TREE_SHA256_V2.txt").write_text(
+                "deadbeef  self-reference\n", encoding="utf-8"
+            )
+            self.assertEqual(first, source_tree_sha256(root))
