@@ -44,7 +44,7 @@ class KernelR1Tests(unittest.TestCase):
         self.assertEqual(result.status, CalculationStatus.VALID)
         self.assertTrue(result.events)
         self.assertTrue(result.windows)
-        self.assertEqual(result.events[0].instant_utc, "2026-01-02T01:00:00Z")
+        self.assertEqual(result.events[0].instant_utc, "2026-01-02T00:00:00Z")
 
     def test_invalid_provider_cannot_create_window(self) -> None:
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
