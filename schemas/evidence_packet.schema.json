@@ -50,9 +50,12 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["object_id"],
+        "required": ["object_id", "object_status", "requested_flags", "actual_flags"],
         "properties": {
           "object_id": {"type": "string", "minLength": 1},
+          "object_status": {"type": "string", "minLength": 1},
+          "requested_flags": {"type": "integer"},
+          "actual_flags": {"type": ["integer", "null"]},
           "longitude": {"type": ["number", "null"]},
           "latitude": {"type": ["number", "null"]},
           "distance": {"type": ["number", "null"]},
@@ -90,9 +93,10 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["transit_object", "aspect", "effective_orb"],
+        "required": ["transit_object", "natal_object_or_scenario", "aspect", "effective_orb"],
         "properties": {
           "transit_object": {"type": "string", "minLength": 1},
+          "natal_object_or_scenario": {"type": "string", "minLength": 1},
           "aspect": {"type": "string", "enum": ["CONJUNCTION","SEXTILE","SQUARE","TRINE","OPPOSITION"]},
           "effective_orb": {"type": "number", "exclusiveMinimum": 0}
         },
@@ -120,7 +124,7 @@
         "required": ["event_time_utc","residual"],
         "properties": {
           "event_time_utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"},
-          "residual": {"type": "number", "minimum": 0}
+          "residual": {"type": "number"}
         },
         "additionalProperties": true
       }
