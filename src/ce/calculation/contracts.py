@@ -70,9 +70,9 @@ class BirthInput:
             errors.append("invalid:birth_date")
         if not isinstance(self.natal_birth_state, NatalBirthState):
             errors.append("invalid:natal_birth_state")
-        if not _nonempty(self.birth_city, "birth_city") is None:
+        if _nonempty(self.birth_city, "birth_city") is not None:
             errors.append("invalid:birth_city")
-        if not _nonempty(self.timezone_id, "timezone_id") is None:
+        if _nonempty(self.timezone_id, "timezone_id") is not None:
             errors.append("invalid:timezone_id")
         if self.timezone_version is not None and not isinstance(self.timezone_version, str):
             errors.append("invalid:timezone_version")
@@ -99,8 +99,8 @@ class CalculationRequest:
             errors.append(f"invalid:request_id")
         if not isinstance(self.birth, BirthInput):
             errors.append("invalid:birth")
-        elif self.birth.validate():
-            errors.extend(self.birth.validate())
+        elif (birth_errors := self.birth.validate()):
+            errors.extend(birth_errors)
         if not _valid_utc(self.target_interval_start_utc):
             errors.append("invalid:target_interval_start_utc")
         if not _valid_utc(self.target_interval_end_utc):
