@@ -1,1 +1,119 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"CE Calculation Result","type":"object","required":["request_id","status","execution_profile_id","scenario_state"],"properties":{"request_id":{"type":"string"},"status":{"type":"string"},"execution_profile_id":{"type":"string"},"scenario_state":{"type":"string"}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE V1 Calculation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "status",
+    "execution_profile_id",
+    "scenario_state",
+    "normalized_time",
+    "object_states",
+    "warnings",
+    "errors",
+    "provenance",
+    "evidence_packet_ref"
+  ],
+  "properties": {
+    "request_id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": [
+      "VALID",
+      "KNOWN_UNAVAILABLE",
+      "CALCULATION_FAILURE",
+      "INPUT_UNSUPPORTED",
+      "NATAL_EVIDENCE_VARIABLE",
+      "NOT_IMPLEMENTED",
+      "NON_AUTHORIZED",
+      "INVALID_INPUT"
+    ]},
+    "execution_profile_id": {"const": "CE-CALC-V1-EP-001"},
+    "scenario_state": {"type": "string", "enum": [
+      "STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"
+    ]},
+    "normalized_time": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+    },
+    "object_states": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["object_id", "longitude_deg", "speed_deg_per_day", "status"],
+        "properties": {
+          "object_id": {"type": "string", "minLength": 1},
+          "longitude_deg": {"type": ["number", "null"]},
+          "speed_deg_per_day": {"type": ["number", "null"]},
+          "status": {"type": "string", "enum": [
+            "VALID", "KNOWN_UNAVAILABLE", "CALCULATION_FAILURE",
+            "INPUT_UNSUPPORTED", "NATAL_EVIDENCE_VARIABLE",
+            "NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT"
+          ]}
+        }
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean", "null"]
+      }
+    },
+    "evidence_packet_ref": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["evidence_packet_id", "content_sha256"],
+      "properties": {
+        "evidence_packet_id": {"type": "string", "minLength": 1},
+        "content_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "VALID"}}, "required": ["status"]},
+      "then": {
+        "required": ["normalized_time", "object_states", "provenance", "evidence_packet_ref"],
+        "properties": {
+          "normalized_time": {"type": "string"},
+          "object_states": {"minItems": 1},
+          "errors": {"maxItems": 0},
+          "scenario_state": {"not": {"const": "NONE"}},
+          "evidence_packet_ref": {"type": "object"},
+          "provenance": {
+            "required": [
+              "source_commit",
+              "source_tree_sha256_v2",
+              "dependency_lock_digest",
+              "timezone_bundle_digest",
+              "ephemeris_bundle_digest",
+              "runtime_image_digest",
+              "calculation_version"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"not": {"const": "VALID"}}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "evidence_packet_ref": {"const": null}
+        },
+        "not": {
+          "properties": {
+            "object_states": {
+              "contains": {
+                "type": "object",
+                "properties": {"status": {"const": "VALID"}},
+                "required": ["status"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
