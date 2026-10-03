@@ -1,0 +1,29 @@
+{
+  "artifact_id": "CE-V1-SOURCE-IDENTITY-POLICY-R1",
+  "status": "CONTROLLED_CURRENT_CANDIDATE",
+  "content_identity": "UTF8_BYTES_AND_CANONICAL_RELATIVE_PATH",
+  "filesystem_mode_identity": false,
+  "include_roots": [
+    "configs",
+    "src",
+    "tests",
+    "schemas",
+    "profiles",
+    "manifests",
+    "build",
+    "tools"
+  ],
+  "include_files": [
+    "pyproject.toml"
+  ],
+  "exclude_components": [
+    ".git",
+    "__pycache__",
+    ".pytest_cache"
+  ],
+  "exclude_roots": [
+    "docs"
+  ],
+  "rationale": "Build/runtime-affecting configuration is identity-bearing; documentation and VCS metadata are excluded from executable source identity.",
+  "authority": "NOT_ESTABLISHED"
+}
