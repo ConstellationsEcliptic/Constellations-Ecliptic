@@ -7,11 +7,11 @@ from ce.calculation.scenario_windows import (
     DEFAULT_SCENARIO_COUNT,
     MAX_SCENARIO_COUNT,
     MIN_SCENARIO_COUNT,
-    ScenarioState,
     build_scenario_instants,
     classify_sampled_windows,
 )
 from ce.calculation.solver import find_roots, solve_threshold
+from ce.foundation.status import ScenarioState
 
 
 class ConvergentSolverScenarioTests(unittest.TestCase):
@@ -41,7 +41,7 @@ class ConvergentSolverScenarioTests(unittest.TestCase):
         end = datetime(2026, 1, 2, tzinfo=timezone.utc)
         samples = build_scenario_instants(start, end, DEFAULT_SCENARIO_COUNT)
         self.assertEqual(len(samples), DEFAULT_SCENARIO_COUNT)
-        self.assertEqual(min_s:=samples[0] < max(samples), True)
+        self.assertLess(samples[0], samples[-1])
         self.assertLess(samples[-1], end)
         self.assertGreater(samples[0], start)
         self.assertTrue(MIN_SCENARIO_COUNT <= DEFAULT_SCENARIO_COUNT <= MAX_SCENARIO_COUNT)
