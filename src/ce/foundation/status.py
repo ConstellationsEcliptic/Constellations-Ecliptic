@@ -23,18 +23,11 @@ class RuntimeAuthority(str, Enum):
 
 
 class NatalBirthState(str, Enum):
-    """V1 Personal Sky natal input state.
-
-    CE V1 does not accept an exact user-supplied birth time.
-    """
-
     ZERO_BIRTH_TIME = "ZERO_BIRTH_TIME"
     INVALID = "INVALID"
 
 
 class ObservationTimeState(str, Enum):
-    """Time-state for explicit observation/evaluation calculations."""
-
     EXACT = "EXACT"
     INVALID = "INVALID"
 
@@ -46,3 +39,10 @@ class ScenarioState(str, Enum):
     ROBUST = "ROBUST"
     MIXED = "MIXED"
     NONE = "NONE"
+
+
+class KinematicState(str, Enum):
+    EXACT = "EXACT"
+    APPLYING = "APPLYING"
+    SEPARATING = "SEPARATING"
+    NEAR_STATIONARY = "NEAR_STATIONARY"
