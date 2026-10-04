@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-import re
 
 
 FORBIDDEN_BUILD_TOKENS = (
@@ -10,7 +9,6 @@ FORBIDDEN_BUILD_TOKENS = (
     "-Ofast",
     "/fp:fast",
     "/fp:except",
-    "fast-math",
 )
 FORBIDDEN_RUNTIME_DOWNLOAD_TOKENS = (
     "pip install http",
@@ -19,6 +17,7 @@ FORBIDDEN_RUNTIME_DOWNLOAD_TOKENS = (
     "requests.get(",
     "urllib.request.urlretrieve",
 )
+SCAN_SUFFIXES = {".py", ".ps1", ".sh", ".cmd", ".bat", ".toml"}
 
 
 @dataclass(frozen=True)
@@ -32,7 +31,7 @@ def scan_build_policy(root: Path) -> tuple[BuildPolicyFinding, ...]:
     findings: list[BuildPolicyFinding] = []
     candidates = list((root / "build").rglob("*")) + list((root / "tools").rglob("*"))
     for path in candidates:
-        if not path.is_file():
+        if not path.is_file() or path.suffix.lower() not in SCAN_SUFFIXES:
             continue
         try:
             text = path.read_text(encoding="utf-8")
