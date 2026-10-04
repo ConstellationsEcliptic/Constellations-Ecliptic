@@ -8,6 +8,7 @@ from typing import Any
 
 from ce.calculation.contracts import ObjectRecord
 from ce.calculation.registry import EXPECTED_OBJECTS
+from ce.ephemeris.verification import classify_requested_actual_flags
 from ce.foundation.status import CalculationStatus
 
 
@@ -134,9 +135,14 @@ def verify_canonical_swiss_bundle(root: Path) -> str:
     return aggregate
 
 
-def _validate_actual_flags(actual_flags: int, with_speed: bool) -> None:
-    if actual_flags < 0:
-        raise NativeRuntimeError("native_calculation_failure")
+def _validate_actual_flags(actual_flags: int, requested_flags: int, with_speed: bool) -> None:
+    if classify_requested_actual_flags(
+        requested_flags=requested_flags,
+        actual_flags=actual_flags,
+    ) is CalculationStatus.CALCULATION_FAILURE:
+        raise NativeRuntimeError(
+            f"actual_flags_do_not_cover_requested:requested={requested_flags}:actual={actual_flags}"
+        )
     if (actual_flags & SEFLG_SWIEPH) != SEFLG_SWIEPH:
         raise NativeRuntimeError("actual_ephemeris_not_swisseph")
     if with_speed and (actual_flags & SEFLG_SPEED) != SEFLG_SPEED:
@@ -259,7 +265,7 @@ class NativeSwissEphemerisAdapter:
             )
         )
         message = error_buffer.value.decode("utf-8", errors="replace") or None
-        _validate_actual_flags(actual_flags, with_speed)
+        _validate_actual_flags(actual_flags, requested_flags, with_speed)
         numbers = [float(values[index]) for index in range(4)]
         import math
         if any(not math.isfinite(value) for value in numbers):
