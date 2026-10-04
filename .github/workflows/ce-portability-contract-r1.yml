@@ -1,0 +1,54 @@
+name: CE Portability Contract
+
+on:
+  pull_request:
+    branches:
+      - "development/convergent-a1-b1/2026-10-04-r1"
+  push:
+    branches:
+      - "development/calculation-core-clean-reimpl-r1/2026-10-04"
+
+jobs:
+  python-contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+        python: ["3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Compile source and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q src tests tools
+
+      - name: Run portability contract suite
+        shell: bash
+        env:
+          PYTHONPATH: src
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONHASHSEED: "0"
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: |
+          python -m unittest \
+            tests.test_core_golden_r1 \
+            tests.test_planned_core_controls_r1 \
+            tests.test_time_signal_boundaries \
+            tests.test_schema_structure_r1 \
+            tests.test_runtime_coverage_validator_r1 \
+            tests.test_runtime_reproducibility_r1 \
+            tests.test_independent_oracle_current_r1 \
+            tests.test_qualified_signal_record_r1 \
+            tests.test_daily_signal_r1 \
+            tests.test_product_boundary_r1 \
+            tests.test_signal_no_recomputation_r1 \
+            tests.test_evidence_contract_r1 \
+            tests.test_no_commercial_dependency
