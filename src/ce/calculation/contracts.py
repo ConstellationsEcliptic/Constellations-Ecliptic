@@ -265,12 +265,21 @@ class CalculationResult:
     execution_profile_id: str
     scenario_state: ScenarioState
     normalized_time: str | None
+    calculation_version: str = "CE-CALC-CORE-V1-R1-CONVERGENT"
     calculation_id: str | None = None
     observation_interval: tuple[str, str] | None = None
     object_states: tuple[ObjectState, ...] = field(default_factory=tuple)
+    object_records: tuple[ObjectRecord, ...] = field(default_factory=tuple)
     geometry_records: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     event_records: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    window_classification: ScenarioState = ScenarioState.NONE
+    possible_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    robust_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    solver_metadata: dict[str, Any] = field(default_factory=dict)
+    actual_ephemeris_resolution: dict[str, Any] = field(default_factory=dict)
+    calculation_flags: dict[str, Any] = field(default_factory=dict)
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
@@ -311,8 +320,10 @@ class CalculationResult:
             "execution_profile_id": self.execution_profile_id,
             "scenario_state": self.scenario_state.value,
             "normalized_time": self.normalized_time,
+            "calculation_version": self.calculation_version,
             "calculation_id": self.calculation_id,
             "observation_interval": list(self.observation_interval) if self.observation_interval is not None else None,
+            "object_records": [item.as_dict() for item in self.object_records],
             "object_states": [
                 {
                     "object_id": item.object_id,
@@ -325,6 +336,13 @@ class CalculationResult:
             "geometry_records": list(self.geometry_records),
             "event_records": list(self.event_records),
             "window_segments": list(self.window_segments),
+            "window_classification": self.window_classification.value,
+            "possible_window_segments": list(self.possible_window_segments),
+            "robust_window_segments": list(self.robust_window_segments),
+            "scenario_observations": list(self.scenario_observations),
+            "solver_metadata": self.solver_metadata,
+            "actual_ephemeris_resolution": self.actual_ephemeris_resolution,
+            "calculation_flags": self.calculation_flags,
             "warnings": list(self.warnings),
             "errors": list(self.errors),
             "provenance": self.provenance,
@@ -339,11 +357,19 @@ class CalculationResult:
             errors.append("invalid:request_id")
         if self.execution_profile_id != CANONICAL_EXECUTION_PROFILE_ID:
             errors.append("invalid:execution_profile_id:canonical_required")
+        if not isinstance(self.calculation_version, str) or not self.calculation_version.strip():
+            errors.append("invalid:calculation_version")
         if not isinstance(self.scenario_state, ScenarioState):
             errors.append("invalid:scenario_state")
 
         if self.normalized_time is not None and not _valid_utc(self.normalized_time):
             errors.append("invalid:normalized_time")
+
+        for index, record in enumerate(self.object_records):
+            if not isinstance(record, ObjectRecord):
+                errors.append(f"invalid:object_records[{index}]")
+            else:
+                errors.extend(f"object_records[{index}]:{e}" for e in record.validate())
 
         for index, state in enumerate(self.object_states):
             if not isinstance(state, ObjectState):
@@ -407,6 +433,15 @@ class CalculationResult:
                 )
                 if interval_end < interval_start:
                     errors.append("calculated_result_observation_interval_order")
+
+            if not isinstance(self.window_classification, ScenarioState):
+                errors.append("invalid:window_classification")
+            if not isinstance(self.solver_metadata, Mapping):
+                errors.append("invalid:solver_metadata:mapping_required")
+            if not isinstance(self.actual_ephemeris_resolution, Mapping):
+                errors.append("invalid:actual_ephemeris_resolution:mapping_required")
+            if not isinstance(self.calculation_flags, Mapping):
+                errors.append("invalid:calculation_flags:mapping_required")
 
             if self._runtime_identity is None:
                 errors.append("calculated_result_requires_runtime_identity")
