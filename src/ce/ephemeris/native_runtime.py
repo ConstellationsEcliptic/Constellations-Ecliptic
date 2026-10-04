@@ -95,6 +95,11 @@ def _git_blob_sha1(path: Path) -> str:
     return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
 
 
+def _canonical_swiss_bundle_aggregate_sha256(observed: dict[str, str]) -> str:
+    lines = "".join(f"{name} {observed[name]}\n" for name in sorted(observed))
+    return sha256(lines.encode("utf-8")).hexdigest()
+
+
 def verify_canonical_swiss_bundle(root: Path) -> str:
     root = root.resolve()
     if not root.is_dir() or root.is_symlink():

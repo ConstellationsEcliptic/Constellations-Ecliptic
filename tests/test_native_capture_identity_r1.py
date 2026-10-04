@@ -115,6 +115,22 @@ class NativeCaptureIdentityR1Tests(unittest.TestCase):
                 "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
             )
 
+    def test_canonical_bundle_aggregate_uses_real_newlines(self) -> None:
+        from ce.ephemeris.native_runtime import (
+            CANONICAL_SWISS_BUNDLE_SHA256,
+            _canonical_swiss_bundle_aggregate_sha256,
+        )
+
+        observed = {
+            "seas_18.se1": "a2cd8fc33807c78ca9a700c91c2e042258b12fc4796519e00781440b5ad8b2e2",
+            "semo_18.se1": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7",
+            "sepl_18.se1": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66",
+        }
+        self.assertEqual(
+            _canonical_swiss_bundle_aggregate_sha256(observed),
+            CANONICAL_SWISS_BUNDLE_SHA256,
+        )
+
     def test_external_fixture_path_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "fixture.json"
