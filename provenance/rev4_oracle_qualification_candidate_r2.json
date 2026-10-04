@@ -258,5 +258,11 @@
     "seal": "NO",
     "authorization": "NON_AUTHORIZED",
     "fail_closed": true
+  },
+  "historical_b7": {
+    "status": "HISTORICAL_SUPPORTING_EVIDENCE_ONLY",
+    "authority": "NOT_ESTABLISHED",
+    "promotion_allowed": false,
+    "note": "B7 is preserved as historical differential/algorithm evidence and is not promoted to current oracle authority."
   }
 }
