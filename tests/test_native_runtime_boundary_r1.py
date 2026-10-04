@@ -37,6 +37,17 @@ class NativeRuntimeBoundaryR1Tests(unittest.TestCase):
     def test_candidate_bundle_identity_is_fixed(self) -> None:
         self.assertEqual(len(CANONICAL_SWISS_BUNDLE_SHA256), 64)
 
+    def test_unknown_object_fails_closed_without_synthetic_valid_state(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            library = Path(directory) / "libswe.dll"
+            with self.assertRaisesRegex(NativeRuntimeError, "runtime_not_authorized"):
+                NativeSwissEphemerisAdapter(
+                    library_path=library,
+                    ephemeris_root=Path(directory),
+                    calling_convention="__cdecl",
+                    runtime_authorized=False,
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
