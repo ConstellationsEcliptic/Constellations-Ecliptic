@@ -249,7 +249,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
         runtime = TzifRuntime(
             version="2026d",
             files=files,
-            expected_manifest_sha256=compute_manifest_manifest(files) if False else compute_manifest_sha256(files),
+            expected_manifest_sha256=compute_manifest_sha256(files),
         )
         with self.assertRaisesRegex(TzifRuntimeError, "nonexistent_local_time"):
             runtime.resolve_local_instant(datetime(2024, 3, 10, 2, 30), name)
