@@ -4,7 +4,12 @@ from datetime import datetime, timedelta, timezone
 import unittest
 
 from ce.calculation.contracts import ObjectRecord
-from ce.calculation.kernel import KernelFailure, calculate_aspect_window, validate_kernel_window_result
+from ce.calculation.kernel import (
+    KernelFailure,
+    calculate_aspect_window,
+    calculate_zero_birth_aspect_window,
+    validate_kernel_window_result,
+)
 from ce.foundation.status import CalculationStatus
 
 
@@ -45,6 +50,40 @@ class KernelR1Tests(unittest.TestCase):
         self.assertTrue(result.events)
         self.assertTrue(result.windows)
         self.assertEqual(result.events[0].instant_utc, "2026-01-02T00:00:00Z")
+
+    def test_zero_birth_orchestrator_preserves_sampled_variable_state(self) -> None:
+        start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        result = calculate_zero_birth_aspect_window(
+            FakeProvider(),
+            birth_interval_start_utc=start,
+            birth_interval_end_utc=start + timedelta(days=1),
+            target_start_utc=start,
+            target_end_utc=start + timedelta(days=2),
+            transit_object="SUN",
+            natal_object="MOON",
+            aspect="SEXTILE",
+            scenario_count=4,
+            samples=64,
+        )
+        self.assertIs(result.status, CalculationStatus.NATAL_EVIDENCE_VARIABLE)
+        self.assertEqual(result.scenario_state.value, "VARIABLE")
+        self.assertEqual(result.scenario_count, 4)
+        self.assertEqual(len(result.scenario_ids), 4)
+        self.assertTrue(result.possible_segments_seconds)
+
+    def test_zero_birth_orchestrator_rejects_bad_intervals(self) -> None:
+        start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        with self.assertRaisesRegex(KernelFailure, "birth_interval_order_invalid"):
+            calculate_zero_birth_aspect_window(
+                FakeProvider(),
+                birth_interval_start_utc=start + timedelta(days=1),
+                birth_interval_end_utc=start,
+                target_start_utc=start,
+                target_end_utc=start + timedelta(days=1),
+                transit_object="SUN",
+                natal_object="MOON",
+                aspect="SEXTILE",
+            )
 
     def test_invalid_provider_cannot_create_window(self) -> None:
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)

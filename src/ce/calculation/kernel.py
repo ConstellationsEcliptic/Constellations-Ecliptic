@@ -8,7 +8,7 @@ from ce.calculation.contracts import ObjectRecord
 from ce.calculation.geometry import aspect_geometry, effective_orb
 from ce.calculation.registry import EXPECTED_OBJECTS, RegistryValidationError
 from ce.calculation.window_solver import WindowSolution, solve_aspect_window
-from ce.foundation.status import CalculationStatus
+from ce.foundation.status import CalculationStatus, ScenarioState
 
 
 class KernelFailure(ValueError):
@@ -42,6 +42,19 @@ class KernelCalculation:
     samples: int
     solver_residual_deg: float
     event_time_tolerance_seconds: float
+
+
+@dataclass(frozen=True)
+class ZeroBirthKernelCalculation:
+    """Scenario-bounded zero-birth calculation with sampled uncertainty semantics."""
+
+    status: CalculationStatus
+    scenario_state: ScenarioState
+    window_classification: ScenarioState
+    possible_segments_seconds: tuple[tuple[float, float], ...]
+    robust_segments_seconds: tuple[tuple[float, float], ...]
+    scenario_count: int
+    scenario_ids: tuple[str, ...]
 
 
 def _canonical_utc(value: datetime) -> str:
@@ -139,6 +152,105 @@ def calculate_aspect_window(
         samples=samples,
         solver_residual_deg=solution.root_search.residual,
         event_time_tolerance_seconds=solution.root_search.time_tolerance_seconds,
+    )
+
+
+def calculate_zero_birth_aspect_window(
+    provider: NumericalProvider,
+    *,
+    birth_interval_start_utc: datetime,
+    birth_interval_end_utc: datetime,
+    target_start_utc: datetime,
+    target_end_utc: datetime,
+    transit_object: str,
+    natal_object: str,
+    aspect: str,
+    scenario_count: int = 9,
+    samples: int = 256,
+) -> ZeroBirthKernelCalculation:
+    """Compose the provider-backed kernel with the bounded zero-birth evaluator."""
+
+    from ce.calculation.scenario_evaluator import evaluate_zero_birth_scenarios
+    from ce.calculation.scenario_windows import build_scenario_instants, canonical_utc, scenario_id
+
+    if birth_interval_end_utc <= birth_interval_start_utc:
+        raise KernelFailure("birth_interval_order_invalid")
+    if target_end_utc <= target_start_utc:
+        raise KernelFailure("target_interval_order_invalid")
+    for value in (
+        birth_interval_start_utc,
+        birth_interval_end_utc,
+        target_start_utc,
+        target_end_utc,
+    ):
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise KernelFailure("all_instants_must_be_timezone_aware")
+    if scenario_count < 2:
+        raise KernelFailure("scenario_count_too_small")
+
+    target_scope = {
+        "transit_object": transit_object,
+        "natal_object": natal_object,
+        "aspect": aspect,
+        "target_start_utc": _canonical_utc(target_start_utc),
+        "target_end_utc": _canonical_utc(target_end_utc),
+    }
+    total_seconds = (target_end_utc - target_start_utc).total_seconds()
+    target_start_timestamp = target_start_utc.timestamp()
+
+    def evaluate_birth(
+        birth_instant: datetime,
+    ) -> tuple[CalculationStatus, tuple[tuple[float, float], ...]]:
+        result = calculate_aspect_window(
+            provider,
+            birth_instant_utc=birth_instant,
+            target_start_utc=target_start_utc,
+            target_end_utc=target_end_utc,
+            transit_object=transit_object,
+            natal_object=natal_object,
+            aspect=aspect,
+            samples=samples,
+        )
+        segments: list[tuple[float, float]] = []
+        for window in result.windows:
+            start = _parse_target(window.entry_utc).timestamp() - target_start_timestamp
+            end = _parse_target(window.exit_utc).timestamp() - target_start_timestamp
+            if start < 0.0 or end > total_seconds or end <= start:
+                raise KernelFailure("kernel_window_outside_target_interval")
+            segments.append((start, end))
+        return result.status, tuple(segments)
+
+    aggregate = evaluate_zero_birth_scenarios(
+        birth_interval_start_utc,
+        birth_interval_end_utc,
+        target_scope=target_scope,
+        evaluate_birth=evaluate_birth,
+        scenario_count=scenario_count,
+    )
+    instants = build_scenario_instants(
+        birth_interval_start_utc,
+        birth_interval_end_utc,
+        scenario_count,
+    )
+    expected_ids = tuple(
+        scenario_id(
+            birth_instant_utc=canonical_utc(instant),
+            target_scope=target_scope,
+        )
+        for instant in instants
+    )
+    actual_ids = tuple(item.scenario_id for item in aggregate.evaluations)
+    if actual_ids != expected_ids[: len(actual_ids)]:
+        raise KernelFailure("scenario_identity_order_mismatch")
+
+    return ZeroBirthKernelCalculation(
+        status=aggregate.status,
+        scenario_state=aggregate.scenario_state,
+        window_classification=aggregate.window_classification,
+        possible_segments_seconds=aggregate.possible_segments,
+        robust_segments_seconds=aggregate.robust_segments,
+        scenario_count=len(aggregate.evaluations),
+        scenario_ids=actual_ids,
     )
 
 

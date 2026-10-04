@@ -1,1 +1,27 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"CE Signal Result","type":"object","required":["status","canon_input_valid"],"properties":{"status":{"type":"string"},"canon_input_valid":{"type":"boolean"}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Signal Result R2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "canon_input_valid"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "VALID",
+        "NON_AUTHORIZED",
+        "INVALID_INPUT",
+        "CALCULATION_FAILURE",
+        "NOT_IMPLEMENTED",
+        "KNOWN_UNAVAILABLE",
+        "INPUT_UNSUPPORTED"
+      ]
+    },
+    "canon_input_valid": {
+      "type": "boolean"
+    }
+  }
+}
