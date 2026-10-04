@@ -14,7 +14,7 @@ from ce.ephemeris.native_runtime import (
     SEFLG_SPEED,
     SEFLG_SWIEPH,
 )
-from ce.runtime.reproducibility import RuntimeCapture, compare_capture_outputs
+from ce.runtime.reproducibility import RuntimeCapture, ReproducibilityCaptureError, compare_capture_outputs
 from ce.timezone.runtime import CANONICAL_IANA_VERSION, CANONICAL_TZIF_BUNDLE_SHA256
 
 
@@ -47,7 +47,8 @@ def _parse_capture(path: Path) -> tuple[RuntimeCapture, dict[str, object]]:
     missing = [key for key in required if key not in payload]
     if missing:
         raise CoverageValidationError(f"capture_missing_keys:{','.join(missing)}")
-    capture = RuntimeCapture(
+    try:
+        capture = RuntimeCapture(
         capture_id=payload["capture_id"],
         captured_at_utc=payload["captured_at_utc"],
         platform=payload["platform"],
@@ -66,8 +67,10 @@ def _parse_capture(path: Path) -> tuple[RuntimeCapture, dict[str, object]]:
         native_runtime_version=payload["native_runtime_version"],
         swiss_source_commit=payload["swiss_source_commit"],
         calling_convention=payload["calling_convention"],
-        fixtures=tuple(payload["fixtures"]),
-    )
+            fixtures=tuple(payload["fixtures"]),
+        )
+    except ReproducibilityCaptureError as exc:
+        raise CoverageValidationError(f"capture_invalid:{exc}") from exc
     return capture, raw
 
 
