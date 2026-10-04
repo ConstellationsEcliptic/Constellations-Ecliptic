@@ -78,3 +78,18 @@ def aggregate_qualified_signal_records(
         state=DailySignalState.QUIET_SKY,
         qualifying_signal_refs=(),
     )
+
+
+def aggregate_completed_day(
+    signals: Iterable[SignalResult],
+    *,
+    observation_completed: bool,
+) -> DailySignalAggregation:
+    """Aggregate only the current completed observation set.
+
+    Previous-day state is deliberately not an input to this function, so a
+    failed current observation cannot be replaced by stale prior-day output.
+    """
+    if not observation_completed:
+        raise ValueError("daily_observation_not_completed")
+    return aggregate_daily_signals(signals)
