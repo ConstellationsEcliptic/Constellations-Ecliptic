@@ -181,7 +181,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
     def test_int_01_quiet_sky(self) -> None:
         class QuietProvider:
             def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
-                return ObjectState(object_id, 200.0, 0.0, CalculationStatus.VALID)
+                return ObjectState(object_id, 200.0 if object_id == "MOON" else 100.0, 0.0, CalculationStatus.VALID)
 
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
         result = calculate_aspect_window(
