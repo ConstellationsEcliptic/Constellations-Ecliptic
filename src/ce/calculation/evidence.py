@@ -141,6 +141,7 @@ class EvidencePacketRef:
 @dataclass(frozen=True)
 class EvidencePacket:
     evidence_packet_id: str
+    calculation_id: str
     input_identity: dict[str, Any]
     profile_version: dict[str, Any]
     observation_instant_or_interval: dict[str, Any]
@@ -154,6 +155,10 @@ class EvidencePacket:
     exact_events: tuple[dict[str, Any], ...]
     window_segments: tuple[dict[str, Any], ...]
     scenario_stability_state: str
+    scenario_window_state: str = "NONE"
+    possible_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    robust_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     warnings: tuple[str, ...]
     errors: tuple[str, ...]
     numerical_tolerances: dict[str, Any]
@@ -167,6 +172,8 @@ class EvidencePacket:
 
         if not isinstance(self.evidence_packet_id, str) or not self.evidence_packet_id.strip():
             errors.append("invalid:evidence_packet_id")
+        if not isinstance(self.calculation_id, str) or not self.calculation_id.strip():
+            errors.append("invalid:calculation_id")
         if not isinstance(self.calculation_version, str) or not self.calculation_version.strip():
             errors.append("invalid:calculation_version")
         if self.execution_profile_id != CANONICAL_EXECUTION_PROFILE_ID:
@@ -248,6 +255,24 @@ class EvidencePacket:
 
         if self.scenario_stability_state not in {"STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"}:
             errors.append("invalid:scenario_stability_state")
+        if self.scenario_window_state not in {"STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"}:
+            errors.append("invalid:scenario_window_state")
+
+        for name, value in (("possible_window_segments", self.possible_window_segments), ("robust_window_segments", self.robust_window_segments)):
+            errors.extend(_record_errors(
+                value,
+                path=name,
+                required_keys=("entry_utc", "exact_events_utc", "exit_utc"),
+                utc_keys=("entry_utc", "exit_utc"),
+            ))
+        if not isinstance(self.scenario_observations, (list, tuple)):
+            errors.append("invalid:scenario_observations:sequence_required")
+        else:
+            for index, item in enumerate(self.scenario_observations):
+                if not isinstance(item, Mapping):
+                    errors.append(f"invalid:scenario_observations[{index}]:mapping_required")
+                else:
+                    errors.extend(_canonical_domain_errors(item, f"scenario_observations[{index}]"))
 
         for name in ("warnings", "errors"):
             value = getattr(self, name)
