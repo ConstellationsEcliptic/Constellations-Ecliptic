@@ -6,6 +6,7 @@ import unittest
 from datetime import date, time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+from ce.calculation.evidence import EvidencePacket
 from ce.calculation.time import (
     resolve_observation_civil_time,
     resolve_zero_birth_interval,
