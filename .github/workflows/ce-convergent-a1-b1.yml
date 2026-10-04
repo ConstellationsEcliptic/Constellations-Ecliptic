@@ -14,19 +14,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Python version
-        run: python --version
+        run: python3.13 --version
       - name: Compile source and tests
-        run: python -m compileall -q src tests
+        run: python3.13 -m compileall -q src tests
       - name: Compute canonical source-tree identity
         env:
           PYTHONPATH: ${{ github.workspace }}/src
-        run: python tools/compute_source_identity_v2.py
+        run: python3.13 tools/compute_source_identity_v2.py
       - name: Verify canonical source-tree identity
         env:
           PYTHONPATH: ${{ github.workspace }}/src
-        run: python tools/verify_source_identity.py
+        run: python3.13 tools/verify_source_identity.py
       - name: Run test suite
         env:
           PYTHONDONTWRITEBYTECODE: "1"
           PYTHONPATH: ${{ github.workspace }}/src
-        run: python -m unittest discover -s tests -p 'test_*.py' -v
+        run: python3.13 -m unittest discover -s tests -p 'test_*.py' -v
