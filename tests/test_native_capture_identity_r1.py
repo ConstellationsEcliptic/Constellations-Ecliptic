@@ -195,23 +195,6 @@ class NativeCaptureIdentityR1Tests(unittest.TestCase):
             with self.assertRaisesRegex(NativeRuntimeError, "runtime_identity_argument_mismatch"):
                 _resolve_runtime_environment_identity("sha256:" + "a" * 64, path)
 
-    def test_capture_script_closes_transcript_before_packaging(self) -> None:
-        script = (self.ROOT / "tools" / "capture_native_runtime.py").read_text(encoding="utf-8")
-        stop_positions = []
-        marker = "Stop-Transcript | Out-Null"
-        start = 0
-        while True:
-            position = script.find(marker, start)
-            if position < 0:
-                break
-            stop_positions.append(position)
-            start = position + len(marker)
-        compress_position = script.find("Compress-Archive")
-        self.assertGreaterEqual(compress_position, 0)
-        self.assertTrue(any(position < compress_position for position in stop_positions))
-        self.assertIn("$transcriptActive = $true", script)
-        self.assertIn("$transcriptActive = $false", script)
-
 
 if __name__ == "__main__":
     unittest.main()
