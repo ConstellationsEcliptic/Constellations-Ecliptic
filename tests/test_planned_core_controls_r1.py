@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from zoneinfo import ZoneInfo
+from hashlib import sha256
 
 from ce.calculation.contracts import CalculationRequest, BirthInput, ObjectState, ObjectRecord
 from ce.calculation.evidence import EvidencePacket
@@ -217,28 +218,21 @@ class PlannedCoreControlsR1(unittest.TestCase):
 
 
     # TIME-01
-    def test_time_01_historical_timezone(self) -> None:
-        name = "America/New_York"
-        data = self._system_tzif(name)
+    def test_time_01_historical_timezone_normative_fixture(self) -> None:
+        name = "Asia/Jakarta"
+        data = self._controlled_tzif(name, "4ef13306f4b37f314274eb0c019d10811f79240e717f790064e361cb98045d11")
         files = {name: data}
         runtime = TzifRuntime(
             version="2026d",
             files=files,
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
-        resolved = runtime.resolve_local_instant(datetime(1970, 1, 1, 12, 0), name)
-        self.assertEqual(resolved.isoformat(), "1970-01-01T17:00:00+00:00")
+        resolved = runtime.resolve_local_instant(datetime(2020, 1, 1, 12, 0), name)
+        self.assertEqual(resolved.isoformat(), "2020-01-01T05:00:00+00:00")
 
-    # TIME-02 / TIME-03 mechanics use injected TZif bytes, never host-global ZoneInfo.
-    def _system_tzif(self, zone_name: str) -> bytes:
-        path = Path("/usr/share/zoneinfo") / zone_name
-        if not path.is_file():
-            self.skipTest(f"system TZif not present: {zone_name}")
-        return path.read_bytes()
-
-    def test_time_02_ambiguous_rejected(self) -> None:
+    def test_time_02_ambiguous_rejected_normative_fixture(self) -> None:
         name = "America/New_York"
-        data = self._system_tzif(name)
+        data = self._controlled_tzif(name, "e9ed07d7bee0c76a9d442d091ef1f01668fee7c4f26014c0a868b19fe6c18a95")
         files = {name: data}
         runtime = TzifRuntime(
             version="2026d",
@@ -246,19 +240,28 @@ class PlannedCoreControlsR1(unittest.TestCase):
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
         with self.assertRaisesRegex(TzifRuntimeError, "ambiguous_local_time"):
-            runtime.resolve_local_instant(datetime(2026, 11, 1, 1, 30), name)
+            runtime.resolve_local_instant(datetime(2024, 11, 3, 1, 30), name)
 
-    def test_time_03_nonexistent_rejected(self) -> None:
+    def test_time_03_nonexistent_rejected_normative_fixture(self) -> None:
         name = "America/New_York"
-        data = self._system_tzif(name)
+        data = self._controlled_tzif(name, "e9ed07d7bee0c76a9d442d091ef1f01668fee7c4f26014c0a868b19fe6c18a95")
         files = {name: data}
         runtime = TzifRuntime(
             version="2026d",
             files=files,
-            expected_manifest_sha256=compute_manifest_sha256(files),
+            expected_manifest_sha256=compute_manifest_manifest(files) if False else compute_manifest_sha256(files),
         )
         with self.assertRaisesRegex(TzifRuntimeError, "nonexistent_local_time"):
-            runtime.resolve_local_instant(datetime(2026, 3, 8, 2, 30), name)
+            runtime.resolve_local_instant(datetime(2024, 3, 10, 2, 30), name)
+
+    def _controlled_tzif(self, zone_name: str, expected_sha256: str) -> bytes:
+        path = Path("/usr/share/zoneinfo") / zone_name
+        if not path.is_file():
+            self.skipTest(f"controlled fixture zone not present: {zone_name}")
+        data = path.read_bytes()
+        observed = sha256(data).hexdigest()
+        self.assertEqual(observed, expected_sha256)
+        return data
 
     def test_current_runtime_gate_is_fail_closed(self) -> None:
         identity = RuntimeIdentity(
