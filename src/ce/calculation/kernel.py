@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Protocol
 
-from ce.calculation.contracts import ObjectState
+from ce.calculation.contracts import ObjectRecord
 from ce.calculation.geometry import aspect_geometry, effective_orb
 from ce.calculation.registry import EXPECTED_OBJECTS, RegistryValidationError
 from ce.calculation.window_solver import WindowSolution, solve_aspect_window
@@ -16,7 +16,7 @@ class KernelFailure(ValueError):
 
 
 class NumericalProvider(Protocol):
-    def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
+    def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectRecord:
         """Return one object state from the authoritative numerical provider."""
 
 
@@ -35,7 +35,7 @@ class KernelWindow:
 @dataclass(frozen=True)
 class KernelCalculation:
     status: CalculationStatus
-    natal_object: ObjectState
+    natal_object: ObjectRecord
     events: tuple[KernelEvent, ...]
     windows: tuple[KernelWindow, ...]
     tangential_contacts: tuple[str, ...]
@@ -94,8 +94,8 @@ def calculate_aspect_window(
         _, signed, _, _, _ = aspect_geometry(
             transit_object,
             natal_object,
-            float(transit.longitude_deg),
-            float(natal.longitude_deg),
+            float(transit.longitude),
+            float(natal.longitude),
             transit.speed_deg_per_day,
             aspect,
         )
