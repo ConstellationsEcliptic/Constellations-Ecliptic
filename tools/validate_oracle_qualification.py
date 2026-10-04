@@ -67,7 +67,7 @@ def validate() -> None:
     if not isinstance(basis, dict):
         raise OracleQualificationError("basis_missing")
     _sha(basis.get("base_candidate_head"),40,"base_candidate_head")
-    _sha(basis.get("base_candidate_tree_sha256"),64,"base_candidate_tree_sha256")
+    _sha(basis.get("base_candidate_tree_git_sha1"),40,"base_candidate_tree_git_sha1")
     _sha(basis.get("base_source_tree_identity"),64,"base_source_tree_identity")
     _check_ancestry(basis["base_candidate_head"])
 
