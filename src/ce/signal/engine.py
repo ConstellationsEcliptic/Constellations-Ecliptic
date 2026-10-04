@@ -75,7 +75,7 @@ class SignalEngine:
     def _phase(packet: EvidencePacket) -> str | None:
         states: set[str] = set()
         for record in packet.geometry_records:
-            if isinstance(record, dict):
+            if isinstance(record, Mapping):
                 state = record.get("kinematic_state")
                 if isinstance(state, str) and state.strip():
                     states.add(state)
