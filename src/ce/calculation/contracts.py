@@ -191,6 +191,10 @@ class ObjectRecord:
         ):
             if value is not None and not _finite_number(value):
                 errors.append(f"invalid:{name}")
+        if self.latitude is not None and not -90.0 <= float(self.latitude) <= 90.0:
+            errors.append("latitude_must_be_normalized")
+        if self.distance is not None and float(self.distance) <= 0.0:
+            errors.append("distance_must_be_positive")
         if self.longitude is not None and not 0.0 <= float(self.longitude) < 360.0:
             errors.append("longitude_must_be_normalized")
         if self.observation_time_utc is not None and not _valid_utc(self.observation_time_utc):
@@ -201,6 +205,8 @@ class ObjectRecord:
         if self.object_status is CalculationStatus.VALID:
             if self.actual_flags is None:
                 errors.append("valid_object_requires_actual_flags")
+            elif (self.actual_flags & self.requested_flags) != self.requested_flags:
+                errors.append("valid_object_actual_flags_do_not_cover_requested_flags")
             for value, name in (
                 (self.longitude, "longitude"),
                 (self.latitude, "latitude"),
@@ -210,8 +216,9 @@ class ObjectRecord:
                     errors.append(f"valid_object_requires_{name}")
             if self.errors:
                 errors.append("valid_object_cannot_have_errors")
-        elif self.longitude is not None:
-            errors.append("nonvalid_object_must_not_publish_longitude")
+        else:
+            if any(value is not None for value in (self.longitude, self.latitude, self.distance, self.speed)):
+                errors.append("nonvalid_object_must_not_publish_numeric_state")
         return tuple(errors)
 
     def __post_init__(self) -> None:
