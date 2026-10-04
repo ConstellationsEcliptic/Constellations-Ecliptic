@@ -34,6 +34,7 @@ class RuntimeIdentity:
     source_authority_digest: str | None = None
     trusted_build_digest: str | None = None
     provenance_signature_digest: str | None = None
+    runtime_environment_digest: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -60,6 +61,7 @@ class RuntimeIdentity:
             "source_authority_digest": (self.source_authority_digest, _SHA256_RE, "64-hex"),
             "trusted_build_digest": (self.trusted_build_digest, _SHA256_RE, "64-hex"),
             "provenance_signature_digest": (self.provenance_signature_digest, _SHA256_RE, "64-hex"),
+            "runtime_environment_digest": (self.runtime_environment_digest, _SHA256_RE, "64-hex"),
         }
         for name, (value, pattern, description) in shaped.items():
             if value is not None and (

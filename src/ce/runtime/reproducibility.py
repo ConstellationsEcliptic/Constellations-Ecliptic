@@ -14,6 +14,7 @@ from ce.foundation.serialization import canonical_json
 _COMMIT_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 _RUNTIME_IMAGE_RE = re.compile(r"^sha256:[0-9a-fA-F]{64}$")
+_SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 _UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$")
 
 
@@ -32,7 +33,9 @@ class RuntimeCapture:
     source_commit: str
     source_tree_sha256_v2: str
     dependency_lock_digest: str
-    runtime_image_digest: str
+    runtime_environment_kind: str
+    runtime_image_digest: str | None
+    runtime_environment_digest: str | None
     timezone_bundle_digest: str
     ephemeris_bundle_digest: str
     native_library_sha256: str
@@ -73,8 +76,18 @@ class RuntimeCapture:
         ):
             if not isinstance(value, str) or not _SHA256_RE.fullmatch(value):
                 errors.append(f"invalid:{name}")
-        if not isinstance(self.runtime_image_digest, str) or not _RUNTIME_IMAGE_RE.fullmatch(self.runtime_image_digest):
-            errors.append("invalid:runtime_image_digest")
+        if self.runtime_environment_kind not in {"OCI_IMAGE", "HOST_NATIVE"}:
+            errors.append("invalid:runtime_environment_kind")
+        if self.runtime_environment_kind == "OCI_IMAGE":
+            if not isinstance(self.runtime_image_digest, str) or not _RUNTIME_IMAGE_RE.fullmatch(self.runtime_image_digest):
+                errors.append("invalid:runtime_image_digest")
+            if self.runtime_environment_digest is not None:
+                errors.append("invalid:runtime_environment_digest_for_oci")
+        elif self.runtime_environment_kind == "HOST_NATIVE":
+            if self.runtime_image_digest is not None:
+                errors.append("invalid:runtime_image_digest_for_host_native")
+            if not isinstance(self.runtime_environment_digest, str) or not _SHA256_RE.fullmatch(self.runtime_environment_digest):
+                errors.append("invalid:runtime_environment_digest")
         if self.calling_convention not in {"__cdecl", "__stdcall"}:
             errors.append("invalid:calling_convention")
         if not isinstance(self.fixtures, (tuple, list)):
@@ -108,7 +121,9 @@ class RuntimeCapture:
             "source_commit": self.source_commit,
             "source_tree_sha256_v2": self.source_tree_sha256_v2,
             "dependency_lock_digest": self.dependency_lock_digest,
+            "runtime_environment_kind": self.runtime_environment_kind,
             "runtime_image_digest": self.runtime_image_digest,
+            "runtime_environment_digest": self.runtime_environment_digest,
             "timezone_bundle_digest": self.timezone_bundle_digest,
             "ephemeris_bundle_digest": self.ephemeris_bundle_digest,
             "native_library_sha256": self.native_library_sha256,
@@ -206,7 +221,9 @@ def compare_capture_outputs(
         "source_commit",
         "source_tree_sha256_v2",
         "dependency_lock_digest",
+        "runtime_environment_kind",
         "runtime_image_digest",
+        "runtime_environment_digest",
         "timezone_bundle_digest",
         "ephemeris_bundle_digest",
         "native_library_sha256",

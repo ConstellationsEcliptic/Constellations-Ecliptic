@@ -37,7 +37,14 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree-sha256-v2", required=True)
     parser.add_argument("--dependency-lock-digest", required=True)
-    parser.add_argument("--runtime-image-digest", required=True)
+    runtime_identity = parser.add_mutually_exclusive_group(required=True)
+    runtime_identity.add_argument("--runtime-image-digest")
+    runtime_identity.add_argument("--runtime-environment-digest")
+    parser.add_argument(
+        "--runtime-environment-kind",
+        choices=("OCI_IMAGE", "HOST_NATIVE"),
+        required=True,
+    )
     parser.add_argument("--timezone-bundle-digest", required=True)
     parser.add_argument("--calling-convention", choices=("__cdecl", "__stdcall"), required=True)
     return parser
@@ -213,6 +220,17 @@ def main() -> int:
             }
         )
 
+    if args.runtime_environment_kind == "OCI_IMAGE":
+        if not args.runtime_image_digest or args.runtime_environment_digest is not None:
+            raise NativeRuntimeError("runtime_identity_argument_mismatch")
+        runtime_image_digest = args.runtime_image_digest
+        runtime_environment_digest = None
+    else:
+        if args.runtime_image_digest is not None or not args.runtime_environment_digest:
+            raise NativeRuntimeError("runtime_identity_argument_mismatch")
+        runtime_image_digest = None
+        runtime_environment_digest = args.runtime_environment_digest
+
     runtime_capture = RuntimeCapture(
         capture_id="CE-RUNTIME-CAPTURE-" + uuid.uuid4().hex,
         captured_at_utc=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
@@ -223,7 +241,9 @@ def main() -> int:
         source_commit=args.source_commit,
         source_tree_sha256_v2=args.source_tree_sha256_v2,
         dependency_lock_digest=args.dependency_lock_digest,
-        runtime_image_digest=args.runtime_image_digest,
+        runtime_environment_kind=args.runtime_environment_kind,
+        runtime_image_digest=runtime_image_digest,
+        runtime_environment_digest=runtime_environment_digest,
         timezone_bundle_digest=args.timezone_bundle_digest,
         ephemeris_bundle_digest=bundle_hash,
         native_library_sha256=library_hash,
