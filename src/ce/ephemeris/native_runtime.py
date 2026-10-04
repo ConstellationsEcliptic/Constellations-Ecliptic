@@ -227,19 +227,9 @@ class NativeSwissEphemerisAdapter:
         with_speed: bool,
     ) -> NativeSwissCalculation:
         if object_id not in EXPECTED_OBJECTS:
-            return NativeSwissCalculation(
-                object_id=object_id,
-                swiss_object_id=-1,
-                jd_ut=float(julian_day_ut),
-                longitude_deg=0.0,
-                latitude_deg=0.0,
-                distance_au=0.0,
-                speed_deg_per_day=None,
-                requested_flags=0,
-                actual_flags=-1,
-                ephemeris="SWIEPH",
-                warning_or_error="unknown_ce_object",
-            )
+            raise NativeRuntimeError(f"object_not_in_current_registry:{object_id}")
+        # Verify the exact canonical data immediately before using the native runtime.
+        verify_canonical_swiss_bundle(self._ephemeris_root)
         requested_flags = SEFLG_SWIEPH | (SEFLG_SPEED if with_speed else 0)
         values = (ctypes.c_double * 6)()
         error_buffer = ctypes.create_string_buffer(256)
@@ -255,6 +245,11 @@ class NativeSwissEphemerisAdapter:
         message = error_buffer.value.decode("utf-8", errors="replace") or None
         _validate_actual_flags(actual_flags, with_speed)
         numbers = [float(values[index]) for index in range(4)]
+        import math
+        if any(not math.isfinite(value) for value in numbers):
+            raise NativeRuntimeError("native_numeric_result_not_finite")
+        # Verify again after calculation so data mutation cannot be silently accepted.
+        verify_canonical_swiss_bundle(self._ephemeris_root)
         if any(not __import__("math").isfinite(value) for value in numbers):
             raise NativeRuntimeError("native_numeric_result_not_finite")
         return NativeSwissCalculation(
