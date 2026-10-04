@@ -58,6 +58,23 @@ def _validate_rel_path(value: object) -> str:
     return path
 
 
+
+def compute_manifest_sha256(files: Mapping[str, bytes]) -> str:
+    """Identity function for injected test fixtures.
+
+    Production package identity is derived from the exact runtime-tzif-manifest.json
+    bytes; this helper exists only for isolated fixture verification.
+    """
+    digest = sha256()
+    for path in sorted(files):
+        encoded = path.encode("utf-8")
+        data = files[path]
+        digest.update(len(encoded).to_bytes(4, "big"))
+        digest.update(encoded)
+        digest.update(len(data).to_bytes(8, "big"))
+        digest.update(sha256(data).digest())
+    return digest.hexdigest()
+
 def verify_tzif_manifest_file(
     manifest_path: Path,
     tzif_root: Path,
