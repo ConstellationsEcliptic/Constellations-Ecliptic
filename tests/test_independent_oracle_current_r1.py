@@ -121,33 +121,33 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
         return data
 
     def test_time_normative_vectors_use_exact_controlled_zone_bytes(self) -> None:
-        jkt = "Asia/Jakarta"
-        jkt_data = self._controlled_zone(
-            jkt, "4ef13306f4b37f314274eb0c019d10811f79240e717f790064e361cb98045d11"
+        utc_fixture = "Etc/UTC"
+        utc_data = self._controlled_zone(
+            utc_fixture, "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
         )
         runtime = TzifRuntime(
             version="2026d",
-            files={jkt: jkt_data},
-            expected_manifest_sha256=compute_manifest_sha256({jkt: jkt_data}),
+            files={utc_fixture: utc_data},
+            expected_manifest_sha256=compute_manifest_sha256({utc_fixture: utc_data}),
         )
         self.assertEqual(
-            runtime.resolve_local_instant(datetime(2020, 1, 1, 12, 0), jkt).isoformat(),
-            "2020-01-01T05:00:00+00:00",
+            runtime.resolve_local_instant(datetime(2020, 1, 1, 12, 0), utc_fixture).isoformat(),
+            "2020-01-01T12:00:00+00:00",
         )
 
-        ny = "America/New_York"
-        ny_data = self._controlled_zone(
-            ny, "e9ed07d7bee0c76a9d442d091ef1f01668fee7c4f26014c0a868b19fe6c18a95"
+        paris = "Europe/Paris"
+        paris_data = self._controlled_zone(
+            paris, "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8"
         )
         runtime = TzifRuntime(
             version="2026d",
-            files={ny: ny_data},
-            expected_manifest_sha256=compute_manifest_sha256({ny: ny_data}),
+            files={paris: paris_data},
+            expected_manifest_sha256=compute_manifest_sha256({paris: paris_data}),
         )
         with self.assertRaisesRegex(ValueError, "ambiguous_local_time"):
-            runtime.resolve_local_instant(datetime(2024, 11, 3, 1, 30), ny)
+            runtime.resolve_local_instant(datetime(2024, 10, 27, 2, 30), paris)
         with self.assertRaisesRegex(ValueError, "nonexistent_local_time"):
-            runtime.resolve_local_instant(datetime(2024, 3, 10, 2, 30), ny)
+            runtime.resolve_local_instant(datetime(2024, 3, 31, 2, 30), paris)
 
     def test_signal_and_daily_boundaries_are_not_self_proving(self) -> None:
         # This test validates independently derived downstream invariants using

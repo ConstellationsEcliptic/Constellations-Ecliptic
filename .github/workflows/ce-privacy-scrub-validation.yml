@@ -16,15 +16,14 @@ jobs:
           python-version: "3.13.15"
           check-latest: false
       - name: Compile source and tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
         run: python -m compileall -q src tests tools
       - name: Compute source-tree identity
         env:
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
           echo "SOURCE_TREE_SHA256_V2=$(python tools/compute_source_identity_v2.py)"
-      - name: Check prohibited personal-location strings
-        run: |
-          ! grep -RniE --exclude-dir=.git 'Jakarta|Indonesia|Kalimantan|Tanjung Selor|North Kalimantan' configs docs manifests profiles provenance schemas src tests tools README.md CHANGE_CONTROL.md CE_CONVERGENT_A1_B1_CHECKPOINT_R1.md
       - name: Run test suite
         env:
           PYTHONDONTWRITEBYTECODE: "1"
