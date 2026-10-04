@@ -155,16 +155,16 @@ class EvidencePacket:
     exact_events: tuple[dict[str, Any], ...]
     window_segments: tuple[dict[str, Any], ...]
     scenario_stability_state: str
-    scenario_window_state: str = "NONE"
-    possible_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
-    robust_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
-    scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     warnings: tuple[str, ...]
     errors: tuple[str, ...]
     numerical_tolerances: dict[str, Any]
     solver_metadata: dict[str, Any]
     actual_ephemeris_resolution: dict[str, Any]
     calculation_flags: dict[str, Any]
+    scenario_window_state: str = "NONE"
+    possible_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    robust_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
 
     def validate(self) -> tuple[str, ...]:
