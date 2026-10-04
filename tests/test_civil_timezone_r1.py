@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, time, timezone
 import unittest
 
 from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus
-from ce.timezone.civil import resolve_zero_birth_interval
+from ce.timezone.civil import resolve_observation_civil_time, resolve_zero_birth_interval
 
 
 class StubTzif:
@@ -60,3 +60,17 @@ class CivilTimezoneR1Tests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_observation_time_is_resolved_by_canonical_tzif_boundary(self) -> None:
+        result = resolve_observation_civil_time(
+            observation_date=date(2026, 1, 1),
+            observation_time=time(12, 0),
+            timezone_id="UTC",
+            timezone_version="2026d",
+            calendar_policy_id=CALENDAR_POLICY_GREGORIAN_ONLY,
+            tzif_runtime=StubTzif(),
+        )
+        self.assertEqual(result.status, CalculationStatus.VALID)
+        self.assertEqual(result.observation_time_state.value, "EXACT")
+        self.assertEqual(result.resolved_instant_utc, "2026-01-01T12:00:00Z")
