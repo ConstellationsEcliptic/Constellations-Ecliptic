@@ -105,6 +105,23 @@ def _record_errors(
     return tuple(errors)
 
 
+def _validate_window_orders(records: Any, path: str) -> tuple[str, ...]:
+    if not isinstance(records, (list, tuple)):
+        return ()
+    errors: list[str] = []
+    for index, record in enumerate(records):
+        if not isinstance(record, Mapping):
+            continue
+        entry = record.get("entry_utc")
+        exit_ = record.get("exit_utc")
+        if _valid_utc(entry) and _valid_utc(exit_):
+            entry_dt = datetime.fromisoformat(entry[:-1] + "+00:00")
+            exit_dt = datetime.fromisoformat(exit_[:-1] + "+00:00")
+            if exit_dt <= entry_dt:
+                errors.append(f"invalid:{path}[{index}]:order")
+    return tuple(errors)
+
+
 @dataclass(frozen=True)
 class EvidencePacketRef:
     """Compound identity binding a result to one EvidencePacket issuance."""
@@ -252,6 +269,7 @@ class EvidencePacket:
             required_keys=("entry_utc", "exact_events_utc", "exit_utc"),
             utc_keys=("entry_utc", "exit_utc"),
         ))
+        errors.extend(_validate_window_orders(self.window_segments, "window_segments"))
 
         if self.scenario_stability_state not in {"STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"}:
             errors.append("invalid:scenario_stability_state")
