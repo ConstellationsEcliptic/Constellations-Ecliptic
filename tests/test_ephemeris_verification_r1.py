@@ -50,7 +50,7 @@ class EphemerisVerificationR1Tests(unittest.TestCase):
 
     def test_requested_actual_flags_superset_is_valid(self) -> None:
         self.assertEqual(
-            classify_requested_actual_flags(258, 514),
+            classify_requested_actual_flags(258, 770),
             CalculationStatus.VALID,
         )
 
