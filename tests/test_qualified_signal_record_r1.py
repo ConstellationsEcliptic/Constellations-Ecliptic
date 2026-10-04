@@ -150,6 +150,27 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             "MIXED",
         )
 
+    def test_ambiguous_multi_signal_packet_is_rejected(self) -> None:
+        base = self._packet()
+        geometry = tuple(base.geometry_records) + (
+            {
+                "transit_object": "JUPITER",
+                "natal_object_or_scenario": "VENUS",
+                "aspect": "TRINE",
+                "directed_branch": 120.0,
+                "signed_deviation": 0.0,
+                "absolute_deviation": 0.0,
+                "effective_orb": 2.0,
+                "qualification_state": "QUALIFIED",
+                "kinematic_state": "EXACT",
+            },
+        )
+        from dataclasses import replace
+        packet = replace(base, geometry_records=geometry)
+        result = SignalEngine().evaluate(packet)
+        with self.assertRaisesRegex(ValueError, "qualified_signal_identity_ambiguous"):
+            issue_qualified_signal_record(packet, result)
+
     def test_cross_packet_signal_result_reference_is_rejected(self) -> None:
         packet = self._packet()
         result = SignalEngine().evaluate(packet)
