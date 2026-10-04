@@ -79,7 +79,7 @@ def calculate_aspect_window(
         raise KernelFailure("all_instants_must_be_timezone_aware")
 
     natal = provider.object_state_at(natal_object, birth_instant_utc)
-    if natal.status is not CalculationStatus.VALID:
+    if natal.object_status is not CalculationStatus.VALID:
         raise KernelFailure(f"natal_object_not_valid:{natal_object}:{natal.status.value}")
 
     total_seconds = (target_end_utc - target_start_utc).total_seconds()
