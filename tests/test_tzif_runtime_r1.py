@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import tempfile
 import unittest
 
 from ce.timezone.runtime import TzifRuntime, TzifRuntimeError, compute_manifest_sha256
