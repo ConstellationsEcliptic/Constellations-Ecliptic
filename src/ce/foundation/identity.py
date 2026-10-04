@@ -35,6 +35,7 @@ class RuntimeIdentity:
     trusted_build_digest: str | None = None
     provenance_signature_digest: str | None = None
     runtime_environment_digest: str | None = None
+    runtime_environment_kind: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -74,5 +75,19 @@ class RuntimeIdentity:
             or not _RUNTIME_IMAGE_RE.fullmatch(self.runtime_image_digest)
         ):
             errors.append("malformed:runtime_image_digest:sha256-prefixed")
+
+        if self.runtime_environment_kind is not None:
+            if self.runtime_environment_kind not in {"OCI_IMAGE", "HOST_NATIVE"}:
+                errors.append("malformed:runtime_environment_kind")
+            elif self.runtime_environment_kind == "OCI_IMAGE":
+                if self.runtime_image_digest is None:
+                    errors.append("missing:runtime_image_digest")
+                if self.runtime_environment_digest is not None:
+                    errors.append("conflict:runtime_environment_digest_for_oci")
+            elif self.runtime_environment_kind == "HOST_NATIVE":
+                if self.runtime_image_digest is not None:
+                    errors.append("conflict:runtime_image_digest_for_host_native")
+                if self.runtime_environment_digest is None:
+                    errors.append("missing:runtime_environment_digest")
 
         return tuple(errors)
