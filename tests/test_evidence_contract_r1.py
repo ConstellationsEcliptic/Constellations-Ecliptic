@@ -154,6 +154,61 @@ class EvidenceContractR1Tests(unittest.TestCase):
         )
         self.assertEqual(result.evidence_packet_ref.content_sha256, packet.content_sha256())
 
+    def test_invalid_stability_state_is_rejected(self) -> None:
+        packet = self.packet()
+        payload = {
+            "evidence_packet_id": "E-INVALID",
+            "input_identity": {"birth_date": "2000-01-01"},
+            "profile_version": {"id": "CE-CALC-V1-EP-001", "revision": 4},
+            "observation_instant_or_interval": {"start": "2026-01-01T00:00:00Z"},
+            "timezone_context": {"id": "UTC", "version": "2026d"},
+            "execution_profile_id": "CE-CALC-V1-EP-001",
+            "calculation_version": "v1",
+            "object_records": (),
+            "geometry_records": (),
+            "effective_orb_records": (),
+            "kinematics": (),
+            "exact_events": (),
+            "window_segments": (),
+            "scenario_stability_state": "UNKNOWN",
+            "warnings": (),
+            "errors": (),
+            "numerical_tolerances": {},
+            "solver_metadata": {},
+            "actual_ephemeris_resolution": {},
+            "calculation_flags": {},
+        }
+        with self.assertRaises(ValueError):
+            EvidencePacket(**payload)
+
+    def test_zero_length_window_is_rejected(self) -> None:
+        base = self.packet()
+        with self.assertRaises(ValueError):
+            EvidencePacket(
+                evidence_packet_id="E-WINDOW",
+                input_identity=base.input_identity,
+                profile_version=base.profile_version,
+                observation_instant_or_interval=base.observation_instant_or_interval,
+                timezone_context=base.timezone_context,
+                execution_profile_id=base.execution_profile_id,
+                calculation_version=base.calculation_version,
+                object_records=base.object_records,
+                geometry_records=base.geometry_records,
+                effective_orb_records=base.effective_orb_records,
+                kinematics=base.kinematics,
+                exact_events=base.exact_events,
+                window_segments=(
+                    {"entry_utc": "2026-01-01T00:00:00Z", "exact_events_utc": (), "exit_utc": "2026-01-01T00:00:00Z"},
+                ),
+                scenario_stability_state=base.scenario_stability_state,
+                warnings=base.warnings,
+                errors=base.errors,
+                numerical_tolerances=base.numerical_tolerances,
+                solver_metadata=base.solver_metadata,
+                actual_ephemeris_resolution=base.actual_ephemeris_resolution,
+                calculation_flags=base.calculation_flags,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
