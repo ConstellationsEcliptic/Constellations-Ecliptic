@@ -10,8 +10,7 @@
     "result": "SUCCESS",
     "python": "3.13.15",
     "tests_executed": 128,
-    "source_tree_identity": "PASS",
-    "latest_verified_execution_head": "ae9c295f970f4cf445d5dbdace84e65596ecba87"
+    "source_tree_identity": "PASS"
   },
   "delta_from_r1": {
     "previous_snapshot_head": "d8c09304e580c265f431aa6d606d07df9dadc672",
@@ -85,12 +84,5 @@
     "No claim of complete continuous zero-birth mathematical coverage.",
     "Passing 128 tests does not establish astronomical correctness.",
     "CI success does not establish runtime or source authority."
-  ],
-  "artifact_role": "SNAPSHOT_OF_LATEST_VERIFIED_EXECUTABLE_HEAD",
-  "storage_note": "This provenance snapshot is stored on a later branch commit; it does not claim that later storage-only commits were independently executed by CI. The stored artifact is under provenance/, which is excluded from CE source-tree identity.",
-  "current_branch_observation": {
-    "observed_head": "c5f6920f4a9865acd11418abed69a1e5dc0ac62d",
-    "latest_verified_execution_head": "ae9c295f970f4cf445d5dbdace84e65596ecba87",
-    "storage_delta_is_provenance_only": true
-  }
+  ]
 }

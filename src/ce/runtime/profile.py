@@ -16,6 +16,35 @@ CANONICAL_DATA_LOCK_ID = "CE-V1-CANONICAL-DATA-2026D-SE-V2.10.3BFINAL"
 
 
 def validate_execution_profile(profile: Mapping[str, Any]) -> None:
+    if not isinstance(profile, Mapping):
+        raise ExecutionProfileValidationError("profile_mapping_required")
+    if profile.get("status") != "DEVELOPMENT_ONLY_NON_AUTHORITATIVE":
+        raise ExecutionProfileValidationError("profile_status_mismatch")
+
+    runtime = profile.get("runtime")
+    if not isinstance(runtime, Mapping):
+        raise ExecutionProfileValidationError("runtime_missing")
+    if runtime.get("language") != "python":
+        raise ExecutionProfileValidationError("runtime_language_mismatch")
+    if runtime.get("version") != "3.13":
+        raise ExecutionProfileValidationError("runtime_version_mismatch")
+    if runtime.get("authority") != "development_only":
+        raise ExecutionProfileValidationError("runtime_authority_mismatch")
+
+    source = profile.get("source")
+    if not isinstance(source, Mapping):
+        raise ExecutionProfileValidationError("source_missing")
+    for key in ("commit", "source_tree_sha256_v2"):
+        if not isinstance(source.get(key), str) or not source.get(key).strip():
+            raise ExecutionProfileValidationError(f"source_field_missing:{key}")
+
+    build = profile.get("build")
+    if not isinstance(build, Mapping):
+        raise ExecutionProfileValidationError("build_missing")
+    for key in ("dependency_lock_digest", "runtime_image_digest", "toolchain_identity"):
+        if not isinstance(build.get(key), str) or not build.get(key).strip():
+            raise ExecutionProfileValidationError(f"build_field_missing:{key}")
+
     if profile.get("execution_profile_id") != CANONICAL_EXECUTION_PROFILE_ID:
         raise ExecutionProfileValidationError("execution_profile_id_mismatch")
     if profile.get("execution_profile_revision") != CANONICAL_EXECUTION_PROFILE_REVISION:

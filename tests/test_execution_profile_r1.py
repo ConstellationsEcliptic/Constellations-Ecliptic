@@ -17,6 +17,22 @@ class ExecutionProfileR1Tests(unittest.TestCase):
         )
         validate_execution_profile(profile)
 
+    def test_profile_root_and_nested_runtime_shape_is_required(self) -> None:
+        profile = json.loads(
+            (ROOT / "configs" / "runtime_profile.dev.json").read_text(encoding="utf-8")
+        )
+        profile.pop("runtime")
+        with self.assertRaisesRegex(ExecutionProfileValidationError, "runtime_missing"):
+            validate_execution_profile(profile)
+
+    def test_profile_cannot_claim_authorized_runtime(self) -> None:
+        profile = json.loads(
+            (ROOT / "configs" / "runtime_profile.dev.json").read_text(encoding="utf-8")
+        )
+        profile["runtime"]["authority"] = "production"
+        with self.assertRaisesRegex(ExecutionProfileValidationError, "runtime_authority_mismatch"):
+            validate_execution_profile(profile)
+
     def test_stale_revision_is_rejected(self) -> None:
         profile = json.loads(
             (ROOT / "configs" / "runtime_profile.dev.json").read_text(encoding="utf-8")
