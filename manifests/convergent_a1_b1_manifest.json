@@ -15,7 +15,7 @@
   },
   "registry_candidate": {
     "registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
-    "mapping_sha256": "babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441",
+    "mapping_sha256": "babcccf81636df1e5eb92fe9119d474787fc3801b547fa5703e9048993d441",
     "role": "CONTROLLED_CURRENT_CANDIDATE_BASIS"
   },
   "current_target": {
