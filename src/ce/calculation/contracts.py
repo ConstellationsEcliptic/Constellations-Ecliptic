@@ -307,6 +307,8 @@ class CalculationResult:
             packet_errors = packet.validate()
             if packet_errors:
                 raise ValueError(";".join(f"evidence_packet:{e}" for e in packet_errors))
+            if self.calculation_id is not None and packet.calculation_id != self.calculation_id:
+                raise ValueError("evidence_packet:calculation_id_mismatch")
         ref = EvidencePacketRef.from_packet(packet) if packet is not None else None
         object.__setattr__(self, "evidence_packet_ref", ref)
 
