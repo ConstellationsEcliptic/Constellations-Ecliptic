@@ -184,8 +184,23 @@ class EvidencePacket:
     scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
 
+    def _expected_canonical_bytes(self) -> bytes:
+        payload = {
+            item.name: getattr(self, item.name)
+            for item in fields(self)
+            if item.name not in {"_canonical_bytes", "evidence_packet_id"}
+        }
+        return canonical_json(payload)
+
     def validate(self) -> tuple[str, ...]:
         errors: list[str] = []
+
+        stored = getattr(self, "_canonical_bytes", None)
+        if stored is not None:
+            if not isinstance(stored, bytes):
+                errors.append("invalid:_canonical_bytes:bytes_required")
+            elif stored != self._expected_canonical_bytes():
+                errors.append("invalid:_canonical_bytes:content_mismatch")
 
         if not isinstance(self.evidence_packet_id, str) or not self.evidence_packet_id.strip():
             errors.append("invalid:evidence_packet_id")
@@ -312,12 +327,7 @@ class EvidencePacket:
             if item.name != "_canonical_bytes":
                 object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
 
-        payload = {
-            item.name: getattr(self, item.name)
-            for item in fields(self)
-            if item.name not in {"_canonical_bytes", "evidence_packet_id"}
-        }
-        object.__setattr__(self, "_canonical_bytes", canonical_json(payload))
+        object.__setattr__(self, "_canonical_bytes", self._expected_canonical_bytes())
 
     @classmethod
     def issue(cls, **kwargs: Any) -> "EvidencePacket":
