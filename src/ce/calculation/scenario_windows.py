@@ -10,14 +10,22 @@ from ce.foundation.status import CalculationStatus, ScenarioState
 
 
 SCENARIO_SAMPLING_POLICY_ID = "CE-ZERO-BIRTH-SCENARIO-MIDPOINT-LATTICE-V1"
+SCENARIO_SEGMENT_TIME_UNIT = "SECONDS"
 MIN_SCENARIO_COUNT = 4
 DEFAULT_SCENARIO_COUNT = 24
 MAX_SCENARIO_COUNT = 96
 
 
 def build_scenario_instants(start_utc: datetime, end_utc: datetime, count: int) -> tuple[datetime, ...]:
-    if start_utc.tzinfo is None or end_utc.tzinfo is None:
+    if (
+        start_utc.tzinfo is None
+        or end_utc.tzinfo is None
+        or start_utc.utcoffset() is None
+        or end_utc.utcoffset() is None
+    ):
         raise ValueError("scenario_bounds_must_be_timezone_aware")
+    start_utc = start_utc.astimezone(timezone.utc)
+    end_utc = end_utc.astimezone(timezone.utc)
     if end_utc <= start_utc:
         raise ValueError("scenario_interval_order_invalid")
     if not MIN_SCENARIO_COUNT <= count <= MAX_SCENARIO_COUNT:
@@ -55,7 +63,7 @@ def normalize_segments(segments: Iterable[tuple[float, float]]) -> tuple[tuple[f
     result = [ordered[0]]
     for start, end in ordered[1:]:
         prev_start, prev_end = result[-1]
-        if start <= prev_end + EVENT_TIME_TOLERANCE_SECONDS / 86400.0:
+        if start <= prev_end + EVENT_TIME_TOLERANCE_SECONDS:
             result[-1] = (prev_start, max(prev_end, end))
         else:
             result.append((start, end))
@@ -111,6 +119,8 @@ def classify_sampled_windows(
 
 
 def canonical_utc(value: datetime) -> str:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError("datetime_must_be_timezone_aware")
     normalized = value.astimezone(timezone.utc)
     return normalized.isoformat(timespec="seconds").replace("+00:00", "Z")
 
