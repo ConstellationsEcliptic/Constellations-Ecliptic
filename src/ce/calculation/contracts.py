@@ -157,6 +157,83 @@ class ObjectState:
         if errors:
             raise ValueError(";".join(errors))
 
+@dataclass(frozen=True)
+class ObjectRecord:
+    """Canonical ephemeris output record at the Calculation/Evidence boundary."""
+
+    object_id: str
+    object_status: CalculationStatus
+    requested_flags: int
+    actual_flags: int | None
+    longitude: float | None
+    latitude: float | None
+    distance: float | None
+    speed: float | None
+    observation_time_utc: str | None = None
+    warnings: tuple[str, ...] = field(default_factory=tuple)
+    errors: tuple[str, ...] = field(default_factory=tuple)
+
+    def validate(self) -> tuple[str, ...]:
+        errors: list[str] = []
+        if _nonempty(self.object_id, "object_id"):
+            errors.append("invalid:object_id")
+        if type(self.requested_flags) is not int or self.requested_flags < 0:
+            errors.append("invalid:requested_flags")
+        if self.actual_flags is not None and (
+            type(self.actual_flags) is not int or self.actual_flags < 0
+        ):
+            errors.append("invalid:actual_flags")
+        for value, name in (
+            (self.longitude, "longitude"),
+            (self.latitude, "latitude"),
+            (self.distance, "distance"),
+            (self.speed, "speed"),
+        ):
+            if value is not None and not _finite_number(value):
+                errors.append(f"invalid:{name}")
+        if self.longitude is not None and not 0.0 <= float(self.longitude) < 360.0:
+            errors.append("longitude_must_be_normalized")
+        if self.observation_time_utc is not None and not _valid_utc(self.observation_time_utc):
+            errors.append("invalid:observation_time_utc")
+        for name, value in (("warnings", self.warnings), ("errors", self.errors)):
+            if not isinstance(value, (tuple, list)) or any(not isinstance(item, str) for item in value):
+                errors.append(f"invalid:{name}")
+        if self.object_status is CalculationStatus.VALID:
+            if self.actual_flags is None:
+                errors.append("valid_object_requires_actual_flags")
+            for value, name in (
+                (self.longitude, "longitude"),
+                (self.latitude, "latitude"),
+                (self.distance, "distance"),
+            ):
+                if value is None:
+                    errors.append(f"valid_object_requires_{name}")
+            if self.errors:
+                errors.append("valid_object_cannot_have_errors")
+        elif self.longitude is not None:
+            errors.append("nonvalid_object_must_not_publish_longitude")
+        return tuple(errors)
+
+    def __post_init__(self) -> None:
+        errors = self.validate()
+        if errors:
+            raise ValueError(";".join(errors))
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "object_id": self.object_id,
+            "object_status": self.object_status.value,
+            "requested_flags": self.requested_flags,
+            "actual_flags": self.actual_flags,
+            "longitude": self.longitude,
+            "latitude": self.latitude,
+            "distance": self.distance,
+            "speed": self.speed,
+            "observation_time_utc": self.observation_time_utc,
+            "warnings": list(self.warnings),
+            "errors": list(self.errors),
+        }
+
 
 def _validate_runtime_provenance(provenance: Mapping[str, Any], runtime_identity: RuntimeIdentity) -> tuple[str, ...]:
     errors: list[str] = []
