@@ -14,10 +14,10 @@ class ScenarioUnitsR1Tests(unittest.TestCase):
     def test_segment_time_unit_is_seconds(self) -> None:
         self.assertEqual(SCENARIO_SEGMENT_TIME_UNIT, "SECONDS")
 
-    def test_one_second_gap_is_not_merged(self) -> None:
+    def test_gap_above_tolerance_is_not_merged(self) -> None:
         self.assertEqual(
-            normalize_segments(((0.0, 10.0), (11.0, 20.0))),
-            ((0.0, 10.0), (11.0, 20.0)),
+            normalize_segments(((0.0, 10.0), (12.0, 20.0))),
+            ((0.0, 10.0), (12.0, 20.0)),
         )
 
     def test_sub_tolerance_gap_is_merged(self) -> None:
