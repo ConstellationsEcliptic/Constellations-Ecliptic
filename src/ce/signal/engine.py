@@ -111,8 +111,12 @@ class SignalEngine:
         ref = self._ref(calculation_result)
         calculation_status = calculation_result.calculation_flags.get("calculation_status")
         if calculation_status != CalculationStatus.VALID.value:
+            try:
+                upstream_status = CalculationStatus(calculation_status)
+            except (TypeError, ValueError):
+                upstream_status = CalculationStatus.CALCULATION_FAILURE
             return SignalResult(
-                status=CalculationStatus.CALCULATION_FAILURE,
+                status=upstream_status,
                 classification="DISQUALIFIED_CALCULATION_FAILURE",
                 phase=None,
                 uncertainty_state=None,
