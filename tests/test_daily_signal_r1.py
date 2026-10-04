@@ -121,9 +121,9 @@ class DailySignalR1Tests(unittest.TestCase):
             aggregate_completed_day((), observation_completed=False)
 
     def test_current_failure_remains_failure_after_prior_valid_day(self) -> None:
-        prior = self._signal_result(valid=True, qualifying=True)
+        prior = self._result(status=CalculationStatus.VALID, classification="ROBUST_EXACT_SIGNAL", canon_input_valid=True)
         self.assertEqual(prior.status, CalculationStatus.VALID)
-        current = self._signal_result(valid=False, qualifying=False)
+        current = self._result(status=CalculationStatus.CALCULATION_FAILURE)
         with self.assertRaisesRegex(ValueError, "daily_signal_calculation_not_valid"):
             aggregate_completed_day((current,), observation_completed=True)
 
