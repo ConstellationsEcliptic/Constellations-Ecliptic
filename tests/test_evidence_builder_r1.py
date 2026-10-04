@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from ce.calculation.contracts import CalculationResult, ObjectRecord, ObjectState
+from ce.calculation.contracts import CalculationResult, CalculationResultDraft, ObjectRecord, ObjectState
 from ce.calculation.evidence import EvidencePacket
 from ce.calculation.evidence_builder import EvidenceIssuanceError, issue_evidence_packet
 from ce.foundation.identity import RuntimeIdentity
@@ -78,7 +78,7 @@ class EvidenceBuilderR1Tests(unittest.TestCase):
         )
 
     def test_nonissuable_status_is_rejected(self) -> None:
-        result = CalculationResult(
+        result = CalculationResultDraft(
             request_id="R-ERR",
             status=CalculationStatus.NON_AUTHORIZED,
             execution_profile_id="CE-CALC-V1-EP-001",
@@ -106,7 +106,7 @@ class EvidenceBuilderR1Tests(unittest.TestCase):
 
     def test_variable_result_can_issue_packet_without_exact_natal_coordinate(self) -> None:
         packet = self._packet("C-VAR")
-        result = CalculationResult(
+        result = CalculationResultDraft(
             request_id="R-VAR",
             status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
             execution_profile_id="CE-CALC-V1-EP-001",
