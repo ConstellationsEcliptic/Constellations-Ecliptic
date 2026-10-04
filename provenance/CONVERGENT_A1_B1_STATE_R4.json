@@ -1,0 +1,56 @@
+{
+  "artifact_id": "CE-V1-CONVERGENT-A1-B1-STATE-R4",
+  "recorded_at": "2026-10-04",
+  "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
+  "branch": "development/convergent-a1-b1/2026-10-04-r1",
+  "current_head": "ac10b95f9ca69c08b6f8323706174232faa648c9",
+  "current_tree": "2330615986e895639e263d658282fe3ed4a4a4fd",
+  "latest_verified_ci": {
+    "run_id": 37168882538,
+    "job_id": 111337556991,
+    "result": "SUCCESS",
+    "python": "3.13.15",
+    "tests_executed": 139,
+    "source_tree_identity": "PASS",
+    "source_tree_sha256_v2": "05aaae3213f7274fcd3a2632d7842c0f5733e30ed1f671687253ccefbddc9cd3"
+  },
+  "human_decisions": {
+    "A1": "ACCEPTED",
+    "B1": "ACCEPTED"
+  },
+  "current_candidate_basis": {
+    "h2_registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+    "h2_mapping_sha256": "babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441"
+  },
+  "engineering_state": [
+    "A1 historical B3 substrate remains reference-only; no merge or authority inheritance.",
+    "B1 H2-repaired registry/mapping remain controlled current candidate basis.",
+    "Zero-birth provider-injected kernel orchestration exists.",
+    "Current rev4 execution-profile semantic validation is hardened.",
+    "CalculationResult, EvidencePacket, and Signal schemas are structurally tightened.",
+    "Runtime reproducibility capture/parity contract and non-authoritative native evidence harness exist.",
+    "Build-policy scanner covers Python/shell/PowerShell/TOML and GitHub workflow YAML."
+  ],
+  "lineage_repair": {
+    "issue": "A harness commit was initially constructed from an older tree snapshot and temporarily regressed several already-verified files.",
+    "correction": "A subsequent explicit repair commit restored the exact verified tree content before final CI verification.",
+    "auditability": "The erroneous commits remain in Git history as non-authoritative development events; the current tree is the corrected state.",
+    "final_verification_after_repair": true
+  },
+  "human_boundary_now": {
+    "status": "REACHED",
+    "reason": "Actual controlled native runtime execution is required for N-MID-03 reproducibility and Windows/MSVC evidence; GitHub Ubuntu CI cannot substitute for that evidence."
+  },
+  "governance": {
+    "SOURCE_AUTHORITY": "NOT_ESTABLISHED",
+    "TRUSTED_BUILD": "NOT_ESTABLISHED",
+    "RUNTIME_ADOPTION": "NOT_ESTABLISHED",
+    "FULL_RUNTIME_COVERAGE": "NOT_ESTABLISHED",
+    "TZIF_RUNTIME_IDENTITY": "NOT_ESTABLISHED",
+    "PRODUCTION_RUNTIME": "NOT_AUTHORIZED",
+    "DUAL_APPROVAL": "NOT_ESTABLISHED",
+    "SEAL": "NO",
+    "AUTHORIZATION": "NON_AUTHORIZED",
+    "FAIL_CLOSED": true
+  }
+}
