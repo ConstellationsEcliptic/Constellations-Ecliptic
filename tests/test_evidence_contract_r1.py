@@ -12,6 +12,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
     def packet(self) -> EvidencePacket:
         return EvidencePacket(
             evidence_packet_id="E-001",
+            calculation_id="C-001",
             input_identity={"birth_date": "2000-01-01"},
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
             observation_instant_or_interval={
@@ -186,6 +187,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             EvidencePacket(
                 evidence_packet_id="E-WINDOW",
+                calculation_id="C-WINDOW",
                 input_identity=base.input_identity,
                 profile_version=base.profile_version,
                 observation_instant_or_interval=base.observation_instant_or_interval,
