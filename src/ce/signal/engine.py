@@ -30,7 +30,7 @@ class SignalEngine:
     def _failure() -> SignalResult:
         return SignalResult(
             status=CalculationStatus.CALCULATION_FAILURE,
-            classification="DISQUALIFIED_CALCULATION_FAILURE",
+            classification=None,
             phase=None,
             uncertainty_state=None,
             evidence_packet_ref=None,
