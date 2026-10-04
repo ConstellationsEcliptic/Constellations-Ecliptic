@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-"""Independent reference checks for the CE V1 numerical/geometric contracts.
+"""Independent challenge checks for the CE V1 numerical/geometric contracts.
 
-This module deliberately does not import CE production geometry, solver,
-scenario, or signal implementations. It reconstructs only the small normative
-oracles needed to challenge the current implementation under the approved
-fixtures.
+This module contains its own reference equations and set logic, then compares
+those expectations with selected CE production outputs. It does not treat CE
+production outputs as the source of the expected values.
 """
 
 import math
