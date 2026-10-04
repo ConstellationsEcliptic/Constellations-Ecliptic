@@ -24,12 +24,14 @@ def authorize_runtime(identity: RuntimeIdentity) -> RuntimeGateResult:
         "source_commit": identity.source_commit,
         "source_tree_sha256_v2": identity.source_tree_sha256_v2,
         "runtime_environment_kind": identity.runtime_environment_kind,
-        "runtime_image_digest": identity.runtime_image_digest,
-        "runtime_environment_digest": identity.runtime_environment_digest,
         "dependency_lock_digest": identity.dependency_lock_digest,
         "timezone_bundle_digest": identity.timezone_bundle_digest,
         "ephemeris_bundle_digest": identity.ephemeris_bundle_digest,
     }
+    if identity.runtime_environment_kind == "OCI_IMAGE":
+        required_fields["runtime_image_digest"] = identity.runtime_image_digest
+    elif identity.runtime_environment_kind == "HOST_NATIVE":
+        required_fields["runtime_environment_digest"] = identity.runtime_environment_digest
     reasons.extend(
         f"missing:{name}"
         for name, value in required_fields.items()

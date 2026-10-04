@@ -9,6 +9,7 @@ from ce.calculation.contracts import BirthInput, CalculationRequest
 from ce.calculation.engine import CalculationEngine
 from ce.ephemeris.adapter import UnavailableSwissEphemerisAdapter
 from ce.foundation.identity import RuntimeIdentity
+from ce.runtime.gates import authorize_runtime
 from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
 from datetime import date
 
@@ -128,6 +129,28 @@ class RuntimeGateTests(unittest.TestCase):
         result = engine.calculate(request)
         self.assertEqual(result.status, CalculationStatus.NON_AUTHORIZED)
         self.assertEqual(result.scenario_state, ScenarioState.NONE)
+
+    def test_host_native_environment_identity_shape_is_accepted_by_identity_layer(self) -> None:
+        identity = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, None,
+            "c" * 64, "d" * 64, "e" * 64,
+            runtime_environment_digest="f" * 64,
+            runtime_environment_kind="HOST_NATIVE",
+        )
+        self.assertEqual(identity.validate_shape(), ())
+
+    def test_host_native_runtime_gate_requires_authority_independently_of_identity(self) -> None:
+        identity = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, None,
+            "c" * 64, "d" * 64, "e" * 64,
+            runtime_environment_digest="f" * 64,
+            runtime_environment_kind="HOST_NATIVE",
+        )
+        result = authorize_runtime(identity)
+        self.assertEqual(result.authority, __import__("ce.foundation.status", fromlist=["RuntimeAuthority"]).RuntimeAuthority.NON_AUTHORIZED)
+        self.assertIn("source_authority_attestation_not_established", result.reasons)
 
     def test_complete_identity_still_fails_closed(self) -> None:
         identity = RuntimeIdentity(

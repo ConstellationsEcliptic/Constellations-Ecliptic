@@ -21,6 +21,7 @@ from ce.ephemeris.native_runtime import (
 from ce.calculation.registry import EXPECTED_OBJECTS
 from ce.foundation.source_tree_identity import source_tree_sha256
 from ce.runtime.reproducibility import RuntimeCapture
+from ce.runtime.environment_identity import HostRuntimeEnvironmentError, host_native_environment_digest
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -39,12 +40,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--dependency-lock-digest", required=True)
     runtime_identity = parser.add_mutually_exclusive_group(required=True)
     runtime_identity.add_argument("--runtime-image-digest")
-    runtime_identity.add_argument("--runtime-environment-digest")
-    parser.add_argument(
-        "--runtime-environment-kind",
-        choices=("OCI_IMAGE", "HOST_NATIVE"),
-        required=True,
-    )
+    runtime_identity.add_argument("--runtime-environment-manifest", type=Path)
     parser.add_argument("--timezone-bundle-digest", required=True)
     parser.add_argument("--calling-convention", choices=("__cdecl", "__stdcall"), required=True)
     return parser
@@ -220,16 +216,27 @@ def main() -> int:
             }
         )
 
-    if args.runtime_environment_kind == "OCI_IMAGE":
-        if not args.runtime_image_digest or args.runtime_environment_digest is not None:
-            raise NativeRuntimeError("runtime_identity_argument_mismatch")
+    if args.runtime_image_digest is not None:
+        runtime_environment_kind = "OCI_IMAGE"
         runtime_image_digest = args.runtime_image_digest
         runtime_environment_digest = None
     else:
-        if args.runtime_image_digest is not None or not args.runtime_environment_digest:
-            raise NativeRuntimeError("runtime_identity_argument_mismatch")
+        runtime_environment_kind = "HOST_NATIVE"
+        try:
+            envelope = json.loads(args.runtime_environment_manifest.read_text(encoding="utf-8"))
+            manifest = envelope.get("identity_manifest", envelope)
+            if not isinstance(manifest, dict):
+                raise ValueError("runtime_environment_manifest_mapping_required")
+            computed_environment_digest = host_native_environment_digest(manifest)
+            declared_environment_digest = envelope.get("runtime_environment_digest")
+            if declared_environment_digest is not None and declared_environment_digest != computed_environment_digest:
+                raise NativeRuntimeError("runtime_environment_manifest_digest_mismatch")
+        except (OSError, UnicodeError, ValueError, HostRuntimeEnvironmentError) as exc:
+            if isinstance(exc, NativeRuntimeError):
+                raise
+            raise NativeRuntimeError("runtime_environment_manifest_invalid") from exc
         runtime_image_digest = None
-        runtime_environment_digest = args.runtime_environment_digest
+        runtime_environment_digest = computed_environment_digest
 
     runtime_capture = RuntimeCapture(
         capture_id="CE-RUNTIME-CAPTURE-" + uuid.uuid4().hex,
@@ -241,7 +248,7 @@ def main() -> int:
         source_commit=args.source_commit,
         source_tree_sha256_v2=args.source_tree_sha256_v2,
         dependency_lock_digest=args.dependency_lock_digest,
-        runtime_environment_kind=args.runtime_environment_kind,
+        runtime_environment_kind=runtime_environment_kind,
         runtime_image_digest=runtime_image_digest,
         runtime_environment_digest=runtime_environment_digest,
         timezone_bundle_digest=args.timezone_bundle_digest,
