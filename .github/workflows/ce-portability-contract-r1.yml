@@ -44,7 +44,7 @@ jobs:
             tests.test_time_signal_boundaries \
             tests.test_schema_structure_r1 \
             tests.test_runtime_coverage_validator_r1 \
-            tests.test_runtime_reproducibility_r1 \
+            tests.test_reproducibility_r1 \
             tests.test_independent_oracle_current_r1 \
             tests.test_qualified_signal_record_r1 \
             tests.test_daily_signal_r1 \
