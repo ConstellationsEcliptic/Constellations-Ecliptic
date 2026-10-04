@@ -136,7 +136,7 @@ class ObjectState:
         if not isinstance(self.status, CalculationStatus):
             errors.append("invalid:object_state_status")
             return tuple(errors)
-        if self.status in {CalculationStatus.VALID, CalculationStatus.NATAL_EVIDENCE_VARIABLE}:
+        if self.status is CalculationStatus.VALID:
             if self.longitude_deg is None or not _finite_number(self.longitude_deg):
                 errors.append("valid_object_requires_finite_longitude")
             elif not 0.0 <= float(self.longitude_deg) < 360.0:
