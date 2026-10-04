@@ -17,6 +17,10 @@ jobs:
         run: python --version
       - name: Compile source and tests
         run: python -m compileall -q src tests
+      - name: Compute canonical source-tree identity
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: python tools/compute_source_identity_v2.py
       - name: Run test suite
         env:
           PYTHONDONTWRITEBYTECODE: "1"
