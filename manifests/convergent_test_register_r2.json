@@ -1,6 +1,6 @@
 {
-  "artifact_id": "CE-V1-CONVERGENT-TEST-REGISTER-R1",
-  "status": "IMPLEMENTATION_CANDIDATE",
+  "artifact_id": "CE-V1-CONVERGENT-TEST-REGISTER-R2",
+  "status": "CURRENT_IMPLEMENTATION_CANDIDATE",
   "execution_profile_id": "CE-CALC-V1-EP-001",
   "execution_profile_revision": 4,
   "recovered_h2_registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
@@ -109,5 +109,18 @@
   ],
   "execution_evidence": "CI_RUN_37156184819_73_PASS + CI_RUN_37165468849_89_PASS",
   "authoritative_coverage": "NOT_ESTABLISHED",
-  "current_verified_commit": "38158f664ac245a93c93995cdb84fa4c75889e86"
+  "current_verified_commit": "9bd4ee06e85958a59023e9c089ea718df83312f6",
+  "historical_registry_preserved": true,
+  "latest_ci_run": {
+    "id": 37167069759,
+    "conclusion": "success",
+    "tests_executed": 115,
+    "python": "3.13.15"
+  },
+  "recovered_planned_core_controls": {
+    "total": 19,
+    "currently_executable": 19,
+    "verified_by_ci": true
+  },
+  "reclassification_note": "Historical H2 classifications are preserved. This register records current executable coverage evidence only; it does not retroactively alter historical implementation claims."
 }
