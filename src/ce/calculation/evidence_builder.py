@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from ce.calculation.contracts import CalculationResult
+from ce.calculation.contracts import CalculationResultDraft
 from ce.calculation.evidence import EvidencePacket
 from ce.foundation.status import CalculationStatus
 
@@ -13,7 +13,7 @@ class EvidenceIssuanceError(ValueError):
 
 
 def issue_evidence_packet(
-    result: CalculationResult,
+    result: CalculationResultDraft,
     *,
     input_identity: Mapping[str, Any],
     profile_version: Mapping[str, Any],
