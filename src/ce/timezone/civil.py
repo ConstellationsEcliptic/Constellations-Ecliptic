@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 
-from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, NatalBirthState
+from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, NatalBirthState, ObservationTimeState
 from ce.timezone.runtime import TzifRuntime, TzifRuntimeError
 
 
@@ -99,6 +99,90 @@ def resolve_zero_birth_interval(
         local_interval_end=f"{next_day.isoformat()}T00:00:00",
         resolved_utc_interval_start=utc_string(resolved_start),
         resolved_utc_interval_end=utc_string(resolved_end),
+        timezone_id=timezone_id,
+        timezone_version=timezone_version,
+        error=None,
+    )
+
+
+@dataclass(frozen=True)
+class ObservationResolution:
+    status: CalculationStatus
+    observation_time_state: ObservationTimeState
+    resolved_instant_utc: str | None
+    timezone_id: str
+    timezone_version: str
+    error: str | None
+
+
+def resolve_observation_civil_time(
+    *,
+    observation_date: date,
+    observation_time: time | None,
+    timezone_id: str,
+    timezone_version: str,
+    calendar_policy_id: str,
+    tzif_runtime: TzifRuntime,
+) -> ObservationResolution:
+    """Resolve one explicit observation instant through the policy-owned TZif runtime."""
+
+    if calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
+        return ObservationResolution(
+            status=CalculationStatus.INPUT_UNSUPPORTED,
+            observation_time_state=ObservationTimeState.INVALID,
+            resolved_instant_utc=None,
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            error="unsupported_calendar_policy",
+        )
+
+    if observation_time is None:
+        return ObservationResolution(
+            status=CalculationStatus.INVALID_INPUT,
+            observation_time_state=ObservationTimeState.INVALID,
+            resolved_instant_utc=None,
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            error="explicit_observation_time_required",
+        )
+
+    if timezone_version != tzif_runtime.version:
+        return ObservationResolution(
+            status=CalculationStatus.NON_AUTHORIZED,
+            observation_time_state=ObservationTimeState.EXACT,
+            resolved_instant_utc=None,
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            error="timezone_version_mismatch",
+        )
+
+    try:
+        local = datetime.combine(observation_date, observation_time)
+        resolved = tzif_runtime.resolve_local_instant(local, timezone_id)
+    except TzifRuntimeError as exc:
+        error = str(exc)
+        if error.startswith("ambiguous_local_time") or error.startswith("nonexistent_local_time"):
+            return ObservationResolution(
+                status=CalculationStatus.INPUT_UNSUPPORTED,
+                observation_time_state=ObservationTimeState.INVALID,
+                resolved_instant_utc=None,
+                timezone_id=timezone_id,
+                timezone_version=timezone_version,
+                error=error,
+            )
+        return ObservationResolution(
+            status=CalculationStatus.NON_AUTHORIZED,
+            observation_time_state=ObservationTimeState.EXACT,
+            resolved_instant_utc=None,
+            timezone_id=timezone_id,
+            timezone_version=timezone_version,
+            error=error,
+        )
+
+    return ObservationResolution(
+        status=CalculationStatus.VALID,
+        observation_time_state=ObservationTimeState.EXACT,
+        resolved_instant_utc=resolved.isoformat(timespec="seconds").replace("+00:00", "Z"),
         timezone_id=timezone_id,
         timezone_version=timezone_version,
         error=None,
