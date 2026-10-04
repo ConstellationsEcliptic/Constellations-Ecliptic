@@ -125,8 +125,6 @@ class EvidenceBuilderR1Tests(unittest.TestCase):
                 "runtime_image_digest": "sha256:" + "c" * 64,
                 "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
             },
-            _runtime_identity=self._identity(),
-            _evidence_packet=packet,
         )
         issued = issue_evidence_packet(
             result,
