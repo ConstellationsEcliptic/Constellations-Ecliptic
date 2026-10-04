@@ -89,6 +89,7 @@ def evaluate_full_authority(
         _require_commit(build.source_commit, "build.source_commit")
         _require_sha(build.source_tree_sha256_v2, "build.source_tree_sha256_v2")
         _require_sha(build.dependency_lock_digest, "build.dependency_lock_digest")
+        _require_sha(build.runtime_manifest_digest, "build.runtime_manifest_digest")
         _require_sha(build.timezone_bundle_digest, "build.timezone_bundle_digest")
         _require_sha(build.ephemeris_bundle_digest, "build.ephemeris_bundle_digest")
         _require_sha(signed.provenance_signature_digest, "signed.provenance_signature_digest")

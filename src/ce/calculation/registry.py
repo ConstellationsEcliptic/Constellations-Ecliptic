@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+import math
 from typing import Any
 
 
@@ -113,7 +114,11 @@ def validate_orb_registry(payload: Mapping[str, Any]) -> None:
         if set(values) != set(EXPECTED_ASPECTS):
             raise RegistryValidationError("orb_aspect_set_mismatch")
         for value in values.values():
-            if type(value) not in (int, float) or float(value) <= 0.0:
+            if (
+                type(value) not in (int, float)
+                or not math.isfinite(float(value))
+                or float(value) <= 0.0
+            ):
                 raise RegistryValidationError("orb_value_invalid")
 
 

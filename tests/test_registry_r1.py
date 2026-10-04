@@ -34,6 +34,12 @@ class RegistryR1Tests(unittest.TestCase):
     def test_orb_registry_has_a_and_b_profiles(self) -> None:
         validate_orb_registry(self.load("orb_registry_rev4_candidate.json"))
 
+    def test_nonfinite_orb_value_is_rejected(self) -> None:
+        payload = self.load("orb_registry_rev4_candidate.json")
+        payload["profiles"]["A"]["CONJUNCTION"] = float("nan")
+        with self.assertRaisesRegex(ValueError, "orb_value_invalid"):
+            validate_orb_registry(payload)
+
     def test_object_count_mutation_is_rejected(self) -> None:
         payload = self.load("object_registry_rev4_candidate.json")
         payload["objects"] = payload["objects"][:-1]

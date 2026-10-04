@@ -22,6 +22,7 @@ _COMMIT_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 _RUNTIME_IMAGE_RE = re.compile(r"^sha256:[0-9a-fA-F]{64}$")
 _UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$")
+_SPEED_FLAG = 256
 
 
 def _freeze(value: Any) -> Any:
@@ -207,6 +208,10 @@ class ObjectRecord:
                 errors.append("valid_object_requires_actual_flags")
             elif (self.actual_flags & self.requested_flags) != self.requested_flags:
                 errors.append("valid_object_actual_flags_do_not_cover_requested_flags")
+            if self.requested_flags & _SPEED_FLAG and self.speed is None:
+                errors.append("valid_object_requires_speed_when_speed_requested")
+            if self.actual_flags & _SPEED_FLAG and self.speed is None:
+                errors.append("actual_speed_flag_requires_speed")
             for value, name in (
                 (self.longitude, "longitude"),
                 (self.latitude, "latitude"),

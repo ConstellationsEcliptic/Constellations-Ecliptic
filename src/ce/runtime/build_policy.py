@@ -17,7 +17,7 @@ FORBIDDEN_RUNTIME_DOWNLOAD_TOKENS = (
     "requests.get(",
     "urllib.request.urlretrieve",
 )
-SCAN_SUFFIXES = {".py", ".ps1", ".sh", ".cmd", ".bat", ".toml"}
+SCAN_SUFFIXES = {".py", ".ps1", ".sh", ".cmd", ".bat", ".toml", ".yml", ".yaml"}
 
 
 @dataclass(frozen=True)
@@ -29,7 +29,11 @@ class BuildPolicyFinding:
 
 def scan_build_policy(root: Path) -> tuple[BuildPolicyFinding, ...]:
     findings: list[BuildPolicyFinding] = []
-    candidates = list((root / "build").rglob("*")) + list((root / "tools").rglob("*"))
+    candidates = (
+        list((root / "build").rglob("*"))
+        + list((root / "tools").rglob("*"))
+        + list((root / ".github" / "workflows").rglob("*"))
+    )
     for path in candidates:
         if not path.is_file() or path.suffix.lower() not in SCAN_SUFFIXES:
             continue

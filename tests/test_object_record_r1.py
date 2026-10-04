@@ -14,6 +14,13 @@ class ObjectRecordR1Tests(unittest.TestCase):
                 10.0, 0.0, 1.0, 1.0,
             )
 
+    def test_requested_speed_flag_requires_speed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "requires_speed_when_speed_requested"):
+            ObjectRecord(
+                "SUN", CalculationStatus.VALID, 258, 258,
+                10.0, 0.0, 1.0, None,
+            )
+
     def test_latitude_and_distance_are_bounded(self) -> None:
         with self.assertRaisesRegex(ValueError, "latitude_must_be_normalized"):
             ObjectRecord(
