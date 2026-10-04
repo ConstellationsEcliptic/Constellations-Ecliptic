@@ -51,8 +51,7 @@ def issue_evidence_packet(
     ):
         raise EvidenceIssuanceError("valid_object_missing_actual_flags")
 
-    return EvidencePacket(
-        evidence_packet_id=f"{result.calculation_id}:pending",
+    return EvidencePacket.issue(
         calculation_id=result.calculation_id,
         input_identity=dict(input_identity),
         profile_version=dict(profile_version),
