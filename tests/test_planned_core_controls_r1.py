@@ -205,7 +205,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
         data = self._system_tzif(name)
         files = {name: data}
         runtime = TzifRuntime(
-            version="test-fixture",
+            version="2026d",
             files=files,
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
