@@ -21,14 +21,17 @@ class PlannedCoreControlsR1(unittest.TestCase):
     # WIN-01
     def test_win_01_disjoint_possible_windows(self) -> None:
         result = solve_aspect_window(
-            lambda x: min(abs(x - 1.0), abs(x - 5.0)),
+            lambda x: min(abs(x - 15.0), abs(x - 45.0)),
             start=0.0,
-            end=6.0,
-            effective_orb=0.25,
+            end=60.0,
+            effective_orb=5.0,
             samples=600,
         )
-        self.assertEqual(len(result.segments), 2)
-        self.assertLess(result.segments[0][1], result.segments[1][0])
+        self.assertEqual(result.segments, ((10.0, 20.0), (40.0, 50.0)))
+        self.assertEqual(
+            tuple(round(event.instant, 9) for event in result.exact_events),
+            (15.0, 45.0),
+        )
 
     # WIN-02
     def test_win_02_continuous_multi_peak(self) -> None:
