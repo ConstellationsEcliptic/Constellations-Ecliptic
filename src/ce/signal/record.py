@@ -65,6 +65,8 @@ def _signal_identity_payload(packet: EvidencePacket) -> dict[str, object]:
             identities.add((transit, natal, aspect, float(branch)))
     if not identities:
         raise ValueError("qualified_signal_identity_geometry_missing")
+    if len(identities) != 1:
+        raise ValueError("qualified_signal_identity_ambiguous")
 
     observation_start = packet.observation_instant_or_interval.get("start")
     if not isinstance(observation_start, str) or not observation_start:
