@@ -26,6 +26,7 @@ class SchemaStructureR1Tests(unittest.TestCase):
             "calculation_result.schema.json",
             "evidence_packet.schema.json",
             "signal_result.schema.json",
+            "qualified_signal_record.schema.json",
             "runtime_environment_identity_r1.schema.json",
             "runtime_capture_r2.schema.json",
         ):
@@ -50,6 +51,31 @@ class SchemaStructureR1Tests(unittest.TestCase):
         schema = self._load_without_duplicate_keys(ROOT / "schemas" / "calculation_result.schema.json")
         self.assertEqual(len(schema["allOf"]), 3)
         self.assertIn("NATAL_EVIDENCE_VARIABLE", schema["properties"]["status"]["enum"])
+
+    def test_qualified_signal_record_schema_matches_normative_record_shape(self) -> None:
+        schema = self._load_without_duplicate_keys(ROOT / "schemas" / "qualified_signal_record.schema.json")
+        self.assertEqual(
+            set(schema["required"]),
+            {
+                "schema_version",
+                "signal_id",
+                "evidence_packet_ref",
+                "timestamp_observation_utc",
+                "qualification_status",
+                "classification",
+                "kinematic_phase",
+                "phase_uniformity",
+                "canon_input_valid",
+                "requires_uncertainty_disclaimer",
+                "environment_pin",
+            },
+        )
+        self.assertEqual(schema["properties"]["schema_version"]["const"], "CE-QUALIFIED-SIGNAL-RECORD-V1")
+        self.assertEqual(schema["properties"]["canon_input_valid"]["const"], True)
+        self.assertEqual(
+            set(schema["properties"]["phase_uniformity"]["enum"]),
+            {"UNIFORM", "MIXED"},
+        )
 
     def test_signal_result_schema_matches_current_result_shape(self) -> None:
         schema = self._load_without_duplicate_keys(ROOT / "schemas" / "signal_result.schema.json")
