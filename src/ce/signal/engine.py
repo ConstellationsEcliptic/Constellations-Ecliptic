@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
 
@@ -57,7 +58,7 @@ class SignalEngine:
         if start is None:
             return False
         for record in packet.exact_events:
-            if not isinstance(record, dict):
+            if not isinstance(record, Mapping):
                 continue
             raw = record.get("event_time_utc")
             if not isinstance(raw, str) or not raw.endswith("Z"):
@@ -80,7 +81,7 @@ class SignalEngine:
                     states.add(state)
         if not states:
             for record in packet.kinematics:
-                if isinstance(record, dict):
+                if isinstance(record, Mapping):
                     state = record.get("kinematic_state")
                     if isinstance(state, str) and state.strip():
                         states.add(state)
