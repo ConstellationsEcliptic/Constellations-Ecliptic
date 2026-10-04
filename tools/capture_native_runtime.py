@@ -22,6 +22,7 @@ from ce.calculation.registry import EXPECTED_OBJECTS
 from ce.foundation.source_tree_identity import source_tree_sha256
 from ce.runtime.reproducibility import RuntimeCapture
 from ce.runtime.environment_identity import HostRuntimeEnvironmentError, host_native_environment_digest
+from ce.timezone.runtime import CANONICAL_TZIF_BUNDLE_SHA256
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -227,6 +228,8 @@ def _calculate(library, object_id: str, jd_ut: float, ephemeris_root: Path, with
 
 def main() -> int:
     args = _parser().parse_args()
+    if args.timezone_bundle_digest.lower() != CANONICAL_TZIF_BUNDLE_SHA256:
+        raise NativeRuntimeError("timezone_bundle_digest_mismatch")
     repo_root = Path(__file__).resolve().parents[1]
     _verify_source_identity(repo_root, args.source_commit, args.source_tree_sha256_v2)
     fixtures = _load_fixture_spec(args.fixture_spec, repo_root)
