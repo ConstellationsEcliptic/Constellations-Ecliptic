@@ -80,7 +80,7 @@ def calculate_aspect_window(
 
     natal = provider.object_state_at(natal_object, birth_instant_utc)
     if natal.object_status is not CalculationStatus.VALID:
-        raise KernelFailure(f"natal_object_not_valid:{natal_object}:{natal.status.value}")
+        raise KernelFailure(f"natal_object_not_valid:{natal_object}:{natal.object_status.value}")
 
     total_seconds = (target_end_utc - target_start_utc).total_seconds()
     if total_seconds <= 0.0:
@@ -89,14 +89,14 @@ def calculate_aspect_window(
     def signed_residual(offset_seconds: float) -> float:
         instant = target_start_utc + timedelta(seconds=offset_seconds)
         transit = provider.object_state_at(transit_object, instant)
-        if transit.status is not CalculationStatus.VALID:
-            raise KernelFailure(f"transit_object_not_valid:{transit_object}:{transit.status.value}")
+        if transit.object_status is not CalculationStatus.VALID:
+            raise KernelFailure(f"transit_object_not_valid:{transit_object}:{transit.object_status.value}")
         _, signed, _, _, _ = aspect_geometry(
             transit_object,
             natal_object,
             float(transit.longitude),
             float(natal.longitude),
-            transit.speed_deg_per_day,
+            transit.speed,
             aspect,
         )
         return signed
@@ -143,7 +143,7 @@ def calculate_aspect_window(
 def validate_kernel_window_result(result: KernelCalculation) -> None:
     if result.status is not CalculationStatus.VALID:
         raise KernelFailure("kernel_result_not_valid")
-    if result.natal_object.status is not CalculationStatus.VALID:
+    if result.natal_object.object_status is not CalculationStatus.VALID:
         raise KernelFailure("kernel_result_contains_invalid_natal")
     for event in result.events:
         _parse_target(event.instant_utc)
