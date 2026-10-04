@@ -243,8 +243,8 @@ class PlannedCoreControlsR1(unittest.TestCase):
             runtime.resolve_local_instant(datetime(2024, 10, 27, 2, 30), name)
 
     def test_time_03_nonexistent_rejected_normative_fixture(self) -> None:
-        name = "America/New_York"
-        data = self._controlled_tzif(name, "e9ed07d7bee0c76a9d442d091ef1f01668fee7c4f26014c0a868b19fe6c18a95")
+        name = "Europe/Paris"
+        data = self._controlled_tzif(name, "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8")
         files = {name: data}
         runtime = TzifRuntime(
             version="2026d",
