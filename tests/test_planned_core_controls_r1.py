@@ -33,27 +33,35 @@ class PlannedCoreControlsR1(unittest.TestCase):
     # WIN-02
     def test_win_02_continuous_multi_peak(self) -> None:
         result = solve_aspect_window(
-            lambda x: 0.2 * __import__("math").sin(x) - 0.0,
+            lambda x: 0.05 * __import__("math").sin(x),
             start=0.0,
             end=2.0 * __import__("math").pi,
             effective_orb=0.1,
             samples=720,
         )
-        self.assertGreaterEqual(len(result.exact_events), 3)
-        self.assertGreaterEqual(len(result.segments), 2)
+        self.assertEqual(len(result.exact_events), 3)
+        self.assertEqual(len(result.segments), 1)
+        segment = result.segments[0]
+        self.assertAlmostEqual(segment[0], 0.0, places=9)
+        self.assertAlmostEqual(segment[1], 2.0 * __import__("math").pi, places=9)
+        self.assertEqual(
+            tuple(round(event.instant, 9) for event in result.exact_events),
+            (0.0, round(__import__("math").pi, 9), round(2.0 * __import__("math").pi, 9)),
+        )
 
     # WIN-03
     def test_win_03_tangential_contact(self) -> None:
         result = solve_aspect_window(
-            lambda x: (x - 2.0) ** 2,
+            lambda x: 1.0 + (x - 2.0) ** 2,
             start=0.0,
             end=4.0,
-            effective_orb=1.0e-6,
+            effective_orb=1.0,
             samples=256,
         )
-        self.assertTrue(result.exact_events)
-        self.assertTrue(result.segments)
+        self.assertEqual(result.exact_events, ())
+        self.assertEqual(result.segments, ())
         self.assertTrue(result.tangential_contacts)
+        self.assertAlmostEqual(result.tangential_contacts[0], 2.0, places=6)
 
     def _aggregate(self, sets: tuple[tuple[tuple[float, float], ...], ...]):
         from ce.calculation.scenario_windows import classify_sampled_windows
