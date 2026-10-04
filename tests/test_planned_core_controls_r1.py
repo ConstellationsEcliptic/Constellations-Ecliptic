@@ -100,7 +100,12 @@ class PlannedCoreControlsR1(unittest.TestCase):
         self.assertEqual(robust, ())
 
     # EPH-01
-    def test_eph_01_actual_mismatch_is_failure(self) -> None:
+    def test_eph_01_requested_actual_resolution_mismatch_is_failure(self) -> None:
+        from ce.ephemeris.verification import classify_requested_actual_flags
+        result = classify_requested_actual_flags(requested_flags=258, actual_flags=2)
+        self.assertEqual(result, CalculationStatus.CALCULATION_FAILURE)
+
+    def test_ephemeris_data_integrity_mismatch_remains_separate(self) -> None:
         from ce.ephemeris.verification import DataFileExpectation, EphemerisVerificationError, verify_data_files
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "seas_18.se1"
