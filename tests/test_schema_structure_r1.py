@@ -51,6 +51,24 @@ class SchemaStructureR1Tests(unittest.TestCase):
         self.assertEqual(len(schema["allOf"]), 3)
         self.assertIn("NATAL_EVIDENCE_VARIABLE", schema["properties"]["status"]["enum"])
 
+    def test_signal_result_schema_matches_current_result_shape(self) -> None:
+        schema = self._load_without_duplicate_keys(ROOT / "schemas" / "signal_result.schema.json")
+        self.assertEqual(
+            set(schema["required"]),
+            {
+                "status",
+                "classification",
+                "phase",
+                "uncertainty_state",
+                "evidence_packet_ref",
+                "canon_input_valid",
+            },
+        )
+        self.assertEqual(schema["properties"]["classification"]["type"], ["string", "null"])
+        self.assertEqual(schema["properties"]["phase"]["type"], ["string", "null"])
+        self.assertEqual(schema["properties"]["uncertainty_state"]["type"], ["string", "null"])
+        self.assertEqual(schema["properties"]["evidence_packet_ref"]["type"], ["string", "null"])
+
     def test_evidence_packet_schema_uses_strict_record_shapes(self) -> None:
         schema = self._load_without_duplicate_keys(ROOT / "schemas" / "evidence_packet.schema.json")
         self.assertFalse(schema["properties"]["object_records"]["items"]["additionalProperties"])
