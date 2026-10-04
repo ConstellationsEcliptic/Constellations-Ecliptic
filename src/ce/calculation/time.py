@@ -1,9 +1,21 @@
 from __future__ import annotations
 
+"""Compatibility-only time API.
+
+The authoritative civil-time implementation is now in :mod:`ce.timezone.civil`.
+These wrappers exist only for older callers that do not yet provide a controlled
+TZif runtime. They never resolve local time to UTC and never provide authority.
+"""
+
 from dataclasses import dataclass
 from datetime import date, time, timedelta
 
-from ce.foundation.status import CALENDAR_POLICY_GREGORIAN_ONLY, CalculationStatus, NatalBirthState, ObservationTimeState
+from ce.foundation.status import (
+    CALENDAR_POLICY_GREGORIAN_ONLY,
+    CalculationStatus,
+    NatalBirthState,
+    ObservationTimeState,
+)
 
 
 @dataclass(frozen=True)
@@ -29,6 +41,14 @@ class ObservationTimeResolution:
     error: str | None
 
 
+def _day_bounds(birth_date: date) -> tuple[str, str]:
+    next_day = birth_date + timedelta(days=1)
+    return (
+        f"{birth_date.isoformat()}T00:00:00",
+        f"{next_day.isoformat()}T00:00:00",
+    )
+
+
 def resolve_zero_birth_interval(
     birth_date: date,
     timezone_id: str,
@@ -37,53 +57,23 @@ def resolve_zero_birth_interval(
     authoritative_timezone_version: str | None,
     calendar_policy_id: str = CALENDAR_POLICY_GREGORIAN_ONLY,
 ) -> ZeroBirthIntervalResolution:
-    """Represent the natal state as the full local civil day.
-
-    This function deliberately does not choose noon, midnight, a midpoint,
-    or any other representative natal instant. UTC conversion remains blocked
-    until the authoritative TZif dataset is established.
-    """
+    start, end = _day_bounds(birth_date)
     if calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
-        next_day = birth_date + timedelta(days=1)
         return ZeroBirthIntervalResolution(
-            status=CalculationStatus.INPUT_UNSUPPORTED,
-            natal_birth_state=NatalBirthState.ZERO_BIRTH_TIME,
-            local_interval_start=f"{birth_date.isoformat()}T00:00:00",
-            local_interval_end=f"{next_day.isoformat()}T00:00:00",
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
-            resolved_utc_interval_start=None,
-            resolved_utc_interval_end=None,
-            error="unsupported_calendar_policy",
+            CalculationStatus.INPUT_UNSUPPORTED, NatalBirthState.ZERO_BIRTH_TIME,
+            start, end, timezone_id, timezone_version, None, None,
+            "unsupported_calendar_policy",
         )
-
-    next_day = birth_date + timedelta(days=1)
-    start = f"{birth_date.isoformat()}T00:00:00"
-    end = f"{next_day.isoformat()}T00:00:00"
-
     if authoritative_timezone_version is None or timezone_version != authoritative_timezone_version:
         return ZeroBirthIntervalResolution(
-            status=CalculationStatus.NON_AUTHORIZED,
-            natal_birth_state=NatalBirthState.ZERO_BIRTH_TIME,
-            local_interval_start=start,
-            local_interval_end=end,
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
-            resolved_utc_interval_start=None,
-            resolved_utc_interval_end=None,
-            error="authoritative_timezone_identity_not_established",
+            CalculationStatus.NON_AUTHORIZED, NatalBirthState.ZERO_BIRTH_TIME,
+            start, end, timezone_id, timezone_version, None, None,
+            "authoritative_timezone_identity_not_established",
         )
-
     return ZeroBirthIntervalResolution(
-        status=CalculationStatus.NON_AUTHORIZED,
-        natal_birth_state=NatalBirthState.ZERO_BIRTH_TIME,
-        local_interval_start=start,
-        local_interval_end=end,
-        timezone_id=timezone_id,
-        timezone_version=timezone_version,
-        resolved_utc_interval_start=None,
-        resolved_utc_interval_end=None,
-        error="authoritative_tzif_bundle_not_established",
+        CalculationStatus.NON_AUTHORIZED, NatalBirthState.ZERO_BIRTH_TIME,
+        start, end, timezone_id, timezone_version, None, None,
+        "authoritative_tzif_bundle_not_established",
     )
 
 
@@ -96,45 +86,22 @@ def resolve_observation_civil_time(
     authoritative_timezone_version: str | None,
     calendar_policy_id: str = CALENDAR_POLICY_GREGORIAN_ONLY,
 ) -> ObservationTimeResolution:
-    """Resolve an explicit observation/evaluation time.
-
-    Observation time is intentionally separate from natal birth time.
-    """
     if calendar_policy_id != CALENDAR_POLICY_GREGORIAN_ONLY:
         return ObservationTimeResolution(
-            status=CalculationStatus.INPUT_UNSUPPORTED,
-            observation_time_state=ObservationTimeState.INVALID,
-            resolved_instant_utc=None,
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
-            error="unsupported_calendar_policy",
+            CalculationStatus.INPUT_UNSUPPORTED, ObservationTimeState.INVALID,
+            None, timezone_id, timezone_version, "unsupported_calendar_policy",
         )
-
     if observation_time is None:
         return ObservationTimeResolution(
-            status=CalculationStatus.INVALID_INPUT,
-            observation_time_state=ObservationTimeState.INVALID,
-            resolved_instant_utc=None,
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
-            error="explicit_observation_time_required",
+            CalculationStatus.INVALID_INPUT, ObservationTimeState.INVALID,
+            None, timezone_id, timezone_version, "explicit_observation_time_required",
         )
-
     if authoritative_timezone_version is None or timezone_version != authoritative_timezone_version:
         return ObservationTimeResolution(
-            status=CalculationStatus.NON_AUTHORIZED,
-            observation_time_state=ObservationTimeState.EXACT,
-            resolved_instant_utc=None,
-            timezone_id=timezone_id,
-            timezone_version=timezone_version,
-            error="authoritative_timezone_identity_not_established",
+            CalculationStatus.NON_AUTHORIZED, ObservationTimeState.EXACT,
+            None, timezone_id, timezone_version, "authoritative_timezone_identity_not_established",
         )
-
     return ObservationTimeResolution(
-        status=CalculationStatus.NON_AUTHORIZED,
-        observation_time_state=ObservationTimeState.EXACT,
-        resolved_instant_utc=None,
-        timezone_id=timezone_id,
-        timezone_version=timezone_version,
-        error="authoritative_tzif_bundle_not_established",
+        CalculationStatus.NON_AUTHORIZED, ObservationTimeState.EXACT,
+        None, timezone_id, timezone_version, "authoritative_tzif_bundle_not_established",
     )
