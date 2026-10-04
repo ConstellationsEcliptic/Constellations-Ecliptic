@@ -91,7 +91,7 @@ def evaluate_zero_birth_scenarios(
             )
             return ScenarioAggregate(
                 status=CalculationStatus.CALCULATION_FAILURE,
-                scenario_state=ScenarioState.VARIABLE,
+                scenario_state=ScenarioState.NONE,
                 window_classification=ScenarioState.NONE,
                 possible_segments=(),
                 robust_segments=(),
@@ -108,7 +108,7 @@ def evaluate_zero_birth_scenarios(
             )
             return ScenarioAggregate(
                 status=CalculationStatus.CALCULATION_FAILURE,
-                scenario_state=ScenarioState.VARIABLE,
+                scenario_state=ScenarioState.NONE,
                 window_classification=ScenarioState.NONE,
                 possible_segments=(),
                 robust_segments=(),
