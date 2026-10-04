@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import unittest
 
-from ce.calculation.contracts import ObjectState
+from ce.calculation.contracts import ObjectRecord
 from ce.calculation.kernel import KernelFailure, calculate_aspect_window, validate_kernel_window_result
 from ce.foundation.status import CalculationStatus
 
@@ -15,16 +15,16 @@ class FakeProvider:
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
         seconds = (instant_utc - start).total_seconds()
         if object_id == "MOON":
-            return ObjectState("MOON", 0.0, 0.0, CalculationStatus.VALID)
+            return ObjectRecord("MOON", CalculationStatus.VALID, 258, 258, 0.0, 0.0, 1.0, 0.0)
         if object_id == "SUN":
             # Test fixture: an artificial linear longitude, not astronomical data.
-            return ObjectState("SUN", 59.0 + seconds / 86400.0, 1.0, CalculationStatus.VALID)
-        return ObjectState(object_id, None, None, CalculationStatus.KNOWN_UNAVAILABLE)
+            return ObjectRecord("SUN", CalculationStatus.VALID, 258, 258, 59.0 + seconds / 86400.0, 0.0, 1.0, 1.0)
+        return ObjectRecord(object_id, CalculationStatus.KNOWN_UNAVAILABLE, 258, None, None, None, None, None, errors=("KNOWN_UNAVAILABLE",))
 
 
 class InvalidProvider(FakeProvider):
     def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
-        return ObjectState(object_id, None, None, CalculationStatus.KNOWN_UNAVAILABLE)
+        return ObjectRecord(object_id, CalculationStatus.KNOWN_UNAVAILABLE, 258, None, None, None, None, None, errors=("KNOWN_UNAVAILABLE",))
 
 
 class KernelR1Tests(unittest.TestCase):
