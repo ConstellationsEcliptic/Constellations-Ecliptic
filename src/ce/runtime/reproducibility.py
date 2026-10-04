@@ -92,6 +92,7 @@ class RuntimeCapture:
         if not isinstance(self.fixtures, (tuple, list)):
             errors.append("invalid:fixtures:sequence_required")
         else:
+            seen_fixture_ids: set[str] = set()
             for index, fixture in enumerate(self.fixtures):
                 if not isinstance(fixture, Mapping):
                     errors.append(f"invalid:fixtures[{index}]:mapping_required")
@@ -99,6 +100,10 @@ class RuntimeCapture:
                 fixture_id = fixture.get("fixture_id")
                 if not isinstance(fixture_id, str) or not fixture_id.strip():
                     errors.append(f"invalid:fixtures[{index}]:fixture_id")
+                elif fixture_id in seen_fixture_ids:
+                    errors.append(f"invalid:fixtures[{index}]:duplicate_fixture_id")
+                else:
+                    seen_fixture_ids.add(fixture_id)
                 if "records" not in fixture or not isinstance(fixture.get("records"), (Mapping, list, tuple)):
                     errors.append(f"invalid:fixtures[{index}]:records")
                 errors.extend(_domain_errors(fixture, f"fixtures[{index}]"))
@@ -234,6 +239,12 @@ def compare_capture_outputs(
         if getattr(left, field) != getattr(right, field):
             errors.append(f"identity_mismatch:{field}")
 
+    left_ids = [str(item["fixture_id"]) for item in left.fixtures]
+    right_ids = [str(item["fixture_id"]) for item in right.fixtures]
+    if len(left_ids) != len(set(left_ids)):
+        errors.append("fixture_duplicate_id:left")
+    if len(right_ids) != len(set(right_ids)):
+        errors.append("fixture_duplicate_id:right")
     left_by_id = {str(item["fixture_id"]): item for item in left.fixtures}
     right_by_id = {str(item["fixture_id"]): item for item in right.fixtures}
     if set(left_by_id) != set(right_by_id):
