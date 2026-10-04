@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "CE V1 Calculation Result",
+  "title": "CE V1 Calculation Result R2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -28,144 +28,607 @@
     "evidence_packet_ref"
   ],
   "properties": {
-    "calculation_id": {"type": ["string", "null"], "minLength": 1},
-    "request_id": {"type": "string", "minLength": 1},
-    "calculation_version": {"type": "string", "minLength": 1},
-    "observation_interval": {
-      "type": ["array", "null"], "minItems": 2, "maxItems": 2,
-      "items": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"}
+    "request_id": {
+      "type": "string",
+      "minLength": 1
     },
-    "status": {"type": "string", "enum": [
-      "VALID",
-      "KNOWN_UNAVAILABLE",
-      "CALCULATION_FAILURE",
-      "INPUT_UNSUPPORTED",
-      "NATAL_EVIDENCE_VARIABLE",
-      "NOT_IMPLEMENTED",
-      "NON_AUTHORIZED",
-      "INVALID_INPUT"
-    ]},
-    "execution_profile_id": {"const": "CE-CALC-V1-EP-001"},
-    "scenario_state": {"type": "string", "enum": [
-      "STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"
-    ]},
-    "observation_interval": {
-      "type": ["array", "null"], "minItems": 2, "maxItems": 2,
-      "items": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"}
+    "status": {
+      "type": "string",
+      "enum": [
+        "VALID",
+        "KNOWN_UNAVAILABLE",
+        "CALCULATION_FAILURE",
+        "INPUT_UNSUPPORTED",
+        "NATAL_EVIDENCE_VARIABLE",
+        "NOT_IMPLEMENTED",
+        "NON_AUTHORIZED",
+        "INVALID_INPUT"
+      ]
     },
-    "geometry_records": {"type": "array", "items": {"type": "object"}},
-    "event_records": {"type": "array", "items": {"type": "object"}},
-    "window_segments": {"type": "array", "items": {"type": "object"}},
+    "execution_profile_id": {
+      "const": "CE-CALC-V1-EP-001"
+    },
+    "calculation_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "calculation_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "observation_interval": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+      }
+    },
     "normalized_time": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
     },
-    "object_records": {"type": "array", "items": {"type": "object"}},
-    "geometry_records": {"type": "array", "items": {"type": "object"}},
-    "event_records": {"type": "array", "items": {"type": "object"}},
-    "window_segments": {"type": "array", "items": {"type": "object"}},
-    "window_classification": {"type": "string", "enum": ["STABLE","VARIABLE","POSSIBLE","ROBUST","MIXED","NONE"]},
-    "possible_window_segments": {"type": "array", "items": {"type": "object"}},
-    "robust_window_segments": {"type": "array", "items": {"type": "object"}},
-    "scenario_observations": {"type": "array", "items": {"type": "object"}},
-    "solver_metadata": {"type": "object"},
-    "actual_ephemeris_resolution": {"type": "object"},
-    "calculation_flags": {"type": "object"},
     "object_states": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["object_id", "longitude_deg", "speed_deg_per_day", "status"],
+        "required": [
+          "object_id",
+          "longitude_deg",
+          "speed_deg_per_day",
+          "status"
+        ],
         "properties": {
-          "object_id": {"type": "string", "minLength": 1},
-          "longitude_deg": {"type": ["number", "null"]},
-          "speed_deg_per_day": {"type": ["number", "null"]},
-          "status": {"type": "string", "enum": [
-            "VALID", "KNOWN_UNAVAILABLE", "CALCULATION_FAILURE",
-            "INPUT_UNSUPPORTED", "NATAL_EVIDENCE_VARIABLE",
-            "NOT_IMPLEMENTED", "NON_AUTHORIZED", "INVALID_INPUT"
-          ]}
+          "object_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "longitude_deg": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "exclusiveMaximum": 360
+          },
+          "speed_deg_per_day": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "KNOWN_UNAVAILABLE",
+              "CALCULATION_FAILURE",
+              "INPUT_UNSUPPORTED",
+              "NATAL_EVIDENCE_VARIABLE",
+              "NOT_IMPLEMENTED",
+              "NON_AUTHORIZED",
+              "INVALID_INPUT"
+            ]
+          }
         }
       }
     },
-    "warnings": {"type": "array", "items": {"type": "string"}},
-    "errors": {"type": "array", "items": {"type": "string"}},
+    "object_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "object_id",
+          "object_status",
+          "requested_flags",
+          "actual_flags",
+          "longitude",
+          "latitude",
+          "distance",
+          "speed",
+          "observation_time_utc",
+          "warnings",
+          "errors"
+        ],
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "object_status": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "KNOWN_UNAVAILABLE",
+              "CALCULATION_FAILURE",
+              "INPUT_UNSUPPORTED",
+              "NATAL_EVIDENCE_VARIABLE",
+              "NOT_IMPLEMENTED",
+              "NON_AUTHORIZED",
+              "INVALID_INPUT"
+            ]
+          },
+          "requested_flags": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "actual_flags": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "longitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "exclusiveMaximum": 360
+          },
+          "latitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": -90,
+            "maximum": 90
+          },
+          "distance": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "speed": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "observation_time_utc": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "geometry_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "transit_object",
+          "natal_object_or_scenario",
+          "aspect",
+          "directed_branch",
+          "signed_deviation",
+          "absolute_deviation",
+          "effective_orb",
+          "qualification_state",
+          "kinematic_state"
+        ],
+        "properties": {
+          "transit_object": {
+            "type": "string",
+            "minLength": 1
+          },
+          "natal_object_or_scenario": {
+            "type": "string",
+            "minLength": 1
+          },
+          "aspect": {
+            "type": "string",
+            "enum": [
+              "CONJUNCTION",
+              "SEXTILE",
+              "SQUARE",
+              "TRINE",
+              "OPPOSITION"
+            ]
+          },
+          "directed_branch": {
+            "type": "number"
+          },
+          "signed_deviation": {
+            "type": "number"
+          },
+          "absolute_deviation": {
+            "type": "number",
+            "minimum": 0
+          },
+          "effective_orb": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "qualification_state": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kinematic_state": {
+            "type": "string",
+            "enum": [
+              "EXACT",
+              "APPLYING",
+              "SEPARATING",
+              "NEAR_STATIONARY"
+            ]
+          },
+          "transit_speed": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "event_time_utc": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          }
+        }
+      }
+    },
+    "event_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_time_utc",
+          "residual"
+        ],
+        "properties": {
+          "event_time_utc": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          },
+          "residual": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "window_segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entry_utc",
+          "exact_events_utc",
+          "exit_utc"
+        ],
+        "properties": {
+          "entry_utc": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          },
+          "exact_events_utc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+            }
+          },
+          "exit_utc": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          }
+        }
+      }
+    },
+    "window_classification": {
+      "type": "string",
+      "enum": [
+        "STABLE",
+        "VARIABLE",
+        "POSSIBLE",
+        "ROBUST",
+        "MIXED",
+        "NONE"
+      ]
+    },
+    "possible_window_segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entry_utc",
+          "exact_events_utc",
+          "exit_utc"
+        ],
+        "properties": {
+          "entry_utc": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          },
+          "exact_events_utc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+            }
+          },
+          "exit_utc": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          }
+        }
+      }
+    },
+    "robust_window_segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entry_utc",
+          "exact_events_utc",
+          "exit_utc"
+        ],
+        "properties": {
+          "entry_utc": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          },
+          "exact_events_utc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+            }
+          },
+          "exit_utc": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          }
+        }
+      }
+    },
+    "scenario_observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "solver_metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "actual_ephemeris_resolution": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "calculation_flags": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "provenance": {
       "type": "object",
       "additionalProperties": {
-        "type": ["string", "number", "boolean", "null"]
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      },
+      "required": [
+        "source_commit",
+        "source_tree_sha256_v2",
+        "dependency_lock_digest",
+        "timezone_bundle_digest",
+        "ephemeris_bundle_digest",
+        "runtime_image_digest",
+        "calculation_version"
+      ],
+      "properties": {
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{40}$"
+        },
+        "source_tree_sha256_v2": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "dependency_lock_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "timezone_bundle_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "ephemeris_bundle_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "runtime_image_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-fA-F]{64}$"
+        },
+        "calculation_version": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "evidence_packet_ref": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
-      "required": ["evidence_packet_id", "content_sha256"],
+      "required": [
+        "evidence_packet_id",
+        "content_sha256"
+      ],
       "properties": {
-        "evidence_packet_id": {"type": "string", "minLength": 1},
-        "content_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"}
+        "evidence_packet_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        }
       }
     }
   },
   "allOf": [
     {
-      "if": {"properties": {"status": {"const": "NATAL_EVIDENCE_VARIABLE"}}, "required": ["status"]},
-      "then": {
-        "required": ["calculation_id", "observation_interval", "provenance", "evidence_packet_ref"],
+      "if": {
         "properties": {
-          "scenario_state": {"const": "VARIABLE"},
-          "evidence_packet_ref": {"type": "object"},
-          "provenance": {
-            "required": [
-              "source_commit",
-              "source_tree_sha256_v2",
-              "dependency_lock_digest",
-              "timezone_bundle_digest",
-              "ephemeris_bundle_digest",
-              "runtime_image_digest",
-              "calculation_version"
-            ]
+          "status": {
+            "const": "VALID"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "calculation_id",
+          "normalized_time",
+          "observation_interval",
+          "object_states",
+          "provenance",
+          "evidence_packet_ref"
+        ],
+        "properties": {
+          "normalized_time": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+          },
+          "object_states": {
+            "minItems": 1
+          },
+          "errors": {
+            "maxItems": 0
+          },
+          "scenario_state": {
+            "not": {
+              "const": "NONE"
+            }
+          },
+          "evidence_packet_ref": {
+            "type": "object"
           }
         }
       }
     },
     {
-      "if": {"properties": {"status": {"const": "VALID"}}, "required": ["status"]},
-      "then": {
-        "required": ["calculation_id", "normalized_time", "observation_interval", "object_states", "provenance", "evidence_packet_ref"],
+      "if": {
         "properties": {
-          "normalized_time": {"type": "string"},
-          "object_states": {"minItems": 1},
-          "errors": {"maxItems": 0},
-          "scenario_state": {"not": {"const": "NONE"}},
-          "evidence_packet_ref": {"type": "object"},
-          "provenance": {
-            "required": [
-              "source_commit",
-              "source_tree_sha256_v2",
-              "dependency_lock_digest",
-              "timezone_bundle_digest",
-              "ephemeris_bundle_digest",
-              "runtime_image_digest",
-              "calculation_version"
-            ]
+          "status": {
+            "const": "NATAL_EVIDENCE_VARIABLE"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "calculation_id",
+          "observation_interval",
+          "provenance",
+          "evidence_packet_ref"
+        ],
+        "properties": {
+          "scenario_state": {
+            "const": "VARIABLE"
+          },
+          "normalized_time": {
+            "type": "null"
+          },
+          "evidence_packet_ref": {
+            "type": "object"
           }
         }
       }
     },
     {
-      "if": {"properties": {"status": {"not": {"const": "VALID"}}}, "required": ["status"]},
+      "if": {
+        "properties": {
+          "status": {
+            "not": {
+              "enum": [
+                "VALID",
+                "NATAL_EVIDENCE_VARIABLE"
+              ]
+            }
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
       "then": {
         "properties": {
-          "evidence_packet_ref": {"const": null}
+          "evidence_packet_ref": {
+            "const": null
+          }
         },
         "not": {
           "properties": {
             "object_states": {
               "contains": {
-                "type": "object",
-                "properties": {"status": {"const": "VALID"}},
-                "required": ["status"]
+                "properties": {
+                  "status": {
+                    "const": "VALID"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
               }
             }
           }
