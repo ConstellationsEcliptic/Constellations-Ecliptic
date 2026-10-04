@@ -43,56 +43,6 @@ def ref_geometry(transit: float, natal: float, branch: float, speed: float | Non
     return error, distance, "NEAR_STATIONARY"
 
 
-def reference_interval_topology(
-    fn,
-    start: float,
-    end: float,
-    orb: float,
-    *,
-    steps: int = 10000,
-) -> tuple[tuple[float, float], tuple[float, ...]]:
-    """Brute-force topology oracle for fixtures with analytically known roots.
-
-    This is a challenge oracle, not a replacement solver. Boundaries/roots are
-    taken from the approved fixture equations and refined only numerically.
-    """
-    if steps < 10:
-        raise ValueError("steps")
-    h = (end - start) / steps
-
-    def inside(x: float) -> bool:
-        return abs(fn(x)) <= orb
-
-    samples = [start + i * h for i in range(steps + 1)]
-    segments: list[tuple[float, float]] = []
-    roots: list[float] = []
-
-    for i, x in enumerate(samples):
-        if i and inside(x) and not inside(samples[i - 1]):
-            lo, hi = samples[i - 1], x
-            for _ in range(80):
-                mid = (lo + hi) / 2.0
-                if inside(mid):
-                    hi = mid
-                else:
-                    lo = mid
-            segments.append((hi, 0.0))
-
-        if i < steps and inside(x) and not inside(samples[i + 1]):
-            lo, hi = x, samples[i + 1]
-            for _ in range(80):
-                mid = (lo + hi) / 2.0
-                if inside(mid):
-                    lo = mid
-                else:
-                    hi = mid
-            if segments:
-                a, _ = segments[-1]
-                segments[-1] = (a, lo)
-
-    return tuple(segments), tuple(roots)
-
-
 class IndependentCoreOracleChallengeR1(unittest.TestCase):
     def test_geo_01_and_02_reference_math(self) -> None:
         cases = (
