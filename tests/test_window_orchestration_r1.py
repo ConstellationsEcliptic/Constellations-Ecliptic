@@ -70,7 +70,8 @@ class WindowOrchestrationR1Tests(unittest.TestCase):
             scenario_count=4,
         )
         self.assertIs(result.status, CalculationStatus.NATAL_EVIDENCE_VARIABLE)
-        self.assertIs(result.scenario_state, ScenarioState.MIXED)
+        self.assertIs(result.scenario_state, ScenarioState.VARIABLE)
+        self.assertIs(result.window_classification, ScenarioState.MIXED)
         self.assertEqual(result.robust_segments, ((1.5, 2.0),))
 
 
