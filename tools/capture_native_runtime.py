@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import platform
+import subprocess
 import uuid
 
 from ce.ephemeris.native_runtime import (
@@ -18,6 +19,7 @@ from ce.ephemeris.native_runtime import (
     verify_canonical_swiss_bundle,
 )
 from ce.calculation.registry import EXPECTED_OBJECTS
+from ce.foundation.source_tree_identity import source_tree_sha256
 from ce.runtime.reproducibility import RuntimeCapture
 
 
@@ -116,6 +118,31 @@ def _reported_version(library) -> str:
     return buffer.value.decode("ascii", errors="strict")
 
 
+def _verify_source_identity(repo_root: Path, expected_commit: str, expected_tree_sha256: str) -> None:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo_root,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise NativeRuntimeError("source_commit_identity_unavailable") from exc
+
+    if result.stdout.strip() != expected_commit:
+        raise NativeRuntimeError("source_commit_identity_mismatch")
+
+    try:
+        observed_tree = source_tree_sha256(repo_root)
+    except (OSError, ValueError) as exc:
+        raise NativeRuntimeError("source_tree_identity_unavailable") from exc
+
+    if observed_tree.lower() != expected_tree_sha256.lower():
+        raise NativeRuntimeError("source_tree_identity_mismatch")
+
+
 def _calculate(library, object_id: str, jd_ut: float, ephemeris_root: Path, with_speed: bool) -> dict[str, object]:
     import ctypes
 
@@ -151,6 +178,8 @@ def _calculate(library, object_id: str, jd_ut: float, ephemeris_root: Path, with
 
 def main() -> int:
     args = _parser().parse_args()
+    repo_root = Path(__file__).resolve().parents[1]
+    _verify_source_identity(repo_root, args.source_commit, args.source_tree_sha256_v2)
     fixtures = _load_fixture_spec(args.fixture_spec)
 
     ephemeris_root = args.ephemeris_root.resolve()
