@@ -51,6 +51,15 @@ class RuntimeEnvironmentIdentityR1Tests(unittest.TestCase):
         right = self._manifest(first=b"abcd")
         self.assertNotEqual(host_native_environment_digest(left), host_native_environment_digest(right))
 
+    def test_environment_digest_without_kind_is_rejected(self) -> None:
+        from ce.foundation.identity import RuntimeIdentity
+        identity = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            None, None, None, None, None, None,
+            runtime_environment_digest="f" * 64,
+        )
+        self.assertIn("missing:runtime_environment_kind", identity.validate_shape())
+
     def test_duplicate_component_name_fails_closed(self) -> None:
         manifest = self._manifest()
         manifest["components"] = manifest["components"] + [dict(manifest["components"][0])]

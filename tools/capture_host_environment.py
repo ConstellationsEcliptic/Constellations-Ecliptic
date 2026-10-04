@@ -41,12 +41,13 @@ def _parse_components(values: list[str]) -> tuple[list[dict[str, object]], dict[
             raise ValueError("component_requires_NAME_EQUALS_PATH")
         name, raw_path = raw.split("=", 1)
         name = name.strip()
-        path = Path(raw_path).expanduser().resolve()
+        raw_path_obj = Path(raw_path).expanduser()
+        path = raw_path_obj.resolve()
         if not name:
             raise ValueError("component_name_empty")
         if name in names:
             raise ValueError(f"duplicate_component_name:{name}")
-        if path.is_symlink() or not path.is_file():
+        if raw_path_obj.is_symlink() or not path.is_file():
             raise ValueError(f"component_missing_or_nonregular:{name}")
         digest = sha256_file(path)
         components.append(
@@ -64,8 +65,9 @@ def _parse_components(values: list[str]) -> tuple[list[dict[str, object]], dict[
 
 def main() -> int:
     args = _parser().parse_args()
-    python_executable = Path(sys.executable).resolve()
-    if python_executable.is_symlink() or not python_executable.is_file():
+    python_executable_raw = Path(sys.executable)
+    python_executable = python_executable_raw.resolve()
+    if python_executable_raw.is_symlink() or not python_executable.is_file():
         raise SystemExit("python_executable_missing_or_nonregular")
 
     components, observed_paths = _parse_components(args.component)

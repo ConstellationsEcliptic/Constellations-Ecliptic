@@ -76,6 +76,8 @@ class RuntimeIdentity:
         ):
             errors.append("malformed:runtime_image_digest:sha256-prefixed")
 
+        if self.runtime_environment_kind is None and self.runtime_environment_digest is not None:
+            errors.append("missing:runtime_environment_kind")
         if self.runtime_environment_kind is not None:
             if self.runtime_environment_kind not in {"OCI_IMAGE", "HOST_NATIVE"}:
                 errors.append("malformed:runtime_environment_kind")
