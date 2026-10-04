@@ -45,6 +45,8 @@ class KernelCalculation:
 
 
 def _canonical_utc(value: datetime) -> str:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise KernelFailure("datetime_must_be_timezone_aware")
     return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
