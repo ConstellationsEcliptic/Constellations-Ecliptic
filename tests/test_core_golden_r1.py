@@ -16,33 +16,39 @@ from ce.foundation.status import KinematicState
 class CoreGoldenR1Tests(unittest.TestCase):
     # GEO-01
     def test_geo_01_circular_boundary(self) -> None:
-        self.assertAlmostEqual(normalize_longitude_deg(-0.2), 359.8)
-        self.assertAlmostEqual(normalize_longitude_deg(360.2), 0.2)
+        branch, deviation, absolute, state, qualifies = aspect_geometry(
+            "SUN", "MOON", 359.5, 0.5, None, "CONJUNCTION"
+        )
+        self.assertEqual(branch, 0.0)
+        self.assertAlmostEqual(deviation, -1.0, places=12)
+        self.assertAlmostEqual(absolute, 1.0, places=12)
+        self.assertTrue(qualifies)
+        self.assertEqual(state, KinematicState.NEAR_STATIONARY)
 
     # GEO-02
     def test_geo_02_exact_square(self) -> None:
         branch, deviation, absolute, state, qualifies = aspect_geometry(
-            "SUN", "MOON", 90.00001, 0.0, 0.1, "SQUARE"
+            "SUN", "MOON", 10.0, 100.0, None, "SQUARE"
         )
-        self.assertEqual(branch, 90.0)
-        self.assertLessEqual(absolute, 1.0e-4)
+        self.assertEqual(branch, -90.0)
+        self.assertAlmostEqual(deviation, 0.0, places=12)
+        self.assertAlmostEqual(absolute, 0.0, places=12)
         self.assertEqual(state, KinematicState.EXACT)
         self.assertTrue(qualifies)
-        self.assertAlmostEqual(deviation, 0.00001, places=5)
 
     # KIN-01
     def test_kin_01_applying(self) -> None:
-        *_, state, _ = aspect_geometry("SUN", "MOON", 59.0, 0.0, 1.2, "SEXTILE")
+        *_, state, _ = aspect_geometry("SUN", "MOON", 59.5, 0.0, 1.2, "SEXTILE")
         self.assertEqual(state, KinematicState.APPLYING)
 
     # KIN-02
     def test_kin_02_separating(self) -> None:
-        *_, state, _ = aspect_geometry("SUN", "MOON", 61.0, 0.0, 1.2, "SEXTILE")
+        *_, state, _ = aspect_geometry("SUN", "MOON", 60.5, 0.0, 1.2, "SEXTILE")
         self.assertEqual(state, KinematicState.SEPARATING)
 
     # KIN-03
     def test_kin_03_retrograde_separating(self) -> None:
-        *_, state, _ = aspect_geometry("SUN", "MOON", 59.0, 0.0, -0.8, "SEXTILE")
+        *_, state, _ = aspect_geometry("SUN", "MOON", 59.5, 0.0, -0.8, "SEXTILE")
         self.assertEqual(state, KinematicState.SEPARATING)
 
     # KIN-04
