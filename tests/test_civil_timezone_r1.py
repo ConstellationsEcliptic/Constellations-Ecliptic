@@ -58,10 +58,6 @@ class CivilTimezoneR1Tests(unittest.TestCase):
         self.assertEqual(result.status, CalculationStatus.INPUT_UNSUPPORTED)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
     def test_observation_time_is_resolved_by_canonical_tzif_boundary(self) -> None:
         result = resolve_observation_civil_time(
             observation_date=date(2026, 1, 1),
@@ -74,3 +70,7 @@ if __name__ == "__main__":
         self.assertEqual(result.status, CalculationStatus.VALID)
         self.assertEqual(result.observation_time_state.value, "EXACT")
         self.assertEqual(result.resolved_instant_utc, "2026-01-01T12:00:00Z")
+
+
+if __name__ == "__main__":
+    unittest.main()
