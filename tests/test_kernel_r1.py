@@ -11,7 +11,7 @@ from ce.foundation.status import CalculationStatus
 class FakeProvider:
     """Test-only numerical source; never used by production runtime."""
 
-    def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
+    def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectRecord:
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
         seconds = (instant_utc - start).total_seconds()
         if object_id == "MOON":
