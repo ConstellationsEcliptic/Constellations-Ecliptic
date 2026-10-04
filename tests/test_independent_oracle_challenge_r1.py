@@ -140,16 +140,18 @@ class IndependentCoreOracleChallengeR1(unittest.TestCase):
     def test_uncertainty_set_logic_reference(self) -> None:
         # Independent set-theoretic oracle for the approved scenario semantics.
         def agg(sets):
-            nonempty = [set(s) for s in sets if s]
-            if not nonempty:
+            normalized = tuple(tuple(s) for s in sets)
+            if not normalized:
                 return ScenarioState.NONE
-            intersection = set.intersection(*nonempty)
-            union = set.union(*nonempty)
-            if all(set(s) == union for s in sets if s) and len(nonempty) == len(sets):
+            union = set().union(*(set(s) for s in normalized))
+            if not union:
+                return ScenarioState.NONE
+            intersection = set.intersection(*(set(s) for s in normalized))
+            if not intersection:
+                return ScenarioState.POSSIBLE
+            if union == intersection:
                 return ScenarioState.ROBUST
-            if intersection:
-                return ScenarioState.MIXED
-            return ScenarioState.POSSIBLE
+            return ScenarioState.MIXED
 
         self.assertIs(agg((((1, 3),), ((1, 3),), ((1, 3),))), ScenarioState.ROBUST)
         self.assertIs(agg((((1, 2),), (), ())), ScenarioState.POSSIBLE)
