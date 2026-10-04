@@ -4,7 +4,13 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from ce.ephemeris.verification import DataFileExpectation, EphemerisVerificationError, verify_data_files
+from ce.ephemeris.verification import (
+    DataFileExpectation,
+    EphemerisVerificationError,
+    classify_requested_actual_flags,
+    verify_data_files,
+)
+from ce.foundation.status import CalculationStatus
 
 
 class EphemerisVerificationR1Tests(unittest.TestCase):
@@ -36,6 +42,33 @@ class EphemerisVerificationR1Tests(unittest.TestCase):
                     (DataFileExpectation("seas_18.se1", 4, "0" * 64),),
                 )
 
+    def test_requested_actual_flags_match(self) -> None:
+        self.assertEqual(
+            classify_requested_actual_flags(258, 258),
+            CalculationStatus.VALID,
+        )
+
+    def test_requested_actual_flags_superset_is_valid(self) -> None:
+        self.assertEqual(
+            classify_requested_actual_flags(258, 514),
+            CalculationStatus.VALID,
+        )
+
+    def test_requested_actual_flags_missing_is_failure(self) -> None:
+        self.assertEqual(
+            classify_requested_actual_flags(258, 2),
+            CalculationStatus.CALCULATION_FAILURE,
+        )
+
+    def test_requested_actual_flags_missing_actual_is_failure(self) -> None:
+        self.assertEqual(
+            classify_requested_actual_flags(258, None),
+            CalculationStatus.CALCULATION_FAILURE,
+        )
+
+    def test_requested_actual_flags_malformed_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            classify_requested_actual_flags(258, -1)
 
 if __name__ == "__main__":
     unittest.main()
