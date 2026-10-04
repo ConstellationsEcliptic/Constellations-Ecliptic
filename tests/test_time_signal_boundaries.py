@@ -89,11 +89,76 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         self.assertIsNone(result.resolved_utc_interval_start)
         self.assertIsNone(result.resolved_utc_interval_end)
 
-    def test_signal_engine_does_not_invent_signal(self) -> None:
+    def _signal_packet(
+        self,
+        *,
+        calculation_status: str = "VALID",
+        ephemeris_resolution_status: str = "MATCH",
+        errors: tuple[str, ...] = (),
+    ) -> EvidencePacket:
+        return EvidencePacket(
+            evidence_packet_id="E-SIGNAL-001",
+            calculation_id="C-SIGNAL-001",
+            input_identity={"birth_date": "2026-01-01"},
+            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
+            observation_instant_or_interval={
+                "start": "2026-01-01T00:00:00Z",
+                "end": "2026-01-02T00:00:00Z",
+            },
+            timezone_context={"id": "UTC", "version": "2026d"},
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
+            object_records=(),
+            geometry_records=(),
+            effective_orb_records=(),
+            kinematics=(),
+            exact_events=(),
+            window_segments=(),
+            scenario_stability_state="STABLE",
+            warnings=(),
+            errors=errors,
+            numerical_tolerances={},
+            solver_metadata={},
+            actual_ephemeris_resolution={
+                "ephemeris_resolution_status": ephemeris_resolution_status
+            },
+            calculation_flags={"calculation_status": calculation_status},
+        )
+
+    def test_signal_engine_rejects_non_evidence_input_fail_closed(self) -> None:
         result = SignalEngine().evaluate(object())
+        self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
+        self.assertFalse(result.canon_input_valid)
+        self.assertIsNone(result.classification)
+
+    def test_signal_engine_accepts_integrity_gate_but_does_not_invent_qualification(self) -> None:
+        result = SignalEngine().evaluate(self._signal_packet())
         self.assertEqual(result.status, CalculationStatus.NOT_IMPLEMENTED)
         self.assertFalse(result.canon_input_valid)
         self.assertIsNone(result.classification)
+        self.assertTrue(result.evidence_packet_ref)
+        self.assertIn("E-SIGNAL-001:", result.evidence_packet_ref)
+
+    def test_signal_engine_rejects_calculation_failure(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(calculation_status="CALCULATION_FAILURE")
+        )
+        self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
+        self.assertFalse(result.canon_input_valid)
+
+    def test_signal_engine_rejects_ephemeris_mismatch(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(ephemeris_resolution_status="MISMATCH")
+        )
+        self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
+        self.assertFalse(result.canon_input_valid)
+
+    def test_signal_engine_rejects_packet_errors(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(errors=("CALCULATION_FAILURE",))
+        )
+        self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
+        self.assertFalse(result.canon_input_valid)
 
     def test_bad_canon_rule_does_not_fallback(self) -> None:
         from ce.canon.registry import CanonRegistryNotEstablished, get_rule
