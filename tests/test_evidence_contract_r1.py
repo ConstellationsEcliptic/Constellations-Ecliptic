@@ -13,7 +13,6 @@ class EvidenceContractR1Tests(unittest.TestCase):
         return EvidencePacket(
             evidence_packet_id="E-001",
             calculation_id="C-001",
-            calculation_id="C-001",
             input_identity={"birth_date": "2000-01-01"},
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
             observation_instant_or_interval={
@@ -54,7 +53,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
         source = {"nested": {"value": "original"}}
         packet = EvidencePacket(
             evidence_packet_id="E-002",
-                calculation_id="C-002",
+            calculation_id="C-002",
             input_identity=source,
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
             observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
@@ -161,6 +160,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
         packet = self.packet()
         payload = {
             "evidence_packet_id": "E-INVALID",
+            "calculation_id": "C-INVALID",
             "input_identity": {"birth_date": "2000-01-01"},
             "profile_version": {"id": "CE-CALC-V1-EP-001", "revision": 4},
             "observation_instant_or_interval": {"start": "2026-01-01T00:00:00Z"},
@@ -189,7 +189,6 @@ class EvidenceContractR1Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             EvidencePacket(
                 evidence_packet_id="E-WINDOW",
-                calculation_id="C-WINDOW",
                 calculation_id="C-WINDOW",
                 input_identity=base.input_identity,
                 profile_version=base.profile_version,
