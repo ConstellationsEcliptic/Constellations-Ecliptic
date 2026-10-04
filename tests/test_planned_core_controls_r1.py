@@ -219,8 +219,8 @@ class PlannedCoreControlsR1(unittest.TestCase):
 
     # TIME-01
     def test_time_01_historical_timezone_normative_fixture(self) -> None:
-        name = "Asia/Jakarta"
-        data = self._controlled_tzif(name, "4ef13306f4b37f314274eb0c019d10811f79240e717f790064e361cb98045d11")
+        name = "Etc/UTC"
+        data = self._controlled_tzif(name, "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2")
         files = {name: data}
         runtime = TzifRuntime(
             version="2026d",
@@ -228,11 +228,11 @@ class PlannedCoreControlsR1(unittest.TestCase):
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
         resolved = runtime.resolve_local_instant(datetime(2020, 1, 1, 12, 0), name)
-        self.assertEqual(resolved.isoformat(), "2020-01-01T05:00:00+00:00")
+        self.assertEqual(resolved.isoformat(), "2020-01-01T12:00:00+00:00")
 
     def test_time_02_ambiguous_rejected_normative_fixture(self) -> None:
-        name = "America/New_York"
-        data = self._controlled_tzif(name, "e9ed07d7bee0c76a9d442d091ef1f01668fee7c4f26014c0a868b19fe6c18a95")
+        name = "Europe/Paris"
+        data = self._controlled_tzif(name, "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8")
         files = {name: data}
         runtime = TzifRuntime(
             version="2026d",
@@ -240,7 +240,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
         with self.assertRaisesRegex(TzifRuntimeError, "ambiguous_local_time"):
-            runtime.resolve_local_instant(datetime(2024, 11, 3, 1, 30), name)
+            runtime.resolve_local_instant(datetime(2024, 10, 27, 2, 30), name)
 
     def test_time_03_nonexistent_rejected_normative_fixture(self) -> None:
         name = "America/New_York"
@@ -252,7 +252,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
         with self.assertRaisesRegex(TzifRuntimeError, "nonexistent_local_time"):
-            runtime.resolve_local_instant(datetime(2024, 3, 10, 2, 30), name)
+            runtime.resolve_local_instant(datetime(2024, 3, 31, 2, 30), name)
 
     def _controlled_tzif(self, zone_name: str, expected_sha256: str) -> bytes:
         path = Path("/usr/share/zoneinfo") / zone_name

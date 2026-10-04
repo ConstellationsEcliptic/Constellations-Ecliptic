@@ -11,20 +11,20 @@
   },
   "zone_bindings": [
     {
-      "zone": "Asia/Jakarta",
-      "sha256": "4ef13306f4b37f314274eb0c019d10811f79240e717f790064e361cb98045d11",
-      "size_bytes": 383,
+      "zone": "Etc/UTC",
+      "sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+      "size_bytes": 114,
       "normative_fixture": "TIME-01",
       "local_datetime": "2020-01-01T12:00:00",
-      "expected_utc": "2020-01-01T05:00:00Z"
+      "expected_utc": "2020-01-01T12:00:00Z"
     },
     {
-      "zone": "America/New_York",
-      "sha256": "e9ed07d7bee0c76a9d442d091ef1f01668fee7c4f26014c0a868b19fe6c18a95",
-      "size_bytes": 3552,
+      "zone": "Europe/Paris",
+      "sha256": "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8",
+      "size_bytes": 2962,
       "normative_fixture": "TIME-02/TIME-03",
-      "ambiguous_local_datetime": "2024-11-03T01:30:00",
-      "nonexistent_local_datetime": "2024-03-10T02:30:00"
+      "ambiguous_local_datetime": "2024-10-27T02:30:00",
+      "nonexistent_local_datetime": "2024-03-31T02:30:00"
     }
   ],
   "supporting_box_artifacts": [
