@@ -108,6 +108,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
         with self.assertRaises(ValueError):
             EvidencePacket(
                 evidence_packet_id="E-CORRUPT",
+                calculation_id="C-CORRUPT",
                 input_identity={"x": float("nan")},
                 profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
                 observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
