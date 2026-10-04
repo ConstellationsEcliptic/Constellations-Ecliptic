@@ -143,7 +143,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
     # ERR-05
     def test_err_05_failure_not_quiet_sky(self) -> None:
         class BadProvider:
-            def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
+            def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectRecord:
                 return ObjectRecord(object_id, CalculationStatus.CALCULATION_FAILURE, 258, None, None, None, None, None, errors=("CALCULATION_FAILURE",))
 
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -182,7 +182,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
     def test_int_01_quiet_sky(self) -> None:
         class QuietProvider:
             def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
-                return ObjectState(object_id, 200.0 if object_id == "MOON" else 100.0, 0.0, CalculationStatus.VALID)
+                return ObjectRecord(object_id, CalculationStatus.VALID, 258, 258, 200.0 if object_id == "MOON" else 100.0, 0.0, 1.0, 0.0)
 
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
         result = calculate_aspect_window(
@@ -237,7 +237,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
         data = self._system_tzif(name)
         files = {name: data}
         runtime = TzifRuntime(
-            version="test-fixture",
+            version="2026d",
             files=files,
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
