@@ -46,7 +46,7 @@ class SchemaStructureR1Tests(unittest.TestCase):
         self.assertEqual(schema["properties"]["kind"]["const"], "HOST_NATIVE")
         self.assertEqual(schema["properties"]["schema_version"]["const"], "CE-V1-HOST-NATIVE-ENV-R1")
 
-    def test_calculation_result_schema_contains_status_closures(self) -> None
+    def test_calculation_result_schema_contains_status_closures(self) -> None:
         schema = self._load_without_duplicate_keys(ROOT / "schemas" / "calculation_result.schema.json")
         self.assertEqual(len(schema["allOf"]), 3)
         self.assertIn("NATAL_EVIDENCE_VARIABLE", schema["properties"]["status"]["enum"])
