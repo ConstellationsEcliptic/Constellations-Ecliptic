@@ -7,8 +7,8 @@
     "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
     "qualification_branch": "development/rev4-oracle-qualification-r1/2026-10-04",
     "base_candidate_head": "c6136486fe711cc0eb2681e89222a0f44146b974",
-    "base_candidate_tree_sha256": "30e0e7820d3bd7968dc279ffbe402480b607fee7",
-    "base_source_tree_identity": "a7c318b6ae04012a184bc02bf1cfa673ff84a522dfffc257c0a4d17bdc1e200f"
+    "base_source_tree_identity": "a7c318b6ae04012a184bc02bf1cfa673ff84a522dfffc257c0a4d17bdc1e200f",
+    "base_candidate_tree_git_sha1": "30e0e7820d3bd7968dc279ffbe402480b607fee7"
   },
   "normative_register": {
     "box_file_id": "2485323796025",
@@ -22,7 +22,12 @@
     "current_test_surface_bound": true,
     "current_semantic_reexecution": "NOT_PERFORMED_IN_THIS_ARTIFACT",
     "current_oracle_authority": "NOT_ESTABLISHED",
-    "fail_closed": true
+    "fail_closed": true,
+    "last_validation_observation": {
+      "prior_run_id": 37196135981,
+      "prior_failure": "validator incorrectly required 64 hex for Git tree SHA-1",
+      "correction_status": "CORRECTED"
+    }
   },
   "status_basis": {
     "characterization_reference": "CE_V1_CURRENT_28_ORACLE_DEEP_CHARACTERIZATION_R6_2026-10-04",
