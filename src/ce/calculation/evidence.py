@@ -246,7 +246,7 @@ class EvidencePacket:
             utc_keys=("entry_utc", "exit_utc"),
         ))
 
-        if not isinstance(self.scenario_stability_state, str) or not self.scenario_stability_state.strip():
+        if self.scenario_stability_state not in {"STABLE", "VARIABLE", "POSSIBLE", "ROBUST", "MIXED", "NONE"}:
             errors.append("invalid:scenario_stability_state")
 
         for name in ("warnings", "errors"):
