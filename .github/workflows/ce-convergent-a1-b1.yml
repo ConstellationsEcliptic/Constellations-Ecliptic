@@ -21,6 +21,10 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/src
         run: python tools/compute_source_identity_v2.py
+      - name: Verify canonical source-tree identity
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: python tools/verify_source_identity.py
       - name: Run test suite
         env:
           PYTHONDONTWRITEBYTECODE: "1"
