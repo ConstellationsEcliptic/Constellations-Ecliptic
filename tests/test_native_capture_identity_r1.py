@@ -104,6 +104,17 @@ class NativeCaptureIdentityR1Tests(unittest.TestCase):
             self.assertIsNone(image)
             self.assertEqual(len(environment), 64)
 
+    def test_git_blob_sha1_uses_null_byte_header(self) -> None:
+        from ce.ephemeris.native_runtime import _git_blob_sha1
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "empty.bin"
+            path.write_bytes(b"")
+            self.assertEqual(
+                _git_blob_sha1(path),
+                "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            )
+
     def test_external_fixture_path_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "fixture.json"
