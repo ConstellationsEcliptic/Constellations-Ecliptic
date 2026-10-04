@@ -92,7 +92,7 @@ def sha256_file(path: Path) -> str:
 def _git_blob_sha1(path: Path) -> str:
     import hashlib
     data = path.read_bytes()
-    return hashlib.sha1(f"blob {len(data)}\\0".encode("ascii") + data).hexdigest()
+    return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
 
 
 def verify_canonical_swiss_bundle(root: Path) -> str:
