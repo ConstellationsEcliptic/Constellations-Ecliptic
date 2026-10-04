@@ -9,10 +9,10 @@ from ce.foundation.status import CalculationStatus, ScenarioState
 
 
 class EvidenceContractR1Tests(unittest.TestCase):
-    def packet(self) -> EvidencePacket:
+    def packet(self, calculation_id: str = "C-001") -> EvidencePacket:
         return EvidencePacket(
             evidence_packet_id="E-001",
-            calculation_id="C-001",
+            calculation_id=calculation_id,
             input_identity={"birth_date": "2000-01-01"},
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
             observation_instant_or_interval={
@@ -131,7 +131,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
             )
 
     def test_variable_result_can_publish_evidence_without_exact_natal_time(self) -> None:
-        packet = self.packet()
+        packet = self.packet("C-003")
         identity = self.runtime_identity()
         result = CalculationResult(
             request_id="R-003",
