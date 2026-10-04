@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from zoneinfo import ZoneInfo
 
-from ce.calculation.contracts import CalculationRequest, BirthInput, ObjectState
+from ce.calculation.contracts import CalculationRequest, BirthInput, ObjectState, ObjectRecord
 from ce.calculation.evidence import EvidencePacket
 from ce.calculation.kernel import KernelFailure, calculate_aspect_window
 from ce.calculation.scenario_evaluator import evaluate_zero_birth_scenarios
@@ -144,7 +144,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
     def test_err_05_failure_not_quiet_sky(self) -> None:
         class BadProvider:
             def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
-                return ObjectState(object_id, None, None, CalculationStatus.CALCULATION_FAILURE)
+                return ObjectRecord(object_id, CalculationStatus.CALCULATION_FAILURE, 258, None, None, None, None, None, errors=("CALCULATION_FAILURE",))
 
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
         with self.assertRaisesRegex(KernelFailure, "natal_object_not_valid"):
@@ -163,7 +163,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
     def test_err_06_non_valid_boundary_preserved(self) -> None:
         class UnavailableProvider:
             def object_state_at(self, object_id: str, instant_utc: datetime) -> ObjectState:
-                return ObjectState(object_id, None, None, CalculationStatus.KNOWN_UNAVAILABLE)
+                return ObjectRecord(object_id, CalculationStatus.KNOWN_UNAVAILABLE, 258, None, None, None, None, None, errors=("KNOWN_UNAVAILABLE",))
 
         start = datetime(2026, 1, 1, tzinfo=timezone.utc)
         with self.assertRaisesRegex(KernelFailure, "natal_object_not_valid"):
@@ -225,7 +225,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
         data = self._system_tzif(name)
         files = {name: data}
         runtime = TzifRuntime(
-            version="test-fixture",
+            version="2026d",
             files=files,
             expected_manifest_sha256=compute_manifest_sha256(files),
         )
