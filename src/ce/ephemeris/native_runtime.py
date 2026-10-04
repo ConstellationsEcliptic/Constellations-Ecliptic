@@ -155,6 +155,8 @@ class NativeSwissEphemerisAdapter:
             raise NativeRuntimeError("runtime_not_authorized")
         if calling_convention not in {"__cdecl", "__stdcall"}:
             raise NativeRuntimeError("native_abi_calling_convention_not_pinned")
+        if expected_library_sha256.lower() != CANDIDATE_NATIVE_DLL_SHA256:
+            raise NativeRuntimeError("native_library_identity_override_forbidden")
         if expected_source_commit != CANONICAL_SWISS_SOURCE_COMMIT:
             raise NativeRuntimeError("swiss_source_commit_mismatch")
         if swiss_release != CANONICAL_SWISS_RELEASE:
@@ -164,6 +166,8 @@ class NativeSwissEphemerisAdapter:
         actual_library_hash = sha256_file(library_path)
         if actual_library_hash.lower() != expected_library_sha256.lower():
             raise NativeRuntimeError("native_library_sha256_mismatch")
+        ephemeris_root = ephemeris_root.resolve()
+        self._ephemeris_root = ephemeris_root
         bundle_hash = verify_canonical_swiss_bundle(ephemeris_root)
 
         if loader is None:
