@@ -210,7 +210,11 @@ class ObjectRecord:
                 errors.append("valid_object_actual_flags_do_not_cover_requested_flags")
             if self.requested_flags & _SPEED_FLAG and self.speed is None:
                 errors.append("valid_object_requires_speed_when_speed_requested")
-            if self.actual_flags & _SPEED_FLAG and self.speed is None:
+            if (
+                self.actual_flags is not None
+                and self.actual_flags & _SPEED_FLAG
+                and self.speed is None
+            ):
                 errors.append("actual_speed_flag_requires_speed")
             for value, name in (
                 (self.longitude, "longitude"),
