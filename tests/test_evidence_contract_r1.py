@@ -79,6 +79,21 @@ class EvidenceContractR1Tests(unittest.TestCase):
         with self.assertRaises(TypeError):
             packet.input_identity["nested"]["value"] = "internal-change"
 
+    def test_post_issuance_canonical_bytes_tampering_is_detected(self) -> None:
+        packet = self.packet()
+        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
+        errors = packet.validate()
+        self.assertIn("invalid:_canonical_bytes:content_mismatch", errors)
+
+    def test_post_issuance_tampering_cannot_produce_valid_signal(self) -> None:
+        packet = self.packet()
+        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
+        from ce.signal.engine import SignalEngine
+        result = SignalEngine().evaluate(packet)
+        self.assertEqual(result.status.value, "CALCULATION_FAILURE")
+        self.assertFalse(result.canon_input_valid)
+        self.assertIsNone(result.classification)
+
     def test_compound_reference_matches_packet(self) -> None:
         packet = self.packet()
         ref = EvidencePacketRef.from_packet(packet)
