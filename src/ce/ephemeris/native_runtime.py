@@ -6,7 +6,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from ce.calculation.contracts import ObjectState
+from ce.calculation.contracts import ObjectRecord
 from ce.calculation.registry import EXPECTED_OBJECTS
 from ce.foundation.status import CalculationStatus
 
@@ -56,12 +56,18 @@ class NativeSwissCalculation:
     ephemeris: str
     warning_or_error: str | None
 
-    def to_object_state(self) -> ObjectState:
-        return ObjectState(
+    def to_object_record(self) -> ObjectRecord:
+        return ObjectRecord(
             object_id=self.object_id,
-            longitude_deg=self.longitude_deg % 360.0,
-            speed_deg_per_day=self.speed_deg_per_day,
-            status=CalculationStatus.VALID,
+            object_status=CalculationStatus.VALID,
+            requested_flags=self.requested_flags,
+            actual_flags=self.actual_flags,
+            longitude=self.longitude_deg % 360.0,
+            latitude=self.latitude_deg,
+            distance=self.distance_au,
+            speed=self.speed_deg_per_day,
+            warnings=(),
+            errors=(),
         )
 
 
@@ -220,9 +226,9 @@ class NativeSwissEphemerisAdapter:
         object_id: str,
         julian_day_ut: float,
         with_speed: bool,
-    ) -> ObjectState:
+    ) -> ObjectRecord:
         detailed = self.calculate_object_detailed(object_id, julian_day_ut, with_speed)
-        return detailed.to_object_state()
+        return detailed.to_object_record()
 
     def calculate_object_detailed(
         self,
