@@ -198,6 +198,20 @@ class PlannedCoreControlsR1(unittest.TestCase):
         self.assertEqual(result.events, ())
         self.assertEqual(result.windows, ())
 
+
+    # TIME-01
+    def test_time_01_historical_timezone(self) -> None:
+        name = "America/New_York"
+        data = self._system_tzif(name)
+        files = {name: data}
+        runtime = TzifRuntime(
+            version="test-fixture",
+            files=files,
+            expected_manifest_sha256=compute_manifest_sha256(files),
+        )
+        resolved = runtime.resolve_local_instant(datetime(1970, 1, 1, 12, 0), name)
+        self.assertEqual(resolved.isoformat(), "1970-01-01T17:00:00+00:00")
+
     # TIME-02 / TIME-03 mechanics use injected TZif bytes, never host-global ZoneInfo.
     def _system_tzif(self, zone_name: str) -> bytes:
         path = Path("/usr/share/zoneinfo") / zone_name
