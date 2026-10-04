@@ -1,0 +1,81 @@
+{
+  "artifact_id": "CE-V1-REV4-ORACLE-QUALIFICATION-CURRENT-HEAD-REPORT-R1",
+  "generated_utc": "2026-10-04",
+  "status": "CANDIDATE_NON_AUTHORITY",
+  "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
+  "qualification_branch": "development/rev4-oracle-qualification-r1/2026-10-04",
+  "head": "d49761d5f8aa20539680a1827e3e6c6187ea7240",
+  "workflow": {
+    "run_id": 37196314367,
+    "job_id": 111418820248,
+    "result": "SUCCESS",
+    "python": "3.13.15",
+    "tests_executed": 222
+  },
+  "binding_execution": {
+    "required_unique_ids": 28,
+    "binding_rows": 31,
+    "unique_ids": 28,
+    "every_binding_method_observed_pass": true,
+    "note": "All bound methods were observed as passing in the same successful full-suite CI log. Duplicate rows are intentional redundancy for ERR-01, ERR-05 and ERR-06."
+  },
+  "per_id_status": {
+    "GEO-01": "FRESH_EXECUTION_PASS",
+    "GEO-02": "FRESH_EXECUTION_PASS",
+    "KIN-01": "FRESH_EXECUTION_PASS",
+    "KIN-02": "FRESH_EXECUTION_PASS",
+    "KIN-03": "FRESH_EXECUTION_PASS",
+    "KIN-04": "FRESH_EXECUTION_PASS",
+    "ORB-01": "FRESH_EXECUTION_PASS",
+    "ORB-02": "FRESH_EXECUTION_PASS",
+    "STA-01": "FRESH_EXECUTION_PASS",
+    "WIN-01": "FRESH_EXECUTION_PASS",
+    "WIN-02": "FRESH_EXECUTION_PASS",
+    "WIN-03": "FRESH_EXECUTION_PASS",
+    "UNC-01": "FRESH_EXECUTION_PASS",
+    "UNC-02": "FRESH_EXECUTION_PASS",
+    "UNC-03": "FRESH_EXECUTION_PASS",
+    "UNC-04": "FRESH_EXECUTION_PASS",
+    "EPH-01": "FRESH_EXECUTION_PASS",
+    "EPH-02": "FRESH_EXECUTION_PASS",
+    "ERR-01": "FRESH_EXECUTION_PASS",
+    "ERR-02": "FRESH_EXECUTION_PASS",
+    "ERR-03": "FRESH_EXECUTION_PASS",
+    "ERR-04": "FRESH_EXECUTION_PASS",
+    "ERR-05": "FRESH_EXECUTION_PASS",
+    "ERR-06": "FRESH_EXECUTION_PASS",
+    "TIME-01": "FRESH_EXECUTION_PASS",
+    "TIME-02": "FRESH_EXECUTION_PASS",
+    "TIME-03": "FRESH_EXECUTION_PASS",
+    "INT-01": "FRESH_EXECUTION_PASS"
+  },
+  "interpretation": {
+    "fresh_current_head_test_reexecution": "PASS",
+    "fixture_and_test_surface_execution": "PASS",
+    "independent_math_reference_tests_executed": "PASS",
+    "oracle_authority": "NOT_ESTABLISHED",
+    "trusted_oracle_promotion": "NOT_PERFORMED",
+    "err06": "OPEN_SEMANTIC_GAP",
+    "runtime_coverage": "NOT_ESTABLISHED",
+    "tzif_runtime_adoption": "NOT_ESTABLISHED",
+    "cross_platform_native_parity": "NOT_ESTABLISHED",
+    "n_mid_03": "INVESTIGATION_CLOSED_FINDING_REMAINS_OPEN"
+  },
+  "provenance_notes": [
+    "The qualification branch is based on the untouched calculation-core candidate c6136486...; qualification-only commits do not constitute calculation-core changes.",
+    "This report does not promote historical B7 or any external oracle to authority.",
+    "Passing executable tests establishes implementation behavior for their fixtures; it does not by itself establish constitutional/oracle authority."
+  ],
+  "governance": {
+    "SOURCE_AUTHORITY": "NOT_ESTABLISHED",
+    "TRUSTED_BUILD": "NOT_ESTABLISHED",
+    "RUNTIME_ADOPTION": "NOT_ESTABLISHED",
+    "FULL_RUNTIME_COVERAGE": "NOT_ESTABLISHED",
+    "TZIF_RUNTIME_IDENTITY": "NOT_ESTABLISHED",
+    "PRODUCTION_RUNTIME": "NOT_AUTHORIZED",
+    "DUAL_APPROVAL": "NOT_ESTABLISHED",
+    "SEAL": "NO",
+    "AUTHORIZATION": "NON_AUTHORIZED",
+    "FAIL_CLOSED": true
+  }
+}
