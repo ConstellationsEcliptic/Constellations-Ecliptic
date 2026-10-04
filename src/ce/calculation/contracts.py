@@ -136,7 +136,7 @@ class ObjectState:
         if not isinstance(self.status, CalculationStatus):
             errors.append("invalid:object_state_status")
             return tuple(errors)
-        if self.status is CalculationStatus.VALID:
+        if self.status in {CalculationStatus.VALID, CalculationStatus.NATAL_EVIDENCE_VARIABLE}:
             if self.longitude_deg is None or not _finite_number(self.longitude_deg):
                 errors.append("valid_object_requires_finite_longitude")
             elif not 0.0 <= float(self.longitude_deg) < 360.0:
@@ -314,22 +314,25 @@ class CalculationResult:
                 errors.append("valid_result_requires_valid_observation_interval")
             elif datetime.fromisoformat(self.observation_interval[1][:-1] + "+00:00") < datetime.fromisoformat(self.observation_interval[0][:-1] + "+00:00"):
                 errors.append("valid_result_observation_interval_order")
-            if self.normalized_time is None:
+            if self.status is CalculationStatus.VALID and self.normalized_time is None:
                 errors.append("valid_result_requires_normalized_time")
-            if not self.object_states:
-                errors.append("valid_result_requires_object_states")
-            elif any(item.status is not CalculationStatus.VALID for item in self.object_states):
-                errors.append("valid_result_requires_all_objects_valid")
-            if self.errors:
+            if self.status is CalculationStatus.VALID:
+                if not self.object_states:
+                    errors.append("valid_result_requires_object_states")
+                elif any(item.status is not CalculationStatus.VALID for item in self.object_states):
+                    errors.append("valid_result_requires_all_objects_valid")
+            elif any(item.status not in {CalculationStatus.VALID, CalculationStatus.NATAL_EVIDENCE_VARIABLE} for item in self.object_states):
+                errors.append("variable_result_contains_unpublishable_object_state")
+            if self.status is CalculationStatus.VALID and self.errors:
                 errors.append("valid_result_cannot_have_errors")
             if self.scenario_state is ScenarioState.NONE:
-                errors.append("valid_result_requires_scenario_state")
+                errors.append("calculated_result_requires_scenario_state")
             if self._runtime_identity is None:
-                errors.append("valid_result_requires_runtime_identity")
+                errors.append("calculated_result_requires_runtime_identity")
             else:
                 errors.extend(_validate_runtime_provenance(self.provenance, self._runtime_identity))
             if self._evidence_packet is None or self.evidence_packet_ref is None:
-                errors.append("valid_result_requires_evidence_packet")
+                errors.append("calculated_result_requires_evidence_packet")
             elif not self.evidence_packet_ref.matches(self._evidence_packet):
                 errors.append("evidence_packet:reference_mismatch")
         else:
