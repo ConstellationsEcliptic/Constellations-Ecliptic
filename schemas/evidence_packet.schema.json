@@ -5,6 +5,7 @@
   "additionalProperties": false,
   "required": [
     "evidence_packet_id",
+    "calculation_id",
     "input_identity",
     "profile_version",
     "observation_instant_or_interval",
@@ -27,6 +28,7 @@
   ],
   "properties": {
     "evidence_packet_id": {"type": "string", "minLength": 1},
+    "calculation_id": {"type": "string", "minLength": 1},
     "input_identity": {"type": "object", "additionalProperties": true},
     "profile_version": {
       "type": "object",
@@ -143,6 +145,10 @@
       }
     },
     "scenario_stability_state": {"type": "string", "enum": ["STABLE","VARIABLE","POSSIBLE","ROBUST","MIXED","NONE"]},
+    "scenario_window_state": {"type": "string", "enum": ["STABLE","VARIABLE","POSSIBLE","ROBUST","MIXED","NONE"]},
+    "possible_window_segments": {"type": "array", "items": {"type": "object"}},
+    "robust_window_segments": {"type": "array", "items": {"type": "object"}},
+    "scenario_observations": {"type": "array", "items": {"type": "object"}},
     "actual_ephemeris_resolution": {"type": "object", "additionalProperties": true},
     "calculation_flags": {"type": "object", "additionalProperties": true},
     "warnings": {"type": "array", "items": {"type": "string"}},
