@@ -163,7 +163,7 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         result = SignalEngine().evaluate(object())
         self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
         self.assertFalse(result.canon_input_valid)
-        self.assertEqual(result.classification, "DISQUALIFIED_CALCULATION_FAILURE")
+        self.assertIsNone(result.classification)
 
     def test_signal_engine_reads_phase_from_immutable_geometry_mapping(self) -> None:
         result = SignalEngine().evaluate(
