@@ -102,6 +102,8 @@ def verify_canonical_swiss_bundle(root: Path) -> str:
     files = [path for path in root.iterdir() if path.is_file()]
     if any(path.is_symlink() for path in root.iterdir()):
         raise NativeRuntimeError("canonical_ephemeris_root_contains_symlink")
+    if any(path.is_dir() for path in root.iterdir()):
+        raise NativeRuntimeError("canonical_ephemeris_root_contains_unexpected_directory")
     observed_names = {path.name for path in files}
     if observed_names != set(CANONICAL_SWISS_FILES):
         missing = sorted(set(CANONICAL_SWISS_FILES) - observed_names)
