@@ -6,6 +6,7 @@ from typing import Iterable
 
 from ce.foundation.status import CalculationStatus
 from ce.signal.engine import SignalResult
+from ce.signal.record import QualifiedSignalRecord
 
 
 class DailySignalState(str, Enum):
@@ -38,6 +39,36 @@ def aggregate_daily_signals(signals: Iterable[SignalResult]) -> DailySignalAggre
         for item in items
         if item.canon_input_valid and item.classification is not None
     )
+    if qualifying:
+        return DailySignalAggregation(
+            state=DailySignalState.QUALIFYING_SIGNALS_PRESENT,
+            qualifying_signal_refs=qualifying,
+        )
+    return DailySignalAggregation(
+        state=DailySignalState.QUIET_SKY,
+        qualifying_signal_refs=(),
+    )
+
+
+def aggregate_qualified_signal_records(
+    records: Iterable[QualifiedSignalRecord],
+    *,
+    observation_completed: bool,
+) -> DailySignalAggregation:
+    """Aggregate normative Qualified Signal Records after a completed observation.
+
+    The completion marker is explicit so an empty record set cannot convert an
+    uncompleted or failed observation into QUIET_SKY.
+    """
+    if not observation_completed:
+        raise ValueError("daily_observation_not_completed")
+    items = tuple(records)
+    for item in items:
+        if not isinstance(item, QualifiedSignalRecord):
+            raise ValueError("daily_qualified_signal_record_type_invalid")
+        if not item.canon_input_valid:
+            raise ValueError("daily_qualified_signal_record_not_eligible")
+    qualifying = tuple(item.signal_id for item in items)
     if qualifying:
         return DailySignalAggregation(
             state=DailySignalState.QUALIFYING_SIGNALS_PRESENT,
