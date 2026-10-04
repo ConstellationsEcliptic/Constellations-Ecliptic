@@ -6,14 +6,14 @@ Date: 2026-10-04
 
 Repository: `ConstellationsEcliptic/Constellations-Ecliptic`
 Branch: `development/convergent-a1-b1/2026-10-04-r1`
-HEAD: `ff4b55473ce5277e97cb5d950ed2530e50b63245`
-Source-tree SHA-256 V2: `1de9915e58c09fd46875560a099ddc2953861170dba7065fecacf0a8c9b78902`
+HEAD: `d8c09304e580c265f431aa6d606d07df9dadc672`
+Source-tree SHA-256 V2: `5bd232083985672a73e282e6efa80dcaf6fcf9737815e6470765032ab0a48c57`
 
 Verification:
-- CI run: `37167121315`
+- CI run: `37167556555`
 - result: SUCCESS
 - Python: 3.13.15
-- tests: 115
+- tests: 124
 - source-tree identity: PASS
 
 ## Historical lineage treatment
