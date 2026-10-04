@@ -160,7 +160,7 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         result = SignalEngine().evaluate(object())
         self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
         self.assertFalse(result.canon_input_valid)
-        self.assertIsNone(result.classification)
+        self.assertEqual(result.classification, "DISQUALIFIED_CALCULATION_FAILURE")
 
     def test_signal_engine_accepts_integrity_gate_but_requires_qualification_evidence(self) -> None:
         result = SignalEngine().evaluate(self._signal_packet())
