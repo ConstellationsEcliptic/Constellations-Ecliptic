@@ -106,6 +106,9 @@ def issue_qualified_signal_record(
         raise ValueError("qualified_signal_result_required")
     if result.status.value != "VALID" or not result.canon_input_valid:
         raise ValueError("qualified_signal_result_not_eligible")
+    expected_ref = f"{packet.evidence_packet_id}:{packet.content_sha256()}"
+    if result.evidence_packet_ref != expected_ref:
+        raise ValueError("qualified_signal_evidence_reference_mismatch")
     if not result.classification:
         raise ValueError("qualified_signal_classification_missing")
     if not result.phase:
