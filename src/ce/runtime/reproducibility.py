@@ -76,7 +76,7 @@ class RuntimeCapture:
         ):
             if not isinstance(value, str) or not _SHA256_RE.fullmatch(value):
                 errors.append(f"invalid:{name}")
-        if self.runtime_environment_kind not in {"OCI_IMAGE", "HOST_NATIVE"}:
+        if not isinstance(self.runtime_environment_kind, str) or self.runtime_environment_kind not in {"OCI_IMAGE", "HOST_NATIVE"}:
             errors.append("invalid:runtime_environment_kind")
         if self.runtime_environment_kind == "OCI_IMAGE":
             if not isinstance(self.runtime_image_digest, str) or not _RUNTIME_IMAGE_RE.fullmatch(self.runtime_image_digest):
