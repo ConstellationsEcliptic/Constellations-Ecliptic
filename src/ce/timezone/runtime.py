@@ -179,6 +179,7 @@ class TzifRuntime:
             raise TzifRuntimeError("tzif_bundle_identity_not_established")
         if self._manifest_sha256 != expected_manifest_sha256.lower():
             raise TzifRuntimeError("tzif_bundle_identity_mismatch")
+        self._package_tzif_root: Path | None = None
         self._identity = TzifBundleIdentity(
             version=version,
             manifest=TzifManifestIdentity(
@@ -215,6 +216,7 @@ class TzifRuntime:
         package_root: Path,
         expected_manifest_sha256: str = CANONICAL_RUNTIME_MANIFEST_SHA256,
         expected_version: str = CANONICAL_IANA_VERSION,
+        expected_entry_count: int = CANONICAL_TZIF_ENTRY_COUNT,
     ) -> tuple["TzifRuntime", TzifBundleIdentity]:
         if expected_version != CANONICAL_IANA_VERSION:
             raise TzifRuntimeError("tzif_version_mismatch")
@@ -224,12 +226,14 @@ class TzifRuntime:
             manifest_path,
             tzif_root,
             expected_manifest_sha256=expected_manifest_sha256,
+            expected_entry_count=expected_entry_count,
         )
         runtime = cls.__new__(cls)
         runtime.version = expected_version
         runtime._files = {}
         runtime._manifest_sha256 = identity.manifest.manifest_sha256
         runtime._identity = identity
+        runtime._package_tzif_root = tzif_root.resolve()
         return runtime, identity
 
     @property
@@ -239,16 +243,31 @@ class TzifRuntime:
     def _zone(self, timezone_id: str) -> ZoneInfo:
         if not timezone_id or timezone_id.startswith(("/", "\\")) or ".." in Path(timezone_id).parts:
             raise TzifRuntimeError("tzif_zone_id_invalid")
-        if not self._files:
-            package_identity = getattr(self, "_identity", None)
-            if package_identity is None:
+
+        if self._files:
+            data = self._files.get(timezone_id)
+            if data is None:
+                raise TzifRuntimeError(f"tzif_zone_missing:{timezone_id}")
+        else:
+            root = getattr(self, "_package_tzif_root", None)
+            if root is None:
                 raise TzifRuntimeError("tzif_runtime_identity_missing")
-            # from_package_root intentionally loads zones lazily but still only from
-            # the verified manifest-backed directory in future integration.
-            raise TzifRuntimeError("tzif_package_runtime_lazy_loader_not_yet_bound")
-        data = self._files.get(timezone_id)
-        if data is None:
-            raise TzifRuntimeError(f"tzif_zone_missing:{timezone_id}")
+            candidate = (root / timezone_id).resolve()
+            if root != candidate and root not in candidate.parents:
+                raise TzifRuntimeError("tzif_zone_path_escape")
+            expected_by_path = {item.path.casefold(): item for item in self._identity.files}
+            expected = expected_by_path.get(Path(timezone_id).as_posix().casefold())
+            if expected is None:
+                raise TzifRuntimeError(f"tzif_zone_missing:{timezone_id}")
+            if candidate.is_symlink() or not candidate.is_file():
+                raise TzifRuntimeError(f"tzif_zone_nonregular:{timezone_id}")
+            data = candidate.read_bytes()
+            if len(data) != expected.size_bytes:
+                raise TzifRuntimeError(f"tzif_zone_size_mismatch:{timezone_id}")
+            observed = sha256_bytes(data)
+            if observed != expected.sha256:
+                raise TzifRuntimeError(f"tzif_zone_sha256_mismatch:{timezone_id}")
+
         try:
             return ZoneInfo.from_file(BytesIO(data), key=timezone_id)
         except Exception as exc:
