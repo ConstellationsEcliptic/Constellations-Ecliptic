@@ -67,5 +67,30 @@
     "no historical ancestry claim from B3",
     "no complete continuous zero-birth mathematical coverage claim",
     "no claim that 124 passing tests proves astronomical correctness"
-  ]
+  ],
+  "lineage_verification": {
+    "base_production_candidate": "804036f843a56d0029ceea08af35247d28cbde7e",
+    "current_head": "d8c09304e580c265f431aa6d606d07df9dadc672",
+    "base_to_current": {
+      "status": "ahead",
+      "ahead_by": 266,
+      "behind_by": 0,
+      "merge_base": "804036f843a56d0029ceea08af35247d28cbde7e"
+    },
+    "candidate_r3": "033e90cfd29e047578e70bbd20183e48682d7614",
+    "candidate_r3_to_current": {
+      "status": "ahead",
+      "ahead_by": 183,
+      "behind_by": 0,
+      "merge_base": "033e90cfd29e047578e70bbd20183e48682d7614"
+    },
+    "b4_item11": "6155393e9ce491738575c988267898b85ed6a6b4",
+    "b4_to_current": {
+      "status": "diverged",
+      "ahead_by_current": 266,
+      "behind_by_current": 128,
+      "merge_base": "804036f843a56d0029ceea08af35247d28cbde7e"
+    },
+    "interpretation": "Fresh convergent lineage. No B4 ancestry; B3/B4 remain substrate/reference treatment."
+  }
 }
