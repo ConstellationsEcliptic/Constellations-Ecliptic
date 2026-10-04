@@ -7,6 +7,7 @@ from ce.signal.daily import (
     DailySignalState,
     aggregate_daily_signals,
     aggregate_qualified_signal_records,
+    aggregate_completed_day,
 )
 from ce.signal.engine import SignalResult
 from ce.signal.record import QualifiedSignalRecord
@@ -114,6 +115,17 @@ class DailySignalR1Tests(unittest.TestCase):
     def test_normative_aggregator_rejects_non_record_input(self) -> None:
         with self.assertRaisesRegex(ValueError, "daily_qualified_signal_record_type_invalid"):
             aggregate_qualified_signal_records((object(),), observation_completed=True)
+
+    def test_completed_day_rejects_unfinished_observation(self) -> None:
+        with self.assertRaisesRegex(ValueError, "daily_observation_not_completed"):
+            aggregate_completed_day((), observation_completed=False)
+
+    def test_current_failure_remains_failure_after_prior_valid_day(self) -> None:
+        prior = self._signal_result(valid=True, qualifying=True)
+        self.assertEqual(prior.status, CalculationStatus.VALID)
+        current = self._signal_result(valid=False, qualifying=False)
+        with self.assertRaisesRegex(ValueError, "daily_signal_calculation_not_valid"):
+            aggregate_completed_day((current,), observation_completed=True)
 
     def test_failure_cannot_become_quiet_sky(self) -> None:
         with self.assertRaisesRegex(
