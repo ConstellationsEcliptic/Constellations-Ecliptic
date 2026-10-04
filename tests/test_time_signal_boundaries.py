@@ -116,10 +116,8 @@ class TimeSignalBoundaryTests(unittest.TestCase):
             for state in kinematic_states
         )
         exact_events = (
-            ({"event_time_utc": exact_event_time_utc, "residual": 0.0},)
-            if exact_event_time_utc is not None
-            else ()
-        )
+            {"event_time_utc": exact_event_time_utc, "residual": 0.0},
+        ) if exact_event_time_utc is not None else ()
         return EvidencePacket(
             evidence_packet_id="E-SIGNAL-001",
             calculation_id="C-SIGNAL-001",
