@@ -127,6 +127,29 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
         b = issue_qualified_signal_record(packet, result)
         self.assertEqual(a, b)
 
+    def test_non_valid_upstream_status_is_preserved_at_signal_boundary(self) -> None:
+        packet = self._packet()
+        from dataclasses import replace
+        unavailable = replace(
+            packet,
+            calculation_flags={"calculation_status": "KNOWN_UNAVAILABLE"},
+        )
+        result = SignalEngine().evaluate(unavailable)
+        self.assertEqual(result.status.value, "KNOWN_UNAVAILABLE")
+        self.assertFalse(result.canon_input_valid)
+        self.assertEqual(result.classification, "DISQUALIFIED_CALCULATION_FAILURE")
+
+    def test_unrecognized_upstream_status_fails_closed_as_calculation_failure(self) -> None:
+        packet = self._packet()
+        from dataclasses import replace
+        malformed = replace(
+            packet,
+            calculation_flags={"calculation_status": "MADE_UP_STATUS"},
+        )
+        result = SignalEngine().evaluate(malformed)
+        self.assertEqual(result.status.value, "CALCULATION_FAILURE")
+        self.assertFalse(result.canon_input_valid)
+
     def test_non_qualifying_result_cannot_be_materialized_as_qualified_record(self) -> None:
         packet = self._packet(
             scenario_window_state="NONE",
