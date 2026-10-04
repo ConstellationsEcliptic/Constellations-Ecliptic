@@ -96,7 +96,30 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         calculation_status: str = "VALID",
         ephemeris_resolution_status: str = "MATCH",
         errors: tuple[str, ...] = (),
+        scenario_stability_state: str = "STABLE",
+        scenario_window_state: str = "NONE",
+        kinematic_states: tuple[str, ...] = (),
+        exact_event_time_utc: str | None = None,
     ) -> EvidencePacket:
+        geometry_records = tuple(
+            {
+                "transit_object": "SUN",
+                "natal_object_or_scenario": "MOON",
+                "aspect": "CONJUNCTION",
+                "directed_branch": 0.0,
+                "signed_deviation": 0.0,
+                "absolute_deviation": 0.0,
+                "effective_orb": 2.5,
+                "qualification_state": "QUALIFIED",
+                "kinematic_state": state,
+            }
+            for state in kinematic_states
+        )
+        exact_events = (
+            ({"event_time_utc": exact_event_time_utc, "residual": 0.0},)
+            if exact_event_time_utc is not None
+            else ()
+        )
         return EvidencePacket(
             evidence_packet_id="E-SIGNAL-001",
             calculation_id="C-SIGNAL-001",
@@ -110,12 +133,21 @@ class TimeSignalBoundaryTests(unittest.TestCase):
             execution_profile_id="CE-CALC-V1-EP-001",
             calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
             object_records=(),
-            geometry_records=(),
+            geometry_records=geometry_records,
             effective_orb_records=(),
-            kinematics=(),
-            exact_events=(),
+            kinematics=tuple(
+                {
+                    "transit_object": "SUN",
+                    "aspect": "CONJUNCTION",
+                    "kinematic_state": state,
+                    "transit_speed": 1.0,
+                }
+                for state in kinematic_states
+            ),
+            exact_events=exact_events,
             window_segments=(),
-            scenario_stability_state="STABLE",
+            scenario_stability_state=scenario_stability_state,
+            scenario_window_state=scenario_window_state,
             warnings=(),
             errors=errors,
             numerical_tolerances={},
@@ -132,13 +164,66 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         self.assertFalse(result.canon_input_valid)
         self.assertIsNone(result.classification)
 
-    def test_signal_engine_accepts_integrity_gate_but_does_not_invent_qualification(self) -> None:
+    def test_signal_engine_accepts_integrity_gate_but_requires_qualification_evidence(self) -> None:
         result = SignalEngine().evaluate(self._signal_packet())
-        self.assertEqual(result.status, CalculationStatus.NOT_IMPLEMENTED)
+        self.assertEqual(result.status, CalculationStatus.VALID)
+        self.assertEqual(result.classification, "DISQUALIFIED_OUT_OF_ORB")
         self.assertFalse(result.canon_input_valid)
-        self.assertIsNone(result.classification)
         self.assertTrue(result.evidence_packet_ref)
         self.assertIn("E-SIGNAL-001:", result.evidence_packet_ref)
+
+    def test_unc_02_variable_possible_uniform_applying(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(
+                scenario_stability_state="VARIABLE",
+                scenario_window_state="POSSIBLE",
+                kinematic_states=("APPLYING",),
+                exact_event_time_utc="2026-01-01T12:00:00Z",
+            )
+        )
+        self.assertEqual(result.status, CalculationStatus.VALID)
+        self.assertEqual(result.classification, "POSSIBLE_APPROACHING_SIGNAL")
+        self.assertEqual(result.phase, "APPLYING")
+        self.assertEqual(result.uncertainty_state, "POSSIBLE")
+        self.assertTrue(result.canon_input_valid)
+
+    def test_unc_03_variable_mixed_phase(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(
+                scenario_stability_state="VARIABLE",
+                scenario_window_state="POSSIBLE",
+                kinematic_states=("APPLYING", "SEPARATING"),
+                exact_event_time_utc="2026-01-01T12:00:00Z",
+            )
+        )
+        self.assertEqual(result.status, CalculationStatus.VALID)
+        self.assertEqual(result.classification, "POSSIBLE_MIXED_SIGNAL")
+        self.assertEqual(result.phase, "MIXED")
+        self.assertEqual(result.uncertainty_state, "POSSIBLE")
+        self.assertTrue(result.canon_input_valid)
+
+    def test_unc_04_variable_no_qualification(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(
+                scenario_stability_state="VARIABLE",
+                scenario_window_state="NONE",
+            )
+        )
+        self.assertEqual(result.status, CalculationStatus.VALID)
+        self.assertEqual(result.classification, "DISQUALIFIED_OUT_OF_ORB")
+        self.assertFalse(result.canon_input_valid)
+
+    def test_signal_engine_robust_exact_signal(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(
+                scenario_stability_state="STABLE",
+                scenario_window_state="ROBUST",
+                kinematic_states=("EXACT",),
+            )
+        )
+        self.assertEqual(result.classification, "ROBUST_EXACT_SIGNAL")
+        self.assertEqual(result.phase, "EXACT")
+        self.assertTrue(result.canon_input_valid)
 
     def test_signal_engine_rejects_calculation_failure(self) -> None:
         result = SignalEngine().evaluate(
