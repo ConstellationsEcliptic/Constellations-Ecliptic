@@ -128,8 +128,7 @@ def verify_canonical_swiss_bundle(root: Path) -> str:
             raise NativeRuntimeError(f"canonical_ephemeris_git_blob_mismatch:{name}")
         observed[name] = digest.lower()
 
-    lines = "".join(f"{name} {observed[name]}\\n" for name in sorted(observed))
-    aggregate = sha256(lines.encode("utf-8")).hexdigest()
+    aggregate = _canonical_swiss_bundle_aggregate_sha256(observed)
     if aggregate != CANONICAL_SWISS_BUNDLE_SHA256:
         raise NativeRuntimeError("canonical_ephemeris_bundle_hash_mismatch")
     return aggregate

@@ -131,6 +131,56 @@ class NativeCaptureIdentityR1Tests(unittest.TestCase):
             CANONICAL_SWISS_BUNDLE_SHA256,
         )
 
+    def test_verify_function_uses_canonical_bundle_aggregate(self) -> None:
+        import hashlib
+        import ce.ephemeris.native_runtime as n
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            payloads = {
+                "seas_18.se1": b"a",
+                "semo_18.se1": b"bb",
+                "sepl_18.se1": b"ccc",
+            }
+
+            expected_files = {}
+            observed = {}
+            expected_blobs = {
+                "seas_18.se1": "1" * 40,
+                "semo_18.se1": "2" * 40,
+                "sepl_18.se1": "3" * 40,
+            }
+
+            for name, payload in payloads.items():
+                (root / name).write_bytes(payload)
+                digest = hashlib.sha256(payload).hexdigest()
+                observed[name] = digest
+                expected_files[name] = {
+                    "size_bytes": len(payload),
+                    "sha256": digest,
+                    "git_blob_sha1": expected_blobs[name],
+                }
+
+            expected_aggregate = hashlib.sha256(
+                "".join(
+                    f"{name} {observed[name]}\n"
+                    for name in sorted(observed)
+                ).encode("utf-8")
+            ).hexdigest()
+
+            with patch.object(n, "CANONICAL_SWISS_FILES", expected_files):
+                with patch.object(n, "CANONICAL_SWISS_BUNDLE_SHA256", expected_aggregate):
+                    with patch.object(
+                        n,
+                        "_git_blob_sha1",
+                        side_effect=lambda path: expected_blobs[path.name],
+                    ):
+                        self.assertEqual(
+                            n.verify_canonical_swiss_bundle(root),
+                            expected_aggregate,
+                        )
+
     def test_external_fixture_path_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "fixture.json"
