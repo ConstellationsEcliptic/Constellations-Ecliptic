@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 import subprocess
+import tempfile
 import unittest
 from unittest.mock import patch
 
 from ce.ephemeris.native_runtime import NativeRuntimeError
-from tools.capture_native_runtime import _verify_source_identity
+from tools.capture_native_runtime import _resolve_runtime_environment_identity, _verify_source_identity
 
 
 class NativeCaptureIdentityR1Tests(unittest.TestCase):
@@ -71,6 +72,44 @@ class NativeCaptureIdentityR1Tests(unittest.TestCase):
             NativeRuntimeError, "source_commit_identity_unavailable"
         ):
             _verify_source_identity(self.ROOT, "a" * 40, "b" * 64)
+
+
+    def test_host_native_environment_digest_is_recomputed_from_manifest(self) -> None:
+        import json
+        from hashlib import sha256
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "environment.json"
+            manifest = {
+                "schema_version": "CE-V1-HOST-NATIVE-ENV-R1",
+                "kind": "HOST_NATIVE",
+                "os": {"system": "Windows", "release": "11", "version": "10.0", "machine": "AMD64"},
+                "python": {
+                    "implementation": "CPython",
+                    "version": "3.13.15",
+                    "platform": "Windows",
+                    "executable_sha256": "a" * 64,
+                    "executable_size_bytes": 1,
+                },
+                "components": [],
+            }
+            raw = json.dumps({
+                "identity_manifest": manifest,
+                "runtime_environment_digest": sha256(
+                    json.dumps(manifest, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+                ).hexdigest(),
+            })
+            path.write_text(raw, encoding="utf-8")
+            kind, image, environment = _resolve_runtime_environment_identity(None, path)
+            self.assertEqual(kind, "HOST_NATIVE")
+            self.assertIsNone(image)
+            self.assertEqual(len(environment), 64)
+
+    def test_mixed_runtime_identity_arguments_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "environment.json"
+            path.write_text("{}", encoding="utf-8")
+            with self.assertRaisesRegex(NativeRuntimeError, "runtime_identity_argument_mismatch"):
+                _resolve_runtime_environment_identity("sha256:" + "a" * 64, path)
 
 
 if __name__ == "__main__":

@@ -146,6 +146,34 @@ def _verify_source_identity(repo_root: Path, expected_commit: str, expected_tree
         raise NativeRuntimeError("source_tree_identity_mismatch")
 
 
+def _load_host_environment_digest(path: Path) -> str:
+    try:
+        envelope = json.loads(path.read_text(encoding="utf-8"))
+        manifest = envelope.get("identity_manifest", envelope)
+        if not isinstance(manifest, dict):
+            raise ValueError("runtime_environment_manifest_mapping_required")
+        computed = host_native_environment_digest(manifest)
+        declared = envelope.get("runtime_environment_digest")
+        if declared is not None and declared != computed:
+            raise NativeRuntimeError("runtime_environment_manifest_digest_mismatch")
+        return computed
+    except NativeRuntimeError:
+        raise
+    except (OSError, UnicodeError, ValueError, HostRuntimeEnvironmentError) as exc:
+        raise NativeRuntimeError("runtime_environment_manifest_invalid") from exc
+
+
+def _resolve_runtime_environment_identity(
+    runtime_image_digest: str | None,
+    runtime_environment_manifest: Path | None,
+) -> tuple[str, str | None, str | None]:
+    if (runtime_image_digest is None) == (runtime_environment_manifest is None):
+        raise NativeRuntimeError("runtime_identity_argument_mismatch")
+    if runtime_image_digest is not None:
+        return "OCI_IMAGE", runtime_image_digest, None
+    return "HOST_NATIVE", None, _load_host_environment_digest(runtime_environment_manifest)
+
+
 def _calculate(library, object_id: str, jd_ut: float, ephemeris_root: Path, with_speed: bool) -> dict[str, object]:
     import ctypes
 
@@ -216,27 +244,10 @@ def main() -> int:
             }
         )
 
-    if args.runtime_image_digest is not None:
-        runtime_environment_kind = "OCI_IMAGE"
-        runtime_image_digest = args.runtime_image_digest
-        runtime_environment_digest = None
-    else:
-        runtime_environment_kind = "HOST_NATIVE"
-        try:
-            envelope = json.loads(args.runtime_environment_manifest.read_text(encoding="utf-8"))
-            manifest = envelope.get("identity_manifest", envelope)
-            if not isinstance(manifest, dict):
-                raise ValueError("runtime_environment_manifest_mapping_required")
-            computed_environment_digest = host_native_environment_digest(manifest)
-            declared_environment_digest = envelope.get("runtime_environment_digest")
-            if declared_environment_digest is not None and declared_environment_digest != computed_environment_digest:
-                raise NativeRuntimeError("runtime_environment_manifest_digest_mismatch")
-        except (OSError, UnicodeError, ValueError, HostRuntimeEnvironmentError) as exc:
-            if isinstance(exc, NativeRuntimeError):
-                raise
-            raise NativeRuntimeError("runtime_environment_manifest_invalid") from exc
-        runtime_image_digest = None
-        runtime_environment_digest = computed_environment_digest
+    runtime_environment_kind, runtime_image_digest, runtime_environment_digest = _resolve_runtime_environment_identity(
+        args.runtime_image_digest,
+        args.runtime_environment_manifest,
+    )
 
     runtime_capture = RuntimeCapture(
         capture_id="CE-RUNTIME-CAPTURE-" + uuid.uuid4().hex,
