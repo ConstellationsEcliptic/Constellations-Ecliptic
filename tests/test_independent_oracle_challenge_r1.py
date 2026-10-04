@@ -139,14 +139,37 @@ class IndependentCoreOracleChallengeR1(unittest.TestCase):
 
     def test_uncertainty_set_logic_reference(self) -> None:
         # Independent set-theoretic oracle for the approved scenario semantics.
+        def merge_union(segments):
+            ordered = sorted((a, b) for scenario in segments for a, b in scenario if b > a)
+            result = []
+            for a, b in ordered:
+                if not result or a > result[-1][1]:
+                    result.append([a, b])
+                else:
+                    result[-1][1] = max(result[-1][1], b)
+            return tuple((a, b) for a, b in result)
+
+        def pair_intersection(left, right):
+            result = []
+            for a0, a1 in left:
+                for b0, b1 in right:
+                    lo, hi = max(a0, b0), min(a1, b1)
+                    if hi > lo:
+                        result.append((lo, hi))
+            return merge_union((tuple(result),))
+
         def agg(sets):
             normalized = tuple(tuple(s) for s in sets)
             if not normalized:
                 return ScenarioState.NONE
-            union = set().union(*(set(s) for s in normalized))
+            union = merge_union(normalized)
             if not union:
                 return ScenarioState.NONE
-            intersection = set.intersection(*(set(s) for s in normalized))
+            intersection = normalized[0]
+            for other in normalized[1:]:
+                intersection = pair_intersection(intersection, other)
+                if not intersection:
+                    break
             if not intersection:
                 return ScenarioState.POSSIBLE
             if union == intersection:
