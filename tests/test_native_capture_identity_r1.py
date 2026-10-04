@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 from ce.ephemeris.native_runtime import NativeRuntimeError
-from tools.capture_native_runtime import _resolve_runtime_environment_identity, _verify_source_identity
+from tools.capture_native_runtime import _resolve_runtime_environment_identity, _verify_canonical_fixture_spec, _verify_source_identity
 
 
 class NativeCaptureIdentityR1Tests(unittest.TestCase):
@@ -103,6 +103,13 @@ class NativeCaptureIdentityR1Tests(unittest.TestCase):
             self.assertEqual(kind, "HOST_NATIVE")
             self.assertIsNone(image)
             self.assertEqual(len(environment), 64)
+
+    def test_external_fixture_path_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "fixture.json"
+            path.write_text("{}", encoding="utf-8")
+            with self.assertRaisesRegex(NativeRuntimeError, "fixture_spec_identity_mismatch"):
+                _verify_canonical_fixture_spec(Path(directory), path)
 
     def test_mixed_runtime_identity_arguments_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

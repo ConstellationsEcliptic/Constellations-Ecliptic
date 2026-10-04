@@ -46,7 +46,17 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _load_fixture_spec(path: Path) -> list[dict[str, object]]:
+def _verify_canonical_fixture_spec(repo_root: Path, path: Path) -> None:
+    canonical = (repo_root / "configs" / "native_runtime_fixture_spec_r1.json").resolve()
+    observed = path.resolve()
+    if path.is_symlink() or not path.is_file():
+        raise NativeRuntimeError("fixture_spec_missing_or_nonregular")
+    if observed != canonical:
+        raise NativeRuntimeError("fixture_spec_identity_mismatch")
+
+
+def _load_fixture_spec(path: Path, repo_root: Path) -> list[dict[str, object]]:
+    _verify_canonical_fixture_spec(repo_root, path)
     raw = json.loads(path.read_text(encoding="utf-8"))
     fixtures = raw.get("fixtures")
     if not isinstance(fixtures, list) or not fixtures:
@@ -211,7 +221,7 @@ def main() -> int:
     args = _parser().parse_args()
     repo_root = Path(__file__).resolve().parents[1]
     _verify_source_identity(repo_root, args.source_commit, args.source_tree_sha256_v2)
-    fixtures = _load_fixture_spec(args.fixture_spec)
+    fixtures = _load_fixture_spec(args.fixture_spec, repo_root)
 
     ephemeris_root = args.ephemeris_root.resolve()
     bundle_hash = verify_canonical_swiss_bundle(ephemeris_root)
