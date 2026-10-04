@@ -128,6 +128,32 @@ class EvidenceContractR1Tests(unittest.TestCase):
                 _evidence_packet=packet,
             )
 
+    def test_variable_result_can_publish_evidence_without_exact_natal_time(self) -> None:
+        packet = self.packet()
+        identity = self.runtime_identity()
+        result = CalculationResult(
+            request_id="R-003",
+            status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            scenario_state=ScenarioState.VARIABLE,
+            normalized_time=None,
+            calculation_id="C-003",
+            observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
+            object_states=(),
+            provenance={
+                "source_commit": "a" * 40,
+                "source_tree_sha256_v2": "b" * 64,
+                "dependency_lock_digest": "d" * 64,
+                "timezone_bundle_digest": "e" * 64,
+                "ephemeris_bundle_digest": "f" * 64,
+                "runtime_image_digest": "sha256:" + "c" * 64,
+                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
+            },
+            _runtime_identity=identity,
+            _evidence_packet=packet,
+        )
+        self.assertEqual(result.evidence_packet_ref.content_sha256, packet.content_sha256())
+
 
 if __name__ == "__main__":
     unittest.main()
