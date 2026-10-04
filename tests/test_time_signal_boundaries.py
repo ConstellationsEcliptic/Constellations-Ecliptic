@@ -99,8 +99,11 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         scenario_stability_state: str = "STABLE",
         scenario_window_state: str = "NONE",
         kinematic_states: tuple[str, ...] = (),
+        geometry_kinematic_states: tuple[str, ...] | None = None,
         exact_event_time_utc: str | None = None,
     ) -> EvidencePacket:
+        if geometry_kinematic_states is None:
+            geometry_kinematic_states = kinematic_states
         geometry_records = tuple(
             {
                 "transit_object": "SUN",
@@ -113,7 +116,7 @@ class TimeSignalBoundaryTests(unittest.TestCase):
                 "qualification_state": "QUALIFIED",
                 "kinematic_state": state,
             }
-            for state in kinematic_states
+            for state in geometry_kinematic_states
         )
         exact_events = (
             {"event_time_utc": exact_event_time_utc, "residual": 0.0},
@@ -161,6 +164,18 @@ class TimeSignalBoundaryTests(unittest.TestCase):
         self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
         self.assertFalse(result.canon_input_valid)
         self.assertEqual(result.classification, "DISQUALIFIED_CALCULATION_FAILURE")
+
+    def test_signal_engine_reads_phase_from_immutable_geometry_mapping(self) -> None:
+        result = SignalEngine().evaluate(
+            self._signal_packet(
+                scenario_window_state="ROBUST",
+                kinematic_states=(),
+                geometry_kinematic_states=("EXACT",),
+            )
+        )
+        self.assertEqual(result.classification, "ROBUST_EXACT_SIGNAL")
+        self.assertEqual(result.phase, "EXACT")
+        self.assertTrue(result.canon_input_valid)
 
     def test_signal_engine_accepts_integrity_gate_but_requires_qualification_evidence(self) -> None:
         result = SignalEngine().evaluate(self._signal_packet())
