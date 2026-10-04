@@ -6,7 +6,7 @@ from pathlib import Path
 import math
 import unittest
 
-from ce.calculation.geometry import aspect_geometry, circular_span_deg, effective_orb, wrap180
+from ce.calculation.geometry import aspect_geometry, circular_span_deg, effective_orb
 from ce.calculation.window_solver import solve_aspect_window
 from ce.ephemeris.verification import classify_requested_actual_flags
 from ce.foundation.status import CalculationStatus, KinematicState, ScenarioState
@@ -24,9 +24,13 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
     """
 
     def test_geo_and_kinematics_from_independent_math(self) -> None:
+        def ref_wrap180(value: float) -> float:
+            normalized = value % 360.0
+            return normalized - 360.0 if normalized >= 180.0 else normalized
+
         def reference(transit: float, natal: float, branch: float, speed: float | None):
-            delta = wrap180((transit - natal) % 360.0)
-            error = wrap180(delta - branch)
+            delta = ref_wrap180((transit - natal) % 360.0)
+            error = ref_wrap180(delta - branch)
             abs_error = abs(error)
             if abs_error <= 1.0e-4:
                 phase = "EXACT"
@@ -154,7 +158,7 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
         record = QualifiedSignalRecord(
             schema_version="CE-QUALIFIED-SIGNAL-RECORD-V1",
             signal_id="CE-SIGNAL-" + "1" * 64,
-            evidence_packet_ref=result.evidence_packet_ref,
+            evidence_packet_ref=result.evidence_packet_ref or f"{packet.evidence_packet_id}:{packet.content_sha256()}",
             timestamp_observation_utc="2026-01-01T00:00:00Z",
             qualification_status="VALID",
             classification="ROBUST_EXACT_SIGNAL",
