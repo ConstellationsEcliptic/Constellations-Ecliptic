@@ -61,6 +61,38 @@ class NativeRuntimeBoundaryR1Tests(unittest.TestCase):
                     expected_library_sha256="0" * 64,
                 )
 
+    def test_native_calculation_record_carries_flags_and_coordinates_contract(self) -> None:
+        from ce.calculation.contracts import ObjectRecord
+        import math
+        record = ObjectRecord(
+            object_id="SUN",
+            object_status=__import__("ce.foundation.status", fromlist=["CalculationStatus"]).CalculationStatus.VALID,
+            requested_flags=258,
+            actual_flags=258,
+            longitude=10.0,
+            latitude=0.0,
+            distance=1.0,
+            speed=0.99,
+        )
+        self.assertEqual(record.requested_flags, 258)
+        self.assertEqual(record.actual_flags, 258)
+        self.assertTrue(math.isfinite(record.longitude))
+
+    def test_nonvalid_object_record_cannot_publish_position(self) -> None:
+        from ce.calculation.contracts import ObjectRecord
+        from ce.foundation.status import CalculationStatus
+        with self.assertRaises(ValueError):
+            ObjectRecord(
+                object_id="SUN",
+                object_status=CalculationStatus.KNOWN_UNAVAILABLE,
+                requested_flags=258,
+                actual_flags=None,
+                longitude=10.0,
+                latitude=None,
+                distance=None,
+                speed=None,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
