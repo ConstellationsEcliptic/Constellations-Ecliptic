@@ -11,9 +11,12 @@
     "base_source_tree_identity": "a7c318b6ae04012a184bc02bf1cfa673ff84a522dfffc257c0a4d17bdc1e200f"
   },
   "normative_register": {
-    "library_file_id": "file_0000000071d4820899941b51f4b38c75",
+    "box_file_id": "2485323796025",
+    "box_sha1": "973749ba88112a7b4202c807bcc7635d286a5ea9",
+    "size_bytes": 27957,
     "sha256": "97a977feb051999dcefec7ee9322c5980ba73ed961608bc021a4b889ed659de0",
-    "role": "CURRENT_NORMATIVE_REGISTER_CANDIDATE_BINDING"
+    "role": "CURRENT_NORMATIVE_REGISTER_CANDIDATE_BINDING",
+    "note": "SHA-256 is carried from the prior durable qualification evidence; Box live metadata additionally binds the current Box object by ID/SHA-1/size."
   },
   "qualification_state": {
     "current_test_surface_bound": true,
@@ -25,7 +28,13 @@
     "characterization_reference": "CE_V1_CURRENT_28_ORACLE_DEEP_CHARACTERIZATION_R6_2026-10-04",
     "characterization_role": "SUPPORTING_EVIDENCE_ONLY",
     "characterization_commit": "c709f91f25ff8406193164266de9b09355222cc6",
-    "note": "The R6 characterization is not treated as current-head authority; this branch is anchored to the c613 candidate and validates source ancestry."
+    "note": "The R6 characterization is not treated as current-head authority; this branch is anchored to the c613 candidate and validates source ancestry.",
+    "downstream_contract_sources": {
+      "interpretive_canon_box_id": "2485337228722",
+      "interpretive_canon_sha1": "7ee32ee5f74477cf2674b50182be42aa8c5d439a",
+      "ai_output_validation_spec_box_id": "2485336395859",
+      "ai_output_validation_spec_sha1": "bb95c2b6edcb1eb1e47477ebd776287aa21372bd"
+    }
   },
   "test_bindings": [
     [
