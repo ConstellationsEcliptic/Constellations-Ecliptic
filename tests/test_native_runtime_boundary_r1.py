@@ -48,6 +48,19 @@ class NativeRuntimeBoundaryR1Tests(unittest.TestCase):
                     runtime_authorized=False,
                 )
 
+    def test_canonical_library_hash_cannot_be_overridden(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            library = Path(directory) / "libswe.dll"
+            library.write_bytes(b"test")
+            with self.assertRaisesRegex(NativeRuntimeError, "native_library_identity_override_forbidden"):
+                NativeSwissEphemerisAdapter(
+                    library_path=library,
+                    ephemeris_root=Path(directory),
+                    calling_convention="__cdecl",
+                    runtime_authorized=True,
+                    expected_library_sha256="0" * 64,
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
