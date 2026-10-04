@@ -1,0 +1,183 @@
+{
+  "artifact_id": "CE-V1-REV4-ORACLE-QUALIFICATION-CANDIDATE-R1",
+  "status": "CANDIDATE_NON_AUTHORITY",
+  "generated_utc": "2026-10-04",
+  "basis": {
+    "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
+    "branch": "development/rev4-oracle-qualification-r1/2026-10-04",
+    "base_candidate_head": "c6136486fe711cc0eb2681e89222a0f44146b974",
+    "base_tree_sha": "30e0e7820d3bd7968dc279ffbe402480b607fee7",
+    "source_tree_identity": "a7c318b6ae04012a184bc02bf1cfa673ff84a522dfffc257c0a4d17bdc1e200f",
+    "dependency_lock_sha256": "ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5"
+  },
+  "authority": {
+    "normative_register_library_file_id": "file_0000000071d4820899941b51f4b38c75",
+    "normative_register_sha256": "97a977feb051999dcefec7ee9322c5980ba73ed961608bc021a4b889ed659de0",
+    "b7_status": "HISTORICAL_SUPPORTING_EVIDENCE_ONLY",
+    "current_oracle_authority": "NOT_ESTABLISHED",
+    "fail_closed": true
+  },
+  "semantic_decisions": {
+    "HUM-SEM-01": "APPROVED",
+    "HUM-SEM-02": "APPROVED",
+    "HUM-ARCH-01": "ARCHITECTURE_B_APPROVED",
+    "HUM-MID-01": "A_APPROVED"
+  },
+  "summary": {
+    "total_ids": 28,
+    "semantically_matching": 27,
+    "semantically_weaker": 1,
+    "semantically_weaker_ids": [
+      "ERR-06"
+    ],
+    "fixture_or_provenance_divergence": 0,
+    "semantic_difference": 0,
+    "contract_contradiction": 0,
+    "oracle_qualification": "PENDING"
+  },
+  "test_bindings": [
+    [
+      "GEO-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_geo_01_circular_boundary"
+    ],
+    [
+      "GEO-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_geo_02_exact_square"
+    ],
+    [
+      "KIN-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_kin_01_applying"
+    ],
+    [
+      "KIN-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_kin_02_separating"
+    ],
+    [
+      "KIN-03",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_kin_03_retrograde_separating"
+    ],
+    [
+      "KIN-04",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_kin_04_exact_precedence"
+    ],
+    [
+      "ORB-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_orb_01_profile_a"
+    ],
+    [
+      "ORB-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_orb_02_profile_b"
+    ],
+    [
+      "STA-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests.test_sta_01_circular_span"
+    ],
+    [
+      "WIN-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_win_01_disjoint_possible_windows"
+    ],
+    [
+      "WIN-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_win_02_continuous_multi_peak"
+    ],
+    [
+      "WIN-03",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_win_03_tangential_contact"
+    ],
+    [
+      "UNC-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_unc_01_stable_robust"
+    ],
+    [
+      "UNC-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_unc_02_variable_possible"
+    ],
+    [
+      "UNC-03",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_unc_03_variable_mixed_phase"
+    ],
+    [
+      "UNC-04",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_unc_04_variable_no_qualification"
+    ],
+    [
+      "EPH-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_eph_01_requested_actual_resolution_mismatch_is_failure"
+    ],
+    [
+      "EPH-02",
+      "tests/test_retry_and_range_r1.py::RetryAndRangeR1Tests.test_eph_02_chiron_out_of_range_is_known_unavailable"
+    ],
+    [
+      "ERR-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_err_01_corrupt_evidence_packet"
+    ],
+    [
+      "ERR-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_err_02_malformed_calculation_input"
+    ],
+    [
+      "ERR-03",
+      "tests/test_retry_and_range_r1.py::RetryAndRangeR1Tests.test_err_03_retryable_worker_failure"
+    ],
+    [
+      "ERR-04",
+      "tests/test_retry_and_range_r1.py::RetryAndRangeR1Tests.test_err_04_non_retryable_failure"
+    ],
+    [
+      "ERR-05",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_err_05_failure_not_quiet_sky"
+    ],
+    [
+      "ERR-06",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_err_06_non_valid_boundary_preserved"
+    ],
+    [
+      "TIME-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_time_01_historical_timezone_normative_fixture"
+    ],
+    [
+      "TIME-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_time_02_ambiguous_rejected_normative_fixture"
+    ],
+    [
+      "TIME-03",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_time_03_nonexistent_rejected_normative_fixture"
+    ],
+    [
+      "INT-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1.test_int_01_quiet_sky"
+    ]
+  ],
+  "qualification_rules": {
+    "fixture_identity_required": true,
+    "expected_value_provenance_required": true,
+    "independent_derivation_required_for_critical_oracles": true,
+    "current_runtime_identity_required_for_runtime_qualification": true,
+    "host_zoneinfo_must_not_replace_policy_owned_tzif": true,
+    "historical_b7_must_not_be_promoted": true,
+    "current_semantic_decisions_override_historical_fixture_semantics": true,
+    "pass_does_not_establish_authority": true
+  },
+  "known_open_items": [
+    "ERR-06 full Signal->Canon->AI->UI adapter chain is not implemented",
+    "Full 1900-2100 runtime coverage is not established",
+    "Cross-platform native parity is not established",
+    "Full policy-owned TZIF runtime adoption is not established",
+    "B7 independent solver authority is not established",
+    "Native intermediate-object byte reproducibility remains not established",
+    "IANA signer operational trust remains KEEP_PENDING"
+  ],
+  "governance": {
+    "source_authority": "NOT_ESTABLISHED",
+    "trusted_build": "NOT_ESTABLISHED",
+    "runtime_adoption": "NOT_ESTABLISHED",
+    "full_runtime_coverage": "NOT_ESTABLISHED",
+    "tzif_runtime_identity": "NOT_ESTABLISHED",
+    "production_runtime": "NOT_AUTHORIZED",
+    "dual_approval": "NOT_ESTABLISHED",
+    "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
+    "fail_closed": true
+  }
+}
