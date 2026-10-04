@@ -259,6 +259,82 @@ def _validate_runtime_provenance(provenance: Mapping[str, Any], runtime_identity
 
 
 @dataclass(frozen=True)
+class CalculationResultDraft:
+    """Pre-issuance calculation state.
+
+    A draft may describe numerical calculation state but is never externally
+    publishable until an EvidencePacket is issued and cryptographically bound
+    into the final CalculationResult.
+    """
+
+    request_id: str
+    status: CalculationStatus
+    execution_profile_id: str
+    scenario_state: ScenarioState
+    normalized_time: str | None
+    calculation_version: str = "CE-CALC-CORE-V1-R1-CONVERGENT"
+    calculation_id: str | None = None
+    observation_interval: tuple[str, str] | None = None
+    object_states: tuple[ObjectState, ...] = field(default_factory=tuple)
+    object_records: tuple[ObjectRecord, ...] = field(default_factory=tuple)
+    geometry_records: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    event_records: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    window_classification: ScenarioState = ScenarioState.NONE
+    possible_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    robust_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    solver_metadata: dict[str, Any] = field(default_factory=dict)
+    actual_ephemeris_resolution: dict[str, Any] = field(default_factory=dict)
+    calculation_flags: dict[str, Any] = field(default_factory=dict)
+    warnings: tuple[str, ...] = field(default_factory=tuple)
+    errors: tuple[str, ...] = field(default_factory=tuple)
+    provenance: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        for item in fields(self):
+            object.__setattr__(self, item.name, _freeze(getattr(self, item.name)))
+
+    def to_final(
+        self,
+        *,
+        runtime_identity: RuntimeIdentity,
+        evidence_packet: EvidencePacket,
+    ) -> "CalculationResult":
+        if self.calculation_id is None:
+            raise ValueError("calculation_id_missing")
+        if evidence_packet.calculation_id != self.calculation_id:
+            raise ValueError("evidence_packet:calculation_id_mismatch")
+        return CalculationResult(
+            request_id=self.request_id,
+            status=self.status,
+            execution_profile_id=self.execution_profile_id,
+            scenario_state=self.scenario_state,
+            normalized_time=self.normalized_time,
+            calculation_version=self.calculation_version,
+            calculation_id=self.calculation_id,
+            observation_interval=self.observation_interval,
+            object_states=self.object_states,
+            object_records=self.object_records,
+            geometry_records=self.geometry_records,
+            event_records=self.event_records,
+            window_segments=self.window_segments,
+            window_classification=self.window_classification,
+            possible_window_segments=self.possible_window_segments,
+            robust_window_segments=self.robust_window_segments,
+            scenario_observations=self.scenario_observations,
+            solver_metadata=self.solver_metadata,
+            actual_ephemeris_resolution=self.actual_ephemeris_resolution,
+            calculation_flags=self.calculation_flags,
+            warnings=self.warnings,
+            errors=self.errors,
+            provenance=dict(self.provenance),
+            _runtime_identity=runtime_identity,
+            _evidence_packet=evidence_packet,
+        )
+
+
+@dataclass(frozen=True)
 class CalculationResult:
     request_id: str
     status: CalculationStatus
