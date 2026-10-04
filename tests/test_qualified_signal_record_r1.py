@@ -89,6 +89,21 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
         self.assertFalse(record.requires_uncertainty_disclaimer)
         self.assertRegex(record.environment_pin, r"^sha256:[0-9a-f]{64}$")
 
+    def test_possible_applying_record_requires_disclaimer(self) -> None:
+        packet = self._packet(
+            scenario_stability_state="VARIABLE",
+            scenario_window_state="POSSIBLE",
+            kinematic_states=("APPLYING",),
+            exact_event="2026-01-01T12:00:00Z",
+        )
+        result = SignalEngine().evaluate(packet)
+        self.assertEqual(result.classification, "POSSIBLE_APPROACHING_SIGNAL")
+        record = issue_qualified_signal_record(packet, result)
+        self.assertEqual(record.kinematic_phase, "APPLYING")
+        self.assertEqual(record.phase_uniformity, "UNIFORM")
+        self.assertTrue(record.requires_uncertainty_disclaimer)
+        self.assertTrue(record.canon_input_valid)
+
     def test_possible_mixed_record_requires_disclaimer_and_marks_phase_mixed(self) -> None:
         packet = self._packet(
             scenario_stability_state="VARIABLE",
@@ -121,7 +136,7 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "qualified_signal_result_not_eligible"):
             issue_qualified_signal_record(packet, result)
 
-    def test_phase_uniformity_conflict_fails_closed(self) -> None:
+    def test_mixed_phase_uniformity_is_derived_from_evidence(self) -> None:
         packet = self._packet(
             scenario_stability_state="VARIABLE",
             scenario_window_state="POSSIBLE",
@@ -134,6 +149,19 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             issue_qualified_signal_record(packet, result).phase_uniformity,
             "MIXED",
         )
+
+    def test_cross_packet_signal_result_reference_is_rejected(self) -> None:
+        packet = self._packet()
+        result = SignalEngine().evaluate(packet)
+        other = self._packet()
+        other_result = SignalEngine().evaluate(other)
+        self.assertEqual(result.evidence_packet_ref, other_result.evidence_packet_ref)
+        with self.assertRaisesRegex(ValueError, "qualified_signal_evidence_reference_mismatch"):
+            from dataclasses import replace
+            issue_qualified_signal_record(
+                packet,
+                replace(result, evidence_packet_ref="E-OTHER:" + "0" * 64),
+            )
 
 
 if __name__ == "__main__":
