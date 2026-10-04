@@ -297,9 +297,18 @@ class EvidencePacket:
         payload = {
             item.name: getattr(self, item.name)
             for item in fields(self)
-            if item.name != "_canonical_bytes"
+            if item.name not in {"_canonical_bytes", "evidence_packet_id"}
         }
         object.__setattr__(self, "_canonical_bytes", canonical_json(payload))
+
+    @classmethod
+    def issue(cls, **kwargs: Any) -> "EvidencePacket":
+        """Issue a content-addressed packet without hashing its own identifier."""
+        if "evidence_packet_id" in kwargs:
+            raise ValueError("evidence_packet_id_must_not_be_supplied_to_issue")
+        provisional = dict(kwargs)
+        packet_id = sha256_bytes(canonical_json(provisional))
+        return cls(evidence_packet_id=packet_id, **provisional)
 
     def canonical_bytes(self) -> bytes:
         return self._canonical_bytes
