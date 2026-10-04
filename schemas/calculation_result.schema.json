@@ -7,9 +7,21 @@
     "request_id",
     "status",
     "execution_profile_id",
+    "calculation_version",
     "scenario_state",
     "normalized_time",
     "object_states",
+    "object_records",
+    "geometry_records",
+    "event_records",
+    "window_segments",
+    "window_classification",
+    "possible_window_segments",
+    "robust_window_segments",
+    "scenario_observations",
+    "solver_metadata",
+    "actual_ephemeris_resolution",
+    "calculation_flags",
     "warnings",
     "errors",
     "provenance",
@@ -18,6 +30,11 @@
   "properties": {
     "calculation_id": {"type": ["string", "null"], "minLength": 1},
     "request_id": {"type": "string", "minLength": 1},
+    "calculation_version": {"type": "string", "minLength": 1},
+    "observation_interval": {
+      "type": ["array", "null"], "minItems": 2, "maxItems": 2,
+      "items": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"}
+    },
     "status": {"type": "string", "enum": [
       "VALID",
       "KNOWN_UNAVAILABLE",
@@ -43,6 +60,17 @@
       "type": ["string", "null"],
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
     },
+    "object_records": {"type": "array", "items": {"type": "object"}},
+    "geometry_records": {"type": "array", "items": {"type": "object"}},
+    "event_records": {"type": "array", "items": {"type": "object"}},
+    "window_segments": {"type": "array", "items": {"type": "object"}},
+    "window_classification": {"type": "string", "enum": ["STABLE","VARIABLE","POSSIBLE","ROBUST","MIXED","NONE"]},
+    "possible_window_segments": {"type": "array", "items": {"type": "object"}},
+    "robust_window_segments": {"type": "array", "items": {"type": "object"}},
+    "scenario_observations": {"type": "array", "items": {"type": "object"}},
+    "solver_metadata": {"type": "object"},
+    "actual_ephemeris_resolution": {"type": "object"},
+    "calculation_flags": {"type": "object"},
     "object_states": {
       "type": "array",
       "items": {
