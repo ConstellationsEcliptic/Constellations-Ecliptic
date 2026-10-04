@@ -79,10 +79,18 @@ def _load_fixture_spec(path: Path, repo_root: Path) -> list[dict[str, object]]:
             if not isinstance(object_id, str) or object_id not in EXPECTED_OBJECTS:
                 raise ValueError(f"fixture_spec_unknown_object:{fixture_id}:{object_id}")
             normalized_objects.append(object_id)
+        instant_utc = fixture.get("instant_utc")
+        if instant_utc is not None and (
+            not isinstance(instant_utc, str)
+            or not instant_utc.strip()
+            or not instant_utc.endswith("Z")
+        ):
+            raise ValueError(f"fixture_spec_invalid_instant_utc:{fixture_id}")
         result.append(
             {
                 "fixture_id": fixture_id,
                 "julian_day_ut": float(jd_ut),
+                "instant_utc": instant_utc,
                 "objects": tuple(normalized_objects),
             }
         )
@@ -249,6 +257,7 @@ def main() -> int:
                 "fixture_id": str(fixture["fixture_id"]),
                 "records": {
                     "julian_day_ut": float(fixture["julian_day_ut"]),
+                    "instant_utc": fixture.get("instant_utc"),
                     "objects": records,
                 },
             }
