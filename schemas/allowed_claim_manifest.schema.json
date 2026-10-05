@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Allowed Claim Manifest V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version","manifest_id","claim_id","canon_version","canon_rule_id","signal_reference","allowed_subject","allowed_scope","epistemic_layer","certainty_ceiling","allowed_modality","allowed_tense","forbidden_domains","forbidden_claim_types","required_evidence_refs","allowed_numeric_refs","required_disclosures"],
+  "properties": {
+    "manifest_version":{"type":"string","minLength":1},
+    "manifest_id":{"type":"string","minLength":1},
+    "claim_id":{"type":"string","minLength":1},
+    "canon_version":{"type":"string","minLength":1},
+    "canon_rule_id":{"type":"string","minLength":1},
+    "signal_reference":{"type":"string","minLength":1},
+    "allowed_subject":{"type":"array","items":{"type":"string","minLength":1}},
+    "allowed_scope":{"type":"array","items":{"type":"string","minLength":1}},
+    "epistemic_layer":{"enum":["ASTRONOMICAL_FACT","GEOMETRIC_DERIVATION","ASTROLOGICAL_INTERPRETATION","POSSIBILITY","USER_REPORTED"]},
+    "certainty_ceiling":{"type":"string","minLength":1},
+    "allowed_modality":{"type":"array","items":{"type":"string","minLength":1}},
+    "allowed_tense":{"type":"array","items":{"type":"string","minLength":1}},
+    "forbidden_domains":{"type":"array","items":{"type":"string","minLength":1}},
+    "forbidden_claim_types":{"type":"array","items":{"type":"string","minLength":1}},
+    "required_evidence_refs":{"type":"array","items":{"type":"string","minLength":1}},
+    "allowed_numeric_refs":{"type":"array","items":{"type":"string"}},
+    "required_disclosures":{"type":"array","items":{"type":"string"}}
+  }
+}
