@@ -30,16 +30,16 @@ _DIAGNOSTIC_PATTERNS = (
 )
 _TYPE_PATTERNS = {
     "guarantee": _GUARANTEE_PATTERNS,
-    "objective-truth": _TRUTH_PATTERNS,
-    "unsupported-causality": (
+    "objective truth": _TRUTH_PATTERNS,
+    "unsupported causality": (
         re.compile(r"\bcauses?\b", re.I),
         re.compile(r"\bbecause\s+this\s+signal\b", re.I),
     ),
-    "hidden-profile": (
+    "hidden profile": (
         re.compile(r"\byour\s+true\s+personality\b", re.I),
         re.compile(r"\byou\s+secretly\b", re.I),
     ),
-    "fabricated-fact": (
+    "fabricated fact": (
         re.compile(r"\bfactually\b", re.I),
         re.compile(r"\bthe\s+event\s+will\b", re.I),
     ),
