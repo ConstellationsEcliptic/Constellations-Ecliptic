@@ -72,8 +72,8 @@ class CanonApprovedInterpretation:
             forbidden_domains=_strings("forbidden_domains", value["forbidden_domains"]),
             forbidden_claim_types=_strings("forbidden_claim_types", value["forbidden_claim_types"]),
             required_evidence_refs=_strings("required_evidence_refs", value["required_evidence_refs"]),
-            allowed_numeric_refs=tuple(value["allowed_numeric_refs"]),
-            required_disclosures=tuple(value["required_disclosures"]),
+            allowed_numeric_refs=_strings("allowed_numeric_refs", value["allowed_numeric_refs"]),
+            required_disclosures=_strings("required_disclosures", value["required_disclosures"]),
         )
 
     def canonical_payload(self) -> dict[str, Any]:
@@ -129,11 +129,56 @@ class AllowedClaimManifest:
             "forbidden_claim_types": list(self.forbidden_claim_types),
             "required_evidence_refs": list(self.required_evidence_refs),
             "allowed_numeric_refs": list(self.allowed_numeric_refs),
-            "required_disclosures": list(self.required_disclosures),
+            "required_disclosures": list(self.required_disclosures],
         }
 
     def digest(self) -> str:
         return sha256_bytes(canonical_json(self.canonical_payload()))
+
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, Any]) -> "AllowedClaimManifest":
+        if not isinstance(value, Mapping):
+            raise ManifestInvalid("manifest_not_object")
+        required = (
+            "manifest_version","manifest_id","claim_id","canon_version","canon_rule_id",
+            "signal_reference","allowed_subject","allowed_scope","epistemic_layer",
+            "certainty_ceiling","allowed_modality","allowed_tense","forbidden_domains",
+            "forbidden_claim_types","required_evidence_refs","allowed_numeric_refs",
+            "required_disclosures",
+        )
+        missing = [key for key in required if key not in value]
+        if missing:
+            raise ManifestInvalid("manifest_missing_fields:" + ",".join(missing))
+        for key in (
+            "manifest_version","manifest_id","claim_id","canon_version",
+            "canon_rule_id","signal_reference","certainty_ceiling",
+        ):
+            if not isinstance(value[key], str) or not value[key].strip():
+                raise ManifestInvalid(f"manifest_invalid:{key}")
+        interpretation = CanonApprovedInterpretation.from_mapping(value)
+        candidate = cls(
+            manifest_version=value["manifest_version"],
+            manifest_id=value["manifest_id"],
+            claim_id=value["claim_id"],
+            canon_version=value["canon_version"],
+            canon_rule_id=value["canon_rule_id"],
+            signal_reference=value["signal_reference"],
+            allowed_subject=interpretation.allowed_subject,
+            allowed_scope=interpretation.allowed_scope,
+            epistemic_layer=interpretation.epistemic_layer,
+            certainty_ceiling=interpretation.certainty_ceiling,
+            allowed_modality=interpretation.allowed_modality,
+            allowed_tense=interpretation.allowed_tense,
+            forbidden_domains=interpretation.forbidden_domains,
+            forbidden_claim_types=interpretation.forbidden_claim_types,
+            required_evidence_refs=interpretation.required_evidence_refs,
+            allowed_numeric_refs=interpretation.allowed_numeric_refs,
+            required_disclosures=interpretation.required_disclosures,
+        )
+        expected_id = "CE-ACM-" + sha256_bytes(canonical_json(candidate.canonical_payload()))
+        if candidate.manifest_id != expected_id:
+            raise ManifestInvalid("manifest_identity_digest_mismatch")
+        return candidate
 
 def build_allowed_claim_manifest(
     rule: CanonRule,
@@ -146,6 +191,9 @@ def build_allowed_claim_manifest(
         raise ManifestInvalid("manifest_canon_rule_required")
     if not isinstance(signal_reference, str) or not signal_reference.strip():
         raise ManifestInvalid("manifest_signal_reference_invalid")
+    if not isinstance(interpretation, CanonApprovedInterpretation):
+        raise ManifestInvalid("manifest_interpretation_required")
+
     identity = {
         "manifest_version": manifest_version,
         "claim_id": interpretation.claim_id,
@@ -174,7 +222,3 @@ def build_allowed_claim_manifest(
         allowed_numeric_refs=interpretation.allowed_numeric_refs,
         required_disclosures=interpretation.required_disclosures,
     )
-
-@classmethod
-def _unused(cls, value: Any) -> Any:
-    return value

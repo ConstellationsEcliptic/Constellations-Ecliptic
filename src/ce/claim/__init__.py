@@ -5,6 +5,7 @@ from ce.claim.manifest import (
     ManifestInvalid,
     build_allowed_claim_manifest,
 )
+from ce.claim.authorization import ClaimReleaseDecision, evaluate_claim_release
 
 __all__ = [
     "ALLOWED_EPISTEMIC_LAYERS",
@@ -12,4 +13,6 @@ __all__ = [
     "CanonApprovedInterpretation",
     "ManifestInvalid",
     "build_allowed_claim_manifest",
+    "ClaimReleaseDecision",
+    "evaluate_claim_release",
 ]
