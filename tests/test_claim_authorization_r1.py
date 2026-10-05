@@ -7,7 +7,7 @@ from ce.claim.authorization import evaluate_claim_release
 from ce.claim.manifest import build_allowed_claim_manifest
 from ce.foundation.status import CalculationStatus, RuntimeAuthority
 from ce.output.validation import OutputValidationResult
-from ce.product.boundary import preserve_calculation_truth
+from ce.product.boundary import ProductBoundaryDecision, preserve_calculation_truth
 from ce.runtime.gates import RuntimeGateResult
 from ce.signal.record import QualifiedSignalRecord
 
@@ -67,6 +67,31 @@ class ClaimAuthorizationR1Tests(unittest.TestCase):
         )
         self.assertFalse(decision.authorized)
         self.assertIn("runtime_not_authorized", decision.reasons)
+
+    def test_boundary_boolean_contract_is_enforced(self) -> None:
+        s = signal()
+        reg = registry()
+        m = build_allowed_claim_manifest(
+            reg, rule_id="TEST-RULE-001", signal_reference=s.signal_id
+        )
+        forged_boundary = ProductBoundaryDecision(
+            status=CalculationStatus.VALID,
+            signal_processing_allowed=True,
+            canon_claim_allowed=True,
+            ai_release_allowed=False,
+            quiet_sky_allowed=False,
+            reason="forged",
+        )
+        decision = evaluate_claim_release(
+            forged_boundary,
+            s,
+            m,
+            OutputValidationResult(True, ()),
+            RuntimeGateResult(RuntimeAuthority.NON_AUTHORIZED, ()),
+            reg,
+        )
+        self.assertFalse(decision.authorized)
+        self.assertIn("product_boundary_contract_mismatch", decision.reasons)
 
     def test_non_valid_calculation_blocks(self) -> None:
         s=signal(); reg=registry()

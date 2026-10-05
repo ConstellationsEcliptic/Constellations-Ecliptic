@@ -6,6 +6,8 @@ import re
 from typing import Any
 
 from ce.claim.manifest import AllowedClaimManifest
+from ce.foundation.hashing import sha256_bytes
+from ce.foundation.serialization import canonical_json
 
 SemanticConformanceCheck = Callable[[str, AllowedClaimManifest], bool]
 
@@ -69,6 +71,12 @@ def validate_claim_output(
         reasons.append("output_schema_mismatch")
     if payload.get("manifest_id") != manifest.manifest_id:
         reasons.append("manifest_identity_mismatch")
+
+    expected_manifest_id = "CE-ACM-" + sha256_bytes(
+        canonical_json(manifest.canonical_payload())
+    )
+    if manifest.manifest_id != expected_manifest_id:
+        reasons.append("manifest_identity_digest_mismatch")
 
     claims = payload.get("claims")
     if not isinstance(claims, Sequence) or isinstance(claims, (str, bytes)):

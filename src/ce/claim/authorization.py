@@ -28,7 +28,24 @@ def evaluate_claim_release(
     if not isinstance(boundary, ProductBoundaryDecision):
         reasons.append("boundary_required")
     elif boundary.status is not CalculationStatus.VALID:
+        if any(
+            flag is not False
+            for flag in (
+                boundary.signal_processing_allowed,
+                boundary.canon_claim_allowed,
+                boundary.ai_release_allowed,
+                boundary.quiet_sky_allowed,
+            )
+        ):
+            reasons.append("product_boundary_contract_mismatch")
         reasons.append("calculation_not_valid")
+    elif not (
+        boundary.signal_processing_allowed is True
+        and boundary.canon_claim_allowed is False
+        and boundary.ai_release_allowed is False
+        and boundary.quiet_sky_allowed is False
+    ):
+        reasons.append("product_boundary_contract_mismatch")
 
     if not isinstance(signal, QualifiedSignalRecord):
         reasons.append("qualified_signal_required")

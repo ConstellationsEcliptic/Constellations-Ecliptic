@@ -69,6 +69,28 @@ class CanonClaimOutputGatesR1Tests(unittest.TestCase):
             from ce.claim.manifest import AllowedClaimManifest
             AllowedClaimManifest.from_mapping(raw)
 
+    def test_output_rejects_forged_manifest_identity(self) -> None:
+        reg = registry()
+        m = build_allowed_claim_manifest(
+            reg, rule_id="TEST-RULE-001", signal_reference="CE-SIGNAL-001"
+        )
+        from ce.claim.manifest import AllowedClaimManifest
+        forged = AllowedClaimManifest(
+            **{**m.__dict__, "claim_id": "FORGED-CLAIM-001"}
+        )
+        result = validate_claim_output(
+            {
+                "manifest_id": forged.manifest_id,
+                "claims": [
+                    {"claim_id": forged.claim_id, "text": "This reflection may invite attention."}
+                ],
+            },
+            forged,
+            semantic_conformance=lambda text, manifest: True,
+        )
+        self.assertFalse(result.valid)
+        self.assertIn("manifest_identity_digest_mismatch", result.reasons)
+
     def test_output_requires_semantic_conformance(self) -> None:
         reg = registry()
         m = build_allowed_claim_manifest(reg, rule_id="TEST-RULE-001", signal_reference="CE-SIGNAL-001")
