@@ -37,8 +37,8 @@ def preserve_calculation_truth(status: CalculationStatus) -> ProductBoundaryDeci
     return ProductBoundaryDecision(
         status=status,
         signal_processing_allowed=True,
-        canon_claim_allowed=True,
-        ai_release_allowed=True,
+        canon_claim_allowed=False,
+        ai_release_allowed=False,
         quiet_sky_allowed=False,
         reason="valid_state_requires_downstream_qualification",
     )
