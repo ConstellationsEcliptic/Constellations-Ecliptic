@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - "development/calculation-core-clean-reimpl-r1-privacy/**"
+  pull_request:
+    branches:
+      - "development/calculation-core-clean-reimpl-r1-privacy/**"
 
 jobs:
   validate:
