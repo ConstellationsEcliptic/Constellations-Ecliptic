@@ -129,7 +129,7 @@ class AllowedClaimManifest:
             "forbidden_claim_types": list(self.forbidden_claim_types),
             "required_evidence_refs": list(self.required_evidence_refs),
             "allowed_numeric_refs": list(self.allowed_numeric_refs),
-            "required_disclosures": list(self.required_disclosures],
+            "required_disclosures": list(self.required_disclosures),
         }
 
     def digest(self) -> str:
