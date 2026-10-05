@@ -30,12 +30,16 @@ class ProductBoundaryR1Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "product_boundary_status_invalid"):
             preserve_calculation_truth("VALID")  # type: ignore[arg-type]
 
-    def test_valid_status_still_blocks_quiet_sky_without_aggregation(self) -> None:
+    def test_valid_status_allows_processing_but_blocks_claim_paths(self) -> None:
         decision = preserve_calculation_truth(CalculationStatus.VALID)
         self.assertTrue(decision.signal_processing_allowed)
-        self.assertTrue(decision.canon_claim_allowed)
-        self.assertTrue(decision.ai_release_allowed)
+        self.assertFalse(decision.canon_claim_allowed)
+        self.assertFalse(decision.ai_release_allowed)
         self.assertFalse(decision.quiet_sky_allowed)
+        self.assertEqual(
+            decision.reason,
+            "valid_state_requires_downstream_qualification",
+        )
 
 
 if __name__ == "__main__":
