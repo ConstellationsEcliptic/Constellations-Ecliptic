@@ -128,3 +128,10 @@ def load_registry_json(path: str | Path) -> CanonRegistry:
     if not isinstance(payload, Mapping) or set(payload) != {"registry_version","rules"}:
         raise CanonRuleInvalid("canon_registry_schema_mismatch")
     return CanonRegistry.from_records(payload["registry_version"], payload["rules"])
+
+
+def get_rule(rule_id: str) -> None:
+    """Legacy module-level guard; no rule registry is implicitly authorized."""
+    raise CanonRegistryNotEstablished(
+        f"Canon rule registry is not materialized: {rule_id}"
+    )
