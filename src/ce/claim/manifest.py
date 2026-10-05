@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from ce.canon.registry import CanonRule
+from ce.canon.registry import CanonRegistry, CanonRule
 from ce.foundation.hashing import sha256_bytes
 from ce.foundation.serialization import canonical_json
 
@@ -75,6 +75,12 @@ class CanonApprovedInterpretation:
             allowed_numeric_refs=_strings("allowed_numeric_refs", value["allowed_numeric_refs"]),
             required_disclosures=_strings("required_disclosures", value["required_disclosures"]),
         )
+
+    @classmethod
+    def from_rule(cls, rule: CanonRule) -> "CanonApprovedInterpretation":
+        if not isinstance(rule, CanonRule):
+            raise ManifestInvalid("canon_rule_required")
+        return cls.from_mapping(rule.allowed_interpretation)
 
     def canonical_payload(self) -> dict[str, Any]:
         return {
@@ -181,31 +187,24 @@ class AllowedClaimManifest:
         return candidate
 
 def build_allowed_claim_manifest(
-    rule: CanonRule,
+    registry: CanonRegistry,
     *,
+    rule_id: str,
     signal_reference: str,
-    interpretation: CanonApprovedInterpretation,
     manifest_version: str = "CE-ALLOWED-CLAIM-MANIFEST-V1",
 ) -> AllowedClaimManifest:
-    if not isinstance(rule, CanonRule):
-        raise ManifestInvalid("manifest_canon_rule_required")
+    if not isinstance(registry, CanonRegistry):
+        raise ManifestInvalid("manifest_canon_registry_required")
+    if not isinstance(rule_id, str) or not rule_id.strip():
+        raise ManifestInvalid("manifest_rule_id_invalid")
     if not isinstance(signal_reference, str) or not signal_reference.strip():
         raise ManifestInvalid("manifest_signal_reference_invalid")
-    if not isinstance(interpretation, CanonApprovedInterpretation):
-        raise ManifestInvalid("manifest_interpretation_required")
 
-    identity = {
-        "manifest_version": manifest_version,
-        "claim_id": interpretation.claim_id,
-        "canon_version": rule.canon_version,
-        "canon_rule_id": rule.rule_id,
-        "signal_reference": signal_reference,
-        **interpretation.canonical_payload(),
-    }
-    manifest_id = "CE-ACM-" + sha256_bytes(canonical_json(identity))
-    return AllowedClaimManifest(
+    rule = registry.get_rule(rule_id)
+    interpretation = CanonApprovedInterpretation.from_rule(rule)
+    candidate = AllowedClaimManifest(
         manifest_version=manifest_version,
-        manifest_id=manifest_id,
+        manifest_id="",
         claim_id=interpretation.claim_id,
         canon_version=rule.canon_version,
         canon_rule_id=rule.rule_id,
@@ -221,4 +220,8 @@ def build_allowed_claim_manifest(
         required_evidence_refs=interpretation.required_evidence_refs,
         allowed_numeric_refs=interpretation.allowed_numeric_refs,
         required_disclosures=interpretation.required_disclosures,
+    )
+    manifest_id = "CE-ACM-" + sha256_bytes(canonical_json(candidate.canonical_payload()))
+    return AllowedClaimManifest(
+        **{**candidate.__dict__, "manifest_id": manifest_id}
     )
