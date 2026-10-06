@@ -68,7 +68,7 @@ def _require_fingerprint(value: str, field: str) -> None:
         raise AuthorityEvidenceError(f"malformed:{field}")
 
 
-def evaluate_full_authority(
+def evaluate_authority_consistency(
     runtime_identity: RuntimeIdentity,
     *,
     source: SourceAuthorityEvidence,
@@ -141,4 +141,36 @@ def evaluate_full_authority(
         source.source_authority_digest,
         build.build_digest,
         signed.provenance_signature_digest,
+    )
+
+
+
+def evaluate_full_authority(
+    runtime_identity: RuntimeIdentity,
+    *,
+    source: SourceAuthorityEvidence,
+    build: TrustedBuildEvidence,
+    signed: SignedProvenanceEvidence,
+) -> AuthorityEvaluation:
+    """Authorization boundary: descriptive evidence is never self-authorizing.
+
+    The legacy consistency evaluator remains available as audit evidence, but
+    this function cannot produce an AUTHORIZED decision. A future production
+    path must supply a separately verified authority receipt established by
+    controlled governance machinery.
+    """
+    consistency = evaluate_authority_consistency(
+        runtime_identity,
+        source=source,
+        build=build,
+        signed=signed,
+    )
+    reasons = list(consistency.reasons)
+    reasons.append("verified_authority_receipt_required")
+    return AuthorityEvaluation(
+        authorized=False,
+        reasons=tuple(dict.fromkeys(reasons)),
+        source_authority_digest=None,
+        trusted_build_digest=None,
+        provenance_signature_digest=None,
     )

@@ -10,6 +10,7 @@ from typing import Any
 
 from ce.foundation.hashing import sha256_bytes
 from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, CANONICAL_EXECUTION_PROFILE_REVISION
+from ce.foundation.provenance import derive_provenance_root_sha256
 from ce.foundation.serialization import canonical_json
 
 
@@ -182,6 +183,8 @@ class EvidencePacket:
     possible_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     robust_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    runtime_identity_sha256: str | None = None
+    provenance_root_sha256: str | None = None
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
 
     def _expected_canonical_bytes(self) -> bytes:
@@ -192,7 +195,7 @@ class EvidencePacket:
         }
         return canonical_json(payload)
 
-    def validate(self) -> tuple[str, ...]:
+    def validate(self, *, require_issued: bool = False) -> tuple[str, ...]:
         errors: list[str] = []
 
         stored = getattr(self, "_canonical_bytes", None)
@@ -208,8 +211,35 @@ class EvidencePacket:
             errors.append("invalid:calculation_id")
         if not isinstance(self.calculation_version, str) or not self.calculation_version.strip():
             errors.append("invalid:calculation_version")
+        if self.runtime_identity_sha256 is not None and not _SHA256_RE.fullmatch(self.runtime_identity_sha256):
+            errors.append("invalid:runtime_identity_sha256")
+        if self.provenance_root_sha256 is not None and not _SHA256_RE.fullmatch(self.provenance_root_sha256):
+            errors.append("invalid:provenance_root_sha256")
+        if (self.runtime_identity_sha256 is None) != (self.provenance_root_sha256 is None):
+            errors.append("provenance_root_and_runtime_digest_must_be_present_together")
         if self.execution_profile_id != CANONICAL_EXECUTION_PROFILE_ID:
             errors.append("unrecognized:execution_profile_id")
+
+        if self.runtime_identity_sha256 is not None and self.provenance_root_sha256 is not None:
+            request_id = self.input_identity.get("request_id")
+            if not isinstance(request_id, str) or not request_id.strip():
+                errors.append("provenance_input_identity_request_id_missing")
+            else:
+                try:
+                    expected_root = derive_provenance_root_sha256(
+                        calculation_id=self.calculation_id,
+                        request_id=request_id,
+                        input_identity=self.input_identity,
+                        profile_version=self.profile_version,
+                        timezone_context=self.timezone_context,
+                        execution_profile_id=self.execution_profile_id,
+                        calculation_version=self.calculation_version,
+                        runtime_identity_digest=self.runtime_identity_sha256,
+                    )
+                    if expected_root != self.provenance_root_sha256:
+                        errors.append("provenance_root_sha256_mismatch")
+                except Exception as exc:
+                    errors.append(f"invalid:provenance_root:{type(exc).__name__}")
 
         mappings = (
             "input_identity", "profile_version", "observation_instant_or_interval",
@@ -307,6 +337,13 @@ class EvidencePacket:
                 else:
                     errors.extend(_canonical_domain_errors(item, f"scenario_observations[{index}]"))
 
+        if require_issued:
+            expected_content_id = sha256_bytes(self._expected_canonical_bytes())
+            if self.evidence_packet_id != expected_content_id:
+                errors.append("evidence_packet_id_content_mismatch")
+            if self.runtime_identity_sha256 is None or self.provenance_root_sha256 is None:
+                errors.append("evidence_packet_issuance_binding_missing")
+
         for name in ("warnings", "errors"):
             value = getattr(self, name)
             if not isinstance(value, (list, tuple)):
@@ -334,7 +371,19 @@ class EvidencePacket:
         """Issue a content-addressed packet without hashing its own identifier."""
         if "evidence_packet_id" in kwargs:
             raise ValueError("evidence_packet_id_must_not_be_supplied_to_issue")
+        runtime_digest = kwargs.get("runtime_identity_sha256")
+        provenance_root = kwargs.get("provenance_root_sha256")
+        if not isinstance(runtime_digest, str) or not _SHA256_RE.fullmatch(runtime_digest):
+            raise ValueError("runtime_identity_sha256_required_for_issue")
+        if not isinstance(provenance_root, str) or not _SHA256_RE.fullmatch(provenance_root):
+            raise ValueError("provenance_root_sha256_required_for_issue")
         provisional = dict(kwargs)
+        # Include dataclass defaults in the hashed payload so the packet ID is
+        # exactly the SHA-256 of the canonical stored content.
+        provisional.setdefault("scenario_window_state", "NONE")
+        provisional.setdefault("possible_window_segments", ())
+        provisional.setdefault("robust_window_segments", ())
+        provisional.setdefault("scenario_observations", ())
         packet_id = sha256_bytes(canonical_json(provisional))
         return cls(evidence_packet_id=packet_id, **provisional)
 

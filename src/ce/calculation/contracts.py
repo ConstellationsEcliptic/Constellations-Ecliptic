@@ -9,6 +9,7 @@ from typing import Any
 
 from ce.calculation.evidence import EvidencePacket, EvidencePacketRef
 from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, CANONICAL_EXECUTION_PROFILE_REVISION, RuntimeIdentity
+from ce.foundation.provenance import runtime_identity_sha256
 from ce.foundation.serialization import canonical_json
 from ce.foundation.status import (
     CALENDAR_POLICY_GREGORIAN_ONLY,
@@ -306,6 +307,7 @@ class CalculationResultDraft:
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
+    provenance_root_sha256: str | None = None
 
     def __post_init__(self) -> None:
         for item in fields(self):
@@ -344,7 +346,19 @@ class CalculationResultDraft:
             calculation_flags=self.calculation_flags,
             warnings=self.warnings,
             errors=self.errors,
-            provenance=dict(self.provenance),
+            provenance={
+                **dict(self.provenance),
+                "source_commit": runtime_identity.source_commit,
+                "source_tree_sha256_v2": runtime_identity.source_tree_sha256_v2,
+                "dependency_lock_digest": runtime_identity.dependency_lock_digest,
+                "timezone_bundle_digest": runtime_identity.timezone_bundle_digest,
+                "ephemeris_bundle_digest": runtime_identity.ephemeris_bundle_digest,
+                "runtime_image_digest": runtime_identity.runtime_image_digest,
+                "calculation_version": self.calculation_version,
+                "runtime_identity_sha256": runtime_identity_sha256(runtime_identity),
+                "provenance_root_sha256": evidence_packet.provenance_root_sha256,
+            },
+            provenance_root_sha256=evidence_packet.provenance_root_sha256,
             _runtime_identity=runtime_identity,
             _evidence_packet=evidence_packet,
         )
@@ -375,6 +389,7 @@ class CalculationResult:
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
+    provenance_root_sha256: str | None = None
     evidence_packet_ref: EvidencePacketRef | None = field(
         default=None, init=False, repr=False, compare=False
     )
@@ -396,11 +411,71 @@ class CalculationResult:
         if packet is not None and not isinstance(packet, EvidencePacket):
             raise ValueError("invalid:evidence_packet")
         if packet is not None:
-            packet_errors = packet.validate()
+            packet_errors = packet.validate(require_issued=True)
             if packet_errors:
                 raise ValueError(";".join(f"evidence_packet:{e}" for e in packet_errors))
             if self.calculation_id is not None and packet.calculation_id != self.calculation_id:
                 raise ValueError("evidence_packet:calculation_id_mismatch")
+            if self.provenance_root_sha256 != packet.provenance_root_sha256:
+                raise ValueError("provenance_root_sha256_packet_mismatch")
+            if self._runtime_identity is None:
+                raise ValueError("runtime_identity_required_for_packet_binding")
+            runtime_digest = runtime_identity_sha256(self._runtime_identity)
+            if runtime_digest != packet.runtime_identity_sha256:
+                raise ValueError("runtime_identity_packet_mismatch")
+            if packet.input_identity.get("request_id") != self.request_id:
+                raise ValueError("packet_request_id_result_mismatch")
+            if self.observation_interval is not None:
+                packet_interval = (
+                    packet.observation_instant_or_interval.get("start"),
+                    packet.observation_instant_or_interval.get("end"),
+                )
+                if tuple(self.observation_interval) != packet_interval:
+                    raise ValueError("packet_observation_interval_result_mismatch")
+
+            replicated_fields = (
+                ("calculation_id", packet.calculation_id),
+                ("execution_profile_id", packet.execution_profile_id),
+                ("calculation_version", packet.calculation_version),
+                ("geometry_records", tuple(packet.geometry_records)),
+                ("event_records", tuple(packet.exact_events)),
+                ("window_segments", tuple(packet.window_segments)),
+                ("possible_window_segments", tuple(packet.possible_window_segments)),
+                ("robust_window_segments", tuple(packet.robust_window_segments)),
+                ("scenario_observations", tuple(packet.scenario_observations)),
+                ("solver_metadata", dict(packet.solver_metadata)),
+                ("actual_ephemeris_resolution", dict(packet.actual_ephemeris_resolution)),
+                ("calculation_flags", dict(packet.calculation_flags)),
+                ("warnings", tuple(packet.warnings)),
+                ("errors", tuple(packet.errors)),
+            )
+            for field_name, packet_value in replicated_fields:
+                result_value = getattr(self, field_name)
+                if result_value != packet_value:
+                    raise ValueError(f"packet_{field_name}_result_mismatch")
+
+            result_object_records = tuple(item.as_dict() for item in self.object_records)
+            packet_object_records = tuple(
+                dict(item) if isinstance(item, Mapping) else item
+                for item in packet.object_records
+            )
+            if canonical_json(result_object_records) != canonical_json(packet_object_records):
+                raise ValueError("packet_object_records_result_mismatch")
+            if self.scenario_state.value != packet.scenario_stability_state:
+                raise ValueError("packet_scenario_state_result_mismatch")
+            if self.window_classification.value != packet.scenario_window_state:
+                raise ValueError("packet_window_classification_result_mismatch")
+
+            object_records_by_id = {item.object_id: item for item in self.object_records}
+            for state in self.object_states:
+                record = object_records_by_id.get(state.object_id)
+                if record is None:
+                    raise ValueError("result_object_state_missing_object_record")
+                if record.object_status is not state.status:
+                    raise ValueError("result_object_state_status_mismatch")
+                if state.status is CalculationStatus.VALID:
+                    if record.longitude != state.longitude_deg or record.speed != state.speed_deg_per_day:
+                        raise ValueError("result_object_state_numeric_mismatch")
         ref = EvidencePacketRef.from_packet(packet) if packet is not None else None
         object.__setattr__(self, "evidence_packet_ref", ref)
 
@@ -440,6 +515,7 @@ class CalculationResult:
             "warnings": list(self.warnings),
             "errors": list(self.errors),
             "provenance": self.provenance,
+            "provenance_root_sha256": self.provenance_root_sha256,
             "evidence_packet_ref": ref.as_dict() if ref else None,
         }
         object.__setattr__(self, "_canonical_bytes", canonical_json(payload))
@@ -543,11 +619,24 @@ class CalculationResult:
                 errors.extend(
                     _validate_runtime_provenance(self.provenance, self._runtime_identity)
                 )
+                try:
+                    expected_runtime_digest = runtime_identity_sha256(self._runtime_identity)
+                except Exception:
+                    expected_runtime_digest = None
+                if expected_runtime_digest is not None and self.provenance.get("runtime_identity_sha256") != expected_runtime_digest:
+                    errors.append("runtime_identity_provenance_digest_mismatch")
+
+            if self.provenance_root_sha256 is None or not _SHA256_RE.fullmatch(self.provenance_root_sha256):
+                errors.append("calculated_result_requires_provenance_root")
+            if self.provenance.get("provenance_root_sha256") != self.provenance_root_sha256:
+                errors.append("provenance_root_provenance_mapping_mismatch")
 
             if self._evidence_packet is None or self.evidence_packet_ref is None:
                 errors.append("calculated_result_requires_evidence_packet")
             elif not self.evidence_packet_ref.matches(self._evidence_packet):
                 errors.append("evidence_packet:reference_mismatch")
+            elif self.provenance_root_sha256 != self._evidence_packet.provenance_root_sha256:
+                errors.append("evidence_packet:provenance_root_mismatch")
 
             if self.scenario_state is ScenarioState.NONE:
                 errors.append("calculated_result_requires_scenario_state")

@@ -1,62 +1,153 @@
 from __future__ import annotations
 
+from datetime import date
 import unittest
 
-from ce.calculation.contracts import CalculationResult, ObjectState
+from ce.calculation.contracts import (
+    BirthInput,
+    CalculationRequest,
+    CalculationResultDraft,
+    ObjectState,
+)
 from ce.calculation.evidence import EvidencePacket, EvidencePacketRef
+from ce.calculation.evidence_builder import issue_evidence_packet
 from ce.foundation.identity import RuntimeIdentity
-from ce.foundation.status import CalculationStatus, ScenarioState
+from ce.foundation.provenance import runtime_identity_sha256
+from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
 
 
 class EvidenceContractR1Tests(unittest.TestCase):
-    def packet(self, calculation_id: str = "C-001") -> EvidencePacket:
-        return EvidencePacket(
-            evidence_packet_id="E-001",
+    def runtime_identity(self) -> RuntimeIdentity:
+        return RuntimeIdentity(
+            "CE-CALC-V1-EP-001",
+            4,
+            "a" * 40,
+            "b" * 64,
+            "sha256:" + "c" * 64,
+            "d" * 64,
+            "e" * 64,
+            "f" * 64,
+        )
+
+    def request(self, request_id: str = "R-001") -> CalculationRequest:
+        return CalculationRequest(
+            request_id=request_id,
+            birth=BirthInput(
+                date(2000, 1, 1),
+                "Test City",
+                "UTC",
+                "2026d",
+                NatalBirthState.ZERO_BIRTH_TIME,
+            ),
+            target_interval_start_utc="2026-01-01T00:00:00Z",
+            target_interval_end_utc="2026-01-02T00:00:00Z",
+            execution_profile_id="CE-CALC-V1-EP-001",
+        )
+
+    def draft(self, request_id: str = "R-001", calculation_id: str = "C-001") -> CalculationResultDraft:
+        return CalculationResultDraft(
+            request_id=request_id,
+            status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            scenario_state=ScenarioState.VARIABLE,
+            normalized_time=None,
             calculation_id=calculation_id,
-            input_identity={"birth_date": "2000-01-01"},
+            observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
+            object_states=(),
+            object_records=(),
+            geometry_records=(),
+            event_records=(),
+            window_segments=(),
+            window_classification=ScenarioState.NONE,
+            possible_window_segments=(),
+            robust_window_segments=(),
+            scenario_observations=(),
+            solver_metadata={"solver_revision": "CE-SOLVER-V1-R3"},
+            actual_ephemeris_resolution={"status": "NOT_ESTABLISHED"},
+            calculation_flags={"calculation_status": CalculationStatus.NATAL_EVIDENCE_VARIABLE.value},
+            warnings=(),
+            errors=(),
+            provenance={},
+        )
+
+    def packet(self, request_id: str = "R-001", calculation_id: str = "C-001") -> EvidencePacket:
+        return issue_evidence_packet(
+            self.draft(request_id, calculation_id),
+            request=self.request(request_id),
+            runtime_identity=self.runtime_identity(),
+        )
+
+    def test_packet_is_deeply_immutable(self) -> None:
+        packet = self.packet()
+        original = packet.input_identity["birth_city"]
+        with self.assertRaises(TypeError):
+            packet.input_identity["birth_city"] = "changed"
+        self.assertEqual(packet.input_identity["birth_city"], original)
+
+    def test_post_issuance_canonical_bytes_tampering_is_detected(self) -> None:
+        packet = self.packet()
+        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
+        self.assertIn("invalid:_canonical_bytes:content_mismatch", packet.validate())
+
+    def test_post_issuance_tampering_cannot_produce_valid_signal(self) -> None:
+        packet = self.packet()
+        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
+        from ce.signal.engine import SignalEngine
+        result = SignalEngine().evaluate(packet)
+        self.assertEqual(result.status, CalculationStatus.CALCULATION_FAILURE)
+        self.assertFalse(result.canon_input_valid)
+
+    def test_issued_packet_is_self_content_addressed(self) -> None:
+        packet = self.packet()
+        self.assertEqual(packet.evidence_packet_id, packet.content_sha256())
+
+    def test_compound_reference_matches_packet(self) -> None:
+        packet = self.packet()
+        ref = EvidencePacketRef.from_packet(packet)
+        self.assertTrue(ref.matches(packet))
+        self.assertEqual(ref.evidence_packet_id, packet.evidence_packet_id)
+        self.assertEqual(ref.content_sha256, packet.content_sha256())
+
+    def test_draft_to_final_preserves_exact_evidence_binding(self) -> None:
+        draft = self.draft("R-FINAL", "C-FINAL")
+        packet = issue_evidence_packet(
+            draft,
+            request=self.request("R-FINAL"),
+            runtime_identity=self.runtime_identity(),
+        )
+        result = draft.to_final(
+            runtime_identity=self.runtime_identity(),
+            evidence_packet=packet,
+        )
+        self.assertEqual(result.evidence_packet_ref.content_sha256, packet.content_sha256())
+        self.assertEqual(result.provenance_root_sha256, packet.provenance_root_sha256)
+        self.assertEqual(result.provenance["runtime_identity_sha256"], runtime_identity_sha256(self.runtime_identity()))
+
+    def test_result_rejects_packet_from_different_runtime_identity(self) -> None:
+        draft = self.draft("R-MISMATCH", "C-MISMATCH")
+        packet = issue_evidence_packet(
+            draft,
+            request=self.request("R-MISMATCH"),
+            runtime_identity=self.runtime_identity(),
+        )
+        other = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "9" * 40, "8" * 64, "sha256:" + "7" * 64,
+            "6" * 64, "5" * 64, "4" * 64,
+        )
+        with self.assertRaisesRegex(ValueError, "runtime_identity_packet_mismatch"):
+            draft.to_final(runtime_identity=other, evidence_packet=packet)
+
+    def test_unissued_packet_is_rejected_at_normative_result_boundary(self) -> None:
+        packet = EvidencePacket(
+            evidence_packet_id="fixture",
+            calculation_id="C-UNISSUED",
+            input_identity={"request_id": "R-UNISSUED"},
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
             observation_instant_or_interval={
                 "start": "2026-01-01T00:00:00Z",
                 "end": "2026-01-02T00:00:00Z",
             },
-            timezone_context={"id": "UTC", "version": "2026d"},
-            execution_profile_id="CE-CALC-V1-EP-001",
-            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
-            object_records=({"object_id": "SUN", "object_status": "VALID", "requested_flags": 258, "actual_flags": 258, "longitude": 12.5, "latitude": 0.0, "distance": 1.0, "speed": 0.9},),
-            geometry_records=(),
-            effective_orb_records=({"transit_object": "SUN", "natal_object_or_scenario": "MOON", "aspect": "CONJUNCTION", "effective_orb": 2.5},),
-            kinematics=({"transit_object": "SUN", "aspect": "CONJUNCTION", "kinematic_state": "EXACT", "transit_speed": 0.9},),
-            exact_events=(),
-            window_segments=(),
-            scenario_stability_state="STABLE",
-            warnings=(),
-            errors=(),
-            numerical_tolerances={"exact_tolerance_deg": 1e-4},
-            solver_metadata={"solver_revision": "CE-SOLVER-V1-R3"},
-            actual_ephemeris_resolution={"status": "NOT_ESTABLISHED"},
-            calculation_flags={"requested": "SWIEPH"},
-        )
-
-    def runtime_identity(self) -> RuntimeIdentity:
-        return RuntimeIdentity(
-            execution_profile_id="CE-CALC-V1-EP-001",
-            execution_profile_revision=4,
-            source_commit="a" * 40,
-            source_tree_sha256_v2="b" * 64,
-            runtime_image_digest="sha256:" + "c" * 64,
-            dependency_lock_digest="d" * 64,
-            timezone_bundle_digest="e" * 64,
-            ephemeris_bundle_digest="f" * 64,
-        )
-
-    def test_packet_is_deeply_immutable(self) -> None:
-        source = {"nested": {"value": "original"}}
-        packet = EvidencePacket(
-            evidence_packet_id="E-002",
-            calculation_id="C-002",
-            input_identity=source,
-            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
-            observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
             timezone_context={"id": "UTC", "version": "2026d"},
             execution_profile_id="CE-CALC-V1-EP-001",
             calculation_version="v1",
@@ -66,7 +157,8 @@ class EvidenceContractR1Tests(unittest.TestCase):
             kinematics=(),
             exact_events=(),
             window_segments=(),
-            scenario_stability_state="STABLE",
+            scenario_stability_state="VARIABLE",
+            scenario_window_state="NONE",
             warnings=(),
             errors=(),
             numerical_tolerances={},
@@ -74,130 +166,37 @@ class EvidenceContractR1Tests(unittest.TestCase):
             actual_ephemeris_resolution={},
             calculation_flags={},
         )
-        source["nested"]["value"] = "external-change"
-        self.assertEqual(packet.input_identity["nested"]["value"], "original")
-        with self.assertRaises(TypeError):
-            packet.input_identity["nested"]["value"] = "internal-change"
-
-    def test_post_issuance_canonical_bytes_tampering_is_detected(self) -> None:
-        packet = self.packet()
-        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
-        errors = packet.validate()
-        self.assertIn("invalid:_canonical_bytes:content_mismatch", errors)
-
-    def test_post_issuance_tampering_cannot_produce_valid_signal(self) -> None:
-        packet = self.packet()
-        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
-        from ce.signal.engine import SignalEngine
-        result = SignalEngine().evaluate(packet)
-        self.assertEqual(result.status.value, "CALCULATION_FAILURE")
-        self.assertFalse(result.canon_input_valid)
-        self.assertIsNone(result.classification)
-
-    def test_compound_reference_matches_packet(self) -> None:
-        packet = self.packet()
-        ref = EvidencePacketRef.from_packet(packet)
-        self.assertTrue(ref.matches(packet))
-        self.assertEqual(ref.evidence_packet_id, "E-001")
-        self.assertEqual(len(ref.content_sha256), 64)
-
-    def test_valid_result_requires_exact_evidence_binding(self) -> None:
-        packet = self.packet()
-        identity = self.runtime_identity()
-        result = CalculationResult(
-            request_id="R-001",
-            status=CalculationStatus.VALID,
-            calculation_id="C-001",
-            observation_interval=("2026-01-01T00:00:00Z", "2026-01-01T01:00:00Z"),
-            execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.STABLE,
-            normalized_time="2026-01-01T00:00:00Z",
-            object_states=(ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),),
-            provenance={
-                "source_commit": "a" * 40,
-                "source_tree_sha256_v2": "b" * 64,
-                "dependency_lock_digest": "d" * 64,
-                "timezone_bundle_digest": "e" * 64,
-                "ephemeris_bundle_digest": "f" * 64,
-                "runtime_image_digest": "sha256:" + "c" * 64,
-                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
-            },
-            _runtime_identity=identity,
-            _evidence_packet=packet,
+        self.assertEqual(packet.validate(), ())
+        self.assertIn(
+            "evidence_packet_issuance_binding_missing",
+            packet.validate(require_issued=True),
         )
-        self.assertIsNotNone(result.evidence_packet_ref)
-        self.assertEqual(result.evidence_packet_ref.content_sha256, packet.content_sha256())
-        self.assertEqual(result.canonical_bytes(), result.canonical_bytes())
-
-    def test_valid_result_rejects_incomplete_provenance(self) -> None:
-        packet = self.packet()
-        identity = self.runtime_identity()
-        with self.assertRaises(ValueError):
-            CalculationResult(
-                request_id="R-002",
-                status=CalculationStatus.VALID,
-                execution_profile_id="CE-CALC-V1-EP-001",
-                scenario_state=ScenarioState.STABLE,
-                normalized_time="2026-01-01T00:00:00Z",
-                object_states=(ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),),
-                provenance={},
-                _runtime_identity=identity,
-                _evidence_packet=packet,
-            )
-
-    def test_variable_result_can_publish_evidence_without_exact_natal_time(self) -> None:
-        packet = self.packet("C-003")
-        identity = self.runtime_identity()
-        result = CalculationResult(
-            request_id="R-003",
-            status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
-            execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.VARIABLE,
-            normalized_time=None,
-            calculation_id="C-003",
-            observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
-            object_states=(),
-            provenance={
-                "source_commit": "a" * 40,
-                "source_tree_sha256_v2": "b" * 64,
-                "dependency_lock_digest": "d" * 64,
-                "timezone_bundle_digest": "e" * 64,
-                "ephemeris_bundle_digest": "f" * 64,
-                "runtime_image_digest": "sha256:" + "c" * 64,
-                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
-            },
-            _runtime_identity=identity,
-            _evidence_packet=packet,
-        )
-        self.assertEqual(result.evidence_packet_ref.content_sha256, packet.content_sha256())
 
     def test_invalid_stability_state_is_rejected(self) -> None:
-        packet = self.packet()
-        payload = {
-            "evidence_packet_id": "E-INVALID",
-            "calculation_id": "C-INVALID",
-            "input_identity": {"birth_date": "2000-01-01"},
-            "profile_version": {"id": "CE-CALC-V1-EP-001", "revision": 4},
-            "observation_instant_or_interval": {"start": "2026-01-01T00:00:00Z"},
-            "timezone_context": {"id": "UTC", "version": "2026d"},
-            "execution_profile_id": "CE-CALC-V1-EP-001",
-            "calculation_version": "v1",
-            "object_records": (),
-            "geometry_records": (),
-            "effective_orb_records": (),
-            "kinematics": (),
-            "exact_events": (),
-            "window_segments": (),
-            "scenario_stability_state": "UNKNOWN",
-            "warnings": (),
-            "errors": (),
-            "numerical_tolerances": {},
-            "solver_metadata": {},
-            "actual_ephemeris_resolution": {},
-            "calculation_flags": {},
-        }
         with self.assertRaises(ValueError):
-            EvidencePacket(**payload)
+            EvidencePacket(
+                evidence_packet_id="E-INVALID",
+                calculation_id="C-INVALID",
+                input_identity={"request_id": "R-INVALID"},
+                profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
+                observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
+                timezone_context={"id": "UTC", "version": "2026d"},
+                execution_profile_id="CE-CALC-V1-EP-001",
+                calculation_version="v1",
+                object_records=(),
+                geometry_records=(),
+                effective_orb_records=(),
+                kinematics=(),
+                exact_events=(),
+                window_segments=(),
+                scenario_stability_state="UNKNOWN",
+                warnings=(),
+                errors=(),
+                numerical_tolerances={},
+                solver_metadata={},
+                actual_ephemeris_resolution={},
+                calculation_flags={},
+            )
 
     def test_zero_length_window_is_rejected(self) -> None:
         base = self.packet()
@@ -220,12 +219,15 @@ class EvidenceContractR1Tests(unittest.TestCase):
                     {"entry_utc": "2026-01-01T00:00:00Z", "exact_events_utc": (), "exit_utc": "2026-01-01T00:00:00Z"},
                 ),
                 scenario_stability_state=base.scenario_stability_state,
+                scenario_window_state=base.scenario_window_state,
                 warnings=base.warnings,
                 errors=base.errors,
                 numerical_tolerances=base.numerical_tolerances,
                 solver_metadata=base.solver_metadata,
                 actual_ephemeris_resolution=base.actual_ephemeris_resolution,
                 calculation_flags=base.calculation_flags,
+                runtime_identity_sha256=base.runtime_identity_sha256,
+                provenance_root_sha256=base.provenance_root_sha256,
             )
 
 

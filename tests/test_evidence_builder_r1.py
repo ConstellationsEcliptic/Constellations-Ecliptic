@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+from datetime import date
 import unittest
 
-from ce.calculation.contracts import CalculationResult, CalculationResultDraft, ObjectRecord, ObjectState
-from ce.calculation.evidence import EvidencePacket
+from ce.calculation.contracts import CalculationResultDraft, ObjectRecord, BirthInput, CalculationRequest, ObjectState
 from ce.calculation.evidence_builder import EvidenceIssuanceError, issue_evidence_packet
 from ce.foundation.identity import RuntimeIdentity
-from ce.foundation.status import CalculationStatus, ScenarioState
+from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
 
 
 class EvidenceBuilderR1Tests(unittest.TestCase):
@@ -17,124 +17,89 @@ class EvidenceBuilderR1Tests(unittest.TestCase):
             "d" * 64, "e" * 64, "f" * 64,
         )
 
-    def _packet(self, calculation_id: str) -> EvidencePacket:
-        return EvidencePacket(
-            evidence_packet_id="E-INPUT",
-            calculation_id=calculation_id,
-            input_identity={"birth_date": "2026-01-01"},
-            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
-            observation_instant_or_interval={
-                "start": "2026-01-01T00:00:00Z",
-                "end": "2026-01-02T00:00:00Z",
-            },
-            timezone_context={"id": "UTC", "version": "2026d"},
+    def _request(self, request_id: str = "R-VALID") -> CalculationRequest:
+        return CalculationRequest(
+            request_id=request_id,
+            birth=BirthInput(
+                date(2026, 1, 1),
+                "Test City",
+                "UTC",
+                "2026d",
+                NatalBirthState.ZERO_BIRTH_TIME,
+            ),
+            target_interval_start_utc="2026-01-01T00:00:00Z",
+            target_interval_end_utc="2026-01-02T00:00:00Z",
             execution_profile_id="CE-CALC-V1-EP-001",
-            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
-            object_records=(),
-            geometry_records=(),
-            effective_orb_records=(),
-            kinematics=(),
-            exact_events=(),
-            window_segments=(),
-            scenario_stability_state="STABLE",
-            warnings=(),
-            errors=(),
-            numerical_tolerances={},
-            solver_metadata={},
-            actual_ephemeris_resolution={"status": "NOT_ESTABLISHED"},
-            calculation_flags={},
         )
 
-    def _valid_result(
-        self,
-        calculation_id: str,
-        *,
-        object_records: tuple[ObjectRecord, ...],
-        packet: EvidencePacket,
-    ) -> CalculationResult:
-        return CalculationResult(
-            request_id="R-" + calculation_id,
-            status=CalculationStatus.VALID,
+    def _draft(self, request_id: str, status: CalculationStatus, calculation_id: str = "C-VALID") -> CalculationResultDraft:
+        return CalculationResultDraft(
+            request_id=request_id,
+            status=status,
             execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.STABLE,
-            normalized_time="2026-01-01T00:00:00Z",
+            scenario_state=ScenarioState.VARIABLE if status is CalculationStatus.NATAL_EVIDENCE_VARIABLE else ScenarioState.STABLE,
+            normalized_time=None,
             calculation_id=calculation_id,
-            observation_interval=("2026-01-01T00:00:00Z", "2026-01-01T01:00:00Z"),
-            object_states=(
-                ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),
-            ),
-            object_records=object_records,
-            provenance={
-                "source_commit": "a" * 40,
-                "source_tree_sha256_v2": "b" * 64,
-                "dependency_lock_digest": "d" * 64,
-                "timezone_bundle_digest": "e" * 64,
-                "ephemeris_bundle_digest": "f" * 64,
-                "runtime_image_digest": "sha256:" + "c" * 64,
-                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
-            },
-            _runtime_identity=self._identity(),
-            _evidence_packet=packet,
+            observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
+            object_records=(),
         )
 
     def test_nonissuable_status_is_rejected(self) -> None:
-        result = CalculationResultDraft(
-            request_id="R-ERR",
-            status=CalculationStatus.NON_AUTHORIZED,
-            execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.NONE,
-            normalized_time=None,
-        )
+        result = self._draft("R-ERR", CalculationStatus.NON_AUTHORIZED, "C-ERR")
         with self.assertRaisesRegex(EvidenceIssuanceError, "result_status_not_evidence_issuable"):
             issue_evidence_packet(
                 result,
-                input_identity={},
-                profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
-                timezone_context={"id": "UTC", "version": "2026d"},
+                request=self._request("R-ERR"),
+                runtime_identity=self._identity(),
+            )
+
+    def test_variable_result_uses_request_and_runtime_provenance(self) -> None:
+        request = self._request("R-VAR")
+        result = self._draft("R-VAR", CalculationStatus.NATAL_EVIDENCE_VARIABLE, "C-VAR")
+        issued = issue_evidence_packet(
+            result,
+            request=request,
+            runtime_identity=self._identity(),
+        )
+        self.assertEqual(issued.calculation_id, "C-VAR")
+        self.assertEqual(issued.input_identity["birth_date"], "2026-01-01")
+        self.assertEqual(issued.input_identity["birth_city"], "Test City")
+        self.assertEqual(issued.profile_version["implementation_plan_version"], "1.3.1")
+        self.assertEqual(issued.timezone_context["database"], "IANA")
+        self.assertEqual(len(issued.content_sha256()), 64)
+
+    def test_request_mismatch_is_rejected(self) -> None:
+        result = self._draft("R-OTHER", CalculationStatus.NATAL_EVIDENCE_VARIABLE, "C-OTHER")
+        with self.assertRaisesRegex(EvidenceIssuanceError, "request_id_mismatch"):
+            issue_evidence_packet(
+                result,
+                request=self._request("R-EXPECTED"),
+                runtime_identity=self._identity(),
+            )
+
+    def test_observation_interval_mismatch_is_rejected(self) -> None:
+        result = self._draft("R-VALID", CalculationStatus.NATAL_EVIDENCE_VARIABLE, "C-INTERVAL")
+        result = CalculationResultDraft(
+            request_id=result.request_id,
+            status=result.status,
+            execution_profile_id=result.execution_profile_id,
+            scenario_state=result.scenario_state,
+            normalized_time=None,
+            calculation_id=result.calculation_id,
+            observation_interval=("2026-01-01T01:00:00Z", "2026-01-02T00:00:00Z"),
+        )
+        with self.assertRaisesRegex(EvidenceIssuanceError, "observation_interval_request_mismatch"):
+            issue_evidence_packet(
+                result,
+                request=self._request("R-VALID"),
+                runtime_identity=self._identity(),
             )
 
     def test_valid_result_requires_real_object_record(self) -> None:
-        packet = self._packet("C-VALID")
-        result = self._valid_result("C-VALID", object_records=(), packet=packet)
+        request = self._request("R-VALID")
+        result = self._draft("R-VALID", CalculationStatus.VALID, "C-VALID")
         with self.assertRaisesRegex(EvidenceIssuanceError, "valid_result_requires_object_records"):
-            issue_evidence_packet(
-                result,
-                input_identity={},
-                profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
-                timezone_context={"id": "UTC", "version": "2026d"},
-            )
-
-    def test_variable_result_can_issue_packet_without_exact_natal_coordinate(self) -> None:
-        packet = self._packet("C-VAR")
-        result = CalculationResultDraft(
-            request_id="R-VAR",
-            status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
-            execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.VARIABLE,
-            normalized_time=None,
-            calculation_id="C-VAR",
-            observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
-            object_states=(),
-            object_records=(),
-            provenance={
-                "source_commit": "a" * 40,
-                "source_tree_sha256_v2": "b" * 64,
-                "dependency_lock_digest": "d" * 64,
-                "timezone_bundle_digest": "e" * 64,
-                "ephemeris_bundle_digest": "f" * 64,
-                "runtime_image_digest": "sha256:" + "c" * 64,
-                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
-            },
-        )
-        issued = issue_evidence_packet(
-            result,
-            input_identity={"birth_date": "2026-01-01"},
-            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
-            timezone_context={"id": "UTC", "version": "2026d"},
-        )
-        self.assertEqual(issued.calculation_id, "C-VAR")
-        self.assertEqual(issued.scenario_stability_state, "VARIABLE")
-        self.assertEqual(len(issued.content_sha256()), 64)
+            issue_evidence_packet(result, request=request, runtime_identity=self._identity())
 
 
 if __name__ == "__main__":
