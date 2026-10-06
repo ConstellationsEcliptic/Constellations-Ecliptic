@@ -1,0 +1,69 @@
+name: CE R0 Boundary Audit Probe
+
+on:
+  push:
+    branches:
+      - "audit/ce-r0-reconciliation-r1/2026-10-06"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boundary-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Compile audit probe
+        run: python -m py_compile audits/CE_R0_BOUNDARY_PROBE_R1.py
+
+      - name: Run executable boundary probe
+        env:
+          PYTHONPATH: src
+        run: python -B audits/CE_R0_BOUNDARY_PROBE_R1.py | tee ce_r0_boundary_probe_report.txt
+
+      - name: Compute exact candidate source-tree identity
+        id: identity
+        env:
+          PYTHONPATH: src
+        shell: bash
+        run: |
+          set +e
+          actual="$(python -B tools/compute_source_identity_v2.py 2>&1)"
+          rc=$?
+          manifest="$(awk '{print $1}' manifests/SOURCE_TREE_SHA256_V2.txt)"
+          {
+            echo "SOURCE_TREE_COMPUTE_EXIT=$rc"
+            echo "SOURCE_TREE_ACTUAL=$actual"
+            echo "SOURCE_TREE_MANIFEST=$manifest"
+            if [ "$rc" -eq 0 ] && [ "$actual" = "$manifest" ]; then
+              echo "SOURCE_TREE_IDENTITY_MATCH=TRUE"
+            else
+              echo "SOURCE_TREE_IDENTITY_MATCH=FALSE"
+            fi
+          } | tee ce_r0_source_identity_report.txt
+          exit 0
+
+      - name: Run relevant existing regression suites
+        env:
+          PYTHONPATH: src
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONHASHSEED: "0"
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        continue-on-error: true
+        run: |
+          python -m unittest             tests.test_authority_chain_r1             tests.test_evidence_builder_r1             tests.test_evidence_contract_r1             tests.test_qualified_signal_record_r1             tests.test_signal_no_recomputation_r1             tests.test_runtime_gate
+
+      - name: Upload audit evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ce-r0-boundary-audit-${{ github.sha }}
+          path: |
+            ce_r0_boundary_probe_report.txt
+            ce_r0_source_identity_report.txt
