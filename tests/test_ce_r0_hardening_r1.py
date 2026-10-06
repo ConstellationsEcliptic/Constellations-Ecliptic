@@ -165,7 +165,7 @@ class CER0HardeningTests(unittest.TestCase):
 
     def test_result_rejects_packet_with_different_runtime_identity(self) -> None:
         packet = _packet(runtime=_runtime("a"))
-        runtime_b = _runtime("z")
+        runtime_b = _runtime("c")
         provenance = {
             "source_commit": runtime_b.source_commit,
             "source_tree_sha256_v2": runtime_b.source_tree_sha256_v2,
