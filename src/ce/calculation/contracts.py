@@ -454,7 +454,12 @@ class CalculationResult:
                 if result_value != packet_value:
                     raise ValueError(f"packet_{field_name}_result_mismatch")
 
-            if tuple(item.as_dict() for item in self.object_records) != tuple(packet.object_records):
+            result_object_records = tuple(item.as_dict() for item in self.object_records)
+            packet_object_records = tuple(
+                dict(item) if isinstance(item, Mapping) else item
+                for item in packet.object_records
+            )
+            if canonical_json(result_object_records) != canonical_json(packet_object_records):
                 raise ValueError("packet_object_records_result_mismatch")
             if self.scenario_state.value != packet.scenario_stability_state:
                 raise ValueError("packet_scenario_state_result_mismatch")
