@@ -90,7 +90,9 @@ def resolve_zero_birth_interval(
         )
 
     def utc_string(value: datetime) -> str:
-        return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+        normalized = value.astimezone(timezone.utc)
+        timespec = "microseconds" if normalized.microsecond else "seconds"
+        return normalized.isoformat(timespec=timespec).replace("+00:00", "Z")
 
     return CivilResolution(
         status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
