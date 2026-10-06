@@ -80,7 +80,7 @@ def issue_qualified_signal_record(packet: EvidencePacket) -> QualifiedSignalReco
     """
     if not isinstance(packet, EvidencePacket):
         raise ValueError("qualified_signal_evidence_packet_required")
-    packet_errors = packet.validate()
+    packet_errors = packet.validate(require_issued=True)
     if packet_errors:
         raise ValueError(";".join(f"qualified_signal_evidence:{e}" for e in packet_errors))
     if not packet.runtime_identity_sha256:
