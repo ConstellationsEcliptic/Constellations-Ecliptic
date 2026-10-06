@@ -7,6 +7,7 @@ from ce.runtime.authority import (
     SignedProvenanceEvidence,
     SourceAuthorityEvidence,
     TrustedBuildEvidence,
+    evaluate_authority_consistency,
     evaluate_full_authority,
 )
 
@@ -56,13 +57,15 @@ class AuthorityChainR1Tests(unittest.TestCase):
 
     def test_complete_synthetic_chain_is_consistent(self) -> None:
         source, build, signed = self._evidence()
+        consistency = evaluate_authority_consistency(
+            self._identity(), source=source, build=build, signed=signed
+        )
+        self.assertTrue(consistency.authorized)
         result = evaluate_full_authority(
             self._identity(), source=source, build=build, signed=signed
         )
-        self.assertTrue(result.authorized)
-        self.assertEqual(result.source_authority_digest, "1" * 64)
-        self.assertEqual(result.trusted_build_digest, "2" * 64)
-        self.assertEqual(result.provenance_signature_digest, "3" * 64)
+        self.assertFalse(result.authorized)
+        self.assertIn("verified_authority_receipt_required", result.reasons)
 
     def test_mismatched_tree_cannot_authorize(self) -> None:
         source, build, signed = self._evidence()
