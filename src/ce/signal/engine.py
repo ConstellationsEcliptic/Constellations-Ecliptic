@@ -191,7 +191,7 @@ class SignalEngine:
         if resolution_status is None:
             resolution_status = resolution.get("status")
         if resolution_status != "MATCH" or calculation_result.errors:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.CALCULATION_FAILURE,
                 classification="DISQUALIFIED_CALCULATION_FAILURE",
                 phase=None,
