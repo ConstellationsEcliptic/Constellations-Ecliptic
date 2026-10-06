@@ -239,7 +239,7 @@ def probe() -> dict[str, object]:
     arbitrary_id = replace(clean, evidence_packet_id="ARBITRARY-ID")
     findings["B10_direct_packet_id_not_content_address_enforced"] = (
         arbitrary_id.evidence_packet_id == "ARBITRARY-ID"
-        and arbitrary_id.content_sha256() != clean.content_sha256()
+        and arbitrary_id.evidence_packet_id != arbitrary_id.content_sha256()
     )
 
     return findings
