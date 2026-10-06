@@ -53,11 +53,8 @@ class CanonApprovedInterpretation:
             "required_disclosures",
         )
         missing = [key for key in required if key not in value]
-        extra = [key for key in value if key not in required]
         if missing:
             raise ManifestInvalid("canon_interpretation_missing_fields:" + ",".join(missing))
-        if extra:
-            raise ManifestInvalid("canon_interpretation_unknown_fields:" + ",".join(sorted(extra)))
         if not isinstance(value["claim_id"], str) or not value["claim_id"].strip():
             raise ManifestInvalid("manifest_invalid:claim_id")
         if value["epistemic_layer"] not in ALLOWED_EPISTEMIC_LAYERS:
