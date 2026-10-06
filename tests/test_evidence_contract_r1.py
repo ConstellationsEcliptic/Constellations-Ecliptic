@@ -166,7 +166,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
             actual_ephemeris_resolution={},
             calculation_flags={},
         )
-        self.assertTrue(packet.validate())
+        self.assertEqual(packet.validate(), ())
         self.assertIn(
             "evidence_packet_issuance_binding_missing",
             packet.validate(require_issued=True),
