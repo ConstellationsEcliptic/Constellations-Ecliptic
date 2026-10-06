@@ -8,7 +8,8 @@ from ce.canon.registry import CanonRegistry, CanonRegistryNotEstablished, CanonR
 from ce.claim.manifest import AllowedClaimManifest, ManifestInvalid, build_allowed_claim_manifest
 from ce.foundation.identity import RuntimeIdentity
 from ce.foundation.status import CalculationStatus
-from ce.output.validation import SemanticConformanceCheck, validate_claim_output
+from ce.output.semantic import get_verified_semantic_conformance
+from ce.output.validation import validate_claim_output
 from ce.product.boundary import preserve_calculation_truth
 from ce.runtime.gates import authorize_runtime
 from ce.signal.record import QualifiedSignalRecord, issue_qualified_signal_record
@@ -52,8 +53,6 @@ def evaluate_claim_release(
     output_payload: object,
     runtime_identity: RuntimeIdentity,
     registry: CanonRegistry,
-    *,
-    semantic_conformance: SemanticConformanceCheck | None = None,
 ) -> ClaimReleaseDecision:
     reasons: list[str] = []
 
@@ -145,7 +144,7 @@ def evaluate_claim_release(
             if calculation_result.provenance_root_sha256 is not None
             else evidence_packet.provenance_root_sha256
         ),
-        semantic_conformance=semantic_conformance,
+        semantic_conformance=get_verified_semantic_conformance(),
     )
     if not output_validation.valid:
         reasons.extend(output_validation.reasons or ("output_validation_failed",))
