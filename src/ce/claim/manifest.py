@@ -163,7 +163,24 @@ class AllowedClaimManifest:
         extra=[k for k in value if k not in required]
         if missing: raise ManifestInvalid("manifest_missing_fields:"+",".join(missing))
         if extra: raise ManifestInvalid("manifest_unknown_fields:"+",".join(sorted(extra)))
-        interp=CanonApprovedInterpretation.from_mapping(value)
+        interpretation_fields = {
+            key: value[key]
+            for key in (
+                "claim_id",
+                "allowed_subject",
+                "allowed_scope",
+                "epistemic_layer",
+                "certainty_ceiling",
+                "allowed_modality",
+                "allowed_tense",
+                "forbidden_domains",
+                "forbidden_claim_types",
+                "required_evidence_refs",
+                "allowed_numeric_refs",
+                "required_disclosures",
+            )
+        }
+        interp=CanonApprovedInterpretation.from_mapping(interpretation_fields)
         return cls(
             manifest_version=value["manifest_version"], manifest_id=value["manifest_id"],
             claim_id=interp.claim_id, canon_version=value["canon_version"],
