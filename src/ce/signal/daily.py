@@ -32,6 +32,9 @@ def _aggregate_issued_records(
     for item in items:
         if not isinstance(item, QualifiedSignalRecord):
             raise ValueError("daily_qualified_signal_record_type_invalid")
+        errors = item.validate()
+        if errors:
+            raise ValueError("daily_qualified_signal_record_not_issued")
     qualifying = tuple(item.signal_id for item in items)
     if qualifying:
         return DailySignalAggregation(

@@ -8,6 +8,7 @@ on:
       - "remediation/ce-r0-ci-hard-gates-r1/2026-10-06"
       - "remediation/ce-r0-a2-output-type-strictness-r1/2026-10-06"
       - "remediation/ce-r0-a3-native-capability-diagnostics-r1/2026-10-06"
+      - "remediation/ce-r0-a4-signal-qsr-issuance-r1/2026-10-06"
   workflow_dispatch:
 
 permissions:
