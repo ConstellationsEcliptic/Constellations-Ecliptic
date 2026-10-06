@@ -5,6 +5,7 @@ on:
     branches:
       - "remediation/ce-r0-full-boundary-r1/2026-10-06"
       - "remediation/ce-r0-full-boundary-squashed-r1/2026-10-06"
+      - "remediation/ce-r0-ci-hard-gates-r1/2026-10-06"
   workflow_dispatch:
 
 permissions:
@@ -32,7 +33,19 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
-          python -B tools/compute_source_identity_v2.py
+          set -e
+          actual="$(python -B tools/compute_source_identity_v2.py 2>&1)"
+          rc=$?
+          manifest="$(awk '{print $1}' manifests/SOURCE_TREE_SHA256_V2.txt)"
+          echo "SOURCE_TREE_COMPUTE_EXIT=$rc"
+          echo "SOURCE_TREE_ACTUAL=$actual"
+          echo "SOURCE_TREE_MANIFEST=$manifest"
+          if [ "$rc" -eq 0 ] && [ "$actual" = "$manifest" ]; then
+            echo "SOURCE_TREE_IDENTITY_MATCH=TRUE"
+          else
+            echo "SOURCE_TREE_IDENTITY_MATCH=FALSE"
+            exit 1
+          fi
       - name: Full unit suite
         shell: bash
         env:
