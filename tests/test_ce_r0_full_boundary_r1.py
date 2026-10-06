@@ -205,6 +205,54 @@ class CER0FullBoundaryTests(unittest.TestCase):
         self.assertFalse(result.valid)
         self.assertIn("claim_modality_outside_manifest", result.reasons)
 
+    def test_result_rejects_replicated_packet_content_mismatch(self):
+        from dataclasses import replace
+        packet = self.packet()
+        runtime = self.runtime()
+        mismatched = replace(
+            packet,
+            calculation_flags={"calculation_status": "VALID"},
+        )
+        with self.assertRaisesRegex(ValueError, "packet_calculation_flags_result_mismatch"):
+            CalculationResult(
+                request_id="REQ-FULL-1",
+                status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
+                execution_profile_id="CE-CALC-V1-EP-001",
+                scenario_state=ScenarioState.VARIABLE,
+                normalized_time=None,
+                calculation_id="CALC-FULL-1",
+                observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
+                object_states=(),
+                object_records=(),
+                geometry_records=packet.geometry_records,
+                event_records=packet.exact_events,
+                window_segments=packet.window_segments,
+                window_classification=ScenarioState.ROBUST,
+                possible_window_segments=(),
+                robust_window_segments=(),
+                scenario_observations=(),
+                solver_metadata={},
+                actual_ephemeris_resolution=packet.actual_ephemeris_resolution,
+                calculation_flags={"calculation_status": "CALCULATION_FAILURE"},
+                warnings=(),
+                errors=(),
+                provenance={
+                    "source_commit": runtime.source_commit,
+                    "source_tree_sha256_v2": runtime.source_tree_sha256_v2,
+                    "dependency_lock_digest": runtime.dependency_lock_digest,
+                    "timezone_bundle_digest": runtime.timezone_bundle_digest,
+                    "ephemeris_bundle_digest": runtime.ephemeris_bundle_digest,
+                    "runtime_image_digest": runtime.runtime_image_digest,
+                    "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
+                    "runtime_identity_sha256": runtime_identity_sha256(runtime),
+                    "provenance_root_sha256": packet.provenance_root_sha256,
+                },
+                provenance_root_sha256=packet.provenance_root_sha256,
+                _runtime_identity=runtime,
+                _evidence_packet=mismatched,
+            )
+        self.assertTrue(True)
+
     def test_claim_release_rederives_signal_and_blocks_runtime(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
