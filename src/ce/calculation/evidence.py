@@ -378,6 +378,12 @@ class EvidencePacket:
         if not isinstance(provenance_root, str) or not _SHA256_RE.fullmatch(provenance_root):
             raise ValueError("provenance_root_sha256_required_for_issue")
         provisional = dict(kwargs)
+        # Include dataclass defaults in the hashed payload so the packet ID is
+        # exactly the SHA-256 of the canonical stored content.
+        provisional.setdefault("scenario_window_state", "NONE")
+        provisional.setdefault("possible_window_segments", ())
+        provisional.setdefault("robust_window_segments", ())
+        provisional.setdefault("scenario_observations", ())
         packet_id = sha256_bytes(canonical_json(provisional))
         return cls(evidence_packet_id=packet_id, **provisional)
 
