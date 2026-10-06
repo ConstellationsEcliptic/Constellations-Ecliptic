@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.evidence_test_factory_r1 import build_test_bound_evidence_packet
+
 from datetime import date
 import unittest
 
@@ -74,7 +76,7 @@ def _packet(*, request_id: str = "REQ-1", runtime: RuntimeIdentity | None = None
         calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
         runtime_identity_digest=runtime_digest,
     )
-    return EvidencePacket.issue(
+    return build_test_bound_evidence_packet(
         calculation_id="CALC-1",
         input_identity=input_identity,
         profile_version=profile,

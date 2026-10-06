@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.evidence_test_factory_r1 import build_test_bound_evidence_packet
+
 import unittest
 
 from ce.calculation.evidence import EvidencePacket
@@ -67,7 +69,7 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             if exact_event is not None
             else ()
         )
-        return EvidencePacket.issue(
+        return build_test_bound_evidence_packet(
             calculation_id="C-QSR",
             input_identity=input_identity,
             profile_version=profile,
@@ -196,7 +198,7 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             calculation_version=base.calculation_version,
             runtime_identity_digest=runtime_identity_sha256(runtime),
         )
-        packet = base.__class__.issue(
+        packet = build_test_bound_evidence_packet(
             calculation_id=base.calculation_id,
             input_identity=input_identity,
             profile_version=profile,

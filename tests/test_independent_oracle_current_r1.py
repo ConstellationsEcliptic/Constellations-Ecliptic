@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.evidence_test_factory_r1 import build_test_bound_evidence_packet
+
 from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
@@ -113,9 +115,9 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
         )
 
     def _controlled_zone(self, zone: str, expected_sha: str) -> bytes:
-        path = Path("/usr/share/zoneinfo") / zone
+        path = Path(__file__).resolve().parent / "fixtures" / "tzif" / zone
         if not path.is_file():
-            self.skipTest(zone)
+            self.fail(f"controlled fixture zone missing: {zone}")
         data = path.read_bytes()
         self.assertEqual(sha256(data).hexdigest(), expected_sha)
         return data
@@ -187,7 +189,7 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
             calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
             runtime_identity_digest=runtime_digest,
         )
-        return EvidencePacket.issue(
+        return build_test_bound_evidence_packet(
             calculation_id="C-IND-001",
             input_identity=input_identity,
             profile_version=profile,

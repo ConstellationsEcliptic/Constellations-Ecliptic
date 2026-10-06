@@ -6,6 +6,7 @@ from typing import Any
 from ce.calculation.contracts import CalculationRequest, CalculationResultDraft
 from ce.calculation.evidence import EvidencePacket
 from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, CANONICAL_EXECUTION_PROFILE_REVISION, RuntimeIdentity
+from ce.foundation.hashing import sha256_bytes
 from ce.foundation.provenance import derive_provenance_root_sha256, runtime_identity_sha256
 from ce.foundation.status import CalculationStatus
 
@@ -120,7 +121,7 @@ def issue_evidence_packet(
     ):
         raise EvidenceIssuanceError("valid_object_missing_actual_flags")
 
-    return EvidencePacket.issue(
+    packet = EvidencePacket(evidence_packet_id="UNISSUED",
         calculation_id=result.calculation_id,
         input_identity=input_identity,
         profile_version=profile_version,
@@ -171,6 +172,23 @@ def issue_evidence_packet(
         solver_metadata=dict(result.solver_metadata),
         actual_ephemeris_resolution=dict(result.actual_ephemeris_resolution),
         calculation_flags=dict(result.calculation_flags),
-        runtime_identity_sha256=runtime_digest,
-        provenance_root_sha256=provenance_root,
     )
+
+    # Sole production issuance boundary.
+    # EvidencePacket cannot receive issuance provenance through its constructor.
+    object.__setattr__(packet, "runtime_identity_sha256", runtime_digest)
+    object.__setattr__(packet, "provenance_root_sha256", provenance_root)
+
+    canonical_bytes = packet._expected_canonical_bytes()
+    packet_id = sha256_bytes(canonical_bytes)
+
+    object.__setattr__(packet, "evidence_packet_id", packet_id)
+    object.__setattr__(packet, "_canonical_bytes", canonical_bytes)
+
+    issuance_errors = packet.validate(require_issued=True)
+    if issuance_errors:
+        raise EvidenceIssuanceError(
+            "issued_packet_validation_failed:" + ";".join(issuance_errors)
+        )
+
+    return packet

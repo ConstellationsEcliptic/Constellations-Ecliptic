@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.evidence_test_factory_r1 import build_test_bound_evidence_packet
+
 import unittest
 
 from ce.calculation.evidence import EvidencePacket
@@ -59,7 +61,7 @@ class DailySignalR1Tests(unittest.TestCase):
                 "kinematic_state": "EXACT",
             },
         ) if qualifying else ()
-        return EvidencePacket.issue(
+        return build_test_bound_evidence_packet(
             calculation_id="C-DAY",
             input_identity=input_identity,
             profile_version=profile,

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.evidence_test_factory_r1 import build_test_bound_evidence_packet
+
 from datetime import date
 import unittest
 
@@ -201,7 +203,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
     def test_zero_length_window_is_rejected(self) -> None:
         base = self.packet()
         with self.assertRaises(ValueError):
-            EvidencePacket(
+            build_test_bound_evidence_packet(
                 evidence_packet_id="E-WINDOW",
                 calculation_id="C-WINDOW",
                 input_identity=base.input_identity,
