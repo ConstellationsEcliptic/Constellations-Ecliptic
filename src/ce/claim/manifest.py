@@ -177,22 +177,58 @@ class AllowedClaimManifest:
         )
 
 def build_allowed_claim_manifest(
-    registry: CanonRegistry, *, rule_id: str, signal_reference: str,
-    manifest_version: str="CE-ALLOWED-CLAIM-MANIFEST-V1",
-)->AllowedClaimManifest:
-    if not isinstance(registry,CanonRegistry): raise ManifestInvalid("manifest_canon_registry_required")
-    rule=registry.get_rule(rule_id)
-    interp=CanonApprovedInterpretation.from_rule(rule)
-    candidate=AllowedClaimManifest(
-        manifest_version=manifest_version, manifest_id="",
-        claim_id=interp.claim_id, canon_version=rule.canon_version,
-        canon_registry_digest=registry.digest(), canon_rule_id=rule.rule_id,
-        signal_reference=signal_reference, allowed_subject=interp.allowed_subject,
-        allowed_scope=interp.allowed_scope, epistemic_layer=interp.epistemic_layer,
-        certainty_ceiling=interp.certainty_ceiling, allowed_modality=interp.allowed_modality,
-        allowed_tense=interp.allowed_tense, forbidden_domains=interp.forbidden_domains,
-        forbidden_claim_types=interp.forbidden_claim_types, required_evidence_refs=interp.required_evidence_refs,
-        allowed_numeric_refs=interp.allowed_numeric_refs, required_disclosures=interp.required_disclosures,
+    registry: CanonRegistry,
+    *,
+    rule_id: str,
+    signal_reference: str,
+    manifest_version: str = "CE-ALLOWED-CLAIM-MANIFEST-V1",
+) -> AllowedClaimManifest:
+    if not isinstance(registry, CanonRegistry):
+        raise ManifestInvalid("manifest_canon_registry_required")
+    if not isinstance(rule_id, str) or not rule_id.strip():
+        raise ManifestInvalid("manifest_rule_id_invalid")
+    if not isinstance(signal_reference, str) or not signal_reference.strip():
+        raise ManifestInvalid("manifest_signal_reference_invalid")
+
+    rule = registry.get_rule(rule_id)
+    interp = CanonApprovedInterpretation.from_rule(rule)
+    payload = {
+        "manifest_version": manifest_version,
+        "claim_id": interp.claim_id,
+        "canon_version": rule.canon_version,
+        "canon_registry_digest": registry.digest(),
+        "canon_rule_id": rule.rule_id,
+        "signal_reference": signal_reference,
+        "allowed_subject": list(interp.allowed_subject),
+        "allowed_scope": list(interp.allowed_scope),
+        "epistemic_layer": interp.epistemic_layer,
+        "certainty_ceiling": interp.certainty_ceiling,
+        "allowed_modality": list(interp.allowed_modality),
+        "allowed_tense": list(interp.allowed_tense),
+        "forbidden_domains": list(interp.forbidden_domains),
+        "forbidden_claim_types": list(interp.forbidden_claim_types),
+        "required_evidence_refs": list(interp.required_evidence_refs),
+        "allowed_numeric_refs": list(interp.allowed_numeric_refs),
+        "required_disclosures": list(interp.required_disclosures),
+    }
+    manifest_id = "CE-ACM-" + sha256_bytes(canonical_json(payload))
+    return AllowedClaimManifest(
+        manifest_version=payload["manifest_version"],
+        manifest_id=manifest_id,
+        claim_id=payload["claim_id"],
+        canon_version=payload["canon_version"],
+        canon_registry_digest=payload["canon_registry_digest"],
+        canon_rule_id=payload["canon_rule_id"],
+        signal_reference=payload["signal_reference"],
+        allowed_subject=tuple(payload["allowed_subject"]),
+        allowed_scope=tuple(payload["allowed_scope"]),
+        epistemic_layer=payload["epistemic_layer"],
+        certainty_ceiling=payload["certainty_ceiling"],
+        allowed_modality=tuple(payload["allowed_modality"]),
+        allowed_tense=tuple(payload["allowed_tense"]),
+        forbidden_domains=tuple(payload["forbidden_domains"]),
+        forbidden_claim_types=tuple(payload["forbidden_claim_types"]),
+        required_evidence_refs=tuple(payload["required_evidence_refs"]),
+        allowed_numeric_refs=tuple(payload["allowed_numeric_refs"]),
+        required_disclosures=tuple(payload["required_disclosures"]),
     )
-    manifest_id="CE-ACM-"+sha256_bytes(canonical_json(candidate.canonical_payload()))
-    return AllowedClaimManifest(**{**candidate.__dict__,"manifest_id":manifest_id})
