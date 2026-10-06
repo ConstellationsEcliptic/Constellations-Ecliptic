@@ -9,6 +9,7 @@ from typing import Any
 
 from ce.calculation.evidence import EvidencePacket, EvidencePacketRef
 from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, CANONICAL_EXECUTION_PROFILE_REVISION, RuntimeIdentity
+from ce.foundation.provenance import runtime_identity_sha256
 from ce.foundation.serialization import canonical_json
 from ce.foundation.status import (
     CALENDAR_POLICY_GREGORIAN_ONLY,
