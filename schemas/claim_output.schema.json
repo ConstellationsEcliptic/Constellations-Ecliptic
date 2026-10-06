@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Constrained Claim Output V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_id", "provenance", "claims"],
+  "properties": {
+    "manifest_id": {"type": "string", "minLength": 1},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_id", "manifest_version", "canon_version", "canon_rule_id", "signal_reference", "evidence_refs"],
+      "properties": {
+        "manifest_id": {"type": "string", "minLength": 1},
+        "manifest_version": {"type": "string", "minLength": 1},
+        "canon_version": {"type": "string", "minLength": 1},
+        "canon_rule_id": {"type": "string", "minLength": 1},
+        "signal_reference": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      }
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "text", "subject", "scope", "modality", "tense", "epistemic_layer", "certainty", "evidence_refs", "numeric_refs"],
+        "properties": {
+          "claim_id": {"type": "string", "minLength": 1},
+          "text": {"type": "string", "minLength": 1},
+          "subject": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+          "scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+          "modality": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+          "tense": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+          "epistemic_layer": {"type": "string", "minLength": 1},
+          "certainty": {"type": "string", "minLength": 1},
+          "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+          "numeric_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    }
+  }
+}
