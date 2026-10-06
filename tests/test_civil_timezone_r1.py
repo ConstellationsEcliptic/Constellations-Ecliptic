@@ -58,6 +58,22 @@ class CivilTimezoneR1Tests(unittest.TestCase):
         self.assertEqual(result.status, CalculationStatus.INPUT_UNSUPPORTED)
 
 
+    def test_observation_time_preserves_microseconds(self) -> None:
+        result = resolve_observation_civil_time(
+            observation_date=date(2026, 1, 1),
+            observation_time=time(12, 34, 56, 123456),
+            timezone_id="UTC",
+            timezone_version="2026d",
+            calendar_policy_id=CALENDAR_POLICY_GREGORIAN_ONLY,
+            tzif_runtime=StubTzif(),
+        )
+        self.assertEqual(result.status, CalculationStatus.VALID)
+        self.assertEqual(
+            result.resolved_instant_utc,
+            "2026-01-01T12:34:56.123456Z",
+        )
+
+
     def test_observation_time_is_resolved_by_canonical_tzif_boundary(self) -> None:
         result = resolve_observation_civil_time(
             observation_date=date(2026, 1, 1),
