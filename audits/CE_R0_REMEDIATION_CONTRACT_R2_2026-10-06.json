@@ -1,0 +1,69 @@
+{
+  "artifact": "CE-R0-REMEDIATION-CONTRACT-R2",
+  "date": "2026-10-06",
+  "status": "AUDIT_ONLY_NON_AUTHORITATIVE",
+  "base_head": "b7e5c4df7750ed8d51d8607adfe4ff815453ac22",
+  "blocking_findings": [
+    {
+      "id": "A1",
+      "boundary": "Evidence issuance",
+      "required_fix": "Remove public caller-controlled packet issuance as a publishable path. Establish exactly one issuance boundary bound to validated CalculationRequest + verified RuntimeIdentity/capability; require downstream checks to prove issuance, not merely self-consistency."
+    },
+    {
+      "id": "A2",
+      "boundary": "Source identity",
+      "required_fix": "Bind trust-bearing control-plane (.github/workflows and any release/build governance files) into a separately verified control-plane identity or canonical combined identity."
+    },
+    {
+      "id": "A3",
+      "boundary": "CI identity gate",
+      "required_fix": "Fail non-zero when computed source/control-plane identity differs from the declared manifest. CI reporting alone is insufficient."
+    },
+    {
+      "id": "A4",
+      "boundary": "Claim output types",
+      "required_fix": "Reject non-string subject/scope/modality/tense values before allow-list comparison; never coerce schema-invalid types."
+    },
+    {
+      "id": "A5",
+      "boundary": "Native authorization",
+      "required_fix": "Replace runtime_authorized: bool with a verified authority capability/receipt accepted only from the CE authority boundary."
+    },
+    {
+      "id": "A6",
+      "boundary": "Native diagnostics",
+      "required_fix": "Preserve warning_or_error deterministically into ObjectRecord warnings/errors without silent loss."
+    },
+    {
+      "id": "A7",
+      "boundary": "Execution profile",
+      "required_fix": "Reject NOT_ESTABLISHED and equivalent sentinel values in identity-bearing source/build fields; require exact format and semantic completeness."
+    },
+    {
+      "id": "A8",
+      "boundary": "Temporal canonicalization",
+      "required_fix": "Preserve contract-supported microseconds in canonical_utc; prove distinct instants cannot canonicalize to the same value unless the contract explicitly permits it."
+    },
+    {
+      "id": "A9",
+      "boundary": "Evidence schema",
+      "required_fix": "Close all trust-bearing object maps or define explicit schemas for them; Python and JSON schema must describe the same contract."
+    },
+    {
+      "id": "A10",
+      "boundary": "Canon schema",
+      "required_fix": "Close CanonRule condition/confidence_language_boundary schemas to the exact supported field sets and keep schema/runtime validators aligned."
+    }
+  ],
+  "later_requalification": [
+    "fresh source identity",
+    "all adversarial suites",
+    "full unit suite",
+    "cross-platform runtime verification",
+    "native/TZIF parity and capture review",
+    "trusted-build evidence",
+    "fresh candidate packaging",
+    "fresh C3-1 human disposition"
+  ],
+  "governance_invariant": "No remediation branch or audit branch establishes Source Authority, Trusted Build, Runtime Adoption, Production Authorization, Dual Approval, or SEAL."
+}
