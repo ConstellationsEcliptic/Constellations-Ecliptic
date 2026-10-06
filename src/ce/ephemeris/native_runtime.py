@@ -9,6 +9,7 @@ from typing import Any
 from ce.calculation.contracts import ObjectRecord
 from ce.calculation.registry import EXPECTED_OBJECTS
 from ce.ephemeris.verification import classify_requested_actual_flags
+from ce.runtime.authority import VerifiedRuntimeCapability
 from ce.foundation.status import CalculationStatus
 
 
@@ -58,6 +59,7 @@ class NativeSwissCalculation:
     warning_or_error: str | None
 
     def to_object_record(self) -> ObjectRecord:
+        diagnostic = (self.warning_or_error,) if self.warning_or_error else ()
         return ObjectRecord(
             object_id=self.object_id,
             object_status=CalculationStatus.VALID,
@@ -67,7 +69,7 @@ class NativeSwissCalculation:
             latitude=self.latitude_deg,
             distance=self.distance_au,
             speed=self.speed_deg_per_day,
-            warnings=(),
+            warnings=diagnostic,
             errors=(),
         )
 
@@ -163,14 +165,23 @@ class NativeSwissEphemerisAdapter:
         library_path: Path,
         ephemeris_root: Path,
         calling_convention: str,
-        runtime_authorized: bool,
+        runtime_capability: VerifiedRuntimeCapability,
         expected_library_sha256: str = CANDIDATE_NATIVE_DLL_SHA256,
         expected_source_commit: str = CANONICAL_SWISS_SOURCE_COMMIT,
         swiss_release: str = CANONICAL_SWISS_RELEASE,
         loader: Any | None = None,
     ) -> None:
-        if not runtime_authorized:
-            raise NativeRuntimeError("runtime_not_authorized")
+        if not isinstance(runtime_capability, VerifiedRuntimeCapability):
+            raise NativeRuntimeError("runtime_capability_required")
+        capability_errors = runtime_capability.validate()
+        if capability_errors:
+            raise NativeRuntimeError("runtime_capability_invalid:" + ";".join(capability_errors))
+        if runtime_capability.native_library_sha256.lower() != expected_library_sha256.lower():
+            raise NativeRuntimeError("runtime_capability_library_identity_mismatch")
+        if runtime_capability.swiss_source_commit != expected_source_commit:
+            raise NativeRuntimeError("runtime_capability_swiss_source_commit_mismatch")
+        if runtime_capability.swiss_release != swiss_release:
+            raise NativeRuntimeError("runtime_capability_swiss_release_mismatch")
         if calling_convention not in {"__cdecl", "__stdcall"}:
             raise NativeRuntimeError("native_abi_calling_convention_not_pinned")
         if expected_library_sha256.lower() != CANDIDATE_NATIVE_DLL_SHA256:
@@ -265,7 +276,12 @@ class NativeSwissEphemerisAdapter:
             )
         )
         message = error_buffer.value.decode("utf-8", errors="replace") or None
-        _validate_actual_flags(actual_flags, requested_flags, with_speed)
+        try:
+            _validate_actual_flags(actual_flags, requested_flags, with_speed)
+        except NativeRuntimeError as exc:
+            if message:
+                raise NativeRuntimeError(f"{exc}:native_diagnostic={message}") from exc
+            raise
         numbers = [float(values[index]) for index in range(4)]
         import math
         if any(not math.isfinite(value) for value in numbers):
