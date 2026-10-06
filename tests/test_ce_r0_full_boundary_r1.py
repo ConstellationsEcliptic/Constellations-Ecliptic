@@ -50,6 +50,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
             status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
             execution_profile_id=request.execution_profile_id,
             scenario_state=ScenarioState.VARIABLE,
+            window_classification=ScenarioState.ROBUST,
             normalized_time=None,
             calculation_id="CALC-FULL-1",
             observation_interval=(
@@ -71,6 +72,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
             ),
             actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
             calculation_flags={"calculation_status": "VALID"},
+            solver_metadata={"solver": "test"},
         )
         return issue_evidence_packet(
             draft,
