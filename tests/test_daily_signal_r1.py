@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import unittest
 
+from ce.calculation.evidence import EvidencePacket
+from ce.foundation.identity import RuntimeIdentity
+from ce.foundation.provenance import derive_provenance_root_sha256, runtime_identity_sha256
 from ce.foundation.status import CalculationStatus
 from ce.signal.daily import (
     DailySignalState,
+    aggregate_daily_evidence_packets,
     aggregate_daily_signals,
     aggregate_qualified_signal_records,
     aggregate_completed_day,
@@ -14,138 +18,142 @@ from ce.signal.record import QualifiedSignalRecord
 
 
 class DailySignalR1Tests(unittest.TestCase):
-    def _result(
-        self,
-        *,
-        status: CalculationStatus = CalculationStatus.VALID,
-        classification: str | None = None,
-        canon_input_valid: bool = False,
-        ref: str | None = "E-1:hash",
-    ) -> SignalResult:
-        return SignalResult(
-            status=status,
-            classification=classification,
-            phase=None,
-            uncertainty_state=None,
-            evidence_packet_ref=ref,
-            canon_input_valid=canon_input_valid,
+    def _packet(self, *, calculation_status: str = "VALID", qualifying: bool = True) -> EvidencePacket:
+        runtime = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
+        )
+        input_identity = {
+            "request_id": "R-DAY",
+            "birth_date": "2000-01-01",
+            "birth_city": "Test City",
+            "timezone_id": "UTC",
+            "timezone_version": "2026d",
+            "natal_birth_state": "ZERO_BIRTH_TIME",
+            "calendar_policy_id": "CE-V1-CALENDAR-GREGORIAN-ONLY",
+        }
+        profile = {"id": "CE-CALC-V1-EP-001", "revision": 4}
+        timezone_context = {"id": "UTC", "version": "2026d", "database": "IANA"}
+        runtime_digest = runtime_identity_sha256(runtime)
+        root = derive_provenance_root_sha256(
+            calculation_id="C-DAY",
+            request_id="R-DAY",
+            input_identity=input_identity,
+            profile_version=profile,
+            timezone_context=timezone_context,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
+            runtime_identity_digest=runtime_digest,
+        )
+        geometry = (
+            {
+                "transit_object": "SUN",
+                "natal_object_or_scenario": "MOON",
+                "aspect": "CONJUNCTION",
+                "directed_branch": 0.0,
+                "signed_deviation": 0.0,
+                "absolute_deviation": 0.0,
+                "effective_orb": 2.5,
+                "qualification_state": "QUALIFIED",
+                "kinematic_state": "EXACT",
+            },
+        ) if qualifying else ()
+        return EvidencePacket.issue(
+            calculation_id="C-DAY",
+            input_identity=input_identity,
+            profile_version=profile,
+            observation_instant_or_interval={"start": "2026-01-01T00:00:00Z", "end": "2026-01-02T00:00:00Z"},
+            timezone_context=timezone_context,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
+            object_records=(),
+            geometry_records=geometry,
+            effective_orb_records=(),
+            kinematics=(
+                {
+                    "transit_object": "SUN",
+                    "aspect": "CONJUNCTION",
+                    "kinematic_state": "EXACT",
+                    "transit_speed": 1.0,
+                },
+            ) if qualifying else (),
+            exact_events=(),
+            window_segments=(),
+            scenario_stability_state="STABLE",
+            scenario_window_state="ROBUST" if qualifying else "NONE",
+            warnings=(),
+            errors=(),
+            numerical_tolerances={},
+            solver_metadata={},
+            actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
+            calculation_flags={"calculation_status": calculation_status},
+            runtime_identity_sha256=runtime_digest,
+            provenance_root_sha256=root,
         )
 
-    def test_quiet_sky_requires_successful_completed_observations(self) -> None:
-        result = aggregate_daily_signals(
-            (
-                self._result(
-                    classification="DISQUALIFIED_OUT_OF_ORB",
-                    canon_input_valid=False,
-                ),
-            )
-        )
-        self.assertEqual(result.state, DailySignalState.QUIET_SKY)
-        self.assertEqual(result.qualifying_signal_refs, ())
+    def _result(self, *, status: CalculationStatus = CalculationStatus.VALID) -> SignalResult:
+        return SignalResult(status, None, None, None, "R:hash", False)
 
-    def test_qualifying_signal_prevents_quiet_sky(self) -> None:
-        result = aggregate_daily_signals(
-            (
-                self._result(
-                    classification="ROBUST_EXACT_SIGNAL",
-                    canon_input_valid=True,
-                    ref="E-1:hash",
-                ),
-            )
-        )
-        self.assertEqual(
-            result.state,
-            DailySignalState.QUALIFYING_SIGNALS_PRESENT,
-        )
-        self.assertEqual(result.qualifying_signal_refs, ("E-1:hash",))
-
-    def test_mixed_daily_results_preserve_qualifying_signal(self) -> None:
-        result = aggregate_daily_signals(
-            (
-                self._result(
-                    classification="DISQUALIFIED_OUT_OF_ORB",
-                    canon_input_valid=False,
-                ),
-                self._result(
-                    classification="POSSIBLE_APPROACHING_SIGNAL",
-                    canon_input_valid=True,
-                    ref="E-2:hash",
-                ),
-            )
-        )
-        self.assertEqual(
-            result.state,
-            DailySignalState.QUALIFYING_SIGNALS_PRESENT,
-        )
-        self.assertEqual(result.qualifying_signal_refs, ("E-2:hash",))
-
-
-    def _record(self, signal_id: str = "CE-SIGNAL-" + "1" * 64) -> QualifiedSignalRecord:
+    def _record(self) -> QualifiedSignalRecord:
         return QualifiedSignalRecord(
-            schema_version="CE-QUALIFIED-SIGNAL-RECORD-V1",
-            signal_id=signal_id,
-            evidence_packet_ref="E-1:" + "2" * 64,
-            timestamp_observation_utc="2026-01-01T00:00:00Z",
-            qualification_status="VALID",
-            classification="ROBUST_EXACT_SIGNAL",
-            kinematic_phase="EXACT",
-            phase_uniformity="UNIFORM",
-            canon_input_valid=True,
-            requires_uncertainty_disclaimer=False,
-            environment_pin="sha256:" + "3" * 64,
+            "CE-QUALIFIED-SIGNAL-RECORD-V1",
+            "CE-SIGNAL-" + "1" * 64,
+            "E-1:" + "2" * 64,
+            "2026-01-01T00:00:00Z",
+            "VALID",
+            "ROBUST_EXACT_SIGNAL",
+            "EXACT",
+            "UNIFORM",
+            True,
+            False,
+            "sha256:" + "3" * 64,
         )
 
-    def test_normative_aggregator_empty_completed_day_is_quiet_sky(self) -> None:
-        result = aggregate_qualified_signal_records((), observation_completed=True)
+    def test_empty_completed_day_is_quiet_sky(self) -> None:
+        result = aggregate_daily_evidence_packets((), observation_completed=True)
         self.assertEqual(result.state, DailySignalState.QUIET_SKY)
-        self.assertEqual(result.qualifying_signal_refs, ())
 
-    def test_normative_aggregator_reports_qualifying_signal(self) -> None:
-        result = aggregate_qualified_signal_records(
-            (self._record(),),
+    def test_qualifying_packet_prevents_quiet_sky(self) -> None:
+        result = aggregate_daily_evidence_packets(
+            (self._packet(),),
             observation_completed=True,
         )
         self.assertEqual(result.state, DailySignalState.QUALIFYING_SIGNALS_PRESENT)
-        self.assertEqual(result.qualifying_signal_refs, ("CE-SIGNAL-" + "1" * 64,))
+        self.assertEqual(len(result.qualifying_signal_refs), 1)
 
-    def test_normative_aggregator_rejects_uncompleted_observation(self) -> None:
-        with self.assertRaisesRegex(ValueError, "daily_observation_not_completed"):
-            aggregate_qualified_signal_records((), observation_completed=False)
+    def test_non_qualifying_packet_produces_quiet_sky(self) -> None:
+        result = aggregate_daily_evidence_packets(
+            (self._packet(qualifying=False),),
+            observation_completed=True,
+        )
+        self.assertEqual(result.state, DailySignalState.QUIET_SKY)
 
-    def test_normative_aggregator_rejects_non_record_input(self) -> None:
-        with self.assertRaisesRegex(ValueError, "daily_qualified_signal_record_type_invalid"):
-            aggregate_qualified_signal_records((object(),), observation_completed=True)
+    def test_failed_packet_never_becomes_quiet_sky(self) -> None:
+        with self.assertRaisesRegex(ValueError, "qualified_signal_result_not_eligible"):
+            aggregate_daily_evidence_packets(
+                (self._packet(calculation_status="CALCULATION_FAILURE", qualifying=False),),
+                observation_completed=True,
+            )
+
+    def test_legacy_signal_result_aggregation_path_is_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "daily_signal_result_path_removed"):
+            aggregate_daily_signals((self._result(),))
+
+    def test_legacy_qsr_aggregation_path_is_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "daily_qsr_path_removed"):
+            aggregate_qualified_signal_records((self._record(),), observation_completed=True)
 
     def test_completed_day_rejects_unfinished_observation(self) -> None:
         with self.assertRaisesRegex(ValueError, "daily_observation_not_completed"):
             aggregate_completed_day((), observation_completed=False)
 
-    def test_current_failure_remains_failure_after_prior_valid_day(self) -> None:
-        prior = self._result(status=CalculationStatus.VALID, classification="ROBUST_EXACT_SIGNAL", canon_input_valid=True)
-        self.assertEqual(prior.status, CalculationStatus.VALID)
-        current = self._result(status=CalculationStatus.CALCULATION_FAILURE)
-        with self.assertRaisesRegex(ValueError, "daily_signal_calculation_not_valid"):
-            aggregate_completed_day((current,), observation_completed=True)
-
-    def test_failure_cannot_become_quiet_sky(self) -> None:
-        with self.assertRaisesRegex(
-            ValueError,
-            "daily_signal_calculation_not_valid",
-        ):
-            aggregate_daily_signals(
-                (
-                    self._result(
-                        status=CalculationStatus.CALCULATION_FAILURE,
-                    ),
-                )
-            )
-
-    def test_unknown_signal_result_type_is_rejected(self) -> None:
-        with self.assertRaisesRegex(
-            ValueError,
-            "daily_signal_result_type_invalid",
-        ):
-            aggregate_daily_signals((object(),))
+    def test_completed_day_uses_evidence_packets(self) -> None:
+        result = aggregate_completed_day(
+            (self._packet(),),
+            observation_completed=True,
+        )
+        self.assertEqual(result.state, DailySignalState.QUALIFYING_SIGNALS_PRESENT)
 
 
 if __name__ == "__main__":
