@@ -130,7 +130,7 @@ class DailySignalR1Tests(unittest.TestCase):
         self.assertEqual(result.state, DailySignalState.QUIET_SKY)
 
     def test_failed_packet_never_becomes_quiet_sky(self) -> None:
-        with self.assertRaisesRegex(ValueError, "qualified_signal_result_not_eligible"):
+        with self.assertRaisesRegex(ValueError, "daily_signal_calculation_not_valid"):
             aggregate_daily_evidence_packets(
                 (self._packet(calculation_status="CALCULATION_FAILURE", qualifying=False),),
                 observation_completed=True,
