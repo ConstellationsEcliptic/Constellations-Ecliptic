@@ -255,9 +255,9 @@ class PlannedCoreControlsR1(unittest.TestCase):
             runtime.resolve_local_instant(datetime(2024, 3, 31, 2, 30), name)
 
     def _controlled_tzif(self, zone_name: str, expected_sha256: str) -> bytes:
-        path = Path("/usr/share/zoneinfo") / zone_name
+        path = Path(__file__).resolve().parent / "fixtures" / "tzif" / zone_name
         if not path.is_file():
-            self.skipTest(f"controlled fixture zone not present: {zone_name}")
+            self.fail(f"controlled fixture zone missing: {zone_name}")
         data = path.read_bytes()
         observed = sha256(data).hexdigest()
         self.assertEqual(observed, expected_sha256)

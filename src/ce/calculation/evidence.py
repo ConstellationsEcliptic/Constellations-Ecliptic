@@ -183,8 +183,8 @@ class EvidencePacket:
     possible_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     robust_window_segments: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     scenario_observations: tuple[dict[str, Any], ...] = field(default_factory=tuple)
-    runtime_identity_sha256: str | None = None
-    provenance_root_sha256: str | None = None
+    runtime_identity_sha256: str | None = field(init=False, default=None)
+    provenance_root_sha256: str | None = field(init=False, default=None)
     _canonical_bytes: bytes = field(init=False, repr=False, compare=False)
 
     def _expected_canonical_bytes(self) -> bytes:
@@ -366,26 +366,6 @@ class EvidencePacket:
 
         object.__setattr__(self, "_canonical_bytes", self._expected_canonical_bytes())
 
-    @classmethod
-    def issue(cls, **kwargs: Any) -> "EvidencePacket":
-        """Issue a content-addressed packet without hashing its own identifier."""
-        if "evidence_packet_id" in kwargs:
-            raise ValueError("evidence_packet_id_must_not_be_supplied_to_issue")
-        runtime_digest = kwargs.get("runtime_identity_sha256")
-        provenance_root = kwargs.get("provenance_root_sha256")
-        if not isinstance(runtime_digest, str) or not _SHA256_RE.fullmatch(runtime_digest):
-            raise ValueError("runtime_identity_sha256_required_for_issue")
-        if not isinstance(provenance_root, str) or not _SHA256_RE.fullmatch(provenance_root):
-            raise ValueError("provenance_root_sha256_required_for_issue")
-        provisional = dict(kwargs)
-        # Include dataclass defaults in the hashed payload so the packet ID is
-        # exactly the SHA-256 of the canonical stored content.
-        provisional.setdefault("scenario_window_state", "NONE")
-        provisional.setdefault("possible_window_segments", ())
-        provisional.setdefault("robust_window_segments", ())
-        provisional.setdefault("scenario_observations", ())
-        packet_id = sha256_bytes(canonical_json(provisional))
-        return cls(evidence_packet_id=packet_id, **provisional)
 
     def canonical_bytes(self) -> bytes:
         return self._canonical_bytes
