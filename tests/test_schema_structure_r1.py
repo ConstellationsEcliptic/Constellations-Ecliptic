@@ -101,6 +101,48 @@ class SchemaStructureR1Tests(unittest.TestCase):
         self.assertFalse(schema["properties"]["geometry_records"]["items"]["additionalProperties"])
         self.assertFalse(schema["properties"]["window_segments"]["items"]["additionalProperties"])
 
+    def test_evidence_packet_schema_closes_canonical_identity_maps(self) -> None:
+        schema = self._load_without_duplicate_keys(ROOT / "schemas" / "evidence_packet.schema.json")
+        properties = schema["properties"]
+
+        self.assertFalse(properties["input_identity"]["additionalProperties"])
+        self.assertEqual(
+            set(properties["input_identity"]["required"]),
+            {
+                "request_id",
+                "birth_date",
+                "birth_city",
+                "timezone_id",
+                "timezone_version",
+                "natal_birth_state",
+                "calendar_policy_id",
+            },
+        )
+
+        self.assertFalse(properties["profile_version"]["additionalProperties"])
+        self.assertEqual(
+            set(properties["profile_version"]["required"]),
+            {
+                "id",
+                "revision",
+                "implementation_plan_version",
+                "technical_contracts_version",
+                "execution_profile_version",
+            },
+        )
+
+        self.assertFalse(properties["observation_instant_or_interval"]["additionalProperties"])
+        self.assertEqual(
+            set(properties["observation_instant_or_interval"]["required"]),
+            {"start", "end"},
+        )
+
+        self.assertFalse(properties["timezone_context"]["additionalProperties"])
+        self.assertEqual(
+            set(properties["timezone_context"]["required"]),
+            {"database", "id", "version"},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

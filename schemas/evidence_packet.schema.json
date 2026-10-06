@@ -39,14 +39,58 @@
     },
     "input_identity": {
       "type": "object",
-      "additionalProperties": true
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "birth_date",
+        "birth_city",
+        "timezone_id",
+        "timezone_version",
+        "natal_birth_state",
+        "calendar_policy_id"
+      ],
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "birth_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "birth_city": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timezone_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timezone_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "natal_birth_state": {
+          "type": "string",
+          "enum": [
+            "ZERO_BIRTH_TIME"
+          ]
+        },
+        "calendar_policy_id": {
+          "type": "string",
+          "const": "CE-V1-CALENDAR-GREGORIAN-ONLY"
+        }
+      }
     },
     "profile_version": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "required": [
         "id",
-        "revision"
+        "revision",
+        "implementation_plan_version",
+        "technical_contracts_version",
+        "execution_profile_version"
       ],
       "properties": {
         "id": {
@@ -54,14 +98,24 @@
         },
         "revision": {
           "const": 4
+        },
+        "implementation_plan_version": {
+          "const": "1.3.1"
+        },
+        "technical_contracts_version": {
+          "const": "1.1"
+        },
+        "execution_profile_version": {
+          "const": "1.3"
         }
       }
     },
     "observation_instant_or_interval": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "required": [
-        "start"
+        "start",
+        "end"
       ],
       "properties": {
         "start": {
@@ -69,17 +123,31 @@
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
         },
         "end": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": "string",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
         }
       }
     },
     "timezone_context": {
       "type": "object",
-      "additionalProperties": true
+      "additionalProperties": false,
+      "required": [
+        "database",
+        "id",
+        "version"
+      ],
+      "properties": {
+        "database": {
+          "const": "IANA"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "const": "2026d"
+        }
+      }
     },
     "execution_profile_id": {
       "const": "CE-CALC-V1-EP-001"
