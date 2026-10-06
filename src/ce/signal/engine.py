@@ -202,7 +202,7 @@ class SignalEngine:
 
         uncertainty = calculation_result.scenario_window_state
         if not isinstance(uncertainty, str) or uncertainty == "NONE":
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification="DISQUALIFIED_OUT_OF_ORB",
                 phase=None,
@@ -213,7 +213,7 @@ class SignalEngine:
 
         phase = self._phase(calculation_result)
         if phase == "NEAR_STATIONARY" or phase is None:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification="DISQUALIFIED_KINEMATIC_STATE",
                 phase=phase,
@@ -226,7 +226,7 @@ class SignalEngine:
         # Packet contains an exact event that is future relative to the
         # observation start. No event is inferred.
         if phase in {"APPLYING", "SEPARATING"} and not self._future_exact_event_exists(calculation_result):
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification=None,
                 phase=phase,
@@ -240,7 +240,7 @@ class SignalEngine:
         elif uncertainty in {"POSSIBLE", "MIXED"}:
             prefix = "POSSIBLE"
         else:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification=None,
                 phase=phase,
@@ -259,7 +259,7 @@ class SignalEngine:
             classification = "POSSIBLE_MIXED_SIGNAL" if prefix == "POSSIBLE" else None
 
         if classification is None:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification=None,
                 phase=phase,
@@ -268,7 +268,7 @@ class SignalEngine:
                 canon_input_valid=False,
             )
 
-        return SignalResult(
+        return _issue_signal_result(
             status=CalculationStatus.VALID,
             classification=classification,
             phase=phase,
