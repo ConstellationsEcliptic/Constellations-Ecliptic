@@ -161,23 +161,65 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             issue_qualified_signal_record(packet)
 
     def test_ambiguous_multi_signal_packet_is_rejected(self) -> None:
-        base = self._packet()
+        from ce.foundation.identity import RuntimeIdentity
+        from ce.foundation.provenance import derive_provenance_root_sha256, runtime_identity_sha256
+        runtime = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
+        )
         from dataclasses import replace
-        packet = replace(
-            base,
-            geometry_records=tuple(base.geometry_records) + (
-                {
-                    "transit_object": "JUPITER",
-                    "natal_object_or_scenario": "VENUS",
-                    "aspect": "TRINE",
-                    "directed_branch": 120.0,
-                    "signed_deviation": 0.0,
-                    "absolute_deviation": 0.0,
-                    "effective_orb": 2.0,
-                    "qualification_state": "QUALIFIED",
-                    "kinematic_state": "EXACT",
-                },
-            ),
+        base = self._packet()
+        input_identity = dict(base.input_identity)
+        geometry = tuple(base.geometry_records) + (
+            {
+                "transit_object": "JUPITER",
+                "natal_object_or_scenario": "VENUS",
+                "aspect": "TRINE",
+                "directed_branch": 120.0,
+                "signed_deviation": 0.0,
+                "absolute_deviation": 0.0,
+                "effective_orb": 2.0,
+                "qualification_state": "QUALIFIED",
+                "kinematic_state": "EXACT",
+            },
+        )
+        profile = dict(base.profile_version)
+        timezone_context = dict(base.timezone_context)
+        root = derive_provenance_root_sha256(
+            calculation_id=base.calculation_id,
+            request_id=input_identity["request_id"],
+            input_identity=input_identity,
+            profile_version=profile,
+            timezone_context=timezone_context,
+            execution_profile_id=base.execution_profile_id,
+            calculation_version=base.calculation_version,
+            runtime_identity_digest=runtime_identity_sha256(runtime),
+        )
+        packet = base.__class__.issue(
+            calculation_id=base.calculation_id,
+            input_identity=input_identity,
+            profile_version=profile,
+            observation_instant_or_interval=dict(base.observation_instant_or_interval),
+            timezone_context=timezone_context,
+            execution_profile_id=base.execution_profile_id,
+            calculation_version=base.calculation_version,
+            object_records=base.object_records,
+            geometry_records=geometry,
+            effective_orb_records=base.effective_orb_records,
+            kinematics=base.kinematics,
+            exact_events=base.exact_events,
+            window_segments=base.window_segments,
+            scenario_stability_state=base.scenario_stability_state,
+            scenario_window_state=base.scenario_window_state,
+            warnings=base.warnings,
+            errors=base.errors,
+            numerical_tolerances=base.numerical_tolerances,
+            solver_metadata=base.solver_metadata,
+            actual_ephemeris_resolution=base.actual_ephemeris_resolution,
+            calculation_flags=base.calculation_flags,
+            runtime_identity_sha256=runtime_identity_sha256(runtime),
+            provenance_root_sha256=root,
         )
         with self.assertRaisesRegex(ValueError, "qualified_signal_identity_ambiguous"):
             issue_qualified_signal_record(packet)
