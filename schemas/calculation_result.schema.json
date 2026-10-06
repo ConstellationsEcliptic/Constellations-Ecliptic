@@ -25,7 +25,8 @@
     "warnings",
     "errors",
     "provenance",
-    "evidence_packet_ref"
+    "evidence_packet_ref",
+    "provenance_root_sha256"
   ],
   "properties": {
     "request_id": {
@@ -519,6 +520,10 @@
           "pattern": "^[0-9a-fA-F]{64}$"
         }
       }
+    },
+    "provenance_root_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
     }
   },
   "allOf": [
