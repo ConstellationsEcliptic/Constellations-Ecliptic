@@ -307,6 +307,7 @@ class CalculationResultDraft:
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
+    provenance_root_sha256: str | None = None
 
     def __post_init__(self) -> None:
         for item in fields(self):
@@ -345,7 +346,8 @@ class CalculationResultDraft:
             calculation_flags=self.calculation_flags,
             warnings=self.warnings,
             errors=self.errors,
-            provenance=dict(self.provenance),
+            provenance={**dict(self.provenance), "runtime_identity_sha256": runtime_identity_sha256(runtime_identity), "provenance_root_sha256": evidence_packet.provenance_root_sha256},
+            provenance_root_sha256=evidence_packet.provenance_root_sha256,
             _runtime_identity=runtime_identity,
             _evidence_packet=evidence_packet,
         )
@@ -376,6 +378,7 @@ class CalculationResult:
     warnings: tuple[str, ...] = field(default_factory=tuple)
     errors: tuple[str, ...] = field(default_factory=tuple)
     provenance: dict[str, Any] = field(default_factory=dict)
+    provenance_root_sha256: str | None = None
     evidence_packet_ref: EvidencePacketRef | None = field(
         default=None, init=False, repr=False, compare=False
     )
