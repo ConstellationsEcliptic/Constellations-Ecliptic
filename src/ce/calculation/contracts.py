@@ -421,6 +421,45 @@ class CalculationResult:
                 )
                 if tuple(self.observation_interval) != packet_interval:
                     raise ValueError("packet_observation_interval_result_mismatch")
+
+            replicated_fields = (
+                ("calculation_id", packet.calculation_id),
+                ("execution_profile_id", packet.execution_profile_id),
+                ("calculation_version", packet.calculation_version),
+                ("geometry_records", tuple(packet.geometry_records)),
+                ("event_records", tuple(packet.exact_events)),
+                ("window_segments", tuple(packet.window_segments)),
+                ("possible_window_segments", tuple(packet.possible_window_segments)),
+                ("robust_window_segments", tuple(packet.robust_window_segments)),
+                ("scenario_observations", tuple(packet.scenario_observations)),
+                ("solver_metadata", dict(packet.solver_metadata)),
+                ("actual_ephemeris_resolution", dict(packet.actual_ephemeris_resolution)),
+                ("calculation_flags", dict(packet.calculation_flags)),
+                ("warnings", tuple(packet.warnings)),
+                ("errors", tuple(packet.errors)),
+            )
+            for field_name, packet_value in replicated_fields:
+                result_value = getattr(self, field_name)
+                if result_value != packet_value:
+                    raise ValueError(f"packet_{field_name}_result_mismatch")
+
+            if tuple(item.as_dict() for item in self.object_records) != tuple(packet.object_records):
+                raise ValueError("packet_object_records_result_mismatch")
+            if self.scenario_state.value != packet.scenario_stability_state:
+                raise ValueError("packet_scenario_state_result_mismatch")
+            if self.window_classification.value != packet.scenario_window_state:
+                raise ValueError("packet_window_classification_result_mismatch")
+
+            object_records_by_id = {item.object_id: item for item in self.object_records}
+            for state in self.object_states:
+                record = object_records_by_id.get(state.object_id)
+                if record is None:
+                    raise ValueError("result_object_state_missing_object_record")
+                if record.object_status is not state.status:
+                    raise ValueError("result_object_state_status_mismatch")
+                if state.status is CalculationStatus.VALID:
+                    if record.longitude != state.longitude_deg or record.speed != state.speed_deg_per_day:
+                        raise ValueError("result_object_state_numeric_mismatch")
         ref = EvidencePacketRef.from_packet(packet) if packet is not None else None
         object.__setattr__(self, "evidence_packet_ref", ref)
 
