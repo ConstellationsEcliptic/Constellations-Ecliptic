@@ -171,6 +171,8 @@ class NativeSwissEphemerisAdapter:
         swiss_release: str = CANONICAL_SWISS_RELEASE,
         loader: Any | None = None,
     ) -> None:
+        if expected_library_sha256.lower() != CANDIDATE_NATIVE_DLL_SHA256:
+            raise NativeRuntimeError("native_library_identity_override_forbidden")
         if not isinstance(runtime_capability, VerifiedRuntimeCapability):
             raise NativeRuntimeError("runtime_capability_required")
         capability_errors = runtime_capability.validate()
@@ -184,8 +186,6 @@ class NativeSwissEphemerisAdapter:
             raise NativeRuntimeError("runtime_capability_swiss_release_mismatch")
         if calling_convention not in {"__cdecl", "__stdcall"}:
             raise NativeRuntimeError("native_abi_calling_convention_not_pinned")
-        if expected_library_sha256.lower() != CANDIDATE_NATIVE_DLL_SHA256:
-            raise NativeRuntimeError("native_library_identity_override_forbidden")
         if expected_source_commit != CANONICAL_SWISS_SOURCE_COMMIT:
             raise NativeRuntimeError("swiss_source_commit_mismatch")
         if swiss_release != CANONICAL_SWISS_RELEASE:
