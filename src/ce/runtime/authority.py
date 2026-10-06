@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from ce.foundation.identity import RuntimeIdentity
+from ce.foundation.provenance import runtime_identity_sha256
 
 
 _SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
@@ -141,9 +142,7 @@ def issue_verified_runtime_capability(
     if not evaluation.authorized:
         raise AuthorityEvidenceError("verified_authority_receipt_required")
 
-    runtime_digest = sha256_runtime_identity = __import__(
-        "ce.foundation.provenance", fromlist=["runtime_identity_sha256"]
-    ).runtime_identity_sha256(runtime_identity)
+    runtime_digest = runtime_identity_sha256(runtime_identity)
     capability = object.__new__(VerifiedRuntimeCapability)
     object.__setattr__(capability, "runtime_identity_sha256", runtime_digest)
     object.__setattr__(capability, "runtime_environment_kind", runtime_identity.runtime_environment_kind or "")
