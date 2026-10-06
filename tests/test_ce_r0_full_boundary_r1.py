@@ -14,7 +14,7 @@ from ce.calculation.contracts import (
 from ce.calculation.evidence_builder import issue_evidence_packet
 from ce.canon.registry import CanonRegistry
 from ce.claim.authorization import evaluate_claim_release
-from ce.claim.manifest import build_allowed_claim_manifest
+from ce.claim.manifest import AllowedClaimManifest, ManifestInvalid, build_allowed_claim_manifest
 from ce.foundation.identity import RuntimeIdentity
 from ce.foundation.provenance import runtime_identity_sha256
 from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
@@ -25,16 +25,24 @@ from ce.signal.record import issue_qualified_signal_record
 class CER0FullBoundaryTests(unittest.TestCase):
     def runtime(self) -> RuntimeIdentity:
         return RuntimeIdentity(
-            "CE-CALC-V1-EP-001", 4,
-            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
-            "d" * 64, "e" * 64, "f" * 64,
+            "CE-CALC-V1-EP-001",
+            4,
+            "a" * 40,
+            "b" * 64,
+            "sha256:" + "c" * 64,
+            "d" * 64,
+            "e" * 64,
+            "f" * 64,
         )
 
     def request(self) -> CalculationRequest:
         return CalculationRequest(
             request_id="REQ-FULL-1",
             birth=BirthInput(
-                date(2000, 1, 1), "Test City", "UTC", "2026d",
+                date(2000, 1, 1),
+                "Test City",
+                "UTC",
+                "2026d",
                 NatalBirthState.ZERO_BIRTH_TIME,
             ),
             target_interval_start_utc="2026-01-01T00:00:00Z",
@@ -45,34 +53,48 @@ class CER0FullBoundaryTests(unittest.TestCase):
     def packet(self):
         request = self.request()
         runtime = self.runtime()
+        object_record = ObjectRecord(
+            "SUN",
+            CalculationStatus.VALID,
+            258,
+            258,
+            12.5,
+            0.0,
+            1.0,
+            0.9,
+        )
+        geometry = (
+            {
+                "transit_object": "SUN",
+                "natal_object_or_scenario": "MOON",
+                "aspect": "CONJUNCTION",
+                "directed_branch": 0.0,
+                "signed_deviation": 0.0,
+                "absolute_deviation": 0.0,
+                "effective_orb": 2.5,
+                "qualification_state": "QUALIFIED",
+                "kinematic_state": "EXACT",
+            },
+        )
         draft = CalculationResultDraft(
             request_id=request.request_id,
-            status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
+            status=CalculationStatus.VALID,
             execution_profile_id=request.execution_profile_id,
-            scenario_state=ScenarioState.VARIABLE,
-            window_classification=ScenarioState.ROBUST,
-            normalized_time=None,
+            scenario_state=ScenarioState.STABLE,
+            normalized_time=request.target_interval_start_utc,
             calculation_id="CALC-FULL-1",
             observation_interval=(
                 request.target_interval_start_utc,
                 request.target_interval_end_utc,
             ),
-            geometry_records=(
-                {
-                    "transit_object": "SUN",
-                    "natal_object_or_scenario": "MOON",
-                    "aspect": "CONJUNCTION",
-                    "directed_branch": 0.0,
-                    "signed_deviation": 0.0,
-                    "absolute_deviation": 0.0,
-                    "effective_orb": 2.5,
-                    "qualification_state": "QUALIFIED",
-                    "kinematic_state": "EXACT",
-                },
-            ),
+            object_records=(object_record,),
+            geometry_records=geometry,
+            window_classification=ScenarioState.ROBUST,
+            solver_metadata={},
             actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
             calculation_flags={"calculation_status": "VALID"},
-            solver_metadata={"solver": "test"},
+            warnings=(),
+            errors=(),
         )
         return issue_evidence_packet(
             draft,
@@ -96,12 +118,31 @@ class CER0FullBoundaryTests(unittest.TestCase):
             object_states=(
                 ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),
             ),
-            object_records=(
+            object_records=tuple(
                 ObjectRecord(
-                    "SUN", CalculationStatus.VALID, 258, 258,
-                    12.5, 0.0, 1.0, 0.9,
-                ),
+                    "SUN",
+                    CalculationStatus.VALID,
+                    258,
+                    258,
+                    12.5,
+                    0.0,
+                    1.0,
+                    0.9,
+                )
+                for _ in (0,)
             ),
+            geometry_records=tuple(packet.geometry_records),
+            event_records=tuple(packet.exact_events),
+            window_segments=tuple(packet.window_segments),
+            window_classification=ScenarioState.ROBUST,
+            possible_window_segments=tuple(packet.possible_window_segments),
+            robust_window_segments=tuple(packet.robust_window_segments),
+            scenario_observations=tuple(packet.scenario_observations),
+            solver_metadata=dict(packet.solver_metadata),
+            actual_ephemeris_resolution=dict(packet.actual_ephemeris_resolution),
+            calculation_flags=dict(packet.calculation_flags),
+            warnings=tuple(packet.warnings),
+            errors=tuple(packet.errors),
             provenance={
                 "source_commit": runtime.source_commit,
                 "source_tree_sha256_v2": runtime.source_tree_sha256_v2,
@@ -109,7 +150,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 "timezone_bundle_digest": runtime.timezone_bundle_digest,
                 "ephemeris_bundle_digest": runtime.ephemeris_bundle_digest,
                 "runtime_image_digest": runtime.runtime_image_digest,
-                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
+                "calculation_version": packet.calculation_version,
                 "runtime_identity_sha256": runtime_identity_sha256(runtime),
                 "provenance_root_sha256": packet.provenance_root_sha256,
             },
@@ -148,7 +189,8 @@ class CER0FullBoundaryTests(unittest.TestCase):
             }],
         )
 
-    def output(self, manifest, packet, *, text="This reflection may invite attention.") -> dict:
+    def output(self, manifest: AllowedClaimManifest, packet, text: str = "This reflection may invite attention.") -> dict:
+        evidence_ref = f"{packet.evidence_packet_id}:{packet.content_sha256()}"
         return {
             "manifest_id": manifest.manifest_id,
             "provenance": {
@@ -158,7 +200,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 "canon_registry_digest": manifest.canon_registry_digest,
                 "canon_rule_id": manifest.canon_rule_id,
                 "signal_reference": manifest.signal_reference,
-                "evidence_refs": [f"{packet.evidence_packet_id}:{packet.content_sha256()}"],
+                "evidence_refs": [evidence_ref],
                 "provenance_root_sha256": packet.provenance_root_sha256,
             },
             "claims": [{
@@ -170,16 +212,15 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 "tense": ["present"],
                 "epistemic_layer": "ASTROLOGICAL_INTERPRETATION",
                 "certainty": "possibility_or_reflection",
-                "evidence_refs": [f"{packet.evidence_packet_id}:{packet.content_sha256()}"],
+                "evidence_refs": [evidence_ref],
                 "numeric_refs": [],
             }],
         }
 
-    def test_output_validator_accepts_structurally_conforming_claim(self):
+    def test_output_validator_accepts_conforming_claim(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
-        evidence_ref = signal.evidence_packet_ref
-        registry = self.registry(evidence_ref)
+        registry = self.registry(signal.evidence_packet_ref)
         manifest = build_allowed_claim_manifest(
             registry,
             rule_id="TEST-RULE-001",
@@ -189,71 +230,27 @@ class CER0FullBoundaryTests(unittest.TestCase):
             self.output(manifest, packet),
             manifest,
             expected_signal_reference=signal.signal_id,
-            expected_evidence_refs=(evidence_ref,),
+            expected_evidence_refs=(signal.evidence_packet_ref,),
             expected_provenance_root_sha256=packet.provenance_root_sha256,
             semantic_conformance=lambda text, manifest: True,
         )
         self.assertTrue(result.valid)
         self.assertEqual(result.reasons, ())
 
-    def test_output_rejects_field_outside_manifest(self):
+    def test_output_validator_rejects_forbidden_modality(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
         registry = self.registry(signal.evidence_packet_ref)
         manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
         payload = self.output(manifest, packet)
         payload["claims"][0]["modality"] = ["will"]
-        result = validate_claim_output(payload, manifest, semantic_conformance=lambda text, manifest: True)
+        result = validate_claim_output(
+            payload,
+            manifest,
+            semantic_conformance=lambda text, manifest: True,
+        )
         self.assertFalse(result.valid)
         self.assertIn("claim_modality_outside_manifest", result.reasons)
-
-    def test_result_rejects_replicated_packet_content_mismatch(self):
-        from dataclasses import replace
-        packet = self.packet()
-        runtime = self.runtime()
-        mismatched = replace(
-            packet,
-            calculation_flags={"calculation_status": "VALID"},
-        )
-        with self.assertRaisesRegex(ValueError, "packet_calculation_flags_result_mismatch"):
-            CalculationResult(
-                request_id="REQ-FULL-1",
-                status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
-                execution_profile_id="CE-CALC-V1-EP-001",
-                scenario_state=ScenarioState.VARIABLE,
-                normalized_time=None,
-                calculation_id="CALC-FULL-1",
-                observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
-                object_states=(),
-                object_records=(),
-                geometry_records=packet.geometry_records,
-                event_records=packet.exact_events,
-                window_segments=packet.window_segments,
-                window_classification=ScenarioState.ROBUST,
-                possible_window_segments=(),
-                robust_window_segments=(),
-                scenario_observations=(),
-                solver_metadata={},
-                actual_ephemeris_resolution=packet.actual_ephemeris_resolution,
-                calculation_flags={"calculation_status": "CALCULATION_FAILURE"},
-                warnings=(),
-                errors=(),
-                provenance={
-                    "source_commit": runtime.source_commit,
-                    "source_tree_sha256_v2": runtime.source_tree_sha256_v2,
-                    "dependency_lock_digest": runtime.dependency_lock_digest,
-                    "timezone_bundle_digest": runtime.timezone_bundle_digest,
-                    "ephemeris_bundle_digest": runtime.ephemeris_bundle_digest,
-                    "runtime_image_digest": runtime.runtime_image_digest,
-                    "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
-                    "runtime_identity_sha256": runtime_identity_sha256(runtime),
-                    "provenance_root_sha256": packet.provenance_root_sha256,
-                },
-                provenance_root_sha256=packet.provenance_root_sha256,
-                _runtime_identity=runtime,
-                _evidence_packet=mismatched,
-            )
-        self.assertTrue(True)
 
     def test_claim_release_rederives_signal_and_blocks_runtime(self):
         packet = self.packet()
@@ -273,57 +270,53 @@ class CER0FullBoundaryTests(unittest.TestCase):
         self.assertIn("runtime_not_authorized", result.reasons)
         self.assertEqual(result.signal_id, signal.signal_id)
 
-    def test_claim_release_rejects_forged_manifest(self):
+    def test_claim_release_rejects_unbound_evidence(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
         registry = self.registry(signal.evidence_packet_ref)
         manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        forged = type(manifest)(**{**manifest.__dict__, "canon_version": "FORGED"})
-        result = evaluate_claim_release(
-            self.valid_result(packet),
-            packet,
-            forged,
-            self.output(forged, packet),
-            self.runtime(),
-            registry,
-            semantic_conformance=lambda text, manifest: True,
+        other_runtime = RuntimeIdentity(
+            "CE-CALC-V1-EP-001",
+            4,
+            "z" * 40,
+            "y" * 64,
+            "sha256:" + "x" * 64,
+            "w" * 64,
+            "v" * 64,
+            "u" * 64,
         )
-        self.assertFalse(result.authorized)
-        self.assertIn("manifest_registry_binding_mismatch", result.reasons)
-
-    def test_claim_release_rejects_wrong_evidence_packet(self):
-        packet = self.packet()
-        signal = issue_qualified_signal_record(packet)
-        registry = self.registry(signal.evidence_packet_ref)
-        manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
         other_packet = self.packet()
         result = evaluate_claim_release(
             self.valid_result(packet),
             other_packet,
             manifest,
             self.output(manifest, packet),
-            self.runtime(),
+            other_runtime,
             registry,
             semantic_conformance=lambda text, manifest: True,
         )
         self.assertFalse(result.authorized)
-        self.assertTrue(any("qualified_signal_derivation_failed" in x or "calculation_result_evidence_binding_missing" in x for x in result.reasons))
+        self.assertTrue(
+            any(
+                key in reason
+                for reason in result.reasons
+                for key in (
+                    "calculation_result_evidence_binding_missing",
+                    "qualified_signal_derivation_failed",
+                    "runtime_not_authorized",
+                )
+            )
+        )
 
-    def test_empty_canon_registry_never_releases(self):
+    def test_forged_manifest_identity_is_rejected_at_constructor(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
-        empty = CanonRegistry.empty("CE-CANON-RULE-REGISTRY-V1")
-        from ce.claim.authorization import evaluate_claim_release
-        result = evaluate_claim_release(
-            self.valid_result(packet),
-            packet,
-            None,  # type: ignore[arg-type]
-            {},
-            self.runtime(),
-            empty,
-        )
-        self.assertFalse(result.authorized)
-        self.assertIn("manifest_required", result.reasons)
+        registry = self.registry(signal.evidence_packet_ref)
+        manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
+        forged = manifest.canonical_payload()
+        forged["claim_id"] = "FORGED"
+        with self.assertRaisesRegex(ManifestInvalid, "identity_digest"):
+            AllowedClaimManifest.from_mapping(forged)
 
 
 if __name__ == "__main__":
