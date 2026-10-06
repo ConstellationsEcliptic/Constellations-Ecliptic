@@ -55,6 +55,26 @@ class QualifiedSignalRecord:
             raise ValueError("qualified_signal_environment_pin_invalid")
 
 
+def _signal_geometry_identity(packet: EvidencePacket) -> set[tuple[str, str, str, float]]:
+    identities: set[tuple[str, str, str, float]] = set()
+    for record in packet.geometry_records:
+        if not isinstance(record, Mapping):
+            continue
+        transit = record.get("transit_object")
+        natal = record.get("natal_object_or_scenario")
+        aspect = record.get("aspect")
+        branch = record.get("directed_branch")
+        if (
+            isinstance(transit, str) and transit
+            and isinstance(natal, str) and natal
+            and isinstance(aspect, str) and aspect
+            and isinstance(branch, (int, float))
+            and not isinstance(branch, bool)
+        ):
+            identities.add((transit, natal, aspect, float(branch)))
+    return identities
+
+
 def _phase_states(packet: EvidencePacket) -> tuple[str, ...]:
     states: set[str] = set()
     for record in packet.geometry_records:
@@ -100,6 +120,12 @@ def issue_qualified_signal_record(packet: EvidencePacket) -> QualifiedSignalReco
     observation_start = packet.observation_instant_or_interval.get("start")
     if not isinstance(observation_start, str) or not observation_start:
         raise ValueError("qualified_signal_observation_start_missing")
+
+    identities = _signal_geometry_identity(packet)
+    if not identities:
+        raise ValueError("qualified_signal_identity_geometry_missing")
+    if len(identities) != 1:
+        raise ValueError("qualified_signal_identity_ambiguous")
 
     phases = _phase_states(packet)
     if not phases:
