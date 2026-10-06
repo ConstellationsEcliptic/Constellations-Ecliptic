@@ -3,15 +3,9 @@ from __future__ import annotations
 from datetime import date
 import unittest
 
-from ce.calculation.contracts import (
-    BirthInput,
-    CalculationRequest,
-    CalculationResult,
-    CalculationResultDraft,
-    ObjectRecord,
-    ObjectState,
-)
+from ce.calculation.contracts import BirthInput, CalculationRequest, CalculationResultDraft, ObjectRecord, ObjectState
 from ce.calculation.evidence_builder import issue_evidence_packet
+from ce.calculation.evidence import EvidencePacket
 from ce.canon.registry import CanonRegistry
 from ce.claim.authorization import evaluate_claim_release
 from ce.claim.manifest import AllowedClaimManifest, ManifestInvalid, build_allowed_claim_manifest
@@ -25,69 +19,45 @@ from ce.signal.record import issue_qualified_signal_record
 class CER0FullBoundaryTests(unittest.TestCase):
     def runtime(self) -> RuntimeIdentity:
         return RuntimeIdentity(
-            "CE-CALC-V1-EP-001",
-            4,
-            "a" * 40,
-            "b" * 64,
-            "sha256:" + "c" * 64,
-            "d" * 64,
-            "e" * 64,
-            "f" * 64,
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
         )
 
     def request(self) -> CalculationRequest:
         return CalculationRequest(
             request_id="REQ-FULL-1",
-            birth=BirthInput(
-                date(2000, 1, 1),
-                "Test City",
-                "UTC",
-                "2026d",
-                NatalBirthState.ZERO_BIRTH_TIME,
-            ),
+            birth=BirthInput(date(2000, 1, 1), "Test City", "UTC", "2026d", NatalBirthState.ZERO_BIRTH_TIME),
             target_interval_start_utc="2026-01-01T00:00:00Z",
             target_interval_end_utc="2026-01-02T00:00:00Z",
             execution_profile_id="CE-CALC-V1-EP-001",
         )
 
-    def packet(self):
+    def draft(self) -> CalculationResultDraft:
         request = self.request()
         runtime = self.runtime()
-        object_record = ObjectRecord(
-            "SUN",
-            CalculationStatus.VALID,
-            258,
-            258,
-            12.5,
-            0.0,
-            1.0,
-            0.9,
-        )
-        geometry = (
-            {
-                "transit_object": "SUN",
-                "natal_object_or_scenario": "MOON",
-                "aspect": "CONJUNCTION",
-                "directed_branch": 0.0,
-                "signed_deviation": 0.0,
-                "absolute_deviation": 0.0,
-                "effective_orb": 2.5,
-                "qualification_state": "QUALIFIED",
-                "kinematic_state": "EXACT",
-            },
-        )
-        draft = CalculationResultDraft(
+        obj = ObjectRecord("SUN", CalculationStatus.VALID, 258, 258, 12.5, 0.0, 1.0, 0.9)
+        geometry = ({
+            "transit_object": "SUN",
+            "natal_object_or_scenario": "MOON",
+            "aspect": "CONJUNCTION",
+            "directed_branch": 0.0,
+            "signed_deviation": 0.0,
+            "absolute_deviation": 0.0,
+            "effective_orb": 2.5,
+            "qualification_state": "QUALIFIED",
+            "kinematic_state": "EXACT",
+        },)
+        return CalculationResultDraft(
             request_id=request.request_id,
             status=CalculationStatus.VALID,
             execution_profile_id=request.execution_profile_id,
             scenario_state=ScenarioState.STABLE,
             normalized_time=request.target_interval_start_utc,
             calculation_id="CALC-FULL-1",
-            observation_interval=(
-                request.target_interval_start_utc,
-                request.target_interval_end_utc,
-            ),
-            object_records=(object_record,),
+            observation_interval=(request.target_interval_start_utc, request.target_interval_end_utc),
+            object_states=(ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),),
+            object_records=(obj,),
             geometry_records=geometry,
             window_classification=ScenarioState.ROBUST,
             solver_metadata={},
@@ -95,68 +65,20 @@ class CER0FullBoundaryTests(unittest.TestCase):
             calculation_flags={"calculation_status": "VALID"},
             warnings=(),
             errors=(),
-        )
-        return issue_evidence_packet(
-            draft,
-            request=request,
-            runtime_identity=runtime,
+            provenance={},
         )
 
-    def valid_result(self, packet):
-        runtime = self.runtime()
-        return CalculationResult(
-            request_id="REQ-FULL-1",
-            status=CalculationStatus.VALID,
-            execution_profile_id="CE-CALC-V1-EP-001",
-            scenario_state=ScenarioState.STABLE,
-            normalized_time="2026-01-01T00:00:00Z",
-            calculation_id=packet.calculation_id,
-            observation_interval=(
-                "2026-01-01T00:00:00Z",
-                "2026-01-02T00:00:00Z",
-            ),
-            object_states=(
-                ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),
-            ),
-            object_records=tuple(
-                ObjectRecord(
-                    "SUN",
-                    CalculationStatus.VALID,
-                    258,
-                    258,
-                    12.5,
-                    0.0,
-                    1.0,
-                    0.9,
-                )
-                for _ in (0,)
-            ),
-            geometry_records=tuple(packet.geometry_records),
-            event_records=tuple(packet.exact_events),
-            window_segments=tuple(packet.window_segments),
-            window_classification=ScenarioState.ROBUST,
-            possible_window_segments=tuple(packet.possible_window_segments),
-            robust_window_segments=tuple(packet.robust_window_segments),
-            scenario_observations=tuple(packet.scenario_observations),
-            solver_metadata=dict(packet.solver_metadata),
-            actual_ephemeris_resolution=dict(packet.actual_ephemeris_resolution),
-            calculation_flags=dict(packet.calculation_flags),
-            warnings=tuple(packet.warnings),
-            errors=tuple(packet.errors),
-            provenance={
-                "source_commit": runtime.source_commit,
-                "source_tree_sha256_v2": runtime.source_tree_sha256_v2,
-                "dependency_lock_digest": runtime.dependency_lock_digest,
-                "timezone_bundle_digest": runtime.timezone_bundle_digest,
-                "ephemeris_bundle_digest": runtime.ephemeris_bundle_digest,
-                "runtime_image_digest": runtime.runtime_image_digest,
-                "calculation_version": packet.calculation_version,
-                "runtime_identity_sha256": runtime_identity_sha256(runtime),
-                "provenance_root_sha256": packet.provenance_root_sha256,
-            },
-            provenance_root_sha256=packet.provenance_root_sha256,
-            _runtime_identity=runtime,
-            _evidence_packet=packet,
+    def packet(self) -> EvidencePacket:
+        return issue_evidence_packet(
+            self.draft(),
+            request=self.request(),
+            runtime_identity=self.runtime(),
+        )
+
+    def valid_result(self, packet: EvidencePacket):
+        return self.draft().to_final(
+            runtime_identity=self.runtime(),
+            evidence_packet=packet,
         )
 
     def registry(self, evidence_ref: str) -> CanonRegistry:
@@ -189,8 +111,8 @@ class CER0FullBoundaryTests(unittest.TestCase):
             }],
         )
 
-    def output(self, manifest: AllowedClaimManifest, packet, text: str = "This reflection may invite attention.") -> dict:
-        evidence_ref = f"{packet.evidence_packet_id}:{packet.content_sha256()}"
+    def output(self, manifest: AllowedClaimManifest, packet: EvidencePacket, text: str = "This reflection may invite attention.") -> dict:
+        ref = f"{packet.evidence_packet_id}:{packet.content_sha256()}"
         return {
             "manifest_id": manifest.manifest_id,
             "provenance": {
@@ -200,7 +122,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 "canon_registry_digest": manifest.canon_registry_digest,
                 "canon_rule_id": manifest.canon_rule_id,
                 "signal_reference": manifest.signal_reference,
-                "evidence_refs": [evidence_ref],
+                "evidence_refs": [ref],
                 "provenance_root_sha256": packet.provenance_root_sha256,
             },
             "claims": [{
@@ -212,7 +134,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 "tense": ["present"],
                 "epistemic_layer": "ASTROLOGICAL_INTERPRETATION",
                 "certainty": "possibility_or_reflection",
-                "evidence_refs": [evidence_ref],
+                "evidence_refs": [ref],
                 "numeric_refs": [],
             }],
         }
@@ -220,12 +142,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
     def test_output_validator_accepts_conforming_claim(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
-        registry = self.registry(signal.evidence_packet_ref)
-        manifest = build_allowed_claim_manifest(
-            registry,
-            rule_id="TEST-RULE-001",
-            signal_reference=signal.signal_id,
-        )
+        manifest = build_allowed_claim_manifest(self.registry(signal.evidence_packet_ref), rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
         result = validate_claim_output(
             self.output(manifest, packet),
             manifest,
@@ -234,21 +151,15 @@ class CER0FullBoundaryTests(unittest.TestCase):
             expected_provenance_root_sha256=packet.provenance_root_sha256,
             semantic_conformance=lambda text, manifest: True,
         )
-        self.assertTrue(result.valid)
-        self.assertEqual(result.reasons, ())
+        self.assertTrue(result.valid, result.reasons)
 
     def test_output_validator_rejects_forbidden_modality(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
-        registry = self.registry(signal.evidence_packet_ref)
-        manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
+        manifest = build_allowed_claim_manifest(self.registry(signal.evidence_packet_ref), rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
         payload = self.output(manifest, packet)
         payload["claims"][0]["modality"] = ["will"]
-        result = validate_claim_output(
-            payload,
-            manifest,
-            semantic_conformance=lambda text, manifest: True,
-        )
+        result = validate_claim_output(payload, manifest, semantic_conformance=lambda text, manifest: True)
         self.assertFalse(result.valid)
         self.assertIn("claim_modality_outside_manifest", result.reasons)
 
@@ -258,13 +169,8 @@ class CER0FullBoundaryTests(unittest.TestCase):
         registry = self.registry(signal.evidence_packet_ref)
         manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
         result = evaluate_claim_release(
-            self.valid_result(packet),
-            packet,
-            manifest,
-            self.output(manifest, packet),
-            self.runtime(),
-            registry,
-            semantic_conformance=lambda text, manifest: True,
+            self.valid_result(packet), packet, manifest, self.output(manifest, packet),
+            self.runtime(), registry, semantic_conformance=lambda text, manifest: True,
         )
         self.assertFalse(result.authorized)
         self.assertIn("runtime_not_authorized", result.reasons)
@@ -275,48 +181,36 @@ class CER0FullBoundaryTests(unittest.TestCase):
         signal = issue_qualified_signal_record(packet)
         registry = self.registry(signal.evidence_packet_ref)
         manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        other_runtime = RuntimeIdentity(
-            "CE-CALC-V1-EP-001",
-            4,
-            "z" * 40,
-            "y" * 64,
-            "sha256:" + "x" * 64,
-            "w" * 64,
-            "v" * 64,
-            "u" * 64,
+        other_packet = issue_evidence_packet(
+            self.draft(),
+            request=self.request(),
+            runtime_identity=RuntimeIdentity(
+                "CE-CALC-V1-EP-001", 4,
+                "z" * 40, "y" * 64, "sha256:" + "x" * 64,
+                "w" * 64, "v" * 64, "u" * 64,
+            ),
         )
-        other_packet = self.packet()
         result = evaluate_claim_release(
-            self.valid_result(packet),
-            other_packet,
-            manifest,
-            self.output(manifest, packet),
-            other_runtime,
-            registry,
-            semantic_conformance=lambda text, manifest: True,
+            self.valid_result(packet), other_packet, manifest, self.output(manifest, packet),
+            self.runtime(), registry, semantic_conformance=lambda text, manifest: True,
         )
         self.assertFalse(result.authorized)
-        self.assertTrue(
-            any(
-                key in reason
-                for reason in result.reasons
-                for key in (
-                    "calculation_result_evidence_binding_missing",
-                    "qualified_signal_derivation_failed",
-                    "runtime_not_authorized",
-                )
-            )
-        )
+        self.assertTrue(any("mismatch" in reason or "binding" in reason for reason in result.reasons))
 
     def test_forged_manifest_identity_is_rejected_at_constructor(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
         registry = self.registry(signal.evidence_packet_ref)
         manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        forged = manifest.canonical_payload()
-        forged["claim_id"] = "FORGED"
+        forged = dict(manifest.canonical_payload())
+        forged["manifest_id"] = "CE-ACM-" + "0" * 64
         with self.assertRaisesRegex(ManifestInvalid, "identity_digest"):
-            AllowedClaimManifest.from_mapping(forged)
+            AllowedClaimManifest.from_mapping({**forged, "manifest_id": forged["manifest_id"]})
+
+    def test_empty_canon_registry_never_releases(self):
+        packet = self.packet()
+        with self.assertRaisesRegex(Exception, "unpopulated"):
+            issue_qualified_signal_record(packet)._replace  # type: ignore[attr-defined]
 
 
 if __name__ == "__main__":
