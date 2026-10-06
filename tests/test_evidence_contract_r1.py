@@ -12,6 +12,7 @@ from ce.calculation.contracts import (
 from ce.calculation.evidence import EvidencePacket, EvidencePacketRef
 from ce.calculation.evidence_builder import issue_evidence_packet
 from ce.foundation.identity import RuntimeIdentity
+from ce.foundation.provenance import runtime_identity_sha256
 from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
 
 
