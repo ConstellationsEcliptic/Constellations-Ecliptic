@@ -5,6 +5,8 @@ import unittest
 
 from ce.calculation.evidence import EvidencePacket
 from ce.foundation.status import CalculationStatus
+from ce.foundation.identity import RuntimeIdentity
+from ce.foundation.provenance import derive_provenance_root_sha256, runtime_identity_sha256
 from ce.signal.daily import _aggregate_issued_records
 from ce.signal.engine import SignalEngine, SignalResult
 from ce.signal.record import QualifiedSignalRecord, issue_qualified_signal_record
@@ -13,10 +15,45 @@ from tests.evidence_test_factory_r1 import build_test_bound_evidence_packet
 
 class CER0A4SignalQsrIssuanceTests(unittest.TestCase):
     def _packet(self) -> EvidencePacket:
+        runtime = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
+        )
+        input_identity = {
+            "request_id": "R-A4",
+            "birth_date": "2000-01-01",
+            "birth_city": "Test City",
+            "timezone_id": "UTC",
+            "timezone_version": "2026d",
+            "natal_birth_state": "ZERO_BIRTH_TIME",
+            "calendar_policy_id": "CE-V1-CALENDAR-GREGORIAN-ONLY",
+        }
+        profile = {"id": "CE-CALC-V1-EP-001", "revision": 4}
+        timezone_context = {"id": "UTC", "version": "2026d"}
+        runtime_digest = runtime_identity_sha256(runtime)
+        provenance_root = derive_provenance_root_sha256(
+            calculation_id="C-A4",
+            request_id="R-A4",
+            input_identity=input_identity,
+            profile_version=profile,
+            timezone_context=timezone_context,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
+            runtime_identity_digest=runtime_digest,
+        )
         return build_test_bound_evidence_packet(
             evidence_packet_id="fixture",
             calculation_id="C-A4",
-            input_identity={"request_id": "R-A4"},
+            input_identity={
+                "request_id": "R-A4",
+                "birth_date": "2000-01-01",
+                "birth_city": "Test City",
+                "timezone_id": "UTC",
+                "timezone_version": "2026d",
+                "natal_birth_state": "ZERO_BIRTH_TIME",
+                "calendar_policy_id": "CE-V1-CALENDAR-GREGORIAN-ONLY",
+            },
             profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
             observation_instant_or_interval={
                 "start": "2026-01-01T00:00:00Z",
@@ -58,8 +95,8 @@ class CER0A4SignalQsrIssuanceTests(unittest.TestCase):
             solver_metadata={},
             actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
             calculation_flags={"calculation_status": "VALID"},
-            runtime_identity_sha256="a" * 64,
-            provenance_root_sha256="b" * 64,
+            runtime_identity_sha256=runtime_digest,
+            provenance_root_sha256=provenance_root,
         )
 
     def test_signal_result_direct_constructor_is_not_issuance_path(self) -> None:
