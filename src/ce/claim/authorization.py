@@ -12,6 +12,29 @@ from ce.runtime.gates import authorize_runtime
 from ce.signal.record import QualifiedSignalRecord
 
 
+_SUPPORTED_RULE_CONDITION_FIELDS = {
+    "classification",
+    "kinematic_phase",
+    "phase_uniformity",
+    "requires_uncertainty_disclaimer",
+}
+
+
+def _rule_matches_signal(rule, signal: QualifiedSignalRecord) -> bool:
+    condition = rule.condition
+    if not isinstance(condition, dict) or not condition:
+        return False
+    signal_values = {
+        "classification": signal.classification,
+        "kinematic_phase": signal.kinematic_phase,
+        "phase_uniformity": signal.phase_uniformity,
+        "requires_uncertainty_disclaimer": signal.requires_uncertainty_disclaimer,
+    }
+    if any(key not in _SUPPORTED_RULE_CONDITION_FIELDS for key in condition):
+        return False
+    return all(signal_values[key] == value for key, value in condition.items())
+
+
 @dataclass(frozen=True)
 class ClaimReleaseDecision:
     authorized: bool
@@ -91,6 +114,9 @@ def evaluate_claim_release(
         reasons.append("canon_registry_required")
     elif isinstance(manifest, AllowedClaimManifest):
         try:
+            rule = registry.get_rule(manifest.canon_rule_id)
+            if isinstance(signal, QualifiedSignalRecord) and not _rule_matches_signal(rule, signal):
+                reasons.append("canon_rule_signal_condition_mismatch")
             expected = build_allowed_claim_manifest(
                 registry,
                 rule_id=manifest.canon_rule_id,
