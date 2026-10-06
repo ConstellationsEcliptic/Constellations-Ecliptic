@@ -5,6 +5,8 @@ from enum import Enum
 from typing import Iterable
 
 from ce.calculation.evidence import EvidencePacket
+from ce.foundation.status import CalculationStatus
+from ce.signal.engine import SignalEngine
 from ce.signal.record import QualifiedSignalRecord, issue_qualified_signal_record
 
 
@@ -47,15 +49,27 @@ def aggregate_daily_evidence_packets(
     *,
     observation_completed: bool,
 ) -> DailySignalAggregation:
-    """Normative daily aggregation path.
+    """Aggregate the completed observation directly from immutable evidence.
 
-    Qualified records are always re-derived from immutable EvidencePackets.
-    Caller-created SignalResult or QualifiedSignalRecord objects are never
-    trusted as release input.
+    Every supplied packet is evaluated by the Signal Engine. A VALID but
+    disqualified packet contributes no signal and therefore permits QUIET_SKY.
+    Any non-VALID packet is terminal and cannot be converted into QUIET_SKY.
+    Only qualifying Signal Engine results are materialized as QSRs.
     """
     if not observation_completed:
         raise ValueError("daily_observation_not_completed")
-    records = tuple(issue_qualified_signal_record(packet) for packet in packets)
+
+    records: list[QualifiedSignalRecord] = []
+    for packet in packets:
+        if not isinstance(packet, EvidencePacket):
+            raise ValueError("daily_evidence_packet_type_invalid")
+        result = SignalEngine().evaluate(packet)
+        if result.status is not CalculationStatus.VALID:
+            raise ValueError("daily_signal_calculation_not_valid")
+        if not result.canon_input_valid or result.classification is None:
+            continue
+        records.append(issue_qualified_signal_record(packet))
+
     return _aggregate_issued_records(records, observation_completed=True)
 
 
