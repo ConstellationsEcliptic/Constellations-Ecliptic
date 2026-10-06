@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Canon Rule V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rule_id",
+    "canon_version",
+    "tradition_track",
+    "source_reference",
+    "source_scope",
+    "condition",
+    "allowed_interpretation",
+    "forbidden_extrapolation",
+    "confidence_language_boundary",
+    "applicability_scope"
+  ],
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canon_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tradition_track": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "allowed_interpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "allowed_subject",
+        "allowed_scope",
+        "epistemic_layer",
+        "certainty_ceiling",
+        "allowed_modality",
+        "allowed_tense",
+        "forbidden_domains",
+        "forbidden_claim_types",
+        "required_evidence_refs",
+        "allowed_numeric_refs",
+        "required_disclosures"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowed_subject": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "allowed_scope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "epistemic_layer": {
+          "type": "string",
+          "enum": [
+            "ASTRONOMICAL_FACT",
+            "GEOMETRIC_DERIVATION",
+            "ASTROLOGICAL_INTERPRETATION",
+            "POSSIBILITY",
+            "USER_REPORTED"
+          ]
+        },
+        "certainty_ceiling": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowed_modality": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "allowed_tense": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "forbidden_domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "forbidden_claim_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "required_evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "allowed_numeric_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "required_disclosures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "forbidden_extrapolation": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "confidence_language_boundary": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "applicability_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  }
+}
