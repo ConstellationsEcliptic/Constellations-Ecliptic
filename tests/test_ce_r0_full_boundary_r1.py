@@ -181,14 +181,15 @@ class CER0FullBoundaryTests(unittest.TestCase):
         signal = issue_qualified_signal_record(packet)
         registry = self.registry(signal.evidence_packet_ref)
         manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
+        other_runtime = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "9" * 40, "8" * 64, "sha256:" + "7" * 64,
+            "6" * 64, "5" * 64, "4" * 64,
+        )
         other_packet = issue_evidence_packet(
             self.draft(),
             request=self.request(),
-            runtime_identity=RuntimeIdentity(
-                "CE-CALC-V1-EP-001", 4,
-                "z" * 40, "y" * 64, "sha256:" + "x" * 64,
-                "w" * 64, "v" * 64, "u" * 64,
-            ),
+            runtime_identity=other_runtime,
         )
         result = evaluate_claim_release(
             self.valid_result(packet), other_packet, manifest, self.output(manifest, packet),
