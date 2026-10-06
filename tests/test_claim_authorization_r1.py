@@ -73,6 +73,28 @@ def runtime_identity() -> RuntimeIdentity:
 
 
 class ClaimAuthorizationR1Tests(unittest.TestCase):
+
+    def test_canon_rule_signal_condition_mismatch_blocks_release(self) -> None:
+        s = signal()
+        reg = registry()
+        m = build_allowed_claim_manifest(
+            reg, rule_id="TEST-RULE-001", signal_reference=s.signal_id
+        )
+        mismatched = type(s)(
+            **{**s.__dict__, "classification":"OTHER_SIGNAL"}
+        )
+        decision = evaluate_claim_release(
+            preserve_calculation_truth(CalculationStatus.VALID),
+            mismatched,
+            m,
+            {"manifest_id":m.manifest_id,"claims":[{"claim_id":m.claim_id,"text":"This reflection may invite attention."}]},
+            runtime_identity(),
+            reg,
+            semantic_conformance=lambda text, manifest: True,
+        )
+        self.assertFalse(decision.authorized)
+        self.assertIn("canon_rule_signal_condition_mismatch", decision.reasons)
+
     def test_runtime_gate_is_derived_and_currently_blocks_release(self) -> None:
         s = signal()
         reg = registry()
