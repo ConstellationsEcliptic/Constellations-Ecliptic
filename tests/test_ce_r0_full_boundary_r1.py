@@ -6,7 +6,7 @@ import unittest
 from ce.calculation.contracts import BirthInput, CalculationRequest, CalculationResultDraft, ObjectRecord, ObjectState
 from ce.calculation.evidence_builder import issue_evidence_packet
 from ce.calculation.evidence import EvidencePacket
-from ce.canon.registry import CanonRegistry
+from ce.canon.registry import CanonRegistry, CanonRegistryNotEstablished
 from ce.claim.authorization import evaluate_claim_release
 from ce.claim.manifest import AllowedClaimManifest, ManifestInvalid, build_allowed_claim_manifest
 from ce.foundation.identity import RuntimeIdentity
@@ -205,12 +205,14 @@ class CER0FullBoundaryTests(unittest.TestCase):
         forged = dict(manifest.canonical_payload())
         forged["manifest_id"] = "CE-ACM-" + "0" * 64
         with self.assertRaisesRegex(ManifestInvalid, "identity_digest"):
-            AllowedClaimManifest.from_mapping({**forged, "manifest_id": forged["manifest_id"]})
+            AllowedClaimManifest.from_mapping(forged)
 
-    def test_empty_canon_registry_never_releases(self):
+    def test_empty_canon_registry_never_builds_manifest(self):
         packet = self.packet()
-        with self.assertRaisesRegex(Exception, "unpopulated"):
-            issue_qualified_signal_record(packet)._replace  # type: ignore[attr-defined]
+        signal = issue_qualified_signal_record(packet)
+        empty = CanonRegistry.empty("CE-CANON-RULE-REGISTRY-V1")
+        with self.assertRaisesRegex(CanonRegistryNotEstablished, "unpopulated"):
+            build_allowed_claim_manifest(empty, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
 
 
 if __name__ == "__main__":
