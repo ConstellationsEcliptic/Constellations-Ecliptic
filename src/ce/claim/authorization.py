@@ -4,25 +4,32 @@ from dataclasses import dataclass
 
 from ce.canon.registry import CanonRegistry, CanonRegistryNotEstablished, CanonRuleNotFound
 from ce.claim.manifest import AllowedClaimManifest, ManifestInvalid, build_allowed_claim_manifest
-from ce.foundation.status import CalculationStatus, RuntimeAuthority
-from ce.output.validation import OutputValidationResult
+from ce.foundation.identity import RuntimeIdentity
+from ce.foundation.status import CalculationStatus
+from ce.output.validation import SemanticConformanceCheck, validate_claim_output
 from ce.product.boundary import ProductBoundaryDecision
-from ce.runtime.gates import RuntimeGateResult
+from ce.runtime.gates import authorize_runtime
 from ce.signal.record import QualifiedSignalRecord
+
 
 @dataclass(frozen=True)
 class ClaimReleaseDecision:
     authorized: bool
     reasons: tuple[str, ...]
 
+
 def evaluate_claim_release(
     boundary: ProductBoundaryDecision,
     signal: QualifiedSignalRecord,
     manifest: AllowedClaimManifest,
-    output_validation: OutputValidationResult,
-    runtime_gate: RuntimeGateResult,
+    output_payload: object,
+    runtime_identity: RuntimeIdentity,
     registry: CanonRegistry,
+    *,
+    semantic_conformance: SemanticConformanceCheck | None = None,
 ) -> ClaimReleaseDecision:
+    """Evaluate release gates from the underlying inputs, not caller-made gate results."""
+
     reasons: list[str] = []
 
     if not isinstance(boundary, ProductBoundaryDecision):
@@ -62,15 +69,23 @@ def evaluate_claim_release(
         if signal.evidence_packet_ref not in manifest.required_evidence_refs:
             reasons.append("manifest_missing_signal_evidence_reference")
 
-    if not isinstance(output_validation, OutputValidationResult):
-        reasons.append("output_validation_required")
-    elif not output_validation.valid:
-        reasons.extend(output_validation.reasons or ("output_validation_failed",))
+    if isinstance(manifest, AllowedClaimManifest):
+        output_validation = validate_claim_output(
+            output_payload,
+            manifest,
+            semantic_conformance=semantic_conformance,
+        )
+        if not output_validation.valid:
+            reasons.extend(output_validation.reasons or ("output_validation_failed",))
+    else:
+        reasons.append("output_validation_manifest_unavailable")
 
-    if not isinstance(runtime_gate, RuntimeGateResult):
-        reasons.append("runtime_gate_required")
-    elif runtime_gate.authority is not RuntimeAuthority.AUTHORIZED:
-        reasons.append("runtime_not_authorized")
+    if not isinstance(runtime_identity, RuntimeIdentity):
+        reasons.append("runtime_identity_required")
+    else:
+        runtime_gate = authorize_runtime(runtime_identity)
+        if runtime_gate.authority.value != "AUTHORIZED":
+            reasons.append("runtime_not_authorized")
 
     if not isinstance(registry, CanonRegistry):
         reasons.append("canon_registry_required")
