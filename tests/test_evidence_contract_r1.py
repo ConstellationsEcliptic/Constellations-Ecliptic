@@ -183,7 +183,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
             scenario_state=ScenarioState.VARIABLE,
             normalized_time=None,
             object_states=(),
-            provenance=self.result_provenance(packet, identity),
+            provenance={**self.result_provenance(packet, identity), "solver_metadata": {}},
             provenance_root_sha256=packet.provenance_root_sha256,
             _runtime_identity=identity,
             _evidence_packet=packet,
