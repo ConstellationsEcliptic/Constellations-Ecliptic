@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Canon Rule V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rule_id","canon_version","tradition_track","source_reference","source_scope","condition","allowed_interpretation","forbidden_extrapolation","confidence_language_boundary","applicability_scope"],
+  "properties": {
+    "rule_id": {"type":"string","minLength":1},
+    "canon_version": {"type":"string","minLength":1},
+    "tradition_track": {"type":"string","minLength":1},
+    "source_reference": {"type":"string","minLength":1},
+    "source_scope": {"type":"string","minLength":1},
+    "condition": {"type":"object"},
+    "allowed_interpretation": {"type":"object"},
+    "forbidden_extrapolation": {"type":"array","items":{"type":"string","minLength":1}},
+    "confidence_language_boundary": {"type":"object"},
+    "applicability_scope": {"type":"array","items":{"type":"string","minLength":1}}
+  }
+}
