@@ -10,9 +10,9 @@ from ce.calculation.geometry import aspect_geometry, circular_span_deg, effectiv
 from ce.calculation.window_solver import solve_aspect_window
 from ce.ephemeris.verification import classify_requested_actual_flags
 from ce.foundation.status import CalculationStatus, KinematicState, ScenarioState
-from ce.signal.daily import aggregate_qualified_signal_records
+from ce.signal.daily import aggregate_daily_evidence_packets
 from ce.signal.engine import SignalEngine
-from ce.signal.record import QualifiedSignalRecord
+from ce.signal.record import issue_qualified_signal_record
 from ce.timezone.runtime import TzifRuntime, compute_manifest_sha256
 
 
@@ -155,31 +155,44 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
         packet = self._packet()
         result = SignalEngine().evaluate(packet)
         self.assertEqual(result.classification, "ROBUST_EXACT_SIGNAL")
-        record = QualifiedSignalRecord(
-            schema_version="CE-QUALIFIED-SIGNAL-RECORD-V1",
-            signal_id="CE-SIGNAL-" + "1" * 64,
-            evidence_packet_ref=result.evidence_packet_ref or f"{packet.evidence_packet_id}:{packet.content_sha256()}",
-            timestamp_observation_utc="2026-01-01T00:00:00Z",
-            qualification_status="VALID",
-            classification="ROBUST_EXACT_SIGNAL",
-            kinematic_phase="EXACT",
-            phase_uniformity="UNIFORM",
-            canon_input_valid=True,
-            requires_uncertainty_disclaimer=False,
-            environment_pin="sha256:" + "2" * 64,
-        )
-        agg = aggregate_qualified_signal_records((record,), observation_completed=True)
+        record = issue_qualified_signal_record(packet)
+        self.assertEqual(record.classification, result.classification)
+        agg = aggregate_daily_evidence_packets((packet,), observation_completed=True)
         self.assertEqual(agg.qualifying_signal_refs, (record.signal_id,))
 
     def _packet(self):
         from ce.calculation.evidence import EvidencePacket
-        return EvidencePacket(
-            evidence_packet_id="E-IND-001",
+        from ce.foundation.identity import RuntimeIdentity
+        from ce.foundation.provenance import derive_provenance_root_sha256, runtime_identity_sha256
+
+        runtime = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
+        )
+        input_identity = {
+            "request_id": "R-IND-001",
+            "fixture": "independent-oracle",
+        }
+        profile = {"id": "CE-CALC-V1-EP-001", "revision": 4}
+        timezone_context = {"id": "UTC", "version": "2026d", "database": "IANA"}
+        runtime_digest = runtime_identity_sha256(runtime)
+        root = derive_provenance_root_sha256(
             calculation_id="C-IND-001",
-            input_identity={"fixture": "independent-oracle"},
-            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
+            request_id="R-IND-001",
+            input_identity=input_identity,
+            profile_version=profile,
+            timezone_context=timezone_context,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
+            runtime_identity_digest=runtime_digest,
+        )
+        return EvidencePacket.issue(
+            calculation_id="C-IND-001",
+            input_identity=input_identity,
+            profile_version=profile,
             observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
-            timezone_context={"id": "UTC", "version": "2026d"},
+            timezone_context=timezone_context,
             execution_profile_id="CE-CALC-V1-EP-001",
             calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
             object_records=(),
@@ -195,7 +208,9 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
                 "kinematic_state": "EXACT",
             },),
             effective_orb_records=(),
-            kinematics=({"transit_object": "SUN", "aspect": "CONJUNCTION", "kinematic_state": "EXACT"},),
+            kinematics=(
+                {"transit_object": "SUN", "aspect": "CONJUNCTION", "kinematic_state": "EXACT"},
+            ),
             exact_events=(),
             window_segments=(),
             scenario_stability_state="STABLE",
@@ -206,6 +221,8 @@ class IndependentOracleCurrentR1Tests(unittest.TestCase):
             solver_metadata={},
             actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
             calculation_flags={"calculation_status": "VALID"},
+            runtime_identity_sha256=runtime_digest,
+            provenance_root_sha256=root,
         )
 
 
