@@ -195,7 +195,7 @@ class EvidencePacket:
         }
         return canonical_json(payload)
 
-    def validate(self) -> tuple[str, ...]:
+    def validate(self, *, require_issued: bool = False) -> tuple[str, ...]:
         errors: list[str] = []
 
         stored = getattr(self, "_canonical_bytes", None)
@@ -207,8 +207,6 @@ class EvidencePacket:
 
         if not isinstance(self.evidence_packet_id, str) or not self.evidence_packet_id.strip():
             errors.append("invalid:evidence_packet_id")
-        elif not _SHA256_RE.fullmatch(self.evidence_packet_id):
-            errors.append("invalid:evidence_packet_id:sha256_required")
         if not isinstance(self.calculation_id, str) or not self.calculation_id.strip():
             errors.append("invalid:calculation_id")
         if not isinstance(self.calculation_version, str) or not self.calculation_version.strip():
@@ -339,6 +337,13 @@ class EvidencePacket:
                 else:
                     errors.extend(_canonical_domain_errors(item, f"scenario_observations[{index}]"))
 
+        if require_issued:
+            expected_content_id = sha256_bytes(self._expected_canonical_bytes())
+            if self.evidence_packet_id != expected_content_id:
+                errors.append("evidence_packet_id_content_mismatch")
+            if self.runtime_identity_sha256 is None or self.provenance_root_sha256 is None:
+                errors.append("evidence_packet_issuance_binding_missing")
+
         for name in ("warnings", "errors"):
             value = getattr(self, name)
             if not isinstance(value, (list, tuple)):
@@ -354,10 +359,6 @@ class EvidencePacket:
         errors = self.validate()
         if errors:
             raise ValueError(";".join(errors))
-
-        expected_content_id = sha256_bytes(self._expected_canonical_bytes())
-        if self.evidence_packet_id != expected_content_id:
-            raise ValueError("evidence_packet_id_content_mismatch")
 
         for item in fields(self):
             if item.name != "_canonical_bytes":
