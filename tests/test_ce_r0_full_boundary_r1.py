@@ -69,14 +69,6 @@ class CER0FullBoundaryTests(unittest.TestCase):
                     "kinematic_state": "EXACT",
                 },
             ),
-            kinematics=(
-                {
-                    "transit_object": "SUN",
-                    "aspect": "CONJUNCTION",
-                    "kinematic_state": "EXACT",
-                    "transit_speed": 1.0,
-                },
-            ),
             actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
             calculation_flags={"calculation_status": "VALID"},
         )
