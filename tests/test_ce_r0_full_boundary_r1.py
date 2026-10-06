@@ -56,6 +56,29 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 request.target_interval_start_utc,
                 request.target_interval_end_utc,
             ),
+            geometry_records=(
+                {
+                    "transit_object": "SUN",
+                    "natal_object_or_scenario": "MOON",
+                    "aspect": "CONJUNCTION",
+                    "directed_branch": 0.0,
+                    "signed_deviation": 0.0,
+                    "absolute_deviation": 0.0,
+                    "effective_orb": 2.5,
+                    "qualification_state": "QUALIFIED",
+                    "kinematic_state": "EXACT",
+                },
+            ),
+            kinematics=(
+                {
+                    "transit_object": "SUN",
+                    "aspect": "CONJUNCTION",
+                    "kinematic_state": "EXACT",
+                    "transit_speed": 1.0,
+                },
+            ),
+            actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
+            calculation_flags={"calculation_status": "VALID"},
         )
         return issue_evidence_packet(
             draft,
