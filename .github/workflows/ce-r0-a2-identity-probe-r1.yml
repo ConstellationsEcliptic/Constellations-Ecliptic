@@ -1,0 +1,26 @@
+name: CE R0 A2 Identity Probe
+
+on:
+  push:
+    branches:
+      - "audit/ce-r0-a2-identity-probe-r1/2026-10-06"
+
+permissions:
+  contents: read
+
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Compute identity
+        shell: bash
+        env:
+          PYTHONPATH: src
+        run: |
+          set -e
+          python -B tools/compute_source_identity_v2.py
