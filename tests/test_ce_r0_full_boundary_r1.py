@@ -170,7 +170,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
         manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
         result = evaluate_claim_release(
             self.valid_result(packet), packet, manifest, self.output(manifest, packet),
-            self.runtime(), registry, semantic_conformance=lambda text, manifest: True,
+            self.runtime(), registry,
         )
         self.assertFalse(result.authorized)
         self.assertIn("runtime_not_authorized", result.reasons)
@@ -193,7 +193,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
         )
         result = evaluate_claim_release(
             self.valid_result(packet), other_packet, manifest, self.output(manifest, packet),
-            self.runtime(), registry, semantic_conformance=lambda text, manifest: True,
+            self.runtime(), registry,
         )
         self.assertFalse(result.authorized)
         self.assertTrue(any("mismatch" in reason or "binding" in reason for reason in result.reasons))
