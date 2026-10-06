@@ -39,6 +39,23 @@ def registry() -> CanonRegistry:
     )
 
 class CanonClaimOutputGatesR1Tests(unittest.TestCase):
+    def test_unknown_canon_rule_fields_fail_closed(self) -> None:
+        reg = {
+            "rule_id":"TEST-RULE-001",
+            "canon_version":"CE-CANON-TEST-1",
+            "tradition_track":"TEST_ONLY",
+            "source_reference":"TEST-SOURCE",
+            "source_scope":"TEST-SCOPE",
+            "condition":{},
+            "allowed_interpretation":{},
+            "forbidden_extrapolation":[],
+            "confidence_language_boundary":{},
+            "applicability_scope":[],
+            "unexpected":"reject",
+        }
+        with self.assertRaisesRegex(ValueError, "unknown_fields"):
+            CanonRegistry.from_records("CE-CANON-RULE-REGISTRY-TEST-V1", [reg])
+
     def test_empty_registry_fails_closed(self) -> None:
         with self.assertRaisesRegex(CanonRegistryNotEstablished, "unpopulated"):
             CanonRegistry.empty("CE-CANON-RULE-REGISTRY-V1").get_rule("ANY")
@@ -59,6 +76,16 @@ class CanonClaimOutputGatesR1Tests(unittest.TestCase):
                 rule_id="TEST-RULE-001",
                 signal_reference="CE-SIGNAL-001",
             )
+
+    def test_manifest_unknown_fields_fail_closed(self) -> None:
+        reg = registry()
+        m = build_allowed_claim_manifest(reg, rule_id="TEST-RULE-001", signal_reference="CE-SIGNAL-001")
+        raw = m.canonical_payload()
+        raw["manifest_id"] = m.manifest_id
+        raw["unexpected"] = "reject"
+        from ce.claim.manifest import AllowedClaimManifest
+        with self.assertRaisesRegex(ManifestInvalid, "unknown_fields"):
+            AllowedClaimManifest.from_mapping(raw)
 
     def test_manifest_digest_mismatch_fails_closed(self) -> None:
         reg = registry()
