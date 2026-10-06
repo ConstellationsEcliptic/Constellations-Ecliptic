@@ -48,9 +48,14 @@ class CanonRule:
     def from_mapping(cls, value: Mapping[str, Any]) -> "CanonRule":
         if not isinstance(value, Mapping):
             raise CanonRuleInvalid("canon_rule_not_object")
-        missing = [key for key in CANON_RULE_REQUIRED_FIELDS if key not in value]
+        keys = set(value)
+        required = set(CANON_RULE_REQUIRED_FIELDS)
+        missing = required - keys
+        extra = keys - required
         if missing:
-            raise CanonRuleInvalid("canon_rule_missing_fields:" + ",".join(missing))
+            raise CanonRuleInvalid("canon_rule_missing_fields:" + ",".join(sorted(missing)))
+        if extra:
+            raise CanonRuleInvalid("canon_rule_unknown_fields:" + ",".join(sorted(extra)))
         for key in ("rule_id","canon_version","tradition_track","source_reference","source_scope"):
             if not isinstance(value[key], str) or not value[key].strip():
                 raise CanonRuleInvalid(f"canon_rule_invalid:{key}")
