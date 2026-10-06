@@ -30,6 +30,7 @@ from ce.signal.daily import (
     aggregate_daily_signals,
 )
 from ce.signal.engine import SignalResult
+from tests.signal_test_factory_r1 import build_test_qsr, build_test_signal_result
 from ce.signal.record import QualifiedSignalRecord, issue_qualified_signal_record
 
 
@@ -207,28 +208,28 @@ class CER0HardeningTests(unittest.TestCase):
         self.assertEqual(result.qualifying_signal_refs[0].startswith("CE-SIGNAL-"), True)
 
     def test_legacy_signal_and_qsr_aggregation_paths_fail_closed(self) -> None:
-        fake_signal = SignalResult(
-            CalculationStatus.VALID,
-            "ROBUST_EXACT_SIGNAL",
-            "EXACT",
-            "ROBUST",
-            "FORGED:" + "0" * 64,
-            True,
+        fake_signal = build_test_signal_result(
+            status=CalculationStatus.VALID,
+            classification="ROBUST_EXACT_SIGNAL",
+            phase="EXACT",
+            uncertainty_state="ROBUST",
+            evidence_packet_ref="FORGED:" + "0" * 64,
+            canon_input_valid=True,
         )
         with self.assertRaisesRegex(ValueError, "daily_signal_result_path_removed"):
             aggregate_daily_signals([fake_signal])
-        fake_record = QualifiedSignalRecord(
-            "CE-QUALIFIED-SIGNAL-RECORD-V1",
-            "CE-SIGNAL-FORGED",
-            "FORGED:" + "0" * 64,
-            "2026-01-01T00:00:00Z",
-            "VALID",
-            "ROBUST_EXACT_SIGNAL",
-            "EXACT",
-            "UNIFORM",
-            True,
-            False,
-            "sha256:" + "0" * 64,
+        fake_record = build_test_qsr(
+            schema_version="CE-QUALIFIED-SIGNAL-RECORD-V1",
+            signal_id="CE-SIGNAL-FORGED",
+            evidence_packet_ref="FORGED:" + "0" * 64,
+            timestamp_observation_utc="2026-01-01T00:00:00Z",
+            qualification_status="VALID",
+            classification="ROBUST_EXACT_SIGNAL",
+            kinematic_phase="EXACT",
+            phase_uniformity="UNIFORM",
+            canon_input_valid=True,
+            requires_uncertainty_disclaimer=False,
+            environment_pin="sha256:" + "0" * 64,
         )
         with self.assertRaisesRegex(ValueError, "daily_qsr_path_removed"):
             aggregate_qualified_signal_records([fake_record], observation_completed=True)

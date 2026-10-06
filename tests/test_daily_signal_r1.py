@@ -17,6 +17,7 @@ from ce.signal.daily import (
 )
 from ce.signal.engine import SignalResult
 from ce.signal.record import QualifiedSignalRecord
+from tests.signal_test_factory_r1 import build_test_qsr, build_test_signal_result
 
 
 class DailySignalR1Tests(unittest.TestCase):
@@ -95,21 +96,28 @@ class DailySignalR1Tests(unittest.TestCase):
         )
 
     def _result(self, *, status: CalculationStatus = CalculationStatus.VALID) -> SignalResult:
-        return SignalResult(status, None, None, None, "R:hash", False)
+        return build_test_signal_result(
+            status=status,
+            classification=None,
+            phase=None,
+            uncertainty_state=None,
+            evidence_packet_ref="R:hash",
+            canon_input_valid=False,
+        )
 
     def _record(self) -> QualifiedSignalRecord:
-        return QualifiedSignalRecord(
-            "CE-QUALIFIED-SIGNAL-RECORD-V1",
-            "CE-SIGNAL-" + "1" * 64,
-            "E-1:" + "2" * 64,
-            "2026-01-01T00:00:00Z",
-            "VALID",
-            "ROBUST_EXACT_SIGNAL",
-            "EXACT",
-            "UNIFORM",
-            True,
-            False,
-            "sha256:" + "3" * 64,
+        return build_test_qsr(
+            schema_version="CE-QUALIFIED-SIGNAL-RECORD-V1",
+            signal_id="CE-SIGNAL-" + "1" * 64,
+            evidence_packet_ref="E-1:" + "2" * 64,
+            timestamp_observation_utc="2026-01-01T00:00:00Z",
+            qualification_status="VALID",
+            classification="ROBUST_EXACT_SIGNAL",
+            kinematic_phase="EXACT",
+            phase_uniformity="UNIFORM",
+            canon_input_valid=True,
+            requires_uncertainty_disclaimer=False,
+            environment_pin="sha256:" + "3" * 64,
         )
 
     def test_empty_completed_day_is_quiet_sky(self) -> None:

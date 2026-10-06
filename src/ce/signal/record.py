@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import re
 
 from ce.calculation.evidence import EvidencePacket
@@ -28,8 +28,14 @@ class QualifiedSignalRecord:
     canon_input_valid: bool
     requires_uncertainty_disclaimer: bool
     environment_pin: str
+    _issued: bool = field(default=False, init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
+        if not self._issued:
+            raise ValueError("qualified_signal_record_must_be_issued")
+        self._validate_issued()
+
+    def _validate_issued(self) -> None:
         if self.schema_version != QUALIFIED_SIGNAL_RECORD_SCHEMA_VERSION:
             raise ValueError("qualified_signal_schema_version_mismatch")
         if not isinstance(self.signal_id, str) or not self.signal_id.startswith("CE-SIGNAL-"):
@@ -53,6 +59,26 @@ class QualifiedSignalRecord:
             raise ValueError("qualified_signal_canon_input_invalid")
         if not isinstance(self.environment_pin, str) or not self.environment_pin.startswith("sha256:") or not _SHA256_RE.fullmatch(self.environment_pin[7:]):
             raise ValueError("qualified_signal_environment_pin_invalid")
+
+    def validate(self) -> tuple[str, ...]:
+        if not self._issued:
+            return ("qualified_signal_record_not_issued",)
+        try:
+            self._validate_issued()
+        except ValueError as exc:
+            return (str(exc),)
+        return ()
+
+
+def _issue_qualified_signal_record(**kwargs: object) -> QualifiedSignalRecord:
+    record = object.__new__(QualifiedSignalRecord)
+    for name, value in kwargs.items():
+        object.__setattr__(record, name, value)
+    object.__setattr__(record, "_issued", True)
+    errors = record.validate()
+    if errors:
+        raise ValueError("qualified_signal_record_invalid:" + ";".join(errors))
+    return record
 
 
 def _signal_geometry_identity(packet: EvidencePacket) -> set[tuple[str, str, str, float]]:
@@ -148,7 +174,7 @@ def issue_qualified_signal_record(packet: EvidencePacket) -> QualifiedSignalReco
 
     requires_disclaimer = result.uncertainty_state in {"POSSIBLE", "MIXED"}
 
-    return QualifiedSignalRecord(
+    return _issue_qualified_signal_record(
         schema_version=QUALIFIED_SIGNAL_RECORD_SCHEMA_VERSION,
         signal_id=signal_id,
         evidence_packet_ref=expected_ref,

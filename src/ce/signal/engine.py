@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
@@ -17,7 +17,37 @@ class SignalResult:
     uncertainty_state: str | None
     evidence_packet_ref: str | None
     canon_input_valid: bool
+    _issued: bool = field(default=False, init=False, repr=False, compare=False)
 
+    def __post_init__(self) -> None:
+        if not self._issued:
+            raise ValueError("signal_result_must_be_issued")
+
+    def validate(self) -> tuple[str, ...]:
+        return () if self._issued else ("signal_result_not_issued",)
+
+
+def _issue_signal_result(
+    *,
+    status: CalculationStatus,
+    classification: str | None,
+    phase: str | None,
+    uncertainty_state: str | None,
+    evidence_packet_ref: str | None,
+    canon_input_valid: bool,
+) -> SignalResult:
+    result = object.__new__(SignalResult)
+    object.__setattr__(result, "status", status)
+    object.__setattr__(result, "classification", classification)
+    object.__setattr__(result, "phase", phase)
+    object.__setattr__(result, "uncertainty_state", uncertainty_state)
+    object.__setattr__(result, "evidence_packet_ref", evidence_packet_ref)
+    object.__setattr__(result, "canon_input_valid", canon_input_valid)
+    object.__setattr__(result, "_issued", True)
+    errors = result.validate()
+    if errors:
+        raise ValueError("signal_result_invalid:" + ";".join(errors))
+    return result
 
 class SignalEngine:
     """Pure-read signal qualification boundary.
@@ -28,7 +58,7 @@ class SignalEngine:
 
     @staticmethod
     def _failure() -> SignalResult:
-        return SignalResult(
+        return _issue_signal_result(
             status=CalculationStatus.CALCULATION_FAILURE,
             classification=None,
             phase=None,
@@ -115,7 +145,7 @@ class SignalEngine:
                 upstream_status = CalculationStatus(calculation_status)
             except (TypeError, ValueError):
                 upstream_status = CalculationStatus.CALCULATION_FAILURE
-            return SignalResult(
+            return _issue_signal_result(
                 status=upstream_status,
                 classification="DISQUALIFIED_CALCULATION_FAILURE",
                 phase=None,
@@ -129,7 +159,7 @@ class SignalEngine:
         if resolution_status is None:
             resolution_status = resolution.get("status")
         if resolution_status != "MATCH" or calculation_result.errors:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.CALCULATION_FAILURE,
                 classification="DISQUALIFIED_CALCULATION_FAILURE",
                 phase=None,
@@ -140,7 +170,7 @@ class SignalEngine:
 
         uncertainty = calculation_result.scenario_window_state
         if not isinstance(uncertainty, str) or uncertainty == "NONE":
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification="DISQUALIFIED_OUT_OF_ORB",
                 phase=None,
@@ -151,7 +181,7 @@ class SignalEngine:
 
         phase = self._phase(calculation_result)
         if phase == "NEAR_STATIONARY" or phase is None:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification="DISQUALIFIED_KINEMATIC_STATE",
                 phase=phase,
@@ -164,7 +194,7 @@ class SignalEngine:
         # Packet contains an exact event that is future relative to the
         # observation start. No event is inferred.
         if phase in {"APPLYING", "SEPARATING"} and not self._future_exact_event_exists(calculation_result):
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification=None,
                 phase=phase,
@@ -178,7 +208,7 @@ class SignalEngine:
         elif uncertainty in {"POSSIBLE", "MIXED"}:
             prefix = "POSSIBLE"
         else:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification=None,
                 phase=phase,
@@ -197,7 +227,7 @@ class SignalEngine:
             classification = "POSSIBLE_MIXED_SIGNAL" if prefix == "POSSIBLE" else None
 
         if classification is None:
-            return SignalResult(
+            return _issue_signal_result(
                 status=CalculationStatus.VALID,
                 classification=None,
                 phase=phase,
@@ -206,7 +236,7 @@ class SignalEngine:
                 canon_input_valid=False,
             )
 
-        return SignalResult(
+        return _issue_signal_result(
             status=CalculationStatus.VALID,
             classification=classification,
             phase=phase,
