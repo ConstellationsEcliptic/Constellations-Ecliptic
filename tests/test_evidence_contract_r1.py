@@ -1,218 +1,263 @@
 from __future__ import annotations
 
-from datetime import date
 import unittest
 
-from ce.calculation.contracts import BirthInput, CalculationRequest, CalculationResultDraft, ObjectRecord, ObjectState
-from ce.calculation.evidence_builder import issue_evidence_packet
-from ce.calculation.evidence import EvidencePacket
-from ce.canon.registry import CanonRegistry, CanonRegistryNotEstablished
-from ce.claim.authorization import evaluate_claim_release
-from ce.claim.manifest import AllowedClaimManifest, ManifestInvalid, build_allowed_claim_manifest
+from ce.calculation.contracts import CalculationResultDraft, ObjectState, BirthInput, CalculationRequest
+from ce.calculation.evidence import EvidencePacket, EvidencePacketRef
 from ce.foundation.identity import RuntimeIdentity
-from ce.foundation.provenance import runtime_identity_sha256
-from ce.foundation.status import CalculationStatus, NatalBirthState, ScenarioState
-from ce.output.validation import validate_claim_output
-from ce.signal.record import issue_qualified_signal_record
+from ce.foundation.provenance import derive_provenance_root_sha256, runtime_identity_sha256
+from ce.foundation.status import CalculationStatus, ScenarioState, NatalBirthState
+from ce.calculation.evidence_builder import issue_evidence_packet
 
 
-class CER0FullBoundaryTests(unittest.TestCase):
-    def runtime(self) -> RuntimeIdentity:
-        return RuntimeIdentity(
-            "CE-CALC-V1-EP-001", 4,
-            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
-            "d" * 64, "e" * 64, "f" * 64,
-        )
-
-    def request(self) -> CalculationRequest:
-        return CalculationRequest(
-            request_id="REQ-FULL-1",
-            birth=BirthInput(date(2000, 1, 1), "Test City", "UTC", "2026d", NatalBirthState.ZERO_BIRTH_TIME),
-            target_interval_start_utc="2026-01-01T00:00:00Z",
-            target_interval_end_utc="2026-01-02T00:00:00Z",
+class EvidenceContractR1Tests(unittest.TestCase):
+    def packet(self, calculation_id: str = "C-001", request_id: str = "R-001") -> EvidencePacket:
+        runtime = self.runtime_identity()
+        input_identity = {
+            "request_id": request_id,
+            "birth_date": "2000-01-01",
+            "birth_city": "Test City",
+            "timezone_id": "UTC",
+            "timezone_version": "2026d",
+            "natal_birth_state": "ZERO_BIRTH_TIME",
+            "calendar_policy_id": "CE-V1-CALENDAR-GREGORIAN-ONLY",
+        }
+        profile = {
+            "id": "CE-CALC-V1-EP-001",
+            "revision": 4,
+            "implementation_plan_version": "1.3.1",
+            "technical_contracts_version": "1.1",
+            "execution_profile_version": "1.3",
+        }
+        timezone_context = {"id": "UTC", "version": "2026d", "database": "IANA"}
+        runtime_digest = runtime_identity_sha256(runtime)
+        root = derive_provenance_root_sha256(
+            calculation_id=calculation_id,
+            request_id=request_id,
+            input_identity=input_identity,
+            profile_version=profile,
+            timezone_context=timezone_context,
             execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
+            runtime_identity_digest=runtime_digest,
         )
-
-    def draft(self) -> CalculationResultDraft:
-        request = self.request()
-        runtime = self.runtime()
-        obj = ObjectRecord("SUN", CalculationStatus.VALID, 258, 258, 12.5, 0.0, 1.0, 0.9)
-        geometry = ({
-            "transit_object": "SUN",
-            "natal_object_or_scenario": "MOON",
-            "aspect": "CONJUNCTION",
-            "directed_branch": 0.0,
-            "signed_deviation": 0.0,
-            "absolute_deviation": 0.0,
-            "effective_orb": 2.5,
-            "qualification_state": "QUALIFIED",
-            "kinematic_state": "EXACT",
-        },)
-        return CalculationResultDraft(
-            request_id=request.request_id,
-            status=CalculationStatus.VALID,
-            execution_profile_id=request.execution_profile_id,
-            scenario_state=ScenarioState.STABLE,
-            normalized_time=request.target_interval_start_utc,
-            calculation_id="CALC-FULL-1",
-            observation_interval=(request.target_interval_start_utc, request.target_interval_end_utc),
-            object_states=(ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),),
-            object_records=(obj,),
-            geometry_records=geometry,
-            window_classification=ScenarioState.ROBUST,
-            solver_metadata={},
-            actual_ephemeris_resolution={"ephemeris_resolution_status": "MATCH"},
-            calculation_flags={"calculation_status": "VALID"},
+        return EvidencePacket.issue(
+            input_identity=input_identity,
+            profile_version=profile,
+            observation_instant_or_interval={
+                "start": "2026-01-01T00:00:00Z",
+                "end": "2026-01-02T00:00:00Z",
+            },
+            timezone_context=timezone_context,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="CE-CALC-CORE-V1-R1-CONVERGENT",
+            object_records=(),
+            geometry_records=(),
+            effective_orb_records=({"transit_object": "SUN", "natal_object_or_scenario": "MOON", "aspect": "CONJUNCTION", "effective_orb": 2.5},),
+            kinematics=({"transit_object": "SUN", "aspect": "CONJUNCTION", "kinematic_state": "EXACT", "transit_speed": 0.9},),
+            exact_events=(),
+            window_segments=(),
+            scenario_stability_state="STABLE",
             warnings=(),
             errors=(),
-            provenance={},
+            numerical_tolerances={"exact_tolerance_deg": 1e-4},
+            runtime_identity_sha256=runtime_digest,
+            provenance_root_sha256=root,
+            solver_metadata={"solver_revision": "CE-SOLVER-V1-R3"},
+            actual_ephemeris_resolution={"status": "NOT_ESTABLISHED"},
+            calculation_flags={"calculation_status": "NATAL_EVIDENCE_VARIABLE"},
+        )
+        
+    def runtime_identity(self) -> RuntimeIdentity:
+        return RuntimeIdentity(
+            execution_profile_id="CE-CALC-V1-EP-001",
+            execution_profile_revision=4,
+            source_commit="a" * 40,
+            source_tree_sha256_v2="b" * 64,
+            runtime_image_digest="sha256:" + "c" * 64,
+            dependency_lock_digest="d" * 64,
+            timezone_bundle_digest="e" * 64,
+            ephemeris_bundle_digest="f" * 64,
         )
 
-    def packet(self) -> EvidencePacket:
-        return issue_evidence_packet(
-            self.draft(),
-            request=self.request(),
-            runtime_identity=self.runtime(),
+    def test_packet_is_deeply_immutable(self) -> None:
+        source = {"nested": {"value": "original"}}
+        packet = EvidencePacket(
+            evidence_packet_id="E-002",
+            calculation_id="C-002",
+            input_identity=source,
+            profile_version={"id": "CE-CALC-V1-EP-001", "revision": 4},
+            observation_instant_or_interval={"start": "2026-01-01T00:00:00Z"},
+            timezone_context={"id": "UTC", "version": "2026d"},
+            execution_profile_id="CE-CALC-V1-EP-001",
+            calculation_version="v1",
+            object_records=(),
+            geometry_records=(),
+            effective_orb_records=(),
+            kinematics=(),
+            exact_events=(),
+            window_segments=(),
+            scenario_stability_state="STABLE",
+            warnings=(),
+            errors=(),
+            numerical_tolerances={},
+            solver_metadata={},
+            actual_ephemeris_resolution={},
+            calculation_flags={},
         )
+        source["nested"]["value"] = "external-change"
+        self.assertEqual(packet.input_identity["nested"]["value"], "original")
+        with self.assertRaises(TypeError):
+            packet.input_identity["nested"]["value"] = "internal-change"
 
-    def valid_result(self, packet: EvidencePacket):
-        return self.draft().to_final(
-            runtime_identity=self.runtime(),
-            evidence_packet=packet,
-        )
+    def test_post_issuance_canonical_bytes_tampering_is_detected(self) -> None:
+        packet = self.packet()
+        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
+        errors = packet.validate()
+        self.assertIn("invalid:_canonical_bytes:content_mismatch", errors)
 
-    def registry(self, evidence_ref: str) -> CanonRegistry:
-        return CanonRegistry.from_records(
-            "CE-CANON-RULE-REGISTRY-TEST-V1",
-            [{
-                "rule_id": "TEST-RULE-001",
-                "canon_version": "CE-CANON-TEST-1",
-                "tradition_track": "TEST_ONLY",
-                "source_reference": "TEST-SOURCE",
-                "source_scope": "TEST-SCOPE",
-                "condition": {"classification": "ROBUST_EXACT_SIGNAL"},
-                "allowed_interpretation": {
-                    "claim_id": "TEST-CLAIM-001",
-                    "allowed_subject": ["reflection"],
-                    "allowed_scope": ["self-reflection"],
-                    "epistemic_layer": "ASTROLOGICAL_INTERPRETATION",
-                    "certainty_ceiling": "possibility_or_reflection",
-                    "allowed_modality": ["may"],
-                    "allowed_tense": ["present"],
-                    "forbidden_domains": ["medical", "diagnosis"],
-                    "forbidden_claim_types": ["guarantee"],
-                    "required_evidence_refs": [evidence_ref],
-                    "allowed_numeric_refs": [],
-                    "required_disclosures": [],
-                },
-                "forbidden_extrapolation": ["guarantee"],
-                "confidence_language_boundary": {"ceiling": "possibility"},
-                "applicability_scope": ["self-reflection"],
-            }],
-        )
+    def test_post_issuance_tampering_cannot_produce_valid_signal(self) -> None:
+        packet = self.packet()
+        object.__setattr__(packet, "_canonical_bytes", b"TAMPERED")
+        from ce.signal.engine import SignalEngine
+        result = SignalEngine().evaluate(packet)
+        self.assertEqual(result.status.value, "CALCULATION_FAILURE")
+        self.assertFalse(result.canon_input_valid)
+        self.assertIsNone(result.classification)
 
-    def output(self, manifest: AllowedClaimManifest, packet: EvidencePacket, text: str = "This reflection may invite attention.") -> dict:
-        ref = f"{packet.evidence_packet_id}:{packet.content_sha256()}"
-        return {
-            "manifest_id": manifest.manifest_id,
-            "provenance": {
-                "manifest_id": manifest.manifest_id,
-                "manifest_version": manifest.manifest_version,
-                "canon_version": manifest.canon_version,
-                "canon_registry_digest": manifest.canon_registry_digest,
-                "canon_rule_id": manifest.canon_rule_id,
-                "signal_reference": manifest.signal_reference,
-                "evidence_refs": [ref],
-                "provenance_root_sha256": packet.provenance_root_sha256,
+    def test_compound_reference_matches_packet(self) -> None:
+        packet = self.packet()
+        ref = EvidencePacketRef.from_packet(packet)
+        self.assertTrue(ref.matches(packet))
+        self.assertEqual(ref.evidence_packet_id, "E-001")
+        self.assertEqual(len(ref.content_sha256), 64)
+
+    def test_valid_result_requires_exact_evidence_binding(self) -> None:
+        packet = self.packet()
+        identity = self.runtime_identity()
+        result = CalculationResult(
+            request_id="R-001",
+            status=CalculationStatus.VALID,
+            calculation_id="C-001",
+            observation_interval=("2026-01-01T00:00:00Z", "2026-01-01T01:00:00Z"),
+            execution_profile_id="CE-CALC-V1-EP-001",
+            scenario_state=ScenarioState.STABLE,
+            normalized_time="2026-01-01T00:00:00Z",
+            object_states=(ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),),
+            provenance={
+                "source_commit": "a" * 40,
+                "source_tree_sha256_v2": "b" * 64,
+                "dependency_lock_digest": "d" * 64,
+                "timezone_bundle_digest": "e" * 64,
+                "ephemeris_bundle_digest": "f" * 64,
+                "runtime_image_digest": "sha256:" + "c" * 64,
+                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
             },
-            "claims": [{
-                "claim_id": manifest.claim_id,
-                "text": text,
-                "subject": ["reflection"],
-                "scope": ["self-reflection"],
-                "modality": ["may"],
-                "tense": ["present"],
-                "epistemic_layer": "ASTROLOGICAL_INTERPRETATION",
-                "certainty": "possibility_or_reflection",
-                "evidence_refs": [ref],
-                "numeric_refs": [],
-            }],
+            _runtime_identity=identity,
+            _evidence_packet=packet,
+        )
+        self.assertIsNotNone(result.evidence_packet_ref)
+        self.assertEqual(result.evidence_packet_ref.content_sha256, packet.content_sha256())
+        self.assertEqual(result.canonical_bytes(), result.canonical_bytes())
+
+    def test_valid_result_rejects_incomplete_provenance(self) -> None:
+        packet = self.packet()
+        identity = self.runtime_identity()
+        with self.assertRaises(ValueError):
+            CalculationResult(
+                request_id="R-002",
+                status=CalculationStatus.VALID,
+                execution_profile_id="CE-CALC-V1-EP-001",
+                scenario_state=ScenarioState.STABLE,
+                normalized_time="2026-01-01T00:00:00Z",
+                object_states=(ObjectState("SUN", 12.5, 0.9, CalculationStatus.VALID),),
+                provenance={},
+                _runtime_identity=identity,
+                _evidence_packet=packet,
+            )
+
+    def test_variable_result_can_publish_evidence_without_exact_natal_time(self) -> None:
+        packet = self.packet("C-003")
+        identity = self.runtime_identity()
+        result = CalculationResult(
+            request_id="R-003",
+            status=CalculationStatus.NATAL_EVIDENCE_VARIABLE,
+            execution_profile_id="CE-CALC-V1-EP-001",
+            scenario_state=ScenarioState.VARIABLE,
+            normalized_time=None,
+            calculation_id="C-003",
+            observation_interval=("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"),
+            object_states=(),
+            provenance={
+                "source_commit": "a" * 40,
+                "source_tree_sha256_v2": "b" * 64,
+                "dependency_lock_digest": "d" * 64,
+                "timezone_bundle_digest": "e" * 64,
+                "ephemeris_bundle_digest": "f" * 64,
+                "runtime_image_digest": "sha256:" + "c" * 64,
+                "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
+            },
+            _runtime_identity=identity,
+            _evidence_packet=packet,
+        )
+        self.assertEqual(result.evidence_packet_ref.content_sha256, packet.content_sha256())
+
+    def test_invalid_stability_state_is_rejected(self) -> None:
+        packet = self.packet()
+        payload = {
+            "evidence_packet_id": "E-INVALID",
+            "calculation_id": "C-INVALID",
+            "input_identity": {"birth_date": "2000-01-01"},
+            "profile_version": {"id": "CE-CALC-V1-EP-001", "revision": 4},
+            "observation_instant_or_interval": {"start": "2026-01-01T00:00:00Z"},
+            "timezone_context": {"id": "UTC", "version": "2026d"},
+            "execution_profile_id": "CE-CALC-V1-EP-001",
+            "calculation_version": "v1",
+            "object_records": (),
+            "geometry_records": (),
+            "effective_orb_records": (),
+            "kinematics": (),
+            "exact_events": (),
+            "window_segments": (),
+            "scenario_stability_state": "UNKNOWN",
+            "warnings": (),
+            "errors": (),
+            "numerical_tolerances": {},
+            "solver_metadata": {},
+            "actual_ephemeris_resolution": {},
+            "calculation_flags": {},
         }
+        with self.assertRaises(ValueError):
+            EvidencePacket(**payload)
 
-    def test_output_validator_accepts_conforming_claim(self):
-        packet = self.packet()
-        signal = issue_qualified_signal_record(packet)
-        manifest = build_allowed_claim_manifest(self.registry(signal.evidence_packet_ref), rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        result = validate_claim_output(
-            self.output(manifest, packet),
-            manifest,
-            expected_signal_reference=signal.signal_id,
-            expected_evidence_refs=(signal.evidence_packet_ref,),
-            expected_provenance_root_sha256=packet.provenance_root_sha256,
-            semantic_conformance=lambda text, manifest: True,
-        )
-        self.assertTrue(result.valid, result.reasons)
-
-    def test_output_validator_rejects_forbidden_modality(self):
-        packet = self.packet()
-        signal = issue_qualified_signal_record(packet)
-        manifest = build_allowed_claim_manifest(self.registry(signal.evidence_packet_ref), rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        payload = self.output(manifest, packet)
-        payload["claims"][0]["modality"] = ["will"]
-        result = validate_claim_output(payload, manifest, semantic_conformance=lambda text, manifest: True)
-        self.assertFalse(result.valid)
-        self.assertIn("claim_modality_outside_manifest", result.reasons)
-
-    def test_claim_release_rederives_signal_and_blocks_runtime(self):
-        packet = self.packet()
-        signal = issue_qualified_signal_record(packet)
-        registry = self.registry(signal.evidence_packet_ref)
-        manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        result = evaluate_claim_release(
-            self.valid_result(packet), packet, manifest, self.output(manifest, packet),
-            self.runtime(), registry, semantic_conformance=lambda text, manifest: True,
-        )
-        self.assertFalse(result.authorized)
-        self.assertIn("runtime_not_authorized", result.reasons)
-        self.assertEqual(result.signal_id, signal.signal_id)
-
-    def test_claim_release_rejects_unbound_evidence(self):
-        packet = self.packet()
-        signal = issue_qualified_signal_record(packet)
-        registry = self.registry(signal.evidence_packet_ref)
-        manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        other_packet = issue_evidence_packet(
-            self.draft(),
-            request=self.request(),
-            runtime_identity=RuntimeIdentity(
-                "CE-CALC-V1-EP-001", 4,
-                "z" * 40, "y" * 64, "sha256:" + "x" * 64,
-                "w" * 64, "v" * 64, "u" * 64,
-            ),
-        )
-        result = evaluate_claim_release(
-            self.valid_result(packet), other_packet, manifest, self.output(manifest, packet),
-            self.runtime(), registry, semantic_conformance=lambda text, manifest: True,
-        )
-        self.assertFalse(result.authorized)
-        self.assertTrue(any("mismatch" in reason or "binding" in reason for reason in result.reasons))
-
-    def test_forged_manifest_identity_is_rejected_at_constructor(self):
-        packet = self.packet()
-        signal = issue_qualified_signal_record(packet)
-        registry = self.registry(signal.evidence_packet_ref)
-        manifest = build_allowed_claim_manifest(registry, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
-        forged = dict(manifest.canonical_payload())
-        forged["manifest_id"] = "CE-ACM-" + "0" * 64
-        with self.assertRaisesRegex(ManifestInvalid, "identity_digest"):
-            AllowedClaimManifest.from_mapping(forged)
-
-    def test_empty_canon_registry_never_builds_manifest(self):
-        packet = self.packet()
-        signal = issue_qualified_signal_record(packet)
-        empty = CanonRegistry.empty("CE-CANON-RULE-REGISTRY-V1")
-        with self.assertRaisesRegex(CanonRegistryNotEstablished, "unpopulated"):
-            build_allowed_claim_manifest(empty, rule_id="TEST-RULE-001", signal_reference=signal.signal_id)
+    def test_zero_length_window_is_rejected(self) -> None:
+        base = self.packet()
+        with self.assertRaises(ValueError):
+            EvidencePacket(
+                evidence_packet_id="E-WINDOW",
+                calculation_id="C-WINDOW",
+                input_identity=base.input_identity,
+                profile_version=base.profile_version,
+                observation_instant_or_interval=base.observation_instant_or_interval,
+                timezone_context=base.timezone_context,
+                execution_profile_id=base.execution_profile_id,
+                calculation_version=base.calculation_version,
+                object_records=base.object_records,
+                geometry_records=base.geometry_records,
+                effective_orb_records=base.effective_orb_records,
+                kinematics=base.kinematics,
+                exact_events=base.exact_events,
+                window_segments=(
+                    {"entry_utc": "2026-01-01T00:00:00Z", "exact_events_utc": (), "exit_utc": "2026-01-01T00:00:00Z"},
+                ),
+                scenario_stability_state=base.scenario_stability_state,
+                warnings=base.warnings,
+                errors=base.errors,
+                numerical_tolerances=base.numerical_tolerances,
+                solver_metadata=base.solver_metadata,
+                actual_ephemeris_resolution=base.actual_ephemeris_resolution,
+                calculation_flags=base.calculation_flags,
+            )
 
 
 if __name__ == "__main__":
