@@ -176,6 +176,26 @@ class CER0FullBoundaryTests(unittest.TestCase):
         self.assertIn("runtime_not_authorized", result.reasons)
         self.assertEqual(result.signal_id, signal.signal_id)
 
+    def test_claim_release_requires_internal_semantic_verifier(self):
+        packet = self.packet()
+        signal = issue_qualified_signal_record(packet)
+        registry = self.registry(signal.evidence_packet_ref)
+        manifest = build_allowed_claim_manifest(
+            registry,
+            rule_id="TEST-RULE-001",
+            signal_reference=signal.signal_id,
+        )
+        result = evaluate_claim_release(
+            self.valid_result(packet),
+            packet,
+            manifest,
+            self.output(manifest, packet),
+            self.runtime(),
+            registry,
+        )
+        self.assertFalse(result.authorized)
+        self.assertIn("semantic_conformance_unavailable", result.reasons)
+
     def test_claim_release_rejects_unbound_evidence(self):
         packet = self.packet()
         signal = issue_qualified_signal_record(packet)
