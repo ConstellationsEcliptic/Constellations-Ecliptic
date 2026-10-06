@@ -56,14 +56,55 @@ def _contains(text: str, value: str) -> bool:
 def _numbers(text: str)->tuple[str,...]:
     return tuple(re.findall(r"(?<![\w])[-+]?\d+(?:[.,]\d+)?%?",text))
 
-def _subset(name: str, actual: Any, allowed: Sequence[str], reasons: list[str]) -> None:
-    if not isinstance(actual, Sequence) or isinstance(actual,(str,bytes,bytearray)):
+def _subset(
+    name: str,
+    actual: Any,
+    allowed: Sequence[str],
+    reasons: list[str],
+    *,
+    require_nonempty: bool = True,
+) -> None:
+    if not isinstance(actual, Sequence) or isinstance(actual, (str, bytes, bytearray)):
         reasons.append(f"claim_{name}_not_array")
         return
-    values={str(x) for x in actual}
-    allowed_set=_phrases(allowed)
-    if not values or any(" ".join(v.casefold().replace("-"," ").split()) not in allowed_set for v in values):
+
+    values = list(actual)
+    if require_nonempty and not values:
+        reasons.append(f"claim_{name}_empty")
+        return
+
+    if any(not isinstance(item, str) or not item.strip() for item in values):
+        reasons.append(f"claim_{name}_item_type_invalid")
         reasons.append(f"claim_{name}_outside_manifest")
+        return
+
+    if len(set(values)) != len(values):
+        reasons.append(f"claim_{name}_duplicates")
+
+    normalized = {
+        " ".join(item.casefold().replace("-", " ").split())
+        for item in values
+    }
+    allowed_set = _phrases(allowed)
+    if any(value not in allowed_set for value in normalized):
+        reasons.append(f"claim_{name}_outside_manifest")
+
+
+def _strict_string_sequence(
+    name: str,
+    actual: Any,
+    reasons: list[str],
+) -> list[str] | None:
+    if not isinstance(actual, Sequence) or isinstance(actual, (str, bytes, bytearray)):
+        reasons.append(f"{name}_not_array")
+        return None
+    values = list(actual)
+    if any(not isinstance(item, str) or not item.strip() for item in values):
+        reasons.append(f"{name}_item_type_invalid")
+        return None
+    if len(set(values)) != len(values):
+        reasons.append(f"{name}_duplicates")
+    return values
 
 def validate_claim_output(
     payload: Any,
@@ -107,12 +148,14 @@ def validate_claim_output(
         for key,expected in checks.items():
             if provenance.get(key)!=expected:
                 reasons.append(f"output_provenance_{key}_mismatch")
-        ev=provenance.get("evidence_refs")
-        if not isinstance(ev,Sequence) or isinstance(ev,(str,bytes,bytearray)):
-            reasons.append("output_provenance_evidence_refs_invalid")
-        else:
-            ev_set={str(x) for x in ev}
-            required_set=set(expected_evidence_refs) or set(manifest.required_evidence_refs)
+        ev_values = _strict_string_sequence(
+            "output_provenance_evidence_refs",
+            provenance.get("evidence_refs"),
+            reasons,
+        )
+        if ev_values is not None:
+            ev_set = set(ev_values)
+            required_set = set(expected_evidence_refs) or set(manifest.required_evidence_refs)
             if not required_set.issubset(ev_set):
                 reasons.append("output_provenance_missing_evidence_refs")
         if expected_provenance_root_sha256 is not None and provenance.get("provenance_root_sha256")!=expected_provenance_root_sha256:
@@ -147,21 +190,25 @@ def validate_claim_output(
                 if claim.get("certainty")!=manifest.certainty_ceiling:
                     reasons.append("claim_certainty_exceeds_or_mismatches_ceiling")
 
-                evidence_refs=claim.get("evidence_refs")
-                if not isinstance(evidence_refs,Sequence) or isinstance(evidence_refs,(str,bytes,bytearray)):
-                    reasons.append("claim_evidence_refs_invalid")
-                else:
-                    ev_set={str(x) for x in evidence_refs}
-                    required=set(expected_evidence_refs) or set(manifest.required_evidence_refs)
-                    if not required.issubset(ev_set) or any(str(x) not in required for x in ev_set):
+                evidence_refs = _strict_string_sequence(
+                    "claim_evidence_refs",
+                    claim.get("evidence_refs"),
+                    reasons,
+                )
+                if evidence_refs is not None:
+                    required = set(expected_evidence_refs) or set(manifest.required_evidence_refs)
+                    ev_set = set(evidence_refs)
+                    if not required.issubset(ev_set) or any(value not in required for value in ev_set):
                         reasons.append("claim_evidence_refs_outside_manifest")
 
-                numeric_refs=claim.get("numeric_refs")
-                if not isinstance(numeric_refs,Sequence) or isinstance(numeric_refs,(str,bytes,bytearray)):
-                    reasons.append("claim_numeric_refs_invalid")
-                else:
-                    allowed=set(manifest.allowed_numeric_refs)
-                    if any(str(x) not in allowed for x in numeric_refs):
+                numeric_refs = _strict_string_sequence(
+                    "claim_numeric_refs",
+                    claim.get("numeric_refs"),
+                    reasons,
+                )
+                if numeric_refs is not None:
+                    allowed = set(manifest.allowed_numeric_refs)
+                    if any(value not in allowed for value in numeric_refs):
                         reasons.append("claim_numeric_reference_not_allowed")
 
                 if any(p.search(text) for p in _GUARANTEE_PATTERNS):
