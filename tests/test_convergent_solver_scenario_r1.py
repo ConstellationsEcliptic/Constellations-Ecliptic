@@ -46,6 +46,30 @@ class ConvergentSolverScenarioTests(unittest.TestCase):
         self.assertGreater(samples[0], start)
         self.assertTrue(MIN_SCENARIO_COUNT <= DEFAULT_SCENARIO_COUNT <= MAX_SCENARIO_COUNT)
 
+    def test_midpoint_lattice_uses_exact_integer_microseconds(self) -> None:
+        start = datetime(1900, 1, 1, tzinfo=timezone.utc)
+        end = datetime(2200, 1, 1, tzinfo=timezone.utc)
+        count = 24
+        samples = build_scenario_instants(start, end, count)
+        total_microseconds = int((end - start).total_seconds()) * 1_000_000
+        expected_offsets = [
+            ((2 * index + 1) * total_microseconds) // (2 * count)
+            for index in range(count)
+        ]
+        actual_offsets = [
+            int((sample - start).total_seconds() * 1_000_000)
+            for sample in samples
+        ]
+        self.assertEqual(actual_offsets, expected_offsets)
+
+    def test_canonical_utc_preserves_microseconds_without_padding_zeroes(self) -> None:
+        from ce.calculation.scenario_windows import canonical_utc
+
+        precise = datetime(2026, 1, 2, 3, 4, 5, 123456, tzinfo=timezone.utc)
+        exact_second = datetime(2026, 1, 2, 3, 4, 5, tzinfo=timezone.utc)
+        self.assertEqual(canonical_utc(precise), "2026-01-02T03:04:05.123456Z")
+        self.assertEqual(canonical_utc(exact_second), "2026-01-02T03:04:05Z")
+
     def test_possible_and_robust_classification(self) -> None:
         state, possible, robust = classify_sampled_windows(
             (

@@ -9,7 +9,7 @@ from ce.foundation.serialization import canonical_json
 from ce.foundation.status import CalculationStatus, ScenarioState
 
 
-SCENARIO_SAMPLING_POLICY_ID = "CE-ZERO-BIRTH-SCENARIO-MIDPOINT-LATTICE-V1"
+SCENARIO_SAMPLING_POLICY_ID = "CE-ZERO-BIRTH-SCENARIO-MIDPOINT-LATTICE-V1-MICROSECOND-EXACT"
 SCENARIO_SEGMENT_TIME_UNIT = "SECONDS"
 MIN_SCENARIO_COUNT = 4
 DEFAULT_SCENARIO_COUNT = 24
@@ -31,11 +31,14 @@ def build_scenario_instants(start_utc: datetime, end_utc: datetime, count: int) 
     if not MIN_SCENARIO_COUNT <= count <= MAX_SCENARIO_COUNT:
         raise ValueError("scenario_count_out_of_policy_range")
 
-    total_microseconds = int((end_utc - start_utc).total_seconds() * 1_000_000)
-    width = total_microseconds / count
+    delta = end_utc - start_utc
+    total_microseconds = (
+        ((delta.days * 86_400) + delta.seconds) * 1_000_000
+        + delta.microseconds
+    )
     result = []
     for index in range(count):
-        offset_microseconds = int((index + 0.5) * width)
+        offset_microseconds = ((2 * index + 1) * total_microseconds) // (2 * count)
         value = start_utc + timedelta(microseconds=offset_microseconds)
         if value >= end_utc:
             raise ValueError("scenario_endpoint_included")
@@ -122,7 +125,8 @@ def canonical_utc(value: datetime) -> str:
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError("datetime_must_be_timezone_aware")
     normalized = value.astimezone(timezone.utc)
-    return normalized.isoformat(timespec="seconds").replace("+00:00", "Z")
+    timespec = "microseconds" if normalized.microsecond else "seconds"
+    return normalized.isoformat(timespec=timespec).replace("+00:00", "Z")
 
 
 def validate_scenario_observation(
