@@ -48,38 +48,6 @@ def _issue_signal_result(
     if errors:
         raise ValueError("signal_result_invalid:" + ";".join(errors))
     return result
-    _issued: bool = field(default=False, init=False, repr=False, compare=False)
-
-    def __post_init__(self) -> None:
-        if not self._issued:
-            raise ValueError("signal_result_must_be_issued")
-
-    def validate(self) -> tuple[str, ...]:
-        return () if self._issued else ("signal_result_not_issued",)
-
-
-def _issue_signal_result(
-    *,
-    status: CalculationStatus,
-    classification: str | None,
-    phase: str | None,
-    uncertainty_state: str | None,
-    evidence_packet_ref: str | None,
-    canon_input_valid: bool,
-) -> SignalResult:
-    result = object.__new__(SignalResult)
-    object.__setattr__(result, "status", status)
-    object.__setattr__(result, "classification", classification)
-    object.__setattr__(result, "phase", phase)
-    object.__setattr__(result, "uncertainty_state", uncertainty_state)
-    object.__setattr__(result, "evidence_packet_ref", evidence_packet_ref)
-    object.__setattr__(result, "canon_input_valid", canon_input_valid)
-    object.__setattr__(result, "_issued", True)
-    errors = result.validate()
-    if errors:
-        raise ValueError("signal_result_invalid:" + ";".join(errors))
-    return result
-
 
 class SignalEngine:
     """Pure-read signal qualification boundary.
