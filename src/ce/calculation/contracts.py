@@ -400,7 +400,7 @@ class CalculationResult:
         if packet is not None and not isinstance(packet, EvidencePacket):
             raise ValueError("invalid:evidence_packet")
         if packet is not None:
-            packet_errors = packet.validate()
+            packet_errors = packet.validate(require_issued=True)
             if packet_errors:
                 raise ValueError(";".join(f"evidence_packet:{e}" for e in packet_errors))
             if self.calculation_id is not None and packet.calculation_id != self.calculation_id:
