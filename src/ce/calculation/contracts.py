@@ -405,6 +405,22 @@ class CalculationResult:
                 raise ValueError(";".join(f"evidence_packet:{e}" for e in packet_errors))
             if self.calculation_id is not None and packet.calculation_id != self.calculation_id:
                 raise ValueError("evidence_packet:calculation_id_mismatch")
+            if self.provenance_root_sha256 != packet.provenance_root_sha256:
+                raise ValueError("provenance_root_sha256_packet_mismatch")
+            if self._runtime_identity is None:
+                raise ValueError("runtime_identity_required_for_packet_binding")
+            runtime_digest = runtime_identity_sha256(self._runtime_identity)
+            if runtime_digest != packet.runtime_identity_sha256:
+                raise ValueError("runtime_identity_packet_mismatch")
+            if packet.input_identity.get("request_id") != self.request_id:
+                raise ValueError("packet_request_id_result_mismatch")
+            if self.observation_interval is not None:
+                packet_interval = (
+                    packet.observation_instant_or_interval.get("start"),
+                    packet.observation_instant_or_interval.get("end"),
+                )
+                if tuple(self.observation_interval) != packet_interval:
+                    raise ValueError("packet_observation_interval_result_mismatch")
         ref = EvidencePacketRef.from_packet(packet) if packet is not None else None
         object.__setattr__(self, "evidence_packet_ref", ref)
 
@@ -444,6 +460,7 @@ class CalculationResult:
             "warnings": list(self.warnings),
             "errors": list(self.errors),
             "provenance": self.provenance,
+            "provenance_root_sha256": self.provenance_root_sha256,
             "evidence_packet_ref": ref.as_dict() if ref else None,
         }
         object.__setattr__(self, "_canonical_bytes", canonical_json(payload))
@@ -547,11 +564,24 @@ class CalculationResult:
                 errors.extend(
                     _validate_runtime_provenance(self.provenance, self._runtime_identity)
                 )
+                try:
+                    expected_runtime_digest = runtime_identity_sha256(self._runtime_identity)
+                except Exception:
+                    expected_runtime_digest = None
+                if expected_runtime_digest is not None and self.provenance.get("runtime_identity_sha256") != expected_runtime_digest:
+                    errors.append("runtime_identity_provenance_digest_mismatch")
+
+            if self.provenance_root_sha256 is None or not _SHA256_RE.fullmatch(self.provenance_root_sha256):
+                errors.append("calculated_result_requires_provenance_root")
+            if self.provenance.get("provenance_root_sha256") != self.provenance_root_sha256:
+                errors.append("provenance_root_provenance_mapping_mismatch")
 
             if self._evidence_packet is None or self.evidence_packet_ref is None:
                 errors.append("calculated_result_requires_evidence_packet")
             elif not self.evidence_packet_ref.matches(self._evidence_packet):
                 errors.append("evidence_packet:reference_mismatch")
+            elif self.provenance_root_sha256 != self._evidence_packet.provenance_root_sha256:
+                errors.append("evidence_packet:provenance_root_mismatch")
 
             if self.scenario_state is ScenarioState.NONE:
                 errors.append("calculated_result_requires_scenario_state")
