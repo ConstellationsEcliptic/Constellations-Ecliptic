@@ -1,13 +1,13 @@
 {
   "artifact_id": "CE-R0-A7-RECONCILIATION-STATE-R1",
-  "status": "IN_PROGRESS_NON_AUTHORITY",
+  "status": "TECHNICAL_RECONCILIATION_CI_PASS_NON_AUTHORITY",
   "parent_candidate": {
     "commit": "17a6b31e2294c862eebac4db09027a54b59c75fd",
     "source_tree_sha256_v2": "e90f42901bfdce6fb62e940c945769312befbf377ca738f770437e30a7df87e5",
     "lock_sha256": "ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5"
   },
   "reconciliation_branch": "remediation/ce-r0-a7-reconciliation-r1/2026-10-07",
-  "current_head": "PENDING_FINAL_CI",
+  "current_head": "91a578ea63e30d5635c87d8fe63bbe130eea18c8",
   "changes_closed_or_advanced": [
     "zero-birth scenario default aligned to DEFAULT_SCENARIO_COUNT",
     "kernel timestamp canonicalization aligned to microsecond-preserving policy",
@@ -24,7 +24,7 @@
     "Box-origin SHA-256 custody rehash",
     "GitHub main branch governance verification",
     "fresh native full-range capture under final A7 identity",
-    "fresh C3-1 human disposition"
+    "fresh C3-1 human disposition for A7 after technical package review"
   ],
   "authority_state": {
     "source_authority": "NOT_ESTABLISHED",
@@ -35,5 +35,20 @@
     "seal": "NO",
     "authorization": "NON_AUTHORIZED",
     "fail_closed": true
+  },
+  "current_source_tree_sha256_v2": "1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b",
+  "current_control_plane_sha256": "55ceb65082afd989b250d779b737f0a29e0835e77259e4fa168554b87d4966b5",
+  "current_lock_sha256": "ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5",
+  "ci": {
+    "remediation_run_id": 37577295350,
+    "full_boundary_run_id": 37577295228,
+    "result": "PASS",
+    "platforms": [
+      "ubuntu-latest",
+      "macos-14",
+      "windows-latest"
+    ],
+    "python": "3.13",
+    "full_unit_tests": 261
   }
 }
