@@ -1,0 +1,36 @@
+{
+  "artifact_id": "CE-V1-GITHUB-PLATFORM-GOVERNANCE-OBSERVATION-R1",
+  "status": "OBSERVED_MATERIAL_GAP",
+  "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
+  "observed_default_branch": "main",
+  "observed_main_commit": "ded37b47cadcc9420619776aacce52b98f9ad3dc",
+  "observed_at_utc": "2026-10-07T05:45:00Z",
+  "observations": {
+    "main_branch_listing_protected": false,
+    "main_branch_protection_enabled": false,
+    "main_required_status_checks_enforcement": "off",
+    "main_required_status_checks": [],
+    "repository_rulesets": [],
+    "codeowners_file_found_in_a7_tree": false,
+    "branch_protection_detail_endpoint": {
+      "result": "INACCESSIBLE_TO_CONNECTED_INTEGRATION",
+      "http_status": 403,
+      "message": "Resource not accessible by integration"
+    }
+  },
+  "interpretation": {
+    "platform_governance_identity": "NOT_ESTABLISHED",
+    "main_branch_governance_enforcement": "NOT_ESTABLISHED",
+    "source_authority_eligibility": "BLOCKED",
+    "trusted_build_eligibility": "BLOCKED",
+    "production_authorization_eligibility": "BLOCKED",
+    "seal_eligibility": "BLOCKED"
+  },
+  "hard_invariant": "A repository workflow hash cannot stand in for GitHub server-side branch governance. Current server-side governance state must be observed and explicitly qualified before authority transition.",
+  "required_next_control": "Establish and freshly verify protected-main governance (branch protection or equivalent ruleset) with the CE release-required checks and human review controls before any source-authority transition.",
+  "a7_candidate_scope": {
+    "branch": branch,
+    "head": "a2ba5067f36247086ed3049371fc471c5a320585"
+  },
+  "fail_closed": true
+}
