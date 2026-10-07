@@ -1,6 +1,9 @@
 name: CE R0 Remediation CI
 
 on:
+  pull_request:
+    branches:
+      - "main"
   push:
     branches:
       - "remediation/ce-r0-root-hardening-r1/2026-10-06"
