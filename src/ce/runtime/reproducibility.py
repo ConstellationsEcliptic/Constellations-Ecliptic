@@ -8,6 +8,7 @@ from typing import Any
 
 from ce.foundation.hashing import sha256_bytes
 from ce.foundation.identity import CANONICAL_EXECUTION_PROFILE_ID, CANONICAL_EXECUTION_PROFILE_REVISION
+from ce.foundation.native_abi import CANONICAL_NATIVE_CALLING_CONVENTION
 from ce.foundation.serialization import canonical_json
 
 
@@ -87,7 +88,7 @@ class RuntimeCapture:
                 errors.append("invalid:runtime_image_digest_for_host_native")
             if not isinstance(self.runtime_environment_digest, str) or not _SHA256_RE.fullmatch(self.runtime_environment_digest):
                 errors.append("invalid:runtime_environment_digest")
-        if self.calling_convention not in {"__cdecl", "__stdcall"}:
+        if self.calling_convention != CANONICAL_NATIVE_CALLING_CONVENTION:
             errors.append("invalid:calling_convention")
         if not isinstance(self.fixtures, (tuple, list)):
             errors.append("invalid:fixtures:sequence_required")
