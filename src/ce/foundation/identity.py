@@ -66,6 +66,8 @@ class RuntimeIdentity:
             "runtime_environment_digest": (self.runtime_environment_digest, _SHA256_RE, "64-hex"),
             "control_plane_sha256": (self.control_plane_sha256, _SHA256_RE, "64-hex"),
         }
+        if self.control_plane_sha256 is None:
+            errors.append("missing:control_plane_sha256")
         for name, (value, pattern, description) in shaped.items():
             if value is not None and (
                 not isinstance(value, str) or not pattern.fullmatch(value)
