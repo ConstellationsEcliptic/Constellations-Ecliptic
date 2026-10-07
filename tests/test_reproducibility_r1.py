@@ -45,6 +45,12 @@ class ReproducibilityR1Tests(unittest.TestCase):
         errors = compare_capture_outputs(left, right)
         self.assertIn("identity_mismatch:native_library_sha256", errors)
 
+    def test_control_plane_identity_mismatch_is_detected(self) -> None:
+        left = self._capture("A")
+        right = RuntimeCapture(**{**left.__dict__, "capture_id": "B", "control_plane_sha256": "8" * 64})
+        errors = compare_capture_outputs(left, right)
+        self.assertIn("identity_mismatch:control_plane_sha256", errors)
+
     def test_numeric_tolerance_is_explicit(self) -> None:
         left = self._capture("A", 10.0)
         right = self._capture("B", 10.0001)
