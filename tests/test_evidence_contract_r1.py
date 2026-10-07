@@ -29,6 +29,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
             "d" * 64,
             "e" * 64,
             "f" * 64,
+            control_plane_sha256="9" * 64,
         )
 
     def request(self, request_id: str = "R-001") -> CalculationRequest:
@@ -136,6 +137,7 @@ class EvidenceContractR1Tests(unittest.TestCase):
             "CE-CALC-V1-EP-001", 4,
             "9" * 40, "8" * 64, "sha256:" + "7" * 64,
             "6" * 64, "5" * 64, "4" * 64,
+            control_plane_sha256="8" * 64,
         )
         with self.assertRaisesRegex(ValueError, "runtime_identity_packet_mismatch"):
             draft.to_final(runtime_identity=other, evidence_packet=packet)
