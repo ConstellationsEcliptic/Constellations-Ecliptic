@@ -34,6 +34,11 @@ class SchemaStructureR1Tests(unittest.TestCase):
             self.assertEqual(schema["type"], "object")
             self.assertFalse(schema["additionalProperties"])
 
+    def test_runtime_capture_r2_schema_pins_control_plane_and_abi(self) -> None:
+        schema = self._load_without_duplicate_keys(ROOT / "schemas" / "runtime_capture_r2.schema.json")
+        self.assertIn("control_plane_sha256", schema["required"])
+        self.assertEqual(schema["properties"]["calling_convention"]["const"], "__cdecl")
+
     def test_runtime_capture_r2_schema_has_explicit_environment_one_of(self) -> None:
         schema = self._load_without_duplicate_keys(ROOT / "schemas" / "runtime_capture_r2.schema.json")
         self.assertEqual(len(schema["oneOf"]), 2)
