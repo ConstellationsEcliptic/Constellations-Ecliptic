@@ -32,6 +32,7 @@ class RuntimeCapture:
     execution_profile_revision: int
     source_commit: str
     source_tree_sha256_v2: str
+    control_plane_sha256: str
     dependency_lock_digest: str
     runtime_environment_kind: str
     runtime_image_digest: str | None
@@ -69,6 +70,7 @@ class RuntimeCapture:
                 errors.append(f"invalid:{name}")
         for name, value in (
             ("source_tree_sha256_v2", self.source_tree_sha256_v2),
+            ("control_plane_sha256", self.control_plane_sha256),
             ("dependency_lock_digest", self.dependency_lock_digest),
             ("timezone_bundle_digest", self.timezone_bundle_digest),
             ("ephemeris_bundle_digest", self.ephemeris_bundle_digest),
@@ -125,6 +127,7 @@ class RuntimeCapture:
             "execution_profile_revision": self.execution_profile_revision,
             "source_commit": self.source_commit,
             "source_tree_sha256_v2": self.source_tree_sha256_v2,
+            "control_plane_sha256": self.control_plane_sha256,
             "dependency_lock_digest": self.dependency_lock_digest,
             "runtime_environment_kind": self.runtime_environment_kind,
             "runtime_image_digest": self.runtime_image_digest,
@@ -225,6 +228,7 @@ def compare_capture_outputs(
         "execution_profile_revision",
         "source_commit",
         "source_tree_sha256_v2",
+        "control_plane_sha256",
         "dependency_lock_digest",
         "runtime_environment_kind",
         "runtime_image_digest",
