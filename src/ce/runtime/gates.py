@@ -27,6 +27,7 @@ def authorize_runtime(identity: RuntimeIdentity) -> RuntimeGateResult:
         "dependency_lock_digest": identity.dependency_lock_digest,
         "timezone_bundle_digest": identity.timezone_bundle_digest,
         "ephemeris_bundle_digest": identity.ephemeris_bundle_digest,
+        "control_plane_sha256": identity.control_plane_sha256,
     }
     if identity.runtime_environment_kind == "OCI_IMAGE":
         required_fields["runtime_image_digest"] = identity.runtime_image_digest
