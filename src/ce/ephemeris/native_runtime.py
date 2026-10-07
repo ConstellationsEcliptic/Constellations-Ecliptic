@@ -9,6 +9,7 @@ from typing import Any
 from ce.calculation.contracts import ObjectRecord
 from ce.calculation.registry import EXPECTED_OBJECTS
 from ce.ephemeris.verification import classify_requested_actual_flags
+from ce.foundation.native_abi import CANONICAL_NATIVE_CALLING_CONVENTION
 from ce.runtime.authority import VerifiedRuntimeCapability
 from ce.foundation.status import CalculationStatus
 
@@ -184,8 +185,10 @@ class NativeSwissEphemerisAdapter:
             raise NativeRuntimeError("runtime_capability_swiss_source_commit_mismatch")
         if runtime_capability.swiss_release != swiss_release:
             raise NativeRuntimeError("runtime_capability_swiss_release_mismatch")
-        if calling_convention not in {"__cdecl", "__stdcall"}:
-            raise NativeRuntimeError("native_abi_calling_convention_not_pinned")
+        if calling_convention != CANONICAL_NATIVE_CALLING_CONVENTION:
+            raise NativeRuntimeError("native_abi_calling_convention_mismatch")
+        if runtime_capability.native_calling_convention != CANONICAL_NATIVE_CALLING_CONVENTION:
+            raise NativeRuntimeError("runtime_capability_native_abi_mismatch")
         if expected_source_commit != CANONICAL_SWISS_SOURCE_COMMIT:
             raise NativeRuntimeError("swiss_source_commit_mismatch")
         if swiss_release != CANONICAL_SWISS_RELEASE:
