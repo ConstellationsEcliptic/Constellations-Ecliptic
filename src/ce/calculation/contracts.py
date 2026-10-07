@@ -260,6 +260,7 @@ def _validate_runtime_provenance(provenance: Mapping[str, Any], runtime_identity
         "dependency_lock_digest": _SHA256_RE,
         "timezone_bundle_digest": _SHA256_RE,
         "ephemeris_bundle_digest": _SHA256_RE,
+        "control_plane_sha256": _SHA256_RE,
         "runtime_image_digest": _RUNTIME_IMAGE_RE,
     }
     for name, pattern in required.items():
@@ -353,6 +354,7 @@ class CalculationResultDraft:
                 "dependency_lock_digest": runtime_identity.dependency_lock_digest,
                 "timezone_bundle_digest": runtime_identity.timezone_bundle_digest,
                 "ephemeris_bundle_digest": runtime_identity.ephemeris_bundle_digest,
+                "control_plane_sha256": runtime_identity.control_plane_sha256,
                 "runtime_image_digest": runtime_identity.runtime_image_digest,
                 "calculation_version": self.calculation_version,
                 "runtime_identity_sha256": runtime_identity_sha256(runtime_identity),
