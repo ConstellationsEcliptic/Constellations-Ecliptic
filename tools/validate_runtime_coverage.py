@@ -230,6 +230,7 @@ def validate_capture(
         source_commit=source_commit,
         source_tree_sha256=source_tree_sha256,
         dependency_lock_digest=dependency_lock_digest,
+        control_plane_sha256=control_plane_sha256,
         calling_convention=calling_convention,
     )
     _validate_fixture_set(capture, fixture_spec)
