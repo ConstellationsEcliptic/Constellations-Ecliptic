@@ -150,6 +150,7 @@ class RuntimeCoverageValidatorR1Tests(unittest.TestCase):
                 source_commit=SOURCE_COMMIT,
                 source_tree_sha256=SOURCE_TREE,
                 dependency_lock_digest=LOCK,
+                control_plane_sha256=CONTROL_PLANE,
                 calling_convention="__cdecl",
             )
 
