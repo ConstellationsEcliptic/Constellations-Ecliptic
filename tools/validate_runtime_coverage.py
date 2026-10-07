@@ -245,7 +245,7 @@ def main() -> int:
     parser.add_argument("--source-tree-sha256-v2", required=True)
     parser.add_argument("--dependency-lock-digest", required=True)
     parser.add_argument("--control-plane-sha256", required=True)
-    parser.add_argument("--calling-convention", choices=("__cdecl", "__stdcall"), required=True)
+    parser.add_argument("--calling-convention", choices=("__cdecl",), required=True)
     parser.add_argument("--output-report", type=Path)
     args = parser.parse_args()
 
