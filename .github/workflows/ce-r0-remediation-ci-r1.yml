@@ -21,7 +21,8 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  remediation_test:
+    name: CE R0 Remediation / ${{ matrix.os }} / Python ${{ matrix.python }}
     strategy:
       fail-fast: false
       matrix:
