@@ -16,6 +16,7 @@ class ReproducibilityR1Tests(unittest.TestCase):
             execution_profile_revision=4,
             source_commit="a" * 40,
             source_tree_sha256_v2="b" * 64,
+            control_plane_sha256="9" * 64,
             dependency_lock_digest="c" * 64,
             runtime_environment_kind="OCI_IMAGE",
             runtime_image_digest="sha256:" + "d" * 64,
