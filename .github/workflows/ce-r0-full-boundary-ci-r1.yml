@@ -21,7 +21,8 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  full_boundary_test:
+    name: CE R0 Full Boundary / ${{ matrix.os }} / Python ${{ matrix.python }}
     strategy:
       fail-fast: false
       matrix:
