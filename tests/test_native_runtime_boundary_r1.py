@@ -31,6 +31,8 @@ def build_test_runtime_capability() -> VerifiedRuntimeCapability:
         "source_authority_digest": "1" * 64,
         "trusted_build_digest": "2" * 64,
         "provenance_signature_digest": "3" * 64,
+        "control_plane_sha256": "4" * 64,
+        "native_calling_convention": "__cdecl",
     }
     for name, value in values.items():
         object.__setattr__(capability, name, value)
@@ -58,6 +60,8 @@ class NativeRuntimeBoundaryR1Tests(unittest.TestCase):
                 source_authority_digest="1"*64,
                 trusted_build_digest="2"*64,
                 provenance_signature_digest="3"*64,
+                control_plane_sha256="4"*64,
+                native_calling_convention="__cdecl",
             )
 
     def test_native_adapter_rejects_missing_capability(self) -> None:
@@ -79,7 +83,7 @@ class NativeRuntimeBoundaryR1Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             library = Path(directory) / "libswe.dll"
             library.write_bytes(b"test")
-            with self.assertRaisesRegex(NativeRuntimeError, "native_abi_calling_convention_not_pinned"):
+            with self.assertRaisesRegex(NativeRuntimeError, "native_abi_calling_convention_mismatch"):
                 with patch("ce.ephemeris.native_runtime.sha256_file", return_value=CANDIDATE_NATIVE_DLL_SHA256),                      patch("ce.ephemeris.native_runtime.verify_canonical_swiss_bundle", return_value="9"*64):
                     NativeSwissEphemerisAdapter(
                         library_path=library,

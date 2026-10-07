@@ -23,6 +23,7 @@ class SourceAuthorityEvidence:
     source_tree_sha256_v2: str
     source_authority_digest: str
     signer_fingerprint: str
+    control_plane_sha256: str
 
 
 @dataclass(frozen=True)
@@ -35,6 +36,7 @@ class TrustedBuildEvidence:
     runtime_manifest_digest: str
     timezone_bundle_digest: str
     ephemeris_bundle_digest: str
+    control_plane_sha256: str
 
 
 @dataclass(frozen=True)
@@ -76,6 +78,8 @@ class VerifiedRuntimeCapability:
     source_authority_digest: str
     trusted_build_digest: str
     provenance_signature_digest: str
+    control_plane_sha256: str
+    native_calling_convention: str
     _issued: bool = field(default=False, init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
@@ -96,6 +100,7 @@ class VerifiedRuntimeCapability:
             ("source_authority_digest", self.source_authority_digest),
             ("trusted_build_digest", self.trusted_build_digest),
             ("provenance_signature_digest", self.provenance_signature_digest),
+            ("control_plane_sha256", self.control_plane_sha256),
         ):
             if not isinstance(value, str) or not _SHA256_RE.fullmatch(value):
                 errors.append(f"malformed:capability.{name}")
@@ -109,6 +114,9 @@ class VerifiedRuntimeCapability:
             errors.append("malformed:capability.swiss_release")
         if not isinstance(self.swiss_source_commit, str) or not _COMMIT_RE.fullmatch(self.swiss_source_commit):
             errors.append("malformed:capability.swiss_source_commit")
+        from ce.foundation.native_abi import CANONICAL_NATIVE_CALLING_CONVENTION
+        if self.native_calling_convention != CANONICAL_NATIVE_CALLING_CONVENTION:
+            errors.append("capability_native_calling_convention_mismatch")
         return tuple(errors)
 
 
@@ -121,6 +129,7 @@ def issue_verified_runtime_capability(
     native_library_sha256: str,
     swiss_release: str,
     swiss_source_commit: str,
+    native_calling_convention: str,
 ) -> VerifiedRuntimeCapability:
     """Issue capability only after a future verified authority receipt.
 
@@ -132,6 +141,9 @@ def issue_verified_runtime_capability(
     _require_commit(swiss_source_commit, "swiss_source_commit")
     if not isinstance(swiss_release, str) or not swiss_release.strip():
         raise AuthorityEvidenceError("malformed:swiss_release")
+    from ce.foundation.native_abi import CANONICAL_NATIVE_CALLING_CONVENTION
+    if native_calling_convention != CANONICAL_NATIVE_CALLING_CONVENTION:
+        raise AuthorityEvidenceError("native_calling_convention_mismatch")
 
     evaluation = evaluate_full_authority(
         runtime_identity,
@@ -157,6 +169,8 @@ def issue_verified_runtime_capability(
     object.__setattr__(capability, "source_authority_digest", source.source_authority_digest)
     object.__setattr__(capability, "trusted_build_digest", build.build_digest)
     object.__setattr__(capability, "provenance_signature_digest", signed.provenance_signature_digest)
+    object.__setattr__(capability, "control_plane_sha256", runtime_identity.control_plane_sha256 or "")
+    object.__setattr__(capability, "native_calling_convention", native_calling_convention)
     object.__setattr__(capability, "_issued", True)
     errors = capability.validate()
     if errors:
@@ -203,6 +217,8 @@ def evaluate_authority_consistency(
         _require_sha(build.runtime_manifest_digest, "build.runtime_manifest_digest")
         _require_sha(build.timezone_bundle_digest, "build.timezone_bundle_digest")
         _require_sha(build.ephemeris_bundle_digest, "build.ephemeris_bundle_digest")
+        _require_sha(build.control_plane_sha256, "build.control_plane_sha256")
+        _require_sha(source.control_plane_sha256, "source.control_plane_sha256")
         _require_sha(signed.provenance_signature_digest, "signed.provenance_signature_digest")
         _require_sha(signed.source_authority_digest, "signed.source_authority_digest")
         _require_sha(signed.trusted_build_digest, "signed.trusted_build_digest")
@@ -212,6 +228,8 @@ def evaluate_authority_consistency(
 
     if source.source_commit != build.source_commit:
         reasons.append("source_build_commit_mismatch")
+    if source.control_plane_sha256 != build.control_plane_sha256:
+        reasons.append("source_build_control_plane_mismatch")
     if source.source_tree_sha256_v2 != build.source_tree_sha256_v2:
         reasons.append("source_build_tree_mismatch")
     if signed.source_authority_digest != source.source_authority_digest:
@@ -228,6 +246,7 @@ def evaluate_authority_consistency(
         "runtime_image_digest": build.runtime_image_digest,
         "timezone_bundle_digest": build.timezone_bundle_digest,
         "ephemeris_bundle_digest": build.ephemeris_bundle_digest,
+        "control_plane_sha256": build.control_plane_sha256,
         "source_authority_digest": source.source_authority_digest,
         "trusted_build_digest": build.build_digest,
         "provenance_signature_digest": signed.provenance_signature_digest,

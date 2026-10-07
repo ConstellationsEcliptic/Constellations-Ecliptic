@@ -37,7 +37,7 @@ def _parse_capture(path: Path) -> tuple[RuntimeCapture, dict[str, object]]:
     required = (
         "capture_id", "captured_at_utc", "platform", "python_version",
         "execution_profile_id", "execution_profile_revision", "source_commit",
-        "source_tree_sha256_v2", "dependency_lock_digest",
+        "source_tree_sha256_v2", "control_plane_sha256", "dependency_lock_digest",
         "runtime_environment_kind", "runtime_image_digest",
         "runtime_environment_digest", "timezone_bundle_digest",
         "ephemeris_bundle_digest", "native_library_sha256",
@@ -57,6 +57,7 @@ def _parse_capture(path: Path) -> tuple[RuntimeCapture, dict[str, object]]:
         execution_profile_revision=payload["execution_profile_revision"],
         source_commit=payload["source_commit"],
         source_tree_sha256_v2=payload["source_tree_sha256_v2"],
+        control_plane_sha256=payload["control_plane_sha256"],
         dependency_lock_digest=payload["dependency_lock_digest"],
         runtime_environment_kind=payload["runtime_environment_kind"],
         runtime_image_digest=payload["runtime_image_digest"],
@@ -115,11 +116,13 @@ def _validate_identity(
     source_commit: str,
     source_tree_sha256: str,
     dependency_lock_digest: str,
+    control_plane_sha256: str,
     calling_convention: str,
 ) -> None:
     expected = {
         "source_commit": source_commit,
         "source_tree_sha256_v2": source_tree_sha256,
+        "control_plane_sha256": control_plane_sha256,
         "dependency_lock_digest": dependency_lock_digest,
         "timezone_bundle_digest": CANONICAL_TZIF_BUNDLE_SHA256,
         "ephemeris_bundle_digest": CANONICAL_SWISS_BUNDLE_SHA256,
@@ -213,6 +216,7 @@ def validate_capture(
     source_commit: str,
     source_tree_sha256: str,
     dependency_lock_digest: str,
+    control_plane_sha256: str,
     calling_convention: str,
 ) -> RuntimeCapture:
     capture, raw = _parse_capture(path)
@@ -226,6 +230,7 @@ def validate_capture(
         source_commit=source_commit,
         source_tree_sha256=source_tree_sha256,
         dependency_lock_digest=dependency_lock_digest,
+        control_plane_sha256=control_plane_sha256,
         calling_convention=calling_convention,
     )
     _validate_fixture_set(capture, fixture_spec)
@@ -239,7 +244,8 @@ def main() -> int:
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree-sha256-v2", required=True)
     parser.add_argument("--dependency-lock-digest", required=True)
-    parser.add_argument("--calling-convention", choices=("__cdecl", "__stdcall"), required=True)
+    parser.add_argument("--control-plane-sha256", required=True)
+    parser.add_argument("--calling-convention", choices=("__cdecl",), required=True)
     parser.add_argument("--output-report", type=Path)
     args = parser.parse_args()
 
@@ -254,6 +260,7 @@ def main() -> int:
             source_commit=args.source_commit,
             source_tree_sha256=args.source_tree_sha256_v2,
             dependency_lock_digest=args.dependency_lock_digest,
+            control_plane_sha256=args.control_plane_sha256,
             calling_convention=args.calling_convention,
         )
         for path in args.captures
@@ -282,6 +289,7 @@ def main() -> int:
         "execution_identity": {
             "source_commit": args.source_commit,
             "source_tree_sha256_v2": args.source_tree_sha256_v2,
+            "control_plane_sha256": args.control_plane_sha256,
             "dependency_lock_digest": args.dependency_lock_digest,
             "timezone_bundle_digest": CANONICAL_TZIF_BUNDLE_SHA256,
             "timezone_version": CANONICAL_IANA_VERSION,

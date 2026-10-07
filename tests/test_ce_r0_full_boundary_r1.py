@@ -22,6 +22,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
             "CE-CALC-V1-EP-001", 4,
             "a" * 40, "b" * 64, "sha256:" + "c" * 64,
             "d" * 64, "e" * 64, "f" * 64,
+            control_plane_sha256="9" * 64,
         )
 
     def request(self) -> CalculationRequest:
@@ -205,6 +206,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
             "CE-CALC-V1-EP-001", 4,
             "9" * 40, "8" * 64, "sha256:" + "7" * 64,
             "6" * 64, "5" * 64, "4" * 64,
+            control_plane_sha256="8" * 64,
         )
         other_packet = issue_evidence_packet(
             self.draft(),

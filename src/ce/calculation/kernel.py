@@ -7,6 +7,7 @@ from typing import Protocol
 from ce.calculation.contracts import ObjectRecord
 from ce.calculation.geometry import aspect_geometry, effective_orb
 from ce.calculation.registry import EXPECTED_OBJECTS, RegistryValidationError
+from ce.calculation.scenario_windows import DEFAULT_SCENARIO_COUNT, canonical_utc
 from ce.calculation.window_solver import WindowSolution, solve_aspect_window
 from ce.foundation.status import CalculationStatus, ScenarioState
 
@@ -60,7 +61,7 @@ class ZeroBirthKernelCalculation:
 def _canonical_utc(value: datetime) -> str:
     if value.tzinfo is None or value.utcoffset() is None:
         raise KernelFailure("datetime_must_be_timezone_aware")
-    return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    return canonical_utc(value)
 
 
 def _parse_target(value: str) -> datetime:
@@ -165,7 +166,7 @@ def calculate_zero_birth_aspect_window(
     transit_object: str,
     natal_object: str,
     aspect: str,
-    scenario_count: int = 9,
+    scenario_count: int = DEFAULT_SCENARIO_COUNT,
     samples: int = 256,
 ) -> ZeroBirthKernelCalculation:
     """Compose the provider-backed kernel with the bounded zero-birth evaluator."""

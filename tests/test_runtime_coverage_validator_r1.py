@@ -14,6 +14,7 @@ from tools.validate_runtime_coverage import CoverageValidationError, validate_ca
 SOURCE_COMMIT = "5" * 40
 SOURCE_TREE = "6" * 64
 LOCK = "7" * 64
+CONTROL_PLANE = "9" * 64
 
 
 class RuntimeCoverageValidatorR1Tests(unittest.TestCase):
@@ -70,6 +71,7 @@ class RuntimeCoverageValidatorR1Tests(unittest.TestCase):
                 "execution_profile_revision": 4,
                 "source_commit": SOURCE_COMMIT,
                 "source_tree_sha256_v2": SOURCE_TREE,
+                "control_plane_sha256": CONTROL_PLANE,
                 "dependency_lock_digest": LOCK,
                 "runtime_environment_kind": "HOST_NATIVE",
                 "runtime_image_digest": None,
@@ -101,6 +103,7 @@ class RuntimeCoverageValidatorR1Tests(unittest.TestCase):
             source_commit=SOURCE_COMMIT,
             source_tree_sha256=SOURCE_TREE,
             dependency_lock_digest=LOCK,
+            control_plane_sha256=CONTROL_PLANE,
             calling_convention="__cdecl",
         )
         self.assertEqual(capture.fixtures[-1]["fixture_id"], "CE-NATIVE-R1-2100-001")
@@ -117,6 +120,7 @@ class RuntimeCoverageValidatorR1Tests(unittest.TestCase):
                 source_commit=SOURCE_COMMIT,
                 source_tree_sha256=SOURCE_TREE,
                 dependency_lock_digest=LOCK,
+                control_plane_sha256=CONTROL_PLANE,
                 calling_convention="__cdecl",
             )
 
@@ -131,6 +135,7 @@ class RuntimeCoverageValidatorR1Tests(unittest.TestCase):
                 source_commit=SOURCE_COMMIT,
                 source_tree_sha256=SOURCE_TREE,
                 dependency_lock_digest=LOCK,
+                control_plane_sha256=CONTROL_PLANE,
                 calling_convention="__cdecl",
             )
 
@@ -145,6 +150,7 @@ class RuntimeCoverageValidatorR1Tests(unittest.TestCase):
                 source_commit=SOURCE_COMMIT,
                 source_tree_sha256=SOURCE_TREE,
                 dependency_lock_digest=LOCK,
+                control_plane_sha256=CONTROL_PLANE,
                 calling_convention="__cdecl",
             )
 

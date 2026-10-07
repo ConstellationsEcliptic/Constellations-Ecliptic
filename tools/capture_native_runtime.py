@@ -20,6 +20,8 @@ from ce.ephemeris.native_runtime import (
 )
 from ce.calculation.registry import EXPECTED_OBJECTS
 from ce.foundation.source_tree_identity import source_tree_sha256
+from ce.foundation.control_plane_identity import control_plane_sha256
+from ce.foundation.native_abi import CANONICAL_NATIVE_CALLING_CONVENTION
 from ce.runtime.reproducibility import RuntimeCapture
 from ce.runtime.environment_identity import HostRuntimeEnvironmentError, host_native_environment_digest
 from ce.timezone.runtime import CANONICAL_TZIF_BUNDLE_SHA256
@@ -38,12 +40,13 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree-sha256-v2", required=True)
+    parser.add_argument("--control-plane-sha256", required=True)
     parser.add_argument("--dependency-lock-digest", required=True)
     runtime_identity = parser.add_mutually_exclusive_group(required=True)
     runtime_identity.add_argument("--runtime-image-digest")
     runtime_identity.add_argument("--runtime-environment-manifest", type=Path)
     parser.add_argument("--timezone-bundle-digest", required=True)
-    parser.add_argument("--calling-convention", choices=("__cdecl", "__stdcall"), required=True)
+    parser.add_argument("--calling-convention", choices=(CANONICAL_NATIVE_CALLING_CONVENTION,), required=True)
     return parser
 
 
@@ -165,6 +168,16 @@ def _verify_source_identity(repo_root: Path, expected_commit: str, expected_tree
         raise NativeRuntimeError("source_tree_identity_mismatch")
 
 
+
+def _verify_control_plane_identity(repo_root: Path, expected_control_plane_sha256: str) -> None:
+    try:
+        observed = control_plane_sha256(repo_root)
+    except (OSError, ValueError) as exc:
+        raise NativeRuntimeError("control_plane_identity_unavailable") from exc
+    if observed.lower() != expected_control_plane_sha256.lower():
+        raise NativeRuntimeError("control_plane_identity_mismatch")
+
+
 def _load_host_environment_digest(path: Path) -> str:
     try:
         envelope = json.loads(path.read_text(encoding="utf-8"))
@@ -232,6 +245,7 @@ def main() -> int:
         raise NativeRuntimeError("timezone_bundle_digest_mismatch")
     repo_root = Path(__file__).resolve().parents[1]
     _verify_source_identity(repo_root, args.source_commit, args.source_tree_sha256_v2)
+    _verify_control_plane_identity(repo_root, args.control_plane_sha256)
     fixtures = _load_fixture_spec(args.fixture_spec, repo_root)
 
     ephemeris_root = args.ephemeris_root.resolve()
@@ -280,6 +294,7 @@ def main() -> int:
         execution_profile_revision=4,
         source_commit=args.source_commit,
         source_tree_sha256_v2=args.source_tree_sha256_v2,
+        control_plane_sha256=args.control_plane_sha256,
         dependency_lock_digest=args.dependency_lock_digest,
         runtime_environment_kind=runtime_environment_kind,
         runtime_image_digest=runtime_image_digest,

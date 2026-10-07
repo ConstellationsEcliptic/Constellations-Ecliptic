@@ -26,6 +26,7 @@ class AuthorityChainR1Tests(unittest.TestCase):
             "1" * 64,
             "2" * 64,
             "3" * 64,
+            control_plane_sha256="4" * 64,
         )
 
     def _evidence(self):
@@ -36,6 +37,7 @@ class AuthorityChainR1Tests(unittest.TestCase):
                 "b" * 64,
                 "1" * 64,
                 "ABCDEF" * 6 + "ABCD",
+                "4" * 64,
             ),
             TrustedBuildEvidence(
                 "2" * 64,
@@ -46,6 +48,7 @@ class AuthorityChainR1Tests(unittest.TestCase):
                 "4" * 64,
                 "e" * 64,
                 "f" * 64,
+                "4" * 64,
             ),
             SignedProvenanceEvidence(
                 "3" * 64,
@@ -78,6 +81,7 @@ class AuthorityChainR1Tests(unittest.TestCase):
             build.runtime_manifest_digest,
             build.timezone_bundle_digest,
             build.ephemeris_bundle_digest,
+            build.control_plane_sha256,
         )
         result = evaluate_full_authority(
             self._identity(), source=source, build=build, signed=signed
@@ -96,6 +100,7 @@ class AuthorityChainR1Tests(unittest.TestCase):
             "not-a-sha256",
             build.timezone_bundle_digest,
             build.ephemeris_bundle_digest,
+            build.control_plane_sha256,
         )
         result = evaluate_full_authority(
             self._identity(), source=source, build=build, signed=signed
@@ -117,6 +122,7 @@ class AuthorityChainR1Tests(unittest.TestCase):
             "1" * 64,
             "2" * 64,
             "3" * 64,
+            control_plane_sha256="4" * 64,
         )
         result = evaluate_full_authority(identity, source=source, build=build, signed=signed)
         self.assertFalse(result.authorized)

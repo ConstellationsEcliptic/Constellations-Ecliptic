@@ -268,6 +268,7 @@ class PlannedCoreControlsR1(unittest.TestCase):
             "CE-CALC-V1-EP-001", 4,
             "a" * 40, "b" * 64, "sha256:" + "c" * 64,
             "d" * 64, "e" * 64, "f" * 64,
+            control_plane_sha256="9" * 64,
         )
         result = authorize_runtime(identity)
         self.assertEqual(result.authority.value, "NON_AUTHORIZED")

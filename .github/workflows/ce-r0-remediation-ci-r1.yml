@@ -11,6 +11,7 @@ on:
       - "remediation/ce-r0-a4-signal-qsr-issuance-r1/2026-10-06"
       - "remediation/ce-r0-a5-evidence-schema-closure-r1/2026-10-06"
       - "remediation/ce-r0-a6-temporal-contract-r1/2026-10-06"
+      - "remediation/ce-r0-a7-reconciliation-r1/2026-10-07"
   workflow_dispatch:
 
 permissions:
@@ -49,6 +50,24 @@ jobs:
             echo "SOURCE_TREE_IDENTITY_MATCH=TRUE"
           else
             echo "SOURCE_TREE_IDENTITY_MATCH=FALSE"
+            exit 1
+          fi
+      - name: Control-plane identity
+        shell: bash
+        env:
+          PYTHONPATH: src
+        run: |
+          set -e
+          actual="$(python -B tools/compute_control_plane_identity_v1.py 2>&1)"
+          rc=$?
+          manifest="$(awk '{print $1}' provenance/CONTROL_PLANE_SHA256_R1.txt)"
+          echo "CONTROL_PLANE_COMPUTE_EXIT=$rc"
+          echo "CONTROL_PLANE_ACTUAL=$actual"
+          echo "CONTROL_PLANE_MANIFEST=$manifest"
+          if [ "$rc" -eq 0 ] && [ "$actual" = "$manifest" ]; then
+            echo "CONTROL_PLANE_IDENTITY_MATCH=TRUE"
+          else
+            echo "CONTROL_PLANE_IDENTITY_MATCH=FALSE"
             exit 1
           fi
       - name: Full unit suite

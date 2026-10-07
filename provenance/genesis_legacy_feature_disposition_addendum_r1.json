@@ -1,0 +1,24 @@
+{
+  "artifact_id": "CE-GENESIS-LEGACY-FEATURE-DISPOSITION-ADDENDUM-R1",
+  "status": "FORENSIC_REQUIREMENT_DISPOSITION",
+  "scope": "Genesis prototype remnants not fully enumerated in Requirement Survival Matrix R2",
+  "features": [
+    {"feature":"seeded love/career/wealth/health meters","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"},
+    {"feature":"lucky number","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"},
+    {"feature":"lucky color","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"},
+    {"feature":"lucky stone","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"},
+    {"feature":"lucky day","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"},
+    {"feature":"weekly forecasts","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"},
+    {"feature":"zodiac-index compatibility percentages","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"},
+    {"feature":"AI core personality / soul purpose / greatest gift narrative","genesis_status":"HISTORICAL","current_v1_status":"SUPERSEDED_NOT_USED","disposition":"EXCLUDED"}
+  ],
+  "epistemic_replacement": {
+    "genesis_model": "input -> deterministic UI values -> AI narrative",
+    "current_v1_model": "astronomical fact -> geometric derivation -> qualified signal -> Canon -> bounded language"
+  },
+  "governance": {
+    "no_silent_restoration": true,
+    "authority": "NOT_ESTABLISHED",
+    "fail_closed": true
+  }
+}

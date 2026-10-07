@@ -27,6 +27,7 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             "CE-CALC-V1-EP-001", 4,
             "a" * 40, "b" * 64, "sha256:" + "c" * 64,
             "d" * 64, "e" * 64, "f" * 64,
+            control_plane_sha256="9" * 64,
         )
         input_identity = {
             "request_id": "R-QSR",
@@ -169,6 +170,7 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             "CE-CALC-V1-EP-001", 4,
             "a" * 40, "b" * 64, "sha256:" + "c" * 64,
             "d" * 64, "e" * 64, "f" * 64,
+            control_plane_sha256="9" * 64,
         )
         from dataclasses import replace
         base = self._packet()

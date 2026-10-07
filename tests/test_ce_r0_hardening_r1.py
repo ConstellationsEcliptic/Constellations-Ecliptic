@@ -44,6 +44,7 @@ def _runtime(seed: str = "a") -> RuntimeIdentity:
         "f" * 64,
         "1" * 64,
         "2" * 64,
+        control_plane_sha256="9" * 64,
     )
 
 
@@ -176,6 +177,7 @@ class CER0HardeningTests(unittest.TestCase):
             "timezone_bundle_digest": runtime_b.timezone_bundle_digest,
             "ephemeris_bundle_digest": runtime_b.ephemeris_bundle_digest,
             "runtime_image_digest": runtime_b.runtime_image_digest,
+            "control_plane_sha256": runtime_b.control_plane_sha256,
             "calculation_version": "CE-CALC-CORE-V1-R1-CONVERGENT",
         }
         with self.assertRaisesRegex(ValueError, "runtime_identity_packet_mismatch|provenance_root_sha256_packet_mismatch"):
@@ -235,13 +237,14 @@ class CER0HardeningTests(unittest.TestCase):
             aggregate_qualified_signal_records([fake_record], observation_completed=True)
 
     def test_full_authority_never_returns_authorized_from_descriptive_evidence(self) -> None:
-        source = SourceAuthorityEvidence("https://example.invalid/ce", "a" * 40, "b" * 64, "1" * 64, "AB" * 20)
-        build = TrustedBuildEvidence("2" * 64, "a" * 40, "b" * 64, "f" * 64, "sha256:" + "d" * 64, "3" * 64, "1" * 64, "2" * 64)
+        source = SourceAuthorityEvidence("https://example.invalid/ce", "a" * 40, "b" * 64, "1" * 64, "AB" * 20, "9" * 64)
+        build = TrustedBuildEvidence("2" * 64, "a" * 40, "b" * 64, "f" * 64, "sha256:" + "d" * 64, "3" * 64, "1" * 64, "2" * 64, "9" * 64)
         signed = SignedProvenanceEvidence("3" * 64, "AB" * 20, "1" * 64, "2" * 64)
         identity = RuntimeIdentity(
             "CE-CALC-V1-EP-001", 4, "a" * 40, "b" * 64,
             "sha256:" + "d" * 64, "f" * 64, "1" * 64, "2" * 64,
             "1" * 64, "2" * 64, "3" * 64,
+            control_plane_sha256="9" * 64,
         )
         self.assertTrue(evaluate_authority_consistency(identity, source=source, build=build, signed=signed).authorized)
         result = evaluate_full_authority(identity, source=source, build=build, signed=signed)

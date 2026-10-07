@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import unittest
 from datetime import datetime, timezone
 
@@ -61,6 +62,20 @@ class ConvergentSolverScenarioTests(unittest.TestCase):
             for sample in samples
         ]
         self.assertEqual(actual_offsets, expected_offsets)
+
+    def test_kernel_zero_birth_uses_canonical_scenario_count(self) -> None:
+        from ce.calculation.kernel import calculate_zero_birth_aspect_window
+
+        parameter = inspect.signature(calculate_zero_birth_aspect_window).parameters["scenario_count"]
+        self.assertEqual(parameter.default, DEFAULT_SCENARIO_COUNT)
+
+    def test_kernel_canonical_utc_preserves_microseconds(self) -> None:
+        from ce.calculation.kernel import _canonical_utc
+
+        precise = datetime(2026, 1, 2, 3, 4, 5, 123456, tzinfo=timezone.utc)
+        exact_second = datetime(2026, 1, 2, 3, 4, 5, tzinfo=timezone.utc)
+        self.assertEqual(_canonical_utc(precise), "2026-01-02T03:04:05.123456Z")
+        self.assertEqual(_canonical_utc(exact_second), "2026-01-02T03:04:05Z")
 
     def test_canonical_utc_preserves_microseconds_without_padding_zeroes(self) -> None:
         from ce.calculation.scenario_windows import canonical_utc
