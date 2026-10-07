@@ -7,7 +7,7 @@
     "lock_sha256": "ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5"
   },
   "reconciliation_branch": "remediation/ce-r0-a7-reconciliation-r1/2026-10-07",
-  "current_head": "91a578ea63e30d5635c87d8fe63bbe130eea18c8",
+  "current_head": "cee75a81248aa4fa8140c131c19fa5dd42babeb9",
   "changes_closed_or_advanced": [
     "zero-birth scenario default aligned to DEFAULT_SCENARIO_COUNT",
     "kernel timestamp canonicalization aligned to microsecond-preserving policy",
@@ -40,8 +40,8 @@
   "current_control_plane_sha256": "55ceb65082afd989b250d779b737f0a29e0835e77259e4fa168554b87d4966b5",
   "current_lock_sha256": "ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5",
   "ci": {
-    "remediation_run_id": 37577295350,
-    "full_boundary_run_id": 37577295228,
+    "remediation_run_id": 37577384567,
+    "full_boundary_run_id": 37577384546,
     "result": "PASS",
     "platforms": [
       "ubuntu-latest",
