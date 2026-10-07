@@ -152,6 +152,18 @@ class RuntimeGateTests(unittest.TestCase):
         self.assertEqual(result.authority, __import__("ce.foundation.status", fromlist=["RuntimeAuthority"]).RuntimeAuthority.NON_AUTHORIZED)
         self.assertIn("source_authority_attestation_not_established", result.reasons)
 
+    def test_complete_identity_requires_control_plane_identity(self) -> None:
+        identity = RuntimeIdentity(
+            "CE-CALC-V1-EP-001", 4,
+            "a" * 40, "b" * 64, "sha256:" + "c" * 64,
+            "d" * 64, "e" * 64, "f" * 64,
+            runtime_environment_digest="g" * 64,
+            runtime_environment_kind="HOST_NATIVE",
+        )
+        result = authorize_runtime(identity)
+        self.assertEqual(result.authority, __import__("ce.foundation.status", fromlist=["RuntimeAuthority"]).RuntimeAuthority.NON_AUTHORIZED)
+        self.assertIn("missing:control_plane_sha256", result.reasons)
+
     def test_complete_identity_still_fails_closed(self) -> None:
         identity = RuntimeIdentity(
             "CE-CALC-V1-EP-001", 4,
