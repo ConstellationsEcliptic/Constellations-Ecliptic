@@ -203,10 +203,7 @@ class NativeSwissEphemerisAdapter:
         bundle_hash = verify_canonical_swiss_bundle(ephemeris_root)
 
         if loader is None:
-            if calling_convention == "__stdcall" and hasattr(ctypes, "WinDLL"):
-                loader = ctypes.WinDLL
-            else:
-                loader = ctypes.CDLL
+            loader = ctypes.CDLL
         try:
             self._lib = loader(str(library_path))
         except OSError as exc:
