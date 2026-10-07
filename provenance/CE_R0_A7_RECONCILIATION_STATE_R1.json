@@ -1,30 +1,39 @@
 {
   "artifact_id": "CE-R0-A7-RECONCILIATION-STATE-R1",
-  "status": "TECHNICAL_RECONCILIATION_CI_PASS_NON_AUTHORITY",
+  "status": "TECHNICAL_RECONCILIATION_REQUIRES_CI_REVALIDATION_NON_AUTHORITY",
   "parent_candidate": {
     "commit": "17a6b31e2294c862eebac4db09027a54b59c75fd",
     "source_tree_sha256_v2": "e90f42901bfdce6fb62e940c945769312befbf377ca738f770437e30a7df87e5",
     "lock_sha256": "ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5"
   },
   "reconciliation_branch": "remediation/ce-r0-a7-reconciliation-r1/2026-10-07",
-  "current_head": "6e902dbddafee703187f4d96c2417f6f750ff864",
+  "current_head": "32723a7d249e08f5fd016a4df43f572482b11f21",
   "changes_closed_or_advanced": [
     "zero-birth scenario default aligned to DEFAULT_SCENARIO_COUNT",
     "kernel timestamp canonicalization aligned to microsecond-preserving policy",
     "native ABI bound to canonical __cdecl",
-    "control-plane identity introduced separately from source-tree identity",
-    "calculation provenance captures control-plane identity",
-    "implementation metadata no longer embeds recursive source-tree digest"
+    "repository control-plane identity introduced separately from source-tree identity",
+    "calculation provenance captures repository control-plane identity",
+    "implementation metadata no longer embeds recursive source-tree digest",
+    "GitHub platform governance is now represented as a separate observed authority-chain evidence layer",
+    "platform-governance gap is explicitly fail-closed",
+    "stale A7 reconciliation state metadata corrected"
   ],
-  "still_open": [
+  "material_open_controls": [
+    "GitHub main branch is currently unprotected and required status checks are off",
+    "repository rulesets query currently returns no rulesets",
+    "no CODEOWNERS file was found in the A7 tree",
+    "detailed branch-protection endpoint is inaccessible to the connected integration (HTTP 403)",
+    "platform governance must be configured and freshly verified before authority transition"
+  ],
+  "other_open_controls": [
     "authoritative end-to-end CalculationEngine integration",
     "historical test-register lineage closure",
     "WIN-02/WIN-03 semantic equivalence",
     "IANA 2026e impact qualification",
     "Box-origin SHA-256 custody rehash",
-    "GitHub main branch governance verification",
     "fresh native full-range capture bound to A7 identity",
-    "fresh C3-1 human disposition for A7 after technical package review"
+    "fresh C3-1 human disposition after this reconciliation"
   ],
   "authority_state": {
     "source_authority": "NOT_ESTABLISHED",
@@ -37,18 +46,15 @@
     "fail_closed": true
   },
   "current_source_tree_sha256_v2": "1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b",
-  "current_control_plane_sha256": "55ceb65082afd989b250d779b737f0a29e0835e77259e4fa168554b87d4966b5",
+  "current_control_plane_sha256": "899672dda5af94feda4d7058be21547e63ba7976a061aaa861cd91db2a9a4221",
   "current_lock_sha256": "ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5",
   "ci": {
-    "remediation_run_id": 37577683253,
-    "full_boundary_run_id": 37577683228,
-    "result": "PASS",
-    "platforms": [
-      "ubuntu-latest",
-      "macos-14",
-      "windows-latest"
-    ],
-    "python": "3.13",
-    "full_unit_tests": 261
+    "status": "PENDING_REVALIDATION_AFTER_RECONCILIATION",
+    "last_verified_before_latest_reconciliation": {
+      "remediation_run_id": 37577733610,
+      "full_boundary_run_id": 37577733605,
+      "result": "PASS",
+      "full_unit_tests": 261
+    }
   }
 }
