@@ -16,6 +16,7 @@ class ReproducibilityR2EnvironmentTests(unittest.TestCase):
             execution_profile_revision=4,
             source_commit="a" * 40,
             source_tree_sha256_v2="b" * 64,
+            control_plane_sha256="9" * 64,
             dependency_lock_digest="c" * 64,
             runtime_environment_kind=kind,
             runtime_image_digest=image_digest,
