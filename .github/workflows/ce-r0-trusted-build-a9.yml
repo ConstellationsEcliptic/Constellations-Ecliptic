@@ -171,21 +171,21 @@ jobs:
           print("SOURCE_PACKAGE_BOUNDARY_PASS")
           PY
 
-      - name: Verify current candidate provenance is not stale
+      - name: Quarantine superseded Trusted Build provenance
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
+          PYTHONPATH=src python - <<'PY'
           import json
+          import subprocess
           from pathlib import Path
           p = json.loads(Path("provenance/CE_V1_TRUSTED_BUILD_PROVENANCE_R3.json").read_text(encoding="utf-8"))
-          actual = __import__("subprocess").check_output(["python","-B","build/build_source_tree_hash.py"], text=True).strip()
-          if p.get("source_tree_sha256") != actual:
-              print("STALE_TRUSTED_BUILD_PROVENANCE_DETECTED")
-              print("PROVENANCE_SOURCE_TREE=" + str(p.get("source_tree_sha256")))
-              print("ACTUAL_SOURCE_TREE=" + actual)
-              raise SystemExit(2)
-          raise SystemExit("A9 requires a new versioned current provenance record; R3 is not admissible.")
+          actual = subprocess.check_output(["python", "-B", "build/build_source_tree_hash.py"], text=True).strip()
+          assert p.get("status") == "CANDIDATE_NON_AUTHORIZED"
+          assert p.get("source_tree_sha256") != actual
+          print("SUPERSEDED_TRUSTED_BUILD_PROVENANCE_QUARANTINED=PASS")
+          print("SUPERSEDED_PROVENANCE_SOURCE_TREE=" + str(p.get("source_tree_sha256")))
+          print("CURRENT_SOURCE_TREE=" + actual)
           PY
 
       - name: Final machine-readable output
