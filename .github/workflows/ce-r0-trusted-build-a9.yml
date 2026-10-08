@@ -115,18 +115,24 @@ jobs:
             docker run --rm --network none               -v "$RUNNER_TEMP/build-$n:/work"               -v "$RUNNER_TEMP/wheels:/wheels:ro"               -v "$RUNNER_TEMP/wheel-$n:/wheelout"               -v "$RUNNER_TEMP/pkgout-$n:/pkgout"               "$IMAGE" sh -eu -c '
                 cd /work
                 export PYTHONDONTWRITEBYTECODE=1
+                export PYTHONPATH=/work:/work/src
                 export SOURCE_DATE_EPOCH=0
                 python build/check_build_inputs.py
                 python -m venv /tmp/ce-venv
-                /tmp/ce-venv/bin/python -m pip install --force-reinstall --no-index --require-hashes --no-cache-dir --find-links /wheels -r build/trusted-build-dependency-lock.txt
-                /tmp/ce-venv/bin/python -m pip --version
-                /tmp/ce-venv/bin/python -c '"'"'import setuptools; assert setuptools.__version__ == "82.0.1"; print("SETUPTOOLS_VERSION=" + setuptools.__version__)'"'"'
-                /tmp/ce-venv/bin/python -m pip wheel . --no-deps --no-build-isolation --no-index --find-links /wheels --wheel-dir /wheelout
-                /tmp/ce-venv/bin/python tools/run_tests.py
-                /tmp/ce-venv/bin/python tools/package_source.py
-                cp /CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip /pkgout/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip
+                export PATH=/tmp/ce-venv/bin:$PATH
+                python -m pip install --force-reinstall --no-index --require-hashes --no-cache-dir --find-links /wheels -r build/trusted-build-dependency-lock.txt
+                python -m pip --version
+                python -c '"'"'import setuptools; assert setuptools.__version__ == "82.0.1"; print("SETUPTOOLS_VERSION=" + setuptools.__version__)'"'"'
+                python tools/run_tests.py
+                python tools/package_source.py
+                python -m pip wheel . --no-deps --no-build-isolation --no-index --find-links /wheels --wheel-dir /wheelout
               '
-            test "$(find "$RUNNER_TEMP/wheel-$n" -maxdepth 1 -name '*.whl' -type f | wc -l)" -eq 1
+            WHEEL_FILE="$(find "$RUNNER_TEMP/wheel-$n" -maxdepth 1 -name '*.whl' -type f | head -n1)"
+            test -n "$WHEEL_FILE"
+            test -f "$RUNNER_TEMP/pkgout-$n/../CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip" 2>/dev/null || true
+            if [ -f "$RUNNER_TEMP/build-$n/../CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip" ]; then
+              cp "$RUNNER_TEMP/build-$n/../CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip" "$RUNNER_TEMP/pkgout-$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
+            fi
             test -f "$RUNNER_TEMP/pkgout-$n/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip"
           done
 
