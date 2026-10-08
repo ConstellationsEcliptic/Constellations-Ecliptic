@@ -1,0 +1,47 @@
+{
+  "artifact_id": "CE-V1-GITHUB-PLATFORM-GOVERNANCE-OBSERVATION-R2",
+  "status": "FRESH_LIVE_OBSERVATION",
+  "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
+  "observed_at_utc": "2026-10-08T10:00:00Z",
+  "observed_default_branch": "main",
+  "observed_main_commit": "ded37b47cadcc9420619776aacce52b98f9ad3dc",
+  "observations": {
+    "main_branch_protected": true,
+    "main_protection_enabled": true,
+    "main_required_status_checks_enforcement": "everyone",
+    "main_required_status_checks": [
+      "CE R0 Remediation / ubuntu-latest / Python 3.13",
+      "CE R0 Remediation / macos-14 / Python 3.13",
+      "CE R0 Remediation / windows-latest / Python 3.13",
+      "CE R0 Full Boundary / ubuntu-latest / Python 3.13",
+      "CE R0 Full Boundary / macos-14 / Python 3.13",
+      "CE R0 Full Boundary / windows-latest / Python 3.13"
+    ],
+    "repository_rulesets": [],
+    "branch_protection_detail_endpoint": {
+      "result": "INACCESSIBLE_TO_CONNECTED_INTEGRATION",
+      "http_status": 403
+    }
+  },
+  "current_candidate": {
+    "branch": "remediation/ce-r0-a9-trusted-build-r1/2026-10-08",
+    "head": "2d3d776b1633e4233efc4713910e9ef0c89e4f89",
+    "parent_a8_head": "bffaffed1e04fa061aa752b58bb359b46b858f69",
+    "source_tree_sha256_v2": "1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b"
+  },
+  "interpretation": {
+    "main_branch_governance": "OBSERVED_PROTECTED_WITH_REQUIRED_CHECKS",
+    "platform_governance_identity": "OBSERVED",
+    "details_not_returned_by_api": "NOT_ASSERTED",
+    "source_authority_eligibility": "NOT_BY_THIS_RECORD",
+    "trusted_build_eligibility": "NOT_BY_THIS_RECORD",
+    "production_authorization": "NOT_BY_THIS_RECORD",
+    "seal_eligibility": "NOT_BY_THIS_RECORD"
+  },
+  "historical_predecessor": {
+    "file": "provenance/github_platform_governance_observation_r1.json",
+    "treatment": "HISTORICAL_STALE_SNAPSHOT"
+  },
+  "authority": "NOT_ESTABLISHED",
+  "fail_closed": true
+}
