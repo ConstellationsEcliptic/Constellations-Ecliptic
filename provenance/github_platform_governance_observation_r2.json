@@ -2,7 +2,6 @@
   "artifact_id": "CE-V1-GITHUB-PLATFORM-GOVERNANCE-OBSERVATION-R2",
   "status": "FRESH_LIVE_OBSERVATION",
   "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
-  "observed_at_utc": "2026-10-08T10:00:00Z",
   "observed_default_branch": "main",
   "observed_main_commit": "ded37b47cadcc9420619776aacce52b98f9ad3dc",
   "observations": {
@@ -25,7 +24,7 @@
   },
   "current_candidate": {
     "branch": "remediation/ce-r0-a9-trusted-build-r1/2026-10-08",
-    "head": "2d3d776b1633e4233efc4713910e9ef0c89e4f89",
+    "head": "2bdab2e4058fcdff2355faa7405658f234d500d1",
     "parent_a8_head": "bffaffed1e04fa061aa752b58bb359b46b858f69",
     "source_tree_sha256_v2": "1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b"
   },
@@ -43,5 +42,7 @@
     "treatment": "HISTORICAL_STALE_SNAPSHOT"
   },
   "authority": "NOT_ESTABLISHED",
-  "fail_closed": true
+  "fail_closed": true,
+  "observed_date": "2026-10-08",
+  "observation_note": "Fresh live GitHub API observations were taken during the A9 point-0 re-audit on 2026-10-08. Exact API call timestamp is intentionally not asserted."
 }
