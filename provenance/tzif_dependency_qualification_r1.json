@@ -1,0 +1,28 @@
+{
+  "artifact_id": "CE-V1-TZIF-DEPENDENCY-QUALIFICATION-R1",
+  "status": "OPEN_QUALIFICATION",
+  "current_policy_release": "2026d",
+  "external_latest_release_observed": "2026e",
+  "adoption_decision": "NOT_ADOPTED",
+  "upgrade_mode": "NO_SILENT_UPGRADE",
+  "current_profile_impact": "UNCHANGED",
+  "qualification_scope": [
+    "compare policy-owned 2026d and 2026e release contents",
+    "identify all CE-supported zones with changed transitions or historical corrections",
+    "evaluate whether any changed transition can alter CE local-to-UTC normalization or downstream astronomical instants in the supported 1900-2100 domain",
+    "record any changed fixture expectations and regenerate affected evidence only in a new candidate"
+  ],
+  "known_upstream_changes_requiring_review": [
+    "Manitoba permanent UTC-05 effective 2026-10-31",
+    "Ireland 1925 historical timestamp correction"
+  ],
+  "governance": {
+    "authority": "NOT_ESTABLISHED",
+    "fail_closed": true,
+    "candidate_scoped": true
+  },
+  "sources": [
+    "https://www.iana.org/time-zones/releases",
+    "https://www.iana.org/news/2026/time-zone-database-2026e"
+  ]
+}

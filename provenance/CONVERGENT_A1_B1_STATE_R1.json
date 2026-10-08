@@ -1,0 +1,96 @@
+{
+  "artifact_id": "CE-V1-CONVERGENT-A1-B1-STATE-R1",
+  "recorded_at": "2026-10-04",
+  "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
+  "branch": "development/convergent-a1-b1/2026-10-04-r1",
+  "head": "d8c09304e580c265f431aa6d606d07df9dadc672",
+  "source_tree_sha256_v2": "5bd232083985672a73e282e6efa80dcaf6fcf9737815e6470765032ab0a48c57",
+  "verification": {
+    "github_actions_run_id": 37167556555,
+    "result": "SUCCESS",
+    "python": "3.13.15",
+    "tests_executed": 124,
+    "source_tree_identity": "PASS"
+  },
+  "historical_substrate": {
+    "b3_archive_sha256": "2eb0d3b152b4d7d0cf026abeb7d3b1ecf10d03f15b820856555003c161e0d9c5",
+    "b3_treatment": "technical_substrate_reference_only_no_authority_inheritance",
+    "b4_item11_treatment": "control_reference_only_no_wholesale_merge"
+  },
+  "recovered_h2_registry": {
+    "registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+    "mapping_sha256": "babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441",
+    "historical_bytes_preserved": true,
+    "previously_planned_core_controls_now_executable": 19
+  },
+  "current_hardening": {
+    "object_record_boundary": true,
+    "native_swiss_abi_boundary": true,
+    "swiss_canonical_data_verification": true,
+    "tzif_manifest_binding": true,
+    "civil_time_centralization": true,
+    "zero_birth_variable_state_separation": true,
+    "sampled_possible_robust_mixed_none": true,
+    "retry_failure_taxonomy": true,
+    "evidence_content_addressed": true,
+    "result_evidence_calculation_identity_binding": true,
+    "calculation_result_draft_lifecycle": true,
+    "authority_chain_pure_verifier": true,
+    "build_policy_scanner": true
+  },
+  "governance": {
+    "source_authority": "NOT_ESTABLISHED",
+    "trusted_build": "NOT_ESTABLISHED",
+    "runtime_adoption": "NOT_ESTABLISHED",
+    "full_runtime_coverage": "NOT_ESTABLISHED",
+    "tzif_runtime_identity": "NOT_ESTABLISHED",
+    "production_runtime": "NOT_AUTHORIZED",
+    "dual_approval": "NOT_ESTABLISHED",
+    "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
+    "fail_closed": true
+  },
+  "open_boundaries": [
+    "N-MID-03 native object reproducibility",
+    "Windows/MSVC controlled runtime evidence",
+    "1900-2100 runtime coverage evidence",
+    "cross-platform parity",
+    "golden astronomical oracle coverage",
+    "final CE source-authority evidence",
+    "trusted-build provenance",
+    "IANA signer operational trust"
+  ],
+  "non_claims": [
+    "no production authority",
+    "no trusted-build authority",
+    "no SEAL",
+    "no historical ancestry claim from B3",
+    "no complete continuous zero-birth mathematical coverage claim",
+    "no claim that 124 passing tests proves astronomical correctness"
+  ],
+  "lineage_verification": {
+    "base_production_candidate": "804036f843a56d0029ceea08af35247d28cbde7e",
+    "current_head": "d8c09304e580c265f431aa6d606d07df9dadc672",
+    "base_to_current": {
+      "status": "ahead",
+      "ahead_by": 266,
+      "behind_by": 0,
+      "merge_base": "804036f843a56d0029ceea08af35247d28cbde7e"
+    },
+    "candidate_r3": "033e90cfd29e047578e70bbd20183e48682d7614",
+    "candidate_r3_to_current": {
+      "status": "ahead",
+      "ahead_by": 183,
+      "behind_by": 0,
+      "merge_base": "033e90cfd29e047578e70bbd20183e48682d7614"
+    },
+    "b4_item11": "6155393e9ce491738575c988267898b85ed6a6b4",
+    "b4_to_current": {
+      "status": "diverged",
+      "ahead_by_current": 266,
+      "behind_by_current": 128,
+      "merge_base": "804036f843a56d0029ceea08af35247d28cbde7e"
+    },
+    "interpretation": "Fresh convergent lineage. No B4 ancestry; B3/B4 remain substrate/reference treatment."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "artifact_id": "CE-V1-TZIF-NORMATIVE-ZONE-BINDINGS-R1",
+  "status": "CANDIDATE_NON_AUTHORITY",
+  "tzif_version": "2026d",
+  "bundle_sha256": "f3edd74a1bb77d092d6c2ed3eead8ebea9657954f5bb30b0ac031a08a5eed942",
+  "runtime_manifest_sha256": "a12881024bee3b801d63b0d9cb74118b6329512f63020f36c42412de1e0a6205",
+  "entry_count": 597,
+  "normative_test_register": {
+    "library_file_id": "file_0000000071d4820899941b51f4b38c75",
+    "sha256": "97a977feb051999dcefec7ee9322c5980ba73ed961608bc021a4b889ed659de0"
+  },
+  "zone_bindings": [
+    {
+      "zone": "Etc/UTC",
+      "sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+      "size_bytes": 114,
+      "normative_fixture": "TIME-01",
+      "local_datetime": "2020-01-01T12:00:00",
+      "expected_utc": "2020-01-01T12:00:00Z"
+    },
+    {
+      "zone": "Europe/Paris",
+      "sha256": "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8",
+      "size_bytes": 2962,
+      "normative_fixture": "TIME-02/TIME-03",
+      "ambiguous_local_datetime": "2024-10-27T02:30:00",
+      "nonexistent_local_datetime": "2024-03-31T02:30:00"
+    }
+  ],
+  "supporting_box_artifacts": [
+    {
+      "file_id": "2505141690144",
+      "name": "CE_V1_TZIF_2026D_RUNTIME_BUNDLE_RECONCILED_R1.zip",
+      "sha1": "653cbc660a39ca6e537c5a43113eef65a77ad312",
+      "size_bytes": 900396
+    },
+    {
+      "file_id": "2505146005898",
+      "name": "CE_V1_TZIF_2026D_RUNTIME_BUNDLE_RECONCILED_R1 (1).zip",
+      "sha1": "653cbc660a39ca6e537c5a43113eef65a77ad312",
+      "size_bytes": 900396
+    },
+    {
+      "file_id": "2505145497181",
+      "name": "CE_V1_TZIF_2026D_RUNTIME_BUNDLE_RECONCILED_R1 (2).zip",
+      "sha1": "653cbc660a39ca6e537c5a43113eef65a77ad312",
+      "size_bytes": 900396
+    }
+  ],
+  "governance_note": "Zone-level byte bindings strengthen TIME fixture provenance. Full policy-owned 597-entry runtime adoption remains a separate gate and is not established by this file."
+}

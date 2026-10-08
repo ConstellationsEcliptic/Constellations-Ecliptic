@@ -1,0 +1,48 @@
+{
+  "artifact_id": "CE-V1-CONVERGENT-TEST-REGISTER-R1",
+  "status": "IMPLEMENTATION_CANDIDATE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "recovered_h2_registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+  "recovered_h2_mapping_sha256": "babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441",
+  "tests": [
+    [
+      "GEO-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_geo_01_circular_boundary"
+    ],
+    [
+      "GEO-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_geo_02_exact_square"
+    ],
+    [
+      "KIN-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_01_applying"
+    ],
+    [
+      "KIN-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_02_separating"
+    ],
+    [
+      "KIN-03",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_03_retrograde_separating"
+    ],
+    [
+      "KIN-04",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_04_exact_precedence"
+    ],
+    [
+      "ORB-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_orb_01_profile_a"
+    ],
+    [
+      "ORB-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_orb_02_profile_b"
+    ],
+    [
+      "STA-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_sta_01_circular_span"
+    ]
+  ],
+  "execution_evidence": "NOT_YET_CAPTURED",
+  "authoritative_coverage": "NOT_ESTABLISHED"
+}

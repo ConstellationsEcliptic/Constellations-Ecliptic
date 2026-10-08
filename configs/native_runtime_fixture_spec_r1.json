@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "fixtures": [
+    {
+      "fixture_id": "CE-NATIVE-R1-1900-001",
+      "julian_day_ut": 2415021,
+      "objects": [
+        "SUN",
+        "MOON",
+        "MERCURY",
+        "VENUS",
+        "MARS",
+        "JUPITER",
+        "SATURN",
+        "URANUS",
+        "NEPTUNE",
+        "PLUTO",
+        "CHIRON",
+        "TRUE_NODE",
+        "MEAN_LILITH"
+      ],
+      "instant_utc": "1900-01-01T12:00:00Z"
+    },
+    {
+      "fixture_id": "CE-NATIVE-R1-2000-001",
+      "julian_day_ut": 2451545,
+      "objects": [
+        "SUN",
+        "MOON",
+        "MERCURY",
+        "VENUS",
+        "MARS",
+        "JUPITER",
+        "SATURN",
+        "URANUS",
+        "NEPTUNE",
+        "PLUTO",
+        "CHIRON",
+        "TRUE_NODE",
+        "MEAN_LILITH"
+      ],
+      "instant_utc": "2000-01-01T12:00:00Z"
+    },
+    {
+      "fixture_id": "CE-NATIVE-R1-2100-001",
+      "julian_day_ut": 2488069,
+      "objects": [
+        "SUN",
+        "MOON",
+        "MERCURY",
+        "VENUS",
+        "MARS",
+        "JUPITER",
+        "SATURN",
+        "URANUS",
+        "NEPTUNE",
+        "PLUTO",
+        "CHIRON",
+        "TRUE_NODE",
+        "MEAN_LILITH"
+      ],
+      "instant_utc": "2100-01-01T12:00:00Z"
+    }
+  ],
+  "fixture_basis": "CURRENT_CANDIDATE_RANGE_PROBES",
+  "historical_variant_note": "Historical handoff evidence contains distinct midnight-UTC JD=.5 probes; those bytes/results remain historical and are not silently promoted."
+}
