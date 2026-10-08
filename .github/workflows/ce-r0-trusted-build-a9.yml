@@ -125,6 +125,7 @@ jobs:
                 python -c '"'"'import setuptools; assert setuptools.__version__ == "82.0.1"; print("SETUPTOOLS_VERSION=" + setuptools.__version__)'"'"'
                 python tools/run_tests.py
                 python tools/package_source.py
+                cp /CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip /pkgout/CE_V1_SOURCE_FOUNDATION_R1_FINAL.zip
                 python -m pip wheel . --no-deps --no-build-isolation --no-index --find-links /wheels --wheel-dir /wheelout
               '
             WHEEL_FILE="$(find "$RUNNER_TEMP/wheel-$n" -maxdepth 1 -name '*.whl' -type f | head -n1)"
