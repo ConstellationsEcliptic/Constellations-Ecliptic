@@ -22,12 +22,6 @@
       "http_status": 403
     }
   },
-  "current_candidate": {
-    "branch": "remediation/ce-r0-a9-trusted-build-r1/2026-10-08",
-    "head": "2bdab2e4058fcdff2355faa7405658f234d500d1",
-    "parent_a8_head": "bffaffed1e04fa061aa752b58bb359b46b858f69",
-    "source_tree_sha256_v2": "1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b"
-  },
   "interpretation": {
     "main_branch_governance": "OBSERVED_PROTECTED_WITH_REQUIRED_CHECKS",
     "platform_governance_identity": "OBSERVED",
@@ -44,5 +38,11 @@
   "authority": "NOT_ESTABLISHED",
   "fail_closed": true,
   "observed_date": "2026-10-08",
-  "observation_note": "Fresh live GitHub API observations were taken during the A9 point-0 re-audit on 2026-10-08. Exact API call timestamp is intentionally not asserted."
+  "observation_note": "Fresh live GitHub API observations were taken during the A9 point-0 re-audit on 2026-10-08. The candidate field is intentionally named candidate_at_observation and is not a final A9 identity binding. Exact API call timestamp is intentionally not asserted.",
+  "candidate_at_observation": {
+    "branch": "remediation/ce-r0-a9-trusted-build-r1/2026-10-08",
+    "head": "2bdab2e4058fcdff2355faa7405658f234d500d1",
+    "parent_a8_head": "bffaffed1e04fa061aa752b58bb359b46b858f69",
+    "source_tree_sha256_v2": "1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b"
+  }
 }
