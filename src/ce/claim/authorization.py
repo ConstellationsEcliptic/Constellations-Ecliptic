@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 import math
 
@@ -46,7 +47,7 @@ def _unique_geometry_values(evidence_packet: EvidencePacket) -> dict[str, object
     """Return one exact geometry identity from the issued packet, or fail closed."""
     identities: set[tuple[str, str, str, float]] = set()
     for record in evidence_packet.geometry_records:
-        if not isinstance(record, dict):
+        if not isinstance(record, Mapping):
             return None
         transit = record.get("transit_object")
         natal = record.get("natal_object_or_scenario")
