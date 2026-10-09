@@ -29,15 +29,22 @@
     {
       "id": "A1",
       "title": "Core product promise and epistemic boundaries",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193",
         "Box:2515023681086"
       ],
       "review_focus": "Review the five epistemic layers, absolute integrity invariants, and the rule that lower layers cannot rewrite higher layers.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Source review and owner discussion completed in this conversation on 2026-10-09. Product Constitution v1.6.1 establishes CE's identity and absolute integrity invariants; Calculation Constitution v1.9 defines the numerical/geometric source-of-record boundary and prohibits invented/synthetic/stale state; Signal Engine v1.4 and Interpretive Canon v1.2 preserve downstream qualification/interpretive boundaries; Evidence, AI & Output Validation v1.4 limits AI to authorized language infrastructure and fail-closed claim validation. Preserve the core invariant: CE must never make the user believe CE knows more than CE actually knows. Normative and governance sources jointly constrain CE; working artifacts, convenience, commercial goals, or autonomous operation cannot override them.",
+      "evidence_refs": [
+        "Box:2491704535193 §§1-3, §§10-14 (Product Constitution v1.6.1)",
+        "Box:2485336984594 §§2-3, §§36-37 (Calculation Constitution v1.9)",
+        "Box:2485335414676 §§14-16, §22 (Signal Engine Core v1.4)",
+        "Box:2485337228722 §§2-6, §19 (Interpretive Canon v1.2)",
+        "Box:2485336395859 §§3-4, §§9-13, §25 (Evidence, AI & Output Validation v1.4)",
+        "Box:2515488894918 §§2-6 (Source-First Recommendation Protocol)"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
