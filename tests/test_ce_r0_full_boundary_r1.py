@@ -82,7 +82,7 @@ class CER0FullBoundaryTests(unittest.TestCase):
             evidence_packet=packet,
         )
 
-    def registry(self, evidence_ref: str) -> CanonRegistry:
+    def registry(self, evidence_ref: str, condition: dict | None = None) -> CanonRegistry:
         return CanonRegistry.from_records(
             "CE-CANON-RULE-REGISTRY-TEST-V1",
             [{
@@ -91,7 +91,11 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 "tradition_track": "TEST_ONLY",
                 "source_reference": "TEST-SOURCE",
                 "source_scope": "TEST-SCOPE",
-                "condition": {"classification": "ROBUST_EXACT_SIGNAL"},
+                "condition": (
+                    condition
+                    if condition is not None
+                    else {"classification": "ROBUST_EXACT_SIGNAL"}
+                ),
                 "allowed_interpretation": {
                     "claim_id": "TEST-CLAIM-001",
                     "allowed_subject": ["reflection"],
@@ -110,6 +114,24 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 "confidence_language_boundary": {"ceiling": "possibility"},
                 "applicability_scope": ["self-reflection"],
             }],
+        )
+
+    def _claim_release_with_condition(self, condition: dict):
+        packet = self.packet()
+        signal = issue_qualified_signal_record(packet)
+        registry = self.registry(signal.evidence_packet_ref, condition=condition)
+        manifest = build_allowed_claim_manifest(
+            registry,
+            rule_id="TEST-RULE-001",
+            signal_reference=signal.signal_id,
+        )
+        return evaluate_claim_release(
+            self.valid_result(packet),
+            packet,
+            manifest,
+            self.output(manifest, packet),
+            self.runtime(),
+            registry,
         )
 
     def output(self, manifest: AllowedClaimManifest, packet: EvidencePacket, text: str = "This reflection may invite attention.") -> dict:
@@ -229,6 +251,45 @@ class CER0FullBoundaryTests(unittest.TestCase):
         forged["manifest_id"] = "CE-ACM-" + "0" * 64
         with self.assertRaisesRegex(ManifestInvalid, "identity_digest"):
             AllowedClaimManifest.from_mapping(forged)
+
+    def test_geometry_selectors_match_exact_evidence_packet_identity(self):
+        result = self._claim_release_with_condition({
+            "classification": "ROBUST_EXACT_SIGNAL",
+            "transit_object": "SUN",
+            "natal_object_or_scenario": "MOON",
+            "aspect": "CONJUNCTION",
+            "directed_branch": 0.0,
+        })
+        self.assertNotIn("canon_rule_signal_condition_mismatch", result.reasons)
+        # A matching selector is not enough to release output: the independent
+        # semantic verifier and separate runtime authority remain required.
+        self.assertIn("semantic_conformance_unavailable", result.reasons)
+        self.assertIn("runtime_not_authorized", result.reasons)
+        self.assertFalse(result.authorized)
+
+    def test_geometry_selector_mismatch_blocks_rule_match_with_same_broad_signal(self):
+        cases = (
+            ("transit_object", "JUPITER"),
+            ("natal_object_or_scenario", "VENUS"),
+            ("aspect", "TRINE"),
+            ("directed_branch", 120.0),
+        )
+        for field, value in cases:
+            with self.subTest(field=field):
+                result = self._claim_release_with_condition({
+                    "classification": "ROBUST_EXACT_SIGNAL",
+                    field: value,
+                })
+                self.assertIn("canon_rule_signal_condition_mismatch", result.reasons)
+                self.assertFalse(result.authorized)
+
+    def test_unsupported_rule_condition_key_fails_closed(self):
+        result = self._claim_release_with_condition({
+            "classification": "ROBUST_EXACT_SIGNAL",
+            "unreviewed_selector": "invented",
+        })
+        self.assertIn("canon_rule_signal_condition_mismatch", result.reasons)
+        self.assertFalse(result.authorized)
 
     def test_empty_canon_registry_never_builds_manifest(self):
         packet = self.packet()
