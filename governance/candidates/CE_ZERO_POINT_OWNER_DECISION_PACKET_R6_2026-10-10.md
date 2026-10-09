@@ -1,6 +1,6 @@
 # CE ZERO-POINT — CONSOLIDATED OWNER DECISION PACKET R6
 Date: 2026-10-10  
-Revision: R5 is a portable current-state overlay after connection-interruption revalidation. It incorporates the latest register CI result, exact historical oracle package verification and a source-based TZDB 2026e impact note. Previously recorded owner decisions remain unchanged; do not ask them again.  
+Revision: R6 is a portable current-state overlay after exact upstream TZDB source-tag comparison and F2 register rebinding. Previously recorded owner decisions remain unchanged; do not ask them again.  
 Classification: WORKING CANDIDATE / NON-AUTHORITATIVE / DECISION SUPPORT  
 Authority effect: NONE • Normative amendment: NONE • Runtime/production/SEAL effect: NONE  
 Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
