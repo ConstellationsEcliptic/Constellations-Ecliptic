@@ -355,7 +355,7 @@
     {
       "id": "D2",
       "title": "Personal Context and data-minimization boundary",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193",
@@ -363,8 +363,16 @@
         "Box:2485336395859"
       ],
       "review_focus": "Preserve persistent Personal Context/free-text exclusion from V1 AI input unless a controlled change reopens it.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Privacy Architecture Minimal V1 v1.5 §§1–6, 12–15, 18–19; Account/Privacy/Commercial v1.7 §§1, 6–8, 14, 20; and Evidence/AI Output Validation v1.4 §§3–4, 14, 17–18, 25 establish exclusion of persistent Personal Context, raw free-text, account history and prior reading from the V1 AI input path. Current-session categories remain ephemeral. Retained paid-reading content is allowed for same-reading reread under entitlement but may not be used as context/training/personalization for a new reading. Account deletion purges personal/reading records under lifecycle, retaining only legitimately required minimal financial records with purpose limitation and unnecessary linkage severance; birth correction creates a new profile version and does not rewrite old reading. Owner dispositions Box 2515505499720 and 2515528652667 confirm preserve current exclusion and explicitly defer future cross-reading continuity until owner reopens it; no active continuity design should proceed now. Test Register specifies PRIV-01–08/PRIV-09–13 and VERS-02, but no tests executed here; actual product runtime conformance remains unverified. Recommendation: CLOSE / PRESERVE V1 boundary; no data-path changes.",
+      "evidence_refs": [
+        "Box:2485335589220 Privacy Architecture Minimal V1 v1.5 §§1–6, 12–15, 18–19",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§1, 6–8, 14, 20",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–4, 14, 17–18, 25",
+        "Box:2515505499720 Owner Disposition Account History / Persistent Personal Context and Voice Boundary R0",
+        "Box:2515528652667 Owner Disposition Future Deep Sky Cross-Reading Continuity Deferred",
+        "Box:2485336117840 Test Register v1.5 PRIV-01–08, PRIV-09–13, VERS-02",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
