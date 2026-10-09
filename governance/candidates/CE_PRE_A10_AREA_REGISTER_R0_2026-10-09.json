@@ -129,7 +129,7 @@
     {
       "id": "B1",
       "title": "Canon Rule Registry and allowed semantic coverage",
-      "status": "NOT_STARTED",
+      "status": "RECOMMENDATION_READY",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2485337228722",
@@ -137,8 +137,19 @@
         "Box:2515023681086"
       ],
       "review_focus": "Verify whether approved populated current V1 rules exist, their lineage, and manifest binding; preserve fail-closed behavior.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "The characterized Interpretive Canon v1.2 requires a provenance-bound, versioned Rule Registry as the source of semantic permission; absent/mismatching rules must produce no interpretation. In exact A9 candidate c8dab354…, src/ce/canon/registry.py provides schema-aware CanonRule/CanonRegistry parsing but module-level get_rule() deliberately raises CanonRegistryNotEstablished because the registry is not materialized; the inspected PR#26 tree has code/schema but no populated Canon data file. Similar-named test_registry_100/H2 artifacts are calculation-core test/coverage registers, and tests/test_registry_r1.py validates calculation object/aspect/orb registries, not interpretive rules. Historical CE_RULEBOOK_v1.0 is in the historical V8 intake and cannot be promoted by name/location. Bounded Box, Library, Dropbox and exact candidate-path searches did not identify a separately approved/populated current V1 Canon-rule registry or its authority/promotion record. This remains NOT_ESTABLISHED in the inspected scope, not universal non-existence. Recommendation: preserve fail-closed behavior; do not invent/promote Canon rules; prepare a source-backed, independently reviewed candidate rule set with provenance/conflict analysis and version/digest-bound claim-manifest tests before asking for a consolidated semantic disposition.",
+      "evidence_refs": [
+        "Box:2485337228722 Interpretive Canon v1.2 §§4–6, 14–18",
+        "GitHub A9 commit c8dab3542d3d4725cf591630c07f76366f7949d0 src/ce/canon/registry.py blob ae1bc1a83f712c8ca15a2d05b56310bec341332d",
+        "GitHub A9 commit c8dab3542d3d4725cf591630c07f76366f7949d0 schemas/canon_rule.schema.json blob 770bfa661bdae89a569e8555155c97fe5b3ad2af",
+        "GitHub A9 commit c8dab3542d3d4725cf591630c07f76366f7949d0 schemas/allowed_claim_manifest.schema.json blob e1b9f46cae1c584a46cf83eb1953ccd376b38028",
+        "GitHub PR #26 changed-file inventory (185 paths; no populated Canon data registry in inspected tree)",
+        "GitHub A9 tests/test_registry_r1.py blob 03efb7dd4609f070473a13fe8ac7c34ccdc38175 (calculation registries, not Canon)",
+        "Box:2504549579690 H2 test-registry provenance/rebinding record (test register ≠ Canon rules)",
+        "Box:2485689424558 CE_RULEBOOK_v1.0.md (historical V8 intake, not current V1 authority)",
+        "Box:2515023681086 Source-Bound Matrix R0",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
