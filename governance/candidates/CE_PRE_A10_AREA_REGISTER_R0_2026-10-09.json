@@ -150,7 +150,7 @@
     {
       "id": "B3",
       "title": "Voice Boundary and negative-sounding language",
-      "status": "NOT_STARTED",
+      "status": "RECOMMENDATION_READY",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2491704535193",
@@ -158,8 +158,19 @@
         "Box:2515023681086"
       ],
       "review_focus": "Find approved V1 voice disposition; distinguish honest limitations from unnecessary fear, fatalism, or demeaning language.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Owner disposition Box 2515505499720 expressly accepts the high-level direction that truth, evidence, Canon/claim authorization and accurate system state are hard constraints; flexible style should be clear, warm, considerate and non-fatalistic where truthful; no blanket ban on every negative-sounding word or forced positivity; the historical Voice Constitution is not silently promoted to V1 authority. Owner clarification Box 2515492744135 confirms a strict/formal Voice Boundary was not adopted for V1 and warns that rigid rules could undermine honesty. Voice Proposal Source Reconciliation R1 Box 2515526817086 classifies evidence/claim/certainty/failure/mismatch/hidden-knowledge controls as directly grounded in V1, while tone and lexical rules remain proposed style guidance. Recommendation: retain two layers—blocking structural/semantic integrity gates and non-blocking editorial style guidance; style becomes blocking only where the actual content causes a substantive truth, certainty, fear/fatalism, safety, privacy or commercial-integrity violation. No normative amendment or code gate is authorized; detailed combined Today’s Note + voice contract remains to be presented for a focused decision after review is consolidated.",
+      "evidence_refs": [
+        "Box:2515505499720 Owner Disposition — Account History / Personal Context and Voice R0, §3",
+        "Box:2515492744135 Owner Clarification PC Tier1 Legal and Voice Boundary R0, §3B",
+        "Box:2515526817086 Voice Proposal Source Reconciliation R1, §§3–6",
+        "Box:2515504511937 Voice Integrity & Editorial Principles Proposal R0 (proposal only)",
+        "Box:2515019564821 Zero-Point Source-Lineage Update R1",
+        "Box:2515541872217 Voice Integrity & Today's Note Change-Control Packet R1 (proposal only)",
+        "Box:2491704535193 Product Constitution v1.6.1 §§3, 8, 11–13",
+        "Box:2485337228722 Interpretive Canon v1.2 §§6–16",
+        "Box:2485336395859 Evidence/AI Output Validation v1.4 §§3–12",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
