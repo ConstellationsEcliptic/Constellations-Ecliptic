@@ -107,7 +107,7 @@
     {
       "id": "A4",
       "title": "Product voice, tone and consumer experience",
-      "status": "RECOMMENDATION_READY",
+      "status": "OWNER_DECISION_RECORDED",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2491704535193",
@@ -115,7 +115,7 @@
         "Box:2515023681086"
       ],
       "review_focus": "Reconcile source-backed claim limits with any owner-approved non-fatalistic/quiet language rules.",
-      "review_summary": "Current Product Constitution and Business Model establish truthful state/claim limits, the free-core-to-Deep-Sky funnel and qualified daily traffic as North Star, but no inspected CE source or first-party evidence proves the effect of Quiet Sky/Today’s Note on interest, return or conversion. Owner-approved Note disposition only permits optional, separate non-personal editorial alongside valid Quiet Sky if an approved item exists. A Jan 2026 mixed-method study of 57 astrology-app users reports trust/privacy/satisfaction concerns but does not study Quiet Sky or CE; a 2025 transparency study of 216 participants in AI decision scenarios is adjacent evidence only. Recommendation: treat consumer effects as a testable hypothesis, preserve Quiet Sky as the truthful result, make any Note optional/separate/approved, avoid filler or personal-sounding rescue, and validate usability/value proposition with consented qualitative research plus permitted aggregate measures, without identity-linked user profiling or letting engagement change signal/Canon behavior. This does not establish market demand or authorize any feature, telemetry, code or normative change.",
+      "review_summary": "Current Product Constitution and Business Model establish truthful state/claim limits, the free-core-to-Deep-Sky funnel and qualified daily traffic as North Star, but no inspected CE source or first-party evidence proves the effect of Quiet Sky/Today’s Note on interest, return or conversion. Owner-approved Note disposition only permits optional, separate non-personal editorial alongside valid Quiet Sky if an approved item exists. A Jan 2026 mixed-method study of 57 astrology-app users reports trust/privacy/satisfaction concerns but does not study Quiet Sky or CE; a 2025 transparency study of 216 participants in AI decision scenarios is adjacent evidence only. Recommendation: treat consumer effects as a testable hypothesis, preserve Quiet Sky as the truthful result, make any Note optional/separate/approved, avoid filler or personal-sounding rescue, and validate usability/value proposition with consented qualitative research plus permitted aggregate measures, without identity-linked user profiling or letting engagement change signal/Canon behavior. This does not establish market demand or authorize any feature, telemetry, code or normative change. Bounded owner disposition recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md: include evidence-based consumer validation before launch, limited to comprehension/expectations/usability/value proposition through consented qualitative research and only already-permitted aggregate measures. This approves the validation direction; it does not claim the study has occurred, authorize new telemetry/personal profiling, or allow engagement to alter astronomy, qualification, Canon or uncertainty.",
       "evidence_refs": [
         "Box:2491704535193 Product Constitution v1.6.1 §§3–5, 8, 11–13",
         "Box:2485331476456 Business Model Minimal V1 v1.5 §§1–6, 13",
@@ -125,10 +125,14 @@
         "Web: https://www.jier.org/index.php/journal/article/view/4272 — 2026 mixed-method study; n=57; no direct Quiet Sky test",
         "Web: https://journals.sagepub.com/doi/10.1177/10711813251369473 — 2025 transparency study; n=216; AI decision scenarios, indirect applicability",
         "Web: https://interfaces.institute/patterns/empty-states/ — UX design guidance only, not CE consumer validation",
-        "Box:2515023681086 Source-Bound Matrix R0, areas 1–2"
+        "Box:2515023681086 Source-Bound Matrix R0, areas 1–2",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md",
+        "Box:2515715498189 Paid Checkout Readiness Matrix R0 (consumer/product readiness and no blanket development gate)",
+        "Box:2515505499720 Owner disposition: Account History / Persistent Personal Context and Voice Boundary"
       ],
-      "disposition_ref": "",
-      "owner_disposition": ""
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+      "owner_disposition": "APPROVE_PRE_LAUNCH_CONSUMER_VALIDATION_DIRECTION_ONLY: assess comprehension, expectations, usability and value proposition using consented qualitative research and only already-permitted aggregate measures. No new telemetry purpose, user-level behavioral profile, persistent personalization, or changes to astronomy/signal/Canon/uncertainty based on engagement are authorized. Actual study/results remain outstanding evidence."
     },
     {
       "id": "B1",
@@ -187,7 +191,7 @@
     {
       "id": "B3",
       "title": "Voice Boundary and negative-sounding language",
-      "status": "RECOMMENDATION_READY",
+      "status": "OWNER_DECISION_RECORDED",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2491704535193",
@@ -195,7 +199,7 @@
         "Box:2515023681086"
       ],
       "review_focus": "Find approved V1 voice disposition; distinguish honest limitations from unnecessary fear, fatalism, or demeaning language.",
-      "review_summary": "Owner disposition Box 2515505499720 expressly accepts the high-level direction that truth, evidence, Canon/claim authorization and accurate system state are hard constraints; flexible style should be clear, warm, considerate and non-fatalistic where truthful; no blanket ban on every negative-sounding word or forced positivity; the historical Voice Constitution is not silently promoted to V1 authority. Owner clarification Box 2515492744135 confirms a strict/formal Voice Boundary was not adopted for V1 and warns that rigid rules could undermine honesty. Voice Proposal Source Reconciliation R1 Box 2515526817086 classifies evidence/claim/certainty/failure/mismatch/hidden-knowledge controls as directly grounded in V1, while tone and lexical rules remain proposed style guidance. Recommendation: retain two layers—blocking structural/semantic integrity gates and non-blocking editorial style guidance; style becomes blocking only where the actual content causes a substantive truth, certainty, fear/fatalism, safety, privacy or commercial-integrity violation. No normative amendment or code gate is authorized; detailed combined Today’s Note + voice contract remains to be presented for a focused decision after review is consolidated. Direct source-to-code reconciliation is now recorded in CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md. It binds the normative output boundary to exact A9 blobs and confirms that the verified semantic checker deliberately returns no implementation and the full release path fails closed when it is unavailable; this does not establish a populated approved Canon registry or production release path, and changes no disposition.",
+      "review_summary": "Owner disposition Box 2515505499720 expressly accepts the high-level direction that truth, evidence, Canon/claim authorization and accurate system state are hard constraints; flexible style should be clear, warm, considerate and non-fatalistic where truthful; no blanket ban on every negative-sounding word or forced positivity; the historical Voice Constitution is not silently promoted to V1 authority. Owner clarification Box 2515492744135 confirms a strict/formal Voice Boundary was not adopted for V1 and warns that rigid rules could undermine honesty. Voice Proposal Source Reconciliation R1 Box 2515526817086 classifies evidence/claim/certainty/failure/mismatch/hidden-knowledge controls as directly grounded in V1, while tone and lexical rules remain proposed style guidance. Recommendation: retain two layers—blocking structural/semantic integrity gates and non-blocking editorial style guidance; style becomes blocking only where the actual content causes a substantive truth, certainty, fear/fatalism, safety, privacy or commercial-integrity violation. No normative amendment or code gate is authorized; detailed combined Today’s Note + voice contract remains to be presented for a focused decision after review is consolidated. Direct source-to-code reconciliation is now recorded in CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md. It binds the normative output boundary to exact A9 blobs and confirms that the verified semantic checker deliberately returns no implementation and the full release path fails closed when it is unavailable; this does not establish a populated approved Canon registry or production release path, and changes no disposition. Existing limited owner direction reconfirmed and indexed in CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md, cross-referencing Box 2515505499720 and source-bound voice reconciliation Box 2515526817086. High-level voice review is now recorded; detailed Today's Note content/source/selection/UI remains separately open under A3, and no detailed style contract/code gate/normative amendment is authorized.",
       "evidence_refs": [
         "Box:2515505499720 Owner Disposition — Account History / Personal Context and Voice R0, §3",
         "Box:2515492744135 Owner Clarification PC Tier1 Legal and Voice Boundary R0, §3B",
@@ -209,10 +213,14 @@
         "Box:2485319995048 Account, Privacy & Commercial Specification v1.7",
         "GitHub:governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md — source-to-code matrix for Product Constitution §§4.2/5/11/15, Canon v1.2 §§4–6/13–20, Evidence-AI v1.4 §§3–12/18–25 and exact A9 blobs; confirms absent verified semantic checker causes fail-closed release and does not authorize output.",
         "Box:2485336395859 Evidence, AI & Output Validation Specification v1.4 §§3–12, 18–25 reviewed directly; core deterministic templates, Deep Sky constrained JSON, required semantic conformance, and failure/Quiet Sky boundary",
-        "GitHub:A9 src/ce/output/validation.py blob 7474c55c7323dc446e4799b3db4f6dc16a1b75a6 has structural/lexical checks but adds semantic_conformance_unavailable when verifier missing"
+        "GitHub:A9 src/ce/output/validation.py blob 7474c55c7323dc446e4799b3db4f6dc16a1b75a6 has structural/lexical checks but adds semantic_conformance_unavailable when verifier missing",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+        "Box:2515505499720 Owner disposition: Account History / Persistent Personal Context and Voice Boundary",
+        "Box:2515492744135 Owner clarification: Persistent Personal Context, Tier-1 legal-policy basis and Voice Boundary",
+        "Box:2515526817086 Voice Proposal Source Reconciliation R1"
       ],
-      "disposition_ref": "",
-      "owner_disposition": ""
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+      "owner_disposition": "PRESERVE_EXISTING_LIMITED_OWNER-ACCEPTED_VOICE_DIRECTION: truth/evidence/state/claim boundaries are hard; no blanket lexical ban or forced positivity; use clear, warm, considerate, non-fatalistic style only where truthful; historical Voice Constitution is not silently promoted. Exact Today's Note content/UI/library and code/normative voice gate are not approved."
     },
     {
       "id": "B4",
@@ -561,7 +569,7 @@
     {
       "id": "E4",
       "title": "A9/A10 and current runtime authority state",
-      "status": "SOURCE_RECONCILED",
+      "status": "DEFERRED_BY_EXPLICIT_DISPOSITION",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2514341553097",
@@ -570,7 +578,7 @@
         "GitHub:PR-26"
       ],
       "review_focus": "Keep A9 and A10 scopes separate; do not treat Trusted Build as Runtime Adoption or production authorization.",
-      "review_summary": "A9 R2 (Box 2514341553097) and formal authorization record (Box 2513654771321) establish Source Authority and formal Trusted Build only for exact candidate c8dab3542d3d4725cf591630c07f76366f7949d0 bound to source-tree 1a4004…, control-plane 0bc4… and lock ef8ace…. Dual full-range capture parity PASS is 201/201 shards within that capture scope, not full runtime coverage. Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain NOT ESTABLISHED/NOT AUTHORIZED; PR #26 remains OPEN/DRAFT/DO NOT MERGE. A10 R0 is DESIGN_ONLY and R1 PRE-IMPLEMENTATION; A9 is frozen. A10 requires a separate candidate, receipt validation, independent runtime identity verification, and a fresh human Runtime Adoption disposition. Canonical semantics for the A10 trusted-build digest field are explicitly unresolved and cannot be guessed. Owner-directed pre-A10 area review must finish before A10 proceeds beyond read-only boundary inspection. No A10 implementation or authority change occurred.",
+      "review_summary": "A9 R2 (Box 2514341553097) and formal authorization record (Box 2513654771321) establish Source Authority and formal Trusted Build only for exact candidate c8dab3542d3d4725cf591630c07f76366f7949d0 bound to source-tree 1a4004…, control-plane 0bc4… and lock ef8ace…. Dual full-range capture parity PASS is 201/201 shards within that capture scope, not full runtime coverage. Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain NOT ESTABLISHED/NOT AUTHORIZED; PR #26 remains OPEN/DRAFT/DO NOT MERGE. A10 R0 is DESIGN_ONLY and R1 PRE-IMPLEMENTATION; A9 is frozen. A10 requires a separate candidate, receipt validation, independent runtime identity verification, and a fresh human Runtime Adoption disposition. Canonical semantics for the A10 trusted-build digest field are explicitly unresolved and cannot be guessed. Owner-directed pre-A10 area review must finish before A10 proceeds beyond read-only boundary inspection. No A10 implementation or authority change occurred. Explicit bounded deferral recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md based on the owner's approved direction to complete the source-first/pre-launch review before advancing and to discuss material protected principles. A10 implementation/Runtime Adoption work is deferred until this review is complete and its separate governance conditions are admissible. The canonical trusted_build_digest meaning remains unresolved and must not be guessed; it is not decided by this deferral.",
       "evidence_refs": [
         "Box:2514341553097 A9 Runtime/Trusted-Build Reconciliation R2",
         "Box:2513654771321 A9 Trusted Build Formal Authorization",
@@ -579,10 +587,15 @@
         "Box:2514357714954 A10 Implementation Change Specification R1",
         "GitHub:PR-26 OPEN/DRAFT/DO NOT MERGE",
         "GitHub:governance/candidates/CE_ZERO_POINT_E4_CANDIDATE_STATE_R0_2026-10-09.md",
-        "GitHub:governance/candidates/CE_PRE_A10_ZERO_POINT_AREA_REVIEW_PLAN_R0_2026-10-09.md"
+        "GitHub:governance/candidates/CE_PRE_A10_ZERO_POINT_AREA_REVIEW_PLAN_R0_2026-10-09.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md",
+        "Box:2514341553097 A9 Runtime/Trusted-Build Reconciliation R2",
+        "Box:2514347022237 A10 Runtime Adoption Boundary Candidate R0",
+        "Box:2514357714954 A10 Implementation Change Specification R1"
       ],
-      "disposition_ref": "",
-      "owner_disposition": ""
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+      "owner_disposition": "DEFER A10 IMPLEMENTATION AND RUNTIME-ADOPTION DECISION UNTIL PRE-A10 REVIEW IS COMPLETE AND A SEPARATE GOVERNANCE PATH IS ADMISSIBLE. Keep trusted_build_digest semantics unresolved for a future source-backed owner decision; do not guess. No Runtime Adoption, production/deployment, merge, or SEAL authorized."
     },
     {
       "id": "F1",
