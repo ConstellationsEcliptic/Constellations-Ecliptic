@@ -326,14 +326,14 @@
     {
       "id": "C4",
       "title": "Paid-market readiness and payment/legal boundaries",
-      "status": "RECOMMENDATION_READY",
+      "status": "OWNER_DECISION_RECORDED",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2485319995048",
         "Box:2515023681086"
       ],
       "review_focus": "Separate internal US research baseline from market-specific launch approval and unresolved payment/consumer issues.",
-      "review_summary": "Owner disposition Box 2515620798775 establishes U.S. federal plus relevant state/territorial law as an internal research/policy baseline, not a public U.S.-only position or nationwide paid launch approval. Owner disposition Box 2515610250498 approves U.S.-focused research for Credits/daily cap/remedies, not a state allowlist or definitive Credits legal classification. Paid Checkout Readiness Matrix R0 (Box 2515715498189), U.S. Counsel Intake Pack (Box 2515650508253) and Product/Transaction Fact Schedule (Box 2515660036686) state seller, processor/MoR, final SKU/currency/price/terms, actual commerce persistence and final market scope remain not established, and Regulation E §1005.20 classification remains unresolved. Current official CFPB §1005.20 and Interpretation indicate coverage depends on exact card/code/device structure, specified/denominated amount, reloadability, marketing and exceptions; name 'Credits' or illustrative 4 Credits/USD pricing is insufficient. FTC official guidance identifies FTC Act §45 as broad anti-deception baseline and distinguishes Cooling-Off Rule/off-premises scope and Merchandise Rule/service exclusion. Recommendation: continue CE development and conditional policy/design/test work, but make no paid-checkout readiness claim and do not enable checkout in a jurisdiction until actual transaction facts, applicable-market review, final consumer disclosure/remedy contract, authorized commerce implementation and separate release gates are evidenced. No legal conclusion or test pass is claimed.",
+      "review_summary": "Owner disposition Box 2515620798775 establishes U.S. federal plus relevant state/territorial law as an internal research/policy baseline, not a public U.S.-only position or nationwide paid launch approval. Owner disposition Box 2515610250498 approves U.S.-focused research for Credits/daily cap/remedies, not a state allowlist or definitive Credits legal classification. Paid Checkout Readiness Matrix R0 (Box 2515715498189), U.S. Counsel Intake Pack (Box 2515650508253) and Product/Transaction Fact Schedule (Box 2515660036686) state seller, processor/MoR, final SKU/currency/price/terms, actual commerce persistence and final market scope remain not established, and Regulation E §1005.20 classification remains unresolved. Current official CFPB §1005.20 and Interpretation indicate coverage depends on exact card/code/device structure, specified/denominated amount, reloadability, marketing and exceptions; name 'Credits' or illustrative 4 Credits/USD pricing is insufficient. FTC official guidance identifies FTC Act §45 as broad anti-deception baseline and distinguishes Cooling-Off Rule/off-premises scope and Merchandise Rule/service exclusion. Recommendation: continue CE development and conditional policy/design/test work, but make no paid-checkout readiness claim and do not enable checkout in a jurisdiction until actual transaction facts, applicable-market review, final consumer disclosure/remedy contract, authorized commerce implementation and separate release gates are evidenced. No legal conclusion or test pass is claimed. Bounded disposition recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_C4_R0_2026-10-10.md. The owner-approved U.S. internal-law research baseline and U.S.-focused investigation direction are preserved. No general CE development halt is inferred from counsel unavailability; conversely no Credits legal classification, market-specific paid-checkout readiness, nationwide/state enablement, final seller/processor/SKU/currency, or final remedy conclusion is inferred. Those remain separate pre-paid-launch conditions.",
       "evidence_refs": [
         "Box:2515620798775 Owner Disposition U.S. Legal Framework as Internal Policy Baseline R0",
         "Box:2515610250498 Owner Disposition U.S. Jurisdiction Investigation Direction R0",
@@ -345,10 +345,16 @@
         "https://www.consumerfinance.gov/rules-policy/regulations/1005/interp-20/",
         "https://www.ftc.gov/legal-library/browse/rules/cooling-period-sales-made-home-or-other-locations",
         "https://www.ftc.gov/business-guidance/resources/business-guide-ftcs-mail-internet-or-telephone-order-merchandise-rule",
-        "https://uscode.house.gov/view.xhtml?req=%28title%3A15+section%3A45+edition%3Aprelim%29"
+        "https://uscode.house.gov/view.xhtml?req=%28title%3A15+section%3A45+edition%3Aprelim%29",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_C4_R0_2026-10-10.md",
+        "Box:2515620798775 Owner disposition U.S. internal legal-policy baseline",
+        "Box:2515610250498 Owner disposition U.S.-focused jurisdiction investigation direction",
+        "Box:2515715498189 Paid Checkout Readiness Matrix R0",
+        "Box:2515660036686 Product & Transaction Fact Schedule for Qualified U.S. Counsel R0",
+        "Box:2515730623159 Daily Deep Sky Cap/Remedy Change-Control Packet R4"
       ],
-      "disposition_ref": "",
-      "owner_disposition": ""
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_C4_R0_2026-10-10.md",
+      "owner_disposition": "ACCEPT THE BOUNDED RESEARCH/READINESS BOUNDARY ONLY: U.S. federal and relevant state/territorial law is the internal baseline for this research stream; legal counsel is not a blanket blocker on CE development; paid checkout remains not authorized until market and transaction configuration, Credits classification and applicable requirements are sufficiently reviewed. No paid market, seller, processor, SKU, currency, counsel conclusion or remedy semantics are selected by this disposition."
     },
     {
       "id": "D1",
