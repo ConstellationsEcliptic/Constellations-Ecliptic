@@ -505,7 +505,7 @@
     {
       "id": "E4",
       "title": "A9/A10 and current runtime authority state",
-      "status": "NOT_STARTED",
+      "status": "SOURCE_RECONCILED",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2514341553097",
@@ -514,8 +514,17 @@
         "GitHub:PR-26"
       ],
       "review_focus": "Keep A9 and A10 scopes separate; do not treat Trusted Build as Runtime Adoption or production authorization.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "A9 R2 (Box 2514341553097) and formal authorization record (Box 2513654771321) establish Source Authority and formal Trusted Build only for exact candidate c8dab3542d3d4725cf591630c07f76366f7949d0 bound to source-tree 1a4004…, control-plane 0bc4… and lock ef8ace…. Dual full-range capture parity PASS is 201/201 shards within that capture scope, not full runtime coverage. Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain NOT ESTABLISHED/NOT AUTHORIZED; PR #26 remains OPEN/DRAFT/DO NOT MERGE. A10 R0 is DESIGN_ONLY and R1 PRE-IMPLEMENTATION; A9 is frozen. A10 requires a separate candidate, receipt validation, independent runtime identity verification, and a fresh human Runtime Adoption disposition. Canonical semantics for the A10 trusted-build digest field are explicitly unresolved and cannot be guessed. Owner-directed pre-A10 area review must finish before A10 proceeds beyond read-only boundary inspection. No A10 implementation or authority change occurred.",
+      "evidence_refs": [
+        "Box:2514341553097 A9 Runtime/Trusted-Build Reconciliation R2",
+        "Box:2513654771321 A9 Trusted Build Formal Authorization",
+        "Box:2513664076345 A9 Runtime Adoption Capture Handoff",
+        "Box:2514347022237 A10 Runtime Adoption Boundary Candidate R0",
+        "Box:2514357714954 A10 Implementation Change Specification R1",
+        "GitHub:PR-26 OPEN/DRAFT/DO NOT MERGE",
+        "GitHub:governance/candidates/CE_ZERO_POINT_E4_CANDIDATE_STATE_R0_2026-10-09.md",
+        "GitHub:governance/candidates/CE_PRE_A10_ZERO_POINT_AREA_REVIEW_PLAN_R0_2026-10-09.md"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
