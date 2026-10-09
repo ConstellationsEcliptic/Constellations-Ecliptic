@@ -30,7 +30,7 @@ Before acting on either path, the order must have one stable identity and an aut
 
 ## 3. Two mutually exclusive first-line remedies
 
-| | **Option A — reverse purchase and free the date slot** | **Option B — keep purchase and fulfill original order** |
+| | **PATH-REVERSAL-RELEASE — reverse the order and release the date slot after terminal closure** | **PATH-LINKED-RECOVERY — preserve the original order and use a linked no-charge retry/replacement** |
 |---|---|---|
 | Credits | Restore the reading debit exactly once. | Do not restore the reading debit as part of this remedy; it remains consideration for the original purchase. |
 | Daily cap | Release the same-date slot only after terminal reversal/restoration and closure of every downstream operation; a new independent order may then be confirmed. | Keep the original purchase's date slot consumed. |
@@ -39,11 +39,11 @@ Before acting on either path, the order must have one stable identity and an aut
 | Principal risk | A second purchase attempt can occur that day after complete reversal; the exact meaning of the cap must recognize an effectively reversed purchase. | The date slot remains occupied while the original order is repaired; the remedy must not become an endless retry or suppress further mandatory consumer remedies. |
 | UTC rollover | Original order/date remains immutable; a closed, reversed order does not transfer its slot. D+1 has its independent allowance. | Original order/date remains immutable; a linked retry is still tied to the original order, not counted as a D+1 purchase. |
 
-These are not the same as the separate policy choice “one purchase per day” versus “one successfully fulfilled reading per day.” Option B preserves the purchase-cap premise most literally; Option A interprets a fully reversed purchase as no longer occupying the cap after every reversal/ledger/fulfillment path is closed. That last interpretation cannot be inferred from the word “purchase” alone.
+These are not the same as the separate policy choice “one purchase per day” versus “one successfully fulfilled reading per day.” PATH-LINKED-RECOVERY preserves the original purchase-cap event; PATH-REVERSAL-RELEASE treats a fully reversed purchase as no longer occupying the cap only after every reversal/ledger/fulfillment path is closed. That last interpretation cannot be inferred from the word “purchase” alone.
 
 ## 4. Recommendation
 
-**Preferred default: Option B as the first-line remedy for a recoverable CE-side delivery failure after debit.**
+**Preferred default: PATH-LINKED-RECOVERY as the first-line remedy for a recoverable CE-side delivery failure after debit, where the original order can still be safely fulfilled.**
 
 Rationale:
 1. It best preserves the recorded owner premise of one new purchase per account/service day without redefining the cap as a fulfilment-only limit.
@@ -57,11 +57,11 @@ Why not make Option A the universal default? It puts a second user-initiated pai
 
 ## 5. Decision that still belongs to the owner
 
-The source records do not settle whether the owner wants the preferred Option B as the first-line remedy or wants Option A (full reversal/restoration and same-day slot release) even when a same-order repair is possible. The owner is not being asked to redo the already approved UTC boundary or to choose again between purchase-cap and fulfilled-reading-cap wording.
+The source records do not settle whether the owner wants the preferred PATH-LINKED-RECOVERY as the first-line remedy or wants PATH-REVERSAL-RELEASE (full reversal/restoration and same-day slot release) even when a same-order repair is possible. The owner is not being asked to redo the already approved UTC boundary or to choose again between purchase-cap and fulfilled-reading-cap wording.
 
 Recommended owner disposition, once the source-lineage prerequisite is resolved:
 
-- **B — LINKED NO-CHARGE RETRY UNDER ORIGINAL ORDER** as first-line remedy where safe delivery can still be achieved.
+- **PATH-LINKED-RECOVERY — linked no-charge retry under the original order** as first-line remedy where safe delivery can still be achieved.
 - Separate terminal inability-to-fulfill path: one-time debit restoration/refund under applicable policy, and a precisely defined slot effect after complete terminal closure. No silent quota reset.
 - Timeout, pending, ambiguous reconciliation or an unclosed downstream operation: no terminal remedy decision and no second order bypass.
 
@@ -107,7 +107,7 @@ No normative file or official Test Register was changed. Option B remains a reco
 
 - Purchase-cap premise: **OWNER-ORIGINATED / EVIDENCED**.
 - UTC boundary: **OWNER-APPROVED, LIMITED TO THE DATE BOUNDARY**.
-- Option B: **RECOMMENDED, NOT APPROVED**.
+- PATH-LINKED-RECOVERY: **RECOMMENDED, NOT APPROVED**.
 - Terminal remedy/cap mechanics: **OPEN OWNER-ONLY PRODUCT SEMANTIC**.
 - Exact current normative-source lineage: **NOT ESTABLISHED**.
 - Normative files, Test Register, production behavior: **UNCHANGED**.
