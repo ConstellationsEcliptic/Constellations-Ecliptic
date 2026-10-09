@@ -103,7 +103,7 @@
     {
       "id": "A4",
       "title": "Product voice, tone and consumer experience",
-      "status": "NOT_STARTED",
+      "status": "RECOMMENDATION_READY",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2491704535193",
@@ -111,8 +111,18 @@
         "Box:2515023681086"
       ],
       "review_focus": "Reconcile source-backed claim limits with any owner-approved non-fatalistic/quiet language rules.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Current Product Constitution and Business Model establish truthful state/claim limits, the free-core-to-Deep-Sky funnel and qualified daily traffic as North Star, but no inspected CE source or first-party evidence proves the effect of Quiet Sky/Today’s Note on interest, return or conversion. Owner-approved Note disposition only permits optional, separate non-personal editorial alongside valid Quiet Sky if an approved item exists. A Jan 2026 mixed-method study of 57 astrology-app users reports trust/privacy/satisfaction concerns but does not study Quiet Sky or CE; a 2025 transparency study of 216 participants in AI decision scenarios is adjacent evidence only. Recommendation: treat consumer effects as a testable hypothesis, preserve Quiet Sky as the truthful result, make any Note optional/separate/approved, avoid filler or personal-sounding rescue, and validate usability/value proposition with consented qualitative research plus permitted aggregate measures, without identity-linked user profiling or letting engagement change signal/Canon behavior. This does not establish market demand or authorize any feature, telemetry, code or normative change.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §§3–5, 8, 11–13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§1–6, 13",
+        "Box:2515533522798 Owner Disposition Today's Note × Valid Quiet Sky R0 (narrow semantics only)",
+        "Box:2515537459111 Today's Note × Quiet Sky Contract Recommendation R0 (non-normative proposal)",
+        "Box:2515505499720 Owner Disposition Account History / Personal Context and Voice R0",
+        "Web: https://www.jier.org/index.php/journal/article/view/4272 — 2026 mixed-method study; n=57; no direct Quiet Sky test",
+        "Web: https://journals.sagepub.com/doi/10.1177/10711813251369473 — 2025 transparency study; n=216; AI decision scenarios, indirect applicability",
+        "Web: https://interfaces.institute/patterns/empty-states/ — UX design guidance only, not CE consumer validation",
+        "Box:2515023681086 Source-Bound Matrix R0, areas 1–2"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
