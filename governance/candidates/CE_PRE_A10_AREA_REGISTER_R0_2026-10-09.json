@@ -51,7 +51,7 @@
     {
       "id": "A2",
       "title": "Look Back, Look Today, Tomorrow Check, Look Future and Quiet Sky",
-      "status": "NOT_STARTED",
+      "status": "SOURCE_RECONCILED",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193",
@@ -59,8 +59,18 @@
         "Box:2485336984594"
       ],
       "review_focus": "Review product time model and distinguish a valid no-signal observation from technical failure.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Source-level semantic review completed against the characterized V1 stack. Look Back is experience-first, controlled-category, session-only and not truth proof; Look Today may show only qualified Testable Sky Signal; Tomorrow Check receives the user's categorical report and compares it with yesterday's testable signal without forcing mismatch to match; Look Future is grounded in upcoming calculations, Canon, and only explicitly permitted current-session input, and remains possibility not guarantee. Quiet Sky is the aggregate result of a valid completed observation with zero qualifying signals. Any non-VALID technical state remains a separate failure/unavailable state: no signal, Canon claim, Quiet Sky promotion, or stale substitution. This is semantic/source reconciliation only, not runtime conformance or test execution; exact byte lineage of the characterized copies to the representative governing archive remains NOT_ESTABLISHED.",
+      "evidence_refs": [
+        "Box:2491704535193 §§2–6, 8.2–8.3, 14",
+        "Box:2485336984594 §§2–3, 29–30, 35–37",
+        "Box:2485335414676 §§1–3, 14–16, 19–22",
+        "Box:2485337228722 §§6–16, 18–20",
+        "Box:2485336395859 §§3–4, 9–12",
+        "Box:2491699264134 §§13.1–13.4",
+        "Box:2485336117840 §11, INT-01, ERR-06, AI-09, §21",
+        "Box:2515023681086 §3 area 1 and §6",
+        "Box:2515742713865 §§2, 5–6"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
