@@ -277,7 +277,7 @@
     {
       "id": "C3",
       "title": "One new Deep Sky purchase per CE service day",
-      "status": "NOT_STARTED",
+      "status": "RECOMMENDATION_READY",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2485319995048",
@@ -285,8 +285,21 @@
         "Box:2515742713865"
       ],
       "review_focus": "Preserve owner-originated purchase cap and owner-approved UTC boundary; resolve trigger, failure, concurrency and remedy mechanics from sources before recommendation.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Owner-originated premise (one new Deep Sky purchase/account/CE service day) and owner-approved UTC Gregorian boundary are settled; the owner boundary disposition fixes service date from server-authoritative time at atomic reservation after explicit confirmation, but limits approval to date/timezone—not the full state machine or remedies. R0 semantic options and purchase-vs-fulfillment finding distinguish reservation, effective purchase/redemption and fulfillment; do not silently turn purchase cap into fulfilled-reading cap. Preferred candidate: reservation is temporary concurrency control; effective quota consumption is the atomic committed new-reading order + Credits debit. Pre-debit terminal failure without unresolved operation releases reservation; unknown state remains reconcilable. After terminal non-delivery and exact one-time restoration, recommend releasing same-day slot only once reversal/restoration commits and no downstream operation remains unresolved; no-charge replacement remains linked to original order, not a new paid purchase. This remedy/slot-release branch is a genuine owner decision. R3/R4 redlines remain provisional because exact source archive byte lineage is not established and current commerce persistence source is not identified. No normative files/test register/code/schema/runtime changed; tests not executed.",
+      "evidence_refs": [
+        "Box:2515555580794 Owner Disposition — UTC service-day boundary, limited scope",
+        "Box:2515757204983 Daily Deep Sky Cap Semantic Options R0",
+        "Box:2515747060613 Purchase-vs-Fulfillment Semantic Finding R0",
+        "Box:2515730623159 Daily cap change-control packet R4, provisional",
+        "Box:2515750096004 Source-Lineage Update R1",
+        "Box:2515659021563 Commerce/Persistence Source-Discovery Finding R0",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7",
+        "Box:2485331476456 Business Model Minimal V1 v1.5",
+        "Box:2491699264134 Implementation Plan v1.3.1 §7.8 and Phase 10",
+        "Box:2485336117840 Test Register v1.5",
+        "Box:2515742713865 Handoff R30",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
