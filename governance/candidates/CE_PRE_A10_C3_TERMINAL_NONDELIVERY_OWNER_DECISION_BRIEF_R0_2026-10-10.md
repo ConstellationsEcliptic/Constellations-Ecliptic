@@ -84,6 +84,12 @@ Key source records:
 - Normative Source-Lineage Boundary Update R1 (Box 2515750096004): https://app.box.com/file/2515750096004
 - R2 Source and Test Disposition R1 (Box 2515695712759): https://app.box.com/file/2515695712759
 
+### Fresh bounded source-lineage check — 2026-10-10
+
+The Box folder listing for `01_CURRENT_GOVERNING` (folder ID `420832009587`) confirms an archive item named `CE_V1_CLEAN_CURRENT_SET_R3-2026-09-24.zip` (Box file ID `2485715303669`, listed SHA-1 `58f8c3dcccc0ccb2e79a79ddd46ab0014c2783d6`) and the pointer record `CE_CURRENT_GOVERNING_BOUNDARY_2026-09-24.md` (Box file ID `2485721889298`). This strengthens archive identification, but does **not** resolve the exact lineage requirement: the connected interface did not provide usable raw ZIP bytes in this pass, so the required member manifest/content hashes were not compared against the individually readable normative Markdown sources.
+
+Exact normative-file identity to the current archive therefore remains **NOT ESTABLISHED**. No normative file or official Test Register was changed.
+
 ## 7. Current state
 
 - Purchase-cap premise: **OWNER-ORIGINATED / EVIDENCED**.
