@@ -1,6 +1,6 @@
 # CE ZERO-POINT — CONSOLIDATED OWNER DECISION PACKET R8
 Date: 2026-10-10  
-Revision: R8 — current-state overlay after the owner's explicit approval of the autonomous-evolution and pre-launch completeness direction, plus current-head PR #27 workflow result.  
+Revision: R8 — current-state overlay after the owner's explicit approval of the autonomous-evolution and pre-launch completeness direction, with the latest confirmed workflow result and an explicit caveat for the exact current head.  
 Classification: WORKING CANDIDATE / NON-AUTHORITATIVE / DECISION SUPPORT  
 Authority effect: NONE • Normative amendment: NONE • Runtime/production/SEAL effect: NONE  
 Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
@@ -35,15 +35,15 @@ Repository: `ConstellationsEcliptic/Constellations-Ecliptic`
 PR: #27 — `[DRAFT / RECONCILE] CE Autonomy & Pre-A10 Controls R0 — DO NOT MERGE`  
 Base: `main`  
 Head branch: `governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09`  
-Current observed head after the owner-decision record: `5393af1438e25dbd41e0a866bea3d70cb13f19ab`  
-PR state at observation: OPEN / DRAFT / MERGED=FALSE; 97 commits, 54 changed files, 6,009 additions, 0 deletions.  
+Current observed head after the R8 packet commit: `3b5faf8526991f2a677f427f99019982558b18c8`  
+PR state at observation: OPEN / DRAFT / MERGED=FALSE; 98 commits, 55 changed files, 6,108 additions, 0 deletions.  
 PR URL: https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/27
 
 This endpoint diff is not an ordered ancestry audit; complete commit ancestry remains NOT_ESTABLISHED. No PR merge was performed, and no write reached `main`.
 
-## 4. Current-head workflow result
+## 4. Latest confirmed workflow result; exact R8-head validation unconfirmed
 
-GitHub Actions run #86, linked to the observed current head:
+GitHub Actions run #86 is associated with the owner-decision commit `5393af1438e25dbd41e0a866bea3d70cb13f19ab`, which is the parent of the current R8 packet commit—not the exact current PR head:
 https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37973447570
 
 Job results:
@@ -53,7 +53,7 @@ Job results:
 - **Pre-A10 completion gate (must remain blocked until review complete): FAILURE/BLOCKED.**
   - The step `Require all review areas to be complete` failed because required area completion is not yet met.
   - This is the expected fail-closed gate outcome while required areas remain incomplete; it is not a failure of the 14 validator unit tests.
-- This run validates the register/gate code at the current head it ran against. It does not establish semantic completeness, runtime conformance, production readiness, or permission to start A10.
+- The connected workflow lookup returned no PR-triggered run associated with the exact R8 head `3b5faf8526991f2a677f427f99019982558b18c8` at the time of this record. Run #86 validates the register/gate code and unit tests at its own associated commit, not the exact R8 head. The R8 commit adds the portable packet; do not infer an all-green exact-head status. The result does not establish semantic completeness, runtime conformance, production readiness, or permission to start A10.
 
 ## 5. Current register and blocked gate
 
