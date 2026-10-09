@@ -109,18 +109,29 @@ Official provider checks on 2026-10-10 found material constraints:
 
 Recommendation: first establish the actual seller/legal-entity jurisdiction; then seek truthful written provider eligibility for CE's precise astrology-oriented reflection and Credits model; compare only eligible payment options; choose the paid-enabled buyer market/allowlist; then separately choose UI locale and currency/SKU pricing. Customer geography alone does not make a seller eligible to open an account in that jurisdiction. No provider, legal market, currency or paid checkout is approved by this note. D4 remains a real owner decision once a source-backed feasibility comparison can be tied to the planned seller entity.
 
-## B1 prototype status update — exact research candidate, 2026-10-10
+## B1 prototype status update — exact research candidates, 2026-10-10
 
-The bounded source/test review has now produced a separate prototype, without changing exact A9:
+The bounded source/test review produced a research-only prototype, without changing exact A9. Two technical iterations were run and their histories are retained.
+
+### First matching prototype
 
 - [B1 source/test-surface review and proposed regression matrix](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_B1_RULE_TO_GEOMETRY_BINDING_TEST_SURFACE_R0_2026-10-10.md) records source blobs and the initial observed test gap.
-- Prototype exact HEAD: `802408757e33d3d8a255d29b0d912f28b5770224`; [PR #31](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/31) is OPEN / DRAFT / NOT MERGED.
-- [Dedicated B1 test workflow #37978828630](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828630) passed on Ubuntu, macOS and Windows using Python 3.13.15. Each platform ran 59 selected B1/adjacent-boundary tests and reported `OK`; source/tests AST parsing and zero Python bytecode/cache checks also passed.
-- First candidate test run [#37978660234](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978660234) exposed a real prototype defect: immutable EvidencePacket geometry records are Mapping objects, not plain dictionaries. The candidate was corrected; the successful later run is tied to the corrected exact head above. The failed run remains in history.
-- The A9-specific identity/Trusted Build workflows fail on this modified branch at the source/control-plane identity gate. This is expected for a changed candidate and is not a failure of the exact A9 evidence or a valid Trusted Build for this prototype. No A9 identity gate was changed or bypassed.
-- This targeted 59-test matrix is not the complete CE suite and does not establish a populated/approved Canon registry, production semantic verifier, source authority, Trusted Build, Runtime Adoption, production authorization, or SEAL. The current four-area completion gate remains blocked.
+- [PR #31](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/31), exact head `802408757e33d3d8a255d29b0d912f28b5770224`, passed the dedicated B1 59-test matrix on Ubuntu, macOS and Windows in [run #37978828630](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828630).
+- The later source review found that its Canon matcher duplicated the QSR geometry identity extraction logic. Even though the selected tests passed, that duplication could drift. The first iteration has therefore been superseded for continuing work; its test result remains accurate for that earlier HEAD.
 
-Next B1 technical work is additional selector/immutability/ambiguity and compatibility review plus independent review of the candidate change. Only afterward should sourced candidate rules and scope options be prepared for the protected V1 Canon decision. No real Canon rule is created by this prototype.
+### Shared identity source refinement — latest candidate
+
+- Current isolated candidate branch: `research/b1-geometry-binding-single-identity-r0-2026-10-10`; exact HEAD: `d6231e3a4d550ad7711e9a5895214c8d9b1b0aa6`.
+- [PR #32](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/32) is OPEN / DRAFT / NOT MERGED and **DO NOT MERGE**.
+- `src/ce/signal/record.py` now exposes one canonical `signal_geometry_identities(packet)` helper; QSR issuance uses it and Canon condition matching consumes the same identity source. It does not independently parse the same geometry records.
+- Regression test proves the canonical identity tuple on a synthetic record and asserts an ambiguous synthetic packet exposes two identities before QSR issuance rejects it. Existing tests still prove exact selector match/mismatch, unknown selector fail-closed behavior, semantic-verifier absence and runtime non-authorization.
+- [Dedicated B1 test workflow #37979511807](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37979511807) passed on this exact HEAD on Ubuntu, macOS and Windows using Python 3.13.15. Each platform ran **60 tests** and reported `OK`; source/test AST parsing passed and each platform confirmed `PYTHON_BYTECODE_CLEAN=TRUE`.
+- The prior failed run that uncovered the initial immutable-`Mapping` handling defect remains preserved in [run #37978660234](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978660234); the defect was corrected before the 59-test pass.
+- The A9-specific identity/Trusted Build workflows fail on a changed research candidate at source/control-plane identity, as expected. They do not run their full suites on this altered source and do not confer Trusted Build to the prototype. Exact A9 `c8dab3542d3d4725cf591630c07f76366f7949d0` remains unchanged.
+- The 60-test matrix is a targeted boundary slice, not the complete CE suite or independent review. Actual approved populated V1 Canon rules, a production semantic verifier, source authority/Trusted Build for this head, Runtime Adoption, production authorization and SEAL remain **NOT ESTABLISHED**.
+
+Next B1 technical work is independent review plus further selector, immutability, duplicate/conflict and compatibility tests on the shared-helper candidate. Prepare source-backed V1 Canon scope options only after the technical contract is reviewed. No real Canon rule is created or approved by this prototype.
+
 
 ## 8. Next admissible work
 
