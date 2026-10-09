@@ -84,12 +84,32 @@ Neither option is adopted here. Before engineering promotion, independently test
 
 ## 7. State and next admissible action
 
+### Exact A9 state remains unchanged
+
+- Exact A9 candidate HEAD: `c8dab3542d3d4725cf591630c07f76366f7949d0`; source branch/PR #26 was not modified by this prototype.
 - Actual approved populated V1 Canon registry: **NOT ESTABLISHED in the inspected A9 candidate tree**.
 - Production verified semantic conformance implementation: **NOT ESTABLISHED**.
-- Geometry-specific rule binding: **not represented by currently supported matcher condition fields**.
-- Current claim release path: remains fail-closed; no release capability is newly established.
-- Normative source, official Test Register, A9 candidate and production state: unchanged by this note.
-- Next work: prototype the minimal EvidencePacket-bound option in a separate isolated candidate with synthetic tests, or prepare a schema/version-bound alternative and compare results. Keep that prototype separate from the exact approved A9 HEAD and from normative/production authority.
+- Exact A9 matcher does not support geometry selector condition fields. Its current behavior rejects those unknown keys, so the confirmed issue is inability to evaluate geometry-specific conditions—not a demonstrated current wrong-geometry release.
+- Current A9 claim-release path remains fail-closed. This prototype grants no release capability.
+
+### Isolated prototype and exact-head test evidence (added 2026-10-10)
+
+Candidate branch: `research/b1-geometry-rule-binding-r0-2026-10-10`. Corrected prototype HEAD: `802408757e33d3d8a255d29b0d912f28b5770224`. Revalidation PR: [#31 — DRAFT / DO NOT MERGE](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/31).
+
+The prototype uses the EvidencePacket-bound option: rule selectors are matched against the same Evidence Packet used to issue the QSR; it adds a closed condition schema and synthetic `TEST_ONLY` positive/negative regressions. It does not change the QSR public shape and does not contain or activate any real Canon rule.
+
+- Dedicated read-only workflow, PR event [run #37978828630](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828630): **SUCCESS** on Ubuntu, macOS and Windows, Python 3.13.15.
+- All three matrix jobs ran **59 tests each**; each reported `OK`. The source/tests AST-parse step passed, and all jobs reported `PYTHON_BYTECODE_CLEAN=TRUE`.
+- The first prototype run failed its positive matching test because immutable EvidencePacket geometry records are `Mapping` objects rather than plain `dict`. The prototype now accepts the immutable mapping interface; the original failure remains visible in [run #37978660234](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978660234) rather than being erased.
+- A9-specific Full Boundary, Remediation and Trusted Build workflows for the **modified prototype** stopped at source/control-plane identity gates ([Full Boundary #37978828599](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828599), [Remediation #37978828550](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828550), [Trusted Build #37978828545](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828545)). That is the expected refusal to treat changed source as exact A9; those workflows did not run the full suite. They do not invalidate the previous A9 exact-head result and do not establish Trusted Build for this prototype.
+
+### What is established versus still required
+
+**Established for this candidate only:** the targeted 59-test regression set passes on three operating systems; exact geometry selectors can match or mismatch the unique geometry identity in the issued Evidence Packet; unsupported selectors fail closed; semantic-verifier absence and runtime non-authorization still block release.
+
+**Not established:** complete CE suite on the modified source; independent code review; comprehensive duplicate/conflicting geometry-record cases; normative approval of selector scope; real Canon rule corpus and provenance; production semantic verifier; source authority/trusted-build authority for the new head; Runtime Adoption or production authorization.
+
+Next: run additional focused adversarial/compatibility tests and obtain an independent technical review of the selector contract, while separately preparing a source-reviewed Canon candidate list. Do not promote the prototype, infer source scope, create real rules from synthetic fixtures, or alter normative/product authority. No new owner decision is needed just to continue this technical validation; the owner's later choice of V1 Canon/tradition scope remains protected until a source-backed option set is ready.
 
 ---
 
