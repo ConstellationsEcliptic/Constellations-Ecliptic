@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass
-import math
 
 from ce.calculation.contracts import CalculationResult
 from ce.calculation.evidence import EvidencePacket
@@ -14,7 +12,7 @@ from ce.output.semantic import get_verified_semantic_conformance
 from ce.output.validation import validate_claim_output
 from ce.product.boundary import preserve_calculation_truth
 from ce.runtime.gates import authorize_runtime
-from ce.signal.record import QualifiedSignalRecord, issue_qualified_signal_record
+from ce.signal.record import QualifiedSignalRecord, issue_qualified_signal_record, signal_geometry_identities
 
 
 _SUPPORTED_RULE_SIGNAL_CONDITION_FIELDS = {
@@ -44,25 +42,8 @@ class ClaimReleaseDecision:
 
 
 def _unique_geometry_values(evidence_packet: EvidencePacket) -> dict[str, object] | None:
-    """Return one exact geometry identity from the issued packet, or fail closed."""
-    identities: set[tuple[str, str, str, float]] = set()
-    for record in evidence_packet.geometry_records:
-        if not isinstance(record, Mapping):
-            return None
-        transit = record.get("transit_object")
-        natal = record.get("natal_object_or_scenario")
-        aspect = record.get("aspect")
-        branch = record.get("directed_branch")
-        if (
-            not isinstance(transit, str) or not transit
-            or not isinstance(natal, str) or not natal
-            or not isinstance(aspect, str) or not aspect
-            or not isinstance(branch, (int, float))
-            or isinstance(branch, bool)
-            or not math.isfinite(float(branch))
-        ):
-            return None
-        identities.add((transit, natal, aspect, float(branch)))
+    """Expose the one canonical signal geometry identity as named rule selectors."""
+    identities = signal_geometry_identities(evidence_packet)
     if len(identities) != 1:
         return None
     transit, natal, aspect, branch = next(iter(identities))
@@ -72,7 +53,6 @@ def _unique_geometry_values(evidence_packet: EvidencePacket) -> dict[str, object
         "aspect": aspect,
         "directed_branch": branch,
     }
-
 
 def _rule_matches_signal(
     rule: object,
