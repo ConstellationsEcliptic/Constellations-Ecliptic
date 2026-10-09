@@ -103,6 +103,18 @@ The prototype uses the EvidencePacket-bound option: rule selectors are matched a
 - The first prototype run failed its positive matching test because immutable EvidencePacket geometry records are `Mapping` objects rather than plain `dict`. The prototype now accepts the immutable mapping interface; the original failure remains visible in [run #37978660234](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978660234) rather than being erased.
 - A9-specific Full Boundary, Remediation and Trusted Build workflows for the **modified prototype** stopped at source/control-plane identity gates ([Full Boundary #37978828599](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828599), [Remediation #37978828550](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828550), [Trusted Build #37978828545](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828545)). That is the expected refusal to treat changed source as exact A9; those workflows did not run the full suite. They do not invalidate the previous A9 exact-head result and do not establish Trusted Build for this prototype.
 
+### Shared geometry-identity source refinement (latest candidate, 2026-10-10)
+
+During post-pass review, a second implementation of geometry identity extraction was found in the prototype matcher. Even after passing its targeted matrix, duplicate identity parsers could drift from the signal-issuance contract. The candidate was refined in separate PR [#32](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/32), branch `research/b1-geometry-binding-single-identity-r0-2026-10-10`, exact head `d6231e3a4d550ad7711e9a5895214c8d9b1b0aa6`.
+
+- `src/ce/signal/record.py` now exposes `signal_geometry_identities(packet)`; QSR issuance uses the same helper.
+- `src/ce/claim/authorization.py` calls that same helper and only transforms the sole unique identity into named selectors. It no longer independently parses packet geometry records. Finite selector values are still required by rule matching.
+- `tests/test_qualified_signal_record_r1.py` tests the exact identity tuple on a synthetic packet and asserts the ambiguous synthetic packet exposes two identities before QSR issuance rejects it.
+- Dedicated workflow [run #37979511807](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37979511807) passed on this exact head across Ubuntu, macOS and Windows, Python 3.13.15. Each platform ran **60 tests**, reported `OK`, passed source/test AST parsing, and passed bytecode/cache absence checks.
+- PR #32 remains OPEN / DRAFT / NOT MERGED / DO NOT MERGE. The new result is only a targeted 60-test boundary matrix, not full-suite qualification or independent review. It grants no source authority, Trusted Build, Runtime Adoption, production authorization or SEAL.
+
+The earlier 59-test result for PR #31 remains valid only for its earlier head. The original failure and the corrective rerun history are retained in earlier PR/run links; no failed run was removed or re-labelled as a success.
+
 ### What is established versus still required
 
 **Established for this candidate only:** the targeted 59-test regression set passes on three operating systems; exact geometry selectors can match or mismatch the unique geometry identity in the issued Evidence Packet; unsupported selectors fail closed; semantic-verifier absence and runtime non-authorization still block release.
