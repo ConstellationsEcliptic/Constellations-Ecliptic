@@ -1,0 +1,97 @@
+name: CE B1 Geometry Binding Prototype Tests (Non-Authoritative)
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - src/ce/claim/authorization.py
+      - schemas/canon_rule.schema.json
+      - tests/test_ce_r0_full_boundary_r1.py
+      - tests/test_schema_structure_r1.py
+      - .github/workflows/ce-b1-geometry-prototype.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  b1-geometry-prototype:
+    name: B1 prototype regression / ${{ matrix.os }} / Python 3.13
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact research candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.13.15
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.13.15"
+          check-latest: false
+
+      - name: Parse Python source without writing bytecode
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B - <<'PY'
+          import ast
+          from pathlib import Path
+          files = sorted(
+              path
+              for root in (Path("src"), Path("tests"))
+              for path in root.rglob("*.py")
+          )
+          for path in files:
+              ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+          print(f"PYTHON_AST_PARSE_COUNT={len(files)}")
+          PY
+
+      - name: Record candidate source-tree digest (observation only)
+        shell: bash
+        env:
+          PYTHONPATH: src
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          digest="$(python -B tools/compute_source_identity_v2.py)"
+          echo "B1_PROTOTYPE_SOURCE_TREE_SHA256_V2=$digest"
+
+      - name: Run B1 and adjacent boundary regression tests
+        shell: bash
+        env:
+          PYTHONPATH: src
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONHASHSEED: "0"
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: |
+          set -euo pipefail
+          python -B -m unittest -v \
+            tests.test_ce_r0_full_boundary_r1 \
+            tests.test_schema_structure_r1 \
+            tests.test_qualified_signal_record_r1 \
+            tests.test_time_signal_boundaries \
+            tests.test_evidence_contract_r1 \
+            tests.test_product_boundary_fail_closed_r1
+
+      - name: Verify no Python bytecode artifacts remain
+        shell: bash
+        run: |
+          set -euo pipefail
+          if find src tests tools -type d -name __pycache__ -print -quit | grep -q .; then
+            echo "PYTHON_CACHE_FOUND=TRUE"
+            find src tests tools -type d -name __pycache__ -print
+            exit 1
+          fi
+          if find src tests tools -type f -name '*.pyc' -print -quit | grep -q .; then
+            echo "PYTHON_BYTECODE_FOUND=TRUE"
+            find src tests tools -type f -name '*.pyc' -print
+            exit 1
+          fi
+          echo "PYTHON_BYTECODE_CLEAN=TRUE"
