@@ -531,23 +531,31 @@
     {
       "id": "F1",
       "title": "Other previously discussed areas discovered during review",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2515742713865",
         "Box:2515023681086"
       ],
       "review_focus": "Add any prior-discussion topic uncovered by source search; do not treat this list as permission to omit unlisted areas.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Current Product Constitution v1.6.1 §13 and Business Model Minimal V1 v1.5 §§2, 3, 11, 14–15 explicitly exclude public/social sharing and rewards, affiliate, advertising, subscription/recurring billing, public UGC, comments/messaging, relationship matching/profiles, third-party personal profiles/calculations, persistent free text/Personal Context and user-level behavioral profiles. Account/Privacy specs reinforce One Account = One Personal Sky and no support/manual ownership-recovery override. Credits-only monetization is preserve; sample US$2.99 price does not decide currency/market. Cross-cutting extra items from this pass have dedicated F2 (birth time/Gregorian/TZDB) and F3 (relationship/third-party exclusions). This is a bounded scope inventory, not a universal completeness/runtime claim. No source/code/schema/Test Register changed.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2,3,11,14–15",
+        "Box:2485319995048 Account Privacy Commercial v1.7",
+        "Box:2485335589220 Privacy Architecture Minimal V1 v1.5",
+        "Box:2510397781891 Share Card retirement",
+        "Box:2515528652667 cross-reading continuity deferred",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_F1_CROSS_CUTTING_V1_SCOPE_LOCKS_R0_2026-10-09.md"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
     {
       "id": "F2",
       "title": "Birth-time input, Gregorian policy and pinned timezone-data release",
-      "status": "NOT_STARTED",
-      "owner_decision_required": false,
+      "status": "RECOMMENDATION_READY",
+      "owner_decision_required": true,
       "source_refs": [
         "Box:2491386800755",
         "Box:2491385407120",
@@ -555,12 +563,23 @@
         "Box:2491702000320",
         "Web:https://www.iana.org/time-zones/releases/2026e"
       ],
-      "review_focus": "Preserve the owner-recorded policy that CE V1 does not use birth-time input and Gregorian-only is the sole supported calendar; inspect the technical zero-birth interval and historical timezone conversion separately. IANA 2026e supersedes external latest status of pinned 2026d, but no automatic in-place update is authorized; identify affected behavior and required profile/candidate verification."
+      "review_focus": "Preserve the owner-recorded policy that CE V1 does not use birth-time input and Gregorian-only is the sole supported calendar; inspect the technical zero-birth interval and historical timezone conversion separately. IANA 2026e supersedes external latest status of pinned 2026d, but no automatic in-place update is authorized; identify affected behavior and required profile/candidate verification.",
+      "review_summary": "Product Constitution v1.6.1 §15: birth date/location used, user birth-time input NOT USED, Gregorian-only; engine uses ZERO_BIRTH_TIME_INTERVAL and does not substitute noon/midnight/arbitrary hour. Calculation Constitution v1.9 and Execution Profile v1.3/rev4 pin IANA 2026d, require bundled/versioned TZDB and no in-place update. Official IANA release page verifies 2026e was released 2026-09-29 and is latest as of 2026-10-09, with Manitoba 2026 changes and Ireland 1925 historical correction. Recommendation: preserve product/calculation semantics; perform read-only delta/impact qualification for 2026e, and do not adopt/change profile/bundle/A9 without new profile identity, regression and controlled authority process. No timezone byte comparison or tests executed.",
+      "evidence_refs": [
+        "Box:2491386800755 Birth-Time Input Policy Correction R4",
+        "Box:2491385407120 Historical Calendar Policy Decision R3",
+        "Box:2491704535193 Product Constitution v1.6.1 §15",
+        "Box:2485336984594 Calculation Constitution v1.9",
+        "Box:2491702000320 Execution Profile v1.3/rev4",
+        "https://www.iana.org/time-zones/releases/2026e",
+        "https://www.iana.org/time-zones/releases",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_F2_BIRTH_TIME_CALENDAR_TZDB_R0_2026-10-09.md"
+      ]
     },
     {
       "id": "F3",
       "title": "Relationship matching, relationship profiles and third-party personal calculations",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193 §13",
@@ -568,7 +587,15 @@
         "Box:2485319995048 §8",
         "Box:2515023681086"
       ],
-      "review_focus": "Reconcile prior relationship-profile ideas/historical drafts against current V1 hard exclusions; preserve the exclusion unless explicit controlled change reopens it. Third-party birth data/profile must not be inferred from the existence of two accounts or marketing narratives."
+      "review_focus": "Reconcile prior relationship-profile ideas/historical drafts against current V1 hard exclusions; preserve the exclusion unless explicit controlled change reopens it. Third-party birth data/profile must not be inferred from the existence of two accounts or marketing narratives.",
+      "review_summary": "Current Product Constitution v1.6.1 §13, Business Model v1.5 §§2/14–15 and Account/Privacy/Commercial v1.7 §8 exclude relationship matching/profiles, third-party personal profiles and third-party birth calculations. A Look Back categorical response such as Relationships remains only current-session user-reported context and does not authorize another person's birth data, compatibility scoring, cross-account history linking or persistent relationship memory. Preserve historical artifacts; do not reopen feature design absent a new explicit scope decision. No code/schema/Test Register change or tests executed.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2,14–15",
+        "Box:2485319995048 Account Privacy Commercial v1.7 §8",
+        "Box:2515023681086 Source-Bound Matrix R0",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_F3_RELATIONSHIP_AND_THIRD_PARTY_EXCLUSIONS_R0_2026-10-09.md"
+      ]
     }
   ]
 }
