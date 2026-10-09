@@ -1,0 +1,361 @@
+{
+  "schema_version": "1.0",
+  "project": "CONSTELLATIONS ECLIPTIC",
+  "document_id": "CE-PRE-A10-ZERO-POINT-AREA-REGISTER-R0",
+  "date": "2026-10-09",
+  "classification": "WORKING_CONTROL_PLANE_CANDIDATE_NON_AUTHORITATIVE",
+  "authority_effect": "NONE",
+  "normative_effect": "NONE",
+  "runtime_authorization_effect": "NONE",
+  "a10_authorized": false,
+  "current_gate": "BLOCKED_PENDING_PRE_A10_AREA_REVIEW_AND_SEPARATE_RUNTIME_ADOPTION_GOVERNANCE",
+  "allowed_statuses": [
+    "NOT_STARTED",
+    "SOURCE_REVIEW_IN_PROGRESS",
+    "SOURCE_RECONCILED",
+    "RECOMMENDATION_READY",
+    "OWNER_DISCUSSION_REQUIRED",
+    "OWNER_DECISION_RECORDED",
+    "CLOSED_PRESERVE",
+    "DEFERRED_BY_EXPLICIT_DISPOSITION"
+  ],
+  "required_completion_statuses": [
+    "OWNER_DECISION_RECORDED",
+    "CLOSED_PRESERVE",
+    "DEFERRED_BY_EXPLICIT_DISPOSITION"
+  ],
+  "invariant": "Area review completion never authorizes Runtime Adoption, production, deployment, or SEAL. Those remain independent governance gates.",
+  "areas": [
+    {
+      "id": "A1",
+      "title": "Core product promise and epistemic boundaries",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Review the five epistemic layers, absolute integrity invariants, and the rule that lower layers cannot rewrite higher layers.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "A2",
+      "title": "Look Back, Look Today, Tomorrow Check, Look Future and Quiet Sky",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485335414676",
+        "Box:2485336984594"
+      ],
+      "review_focus": "Review product time model and distinguish a valid no-signal observation from technical failure.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "A3",
+      "title": "Today's Note and Quiet Sky",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2491699264134",
+        "Box:2491704535193",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Locate an already-approved product/UI/copy decision before proposing behavior.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "A4",
+      "title": "Product voice, tone and consumer experience",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Reconcile source-backed claim limits with any owner-approved non-fatalistic/quiet language rules.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "B1",
+      "title": "Canon Rule Registry and allowed semantic coverage",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2485337228722",
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify whether approved populated current V1 rules exist, their lineage, and manifest binding; preserve fail-closed behavior.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "B2",
+      "title": "Historical three-AI architecture versus current V1",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Keep historic V8 orchestration separate from current V1 language architecture unless controlled scope change is decided.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "B3",
+      "title": "Voice Boundary and negative-sounding language",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Find approved V1 voice disposition; distinguish honest limitations from unnecessary fear, fatalism, or demeaning language.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "B4",
+      "title": "Feedback, mismatch, and anti-confirmation safeguards",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485335414676",
+        "Box:2485337228722"
+      ],
+      "review_focus": "Preserve session-scoped categorical feedback, no narrative rescue, and no feedback-to-accuracy conversion.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C1",
+      "title": "Deep Sky product and fulfillment contract",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify Deep Sky entitlement, constrained synthesis, validation, delivery, reread, and failure contracts.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C2",
+      "title": "Credits, ownership, entitlement and idempotency",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Reconcile balance ownership, non-expiry, reading entitlement, duplicate prevention, deletion and remedies.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C3",
+      "title": "One new Deep Sky purchase per CE service day",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2515023681086",
+        "Box:2515742713865"
+      ],
+      "review_focus": "Preserve owner-originated purchase cap and owner-approved UTC boundary; resolve trigger, failure, concurrency and remedy mechanics from sources before recommendation.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C4",
+      "title": "Paid-market readiness and payment/legal boundaries",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Separate internal US research baseline from market-specific launch approval and unresolved payment/consumer issues.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "D1",
+      "title": "Account identity, trusted devices and recovery",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2491704535193"
+      ],
+      "review_focus": "Verify account ownership, device security, recovery, birth-data versioning and deletion boundaries.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "D2",
+      "title": "Personal Context and data-minimization boundary",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485319995048",
+        "Box:2485336395859"
+      ],
+      "review_focus": "Preserve persistent Personal Context/free-text exclusion from V1 AI input unless a controlled change reopens it.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "D3",
+      "title": "Share Card retirement from V1",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Preserve current V1 removal and historical artifacts; do not reopen as an active feature decision.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "D4",
+      "title": "Locale, currency and market assumptions",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify prior owner decisions; do not infer English-only, en-US-only, USD-only or US-first from examples.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "E1",
+      "title": "Normative stack, source lineage and document metadata",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491702000320",
+        "Box:2491699792103",
+        "Box:2491699264134",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify exact source identity, hierarchy, supersession and bounded metadata discrepancies.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "E2",
+      "title": "Autonomous operating mandate and delegated authority",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2515488894918",
+        "Box:2491704535193",
+        "Box:2491699264134"
+      ],
+      "review_focus": "Reconcile mandate with current governance; distinguish autonomous work from policy/authority transitions.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "E3",
+      "title": "Independent testing, expected-value oracle and release controls",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485336984594",
+        "Box:2491699792103",
+        "Box:2491702000320",
+        "Box:2485336117840"
+      ],
+      "review_focus": "Check candidate identity, oracle validity, CI enforcement, independent verification and rollback.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "E4",
+      "title": "A9/A10 and current runtime authority state",
+      "status": "NOT_STARTED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2514341553097",
+        "Box:2514347022237",
+        "Box:2514357714954",
+        "GitHub:PR-26"
+      ],
+      "review_focus": "Keep A9 and A10 scopes separate; do not treat Trusted Build as Runtime Adoption or production authorization.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "F1",
+      "title": "Other previously discussed areas discovered during review",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2515742713865",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Add any prior-discussion topic uncovered by source search; do not treat this list as permission to omit unlisted areas.",
+      "review_summary": "",
+      "evidence_refs": [],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    }
+  ]
+}
