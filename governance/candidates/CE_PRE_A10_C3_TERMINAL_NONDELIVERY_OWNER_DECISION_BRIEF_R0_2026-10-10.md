@@ -73,7 +73,7 @@ This is the recommendation for owner consideration, **not an owner decision**. N
 
 ## 6. Source-lineage and change-control blocker
 
-The earlier source-lineage update (Box 2515750096004) recorded that the individual normative Markdown files used by the earlier cap crosswalk had not been proven byte-identical to the current governing archive. The follow-up checks below now close the archive-to-Box identity check and the member-hash checks for the Account/Commercial Specification and Technical Contracts. They do **not** automatically establish the other files or test-register authority used by the wider R3 crosswalk. Therefore:
+The earlier source-lineage update (Box 2515750096004) recorded that the individual normative Markdown files used by the earlier cap crosswalk had not been proven byte-identical to the current governing archive. The follow-up checks below now close the archive-to-Box identity check and all six cited normative-member hash checks (Document Index, Product Constitution, Account/Commercial Specification, Business Model, Implementation Plan and Technical Contracts). They do **not** establish the official Test Register's identity/location or the project's global `SOURCE_AUTHORITY`. Therefore:
 
 - this brief is conceptual/product analysis only;
 - do not write a normative redline, alter the governing archive, or update the official Test Register on this basis;
@@ -100,9 +100,15 @@ The Box folder listing for `01_CURRENT_GOVERNING` (folder ID `420832009587`) ide
    - Account/Commercial Specification: `470efd7d95299e8e9a7002b355c967f982a3582412b5664f4c86e7cbc4a152e5` — `MemberHashMatches=True`.
    - Technical Contracts: `e7dae6d0de4becf6aa748667d01758e1cc8499b724539930af9212d64b4cc117` — `MemberHashMatches=True`.
    The operator has now provided the complete PowerShell output for the outer Clean Current Set ZIP: size `2,654,872` bytes; actual SHA-1 `58f8c3dcccc0ccb2e79a79ddd46ab0014c2783d6`; Box-listed SHA-1 is the same; `SHA1Matches=True`. The actual outer SHA-256 recorded by the operator is `d9c2f4abbe0a482e982488d5d2e332202c0c0dc8fceca3b5faaceb3d2c4a8abc`. Both normative member SHA-256 comparisons previously recorded are `True`. A separate `.sha256` sidecar was not located, but the governing-boundary pointer record (Box ID `2485721889298`) independently records the same outer SHA-256, and the operator's actual SHA-256 matches that value exactly. Both outer digest anchors—Box-listed SHA-1 and boundary-record SHA-256—therefore match the local byte object.
-4. The archive manifest also contains the Product Constitution v1.6.1, Document Index v1.9, Business Model v1.5, and Implementation Plan v1.3.1. Those four members are cited by the earlier crosswalk but their raw member hashes have not yet been computed in the operator's local ZIP. The `07_EXECUTION_PROFILE_TEST_REGISTER.md` member is absent from this Clean Current Set archive; the archive's exclusion note says the legacy Execution Profile/Test Register v1.5 and other Rev.1 implementation manifests were intentionally excluded. Therefore the register's current authorized identity/location must be reconciled separately; do not use the excluded staging copy as current authority by filename or version alone.
+4. The operator then computed SHA-256 directly from the local ZIP member streams for the four other files cited by the C3 crosswalk. Each expected path occurred exactly once, and every actual SHA-256 matched the corresponding manifest value (`MemberHashMatches=True`):
+   - Document Index v1.9 (`01_NORMATIVE/00_DOCUMENT_INDEX.md`): `a6a2d482d27777bae21f78ae11593eef62a35f19ee899d0a69ab83e3ccb8025f`.
+   - Product Constitution v1.6.1 (`01_NORMATIVE/01_PRODUCT_CONSTITUTION_MASTER_PRODUCT_SPECIFICATION.md`): `fb646bebd1b2e3e4f8f63f486e5b12a0f50ead59704464100bcd38d9b36b73d7`.
+   - Business Model v1.5 (`01_NORMATIVE/08_BUSINESS_MODEL_MINIMAL_V1_FINAL.md`): `b6a51ea4b40cf08715ca64843278e8ca6400572c67a39a1f1f34804c26133bd6`.
+   - Implementation Plan v1.3.1 (`01_NORMATIVE/CE_V1_IMPLEMENTATION_PLAN.md`): `ca385b00a77bff963c91bdf76fa9dea54c72c4fff4de63def473b28f5e847df4`.
 
-Thus the exact bytes of these two normative members match their expected manifest identities in the local ZIP, beyond the earlier text-extraction-only evidence. The outer ZIP also matches both the Box-listed SHA-1 and the SHA-256 recorded in the governing-boundary pointer (Box ID `2485721889298`). The archive-identity check and these two scoped member checks are closed; the broader crosswalk remains conditional pending the four other member-hash checks and separate Test Register authority reconciliation.
+   A separate ZIP-member check reported `EntryCount=0` and `ABSENT_FROM_CLEAN_CURRENT_SET` for `01_NORMATIVE/07_EXECUTION_PROFILE_TEST_REGISTER.md`. The absence proves only that the register is not in this archive. The archive's exclusion note says the legacy Execution Profile/Test Register v1.5 and other Rev.1 implementation manifests were intentionally excluded. Therefore the register's current authorized identity/location must be reconciled separately; do not use an excluded staging copy as current authority by filename or version alone.
+
+Thus the exact bytes of all six cited normative members match their expected manifest identities in the local ZIP, in addition to the outer ZIP matching both the Box-listed SHA-1 and the SHA-256 recorded in the governing-boundary pointer (Box ID `2485721889298`). The archive identity and all six scoped member-identity checks are closed. The official Test Register identity/location remains unresolved and must be reconciled separately; neither this result nor file absence from the archive establishes global `SOURCE_AUTHORITY`.
 
 The current Account/Commercial Specification v1.7 §§13–17 requires payment idempotency, a minimal fulfillment record, deterministic reconciliation, no duplicate Credits debit, and no silent loss of entitlement. Technical Contracts §§21.4–21.6 require uniqueness for purchase/order and provider identities, atomic Credits/entitlement fulfillment, and an explicit `UNKNOWN / RECONCILIATION_REQUIRED` state for uncertain provider outcomes; §25.1 permits retry only for classified retryable failure. These constraints support the technical integrity boundary but do **not** decide the product remedy path or the separate purchase-versus-fulfilled cap trigger.
 
@@ -114,9 +120,9 @@ No normative file or official Test Register was changed. PATH-LINKED-RECOVERY re
 - UTC boundary: **OWNER-APPROVED, LIMITED TO THE DATE BOUNDARY**.
 - PATH-LINKED-RECOVERY: **RECOMMENDED, NOT APPROVED**.
 - Terminal remedy/cap mechanics: **OPEN OWNER-ONLY PRODUCT SEMANTIC**.
-- Archive-to-Box identity: **PASS**; Account/Commercial Specification and Technical Contracts member hashes: **PASS**.
-- Other crosswalk member hashes (Product Constitution, Document Index, Business Model, Implementation Plan): **PENDING**.
-- Official Test Register identity/location: **NOT ESTABLISHED BY THE CLEAN CURRENT SET ARCHIVE; SEPARATE RECONCILIATION REQUIRED**.
+- Archive-to-Box identity: **PASS**; all six cited normative-member hashes (Document Index, Product Constitution, Account/Commercial Specification, Business Model, Implementation Plan and Technical Contracts): **PASS**.
+- Other crosswalk member hashes (Product Constitution, Document Index, Business Model, Implementation Plan): **PASS** (all four direct member-stream SHA-256 checks matched).
+- Test Register member presence: **ABSENT_FROM_CLEAN_CURRENT_SET**. Official Test Register identity/location: **NOT ESTABLISHED; SEPARATE RECONCILIATION REQUIRED**.
 - Normative files, Test Register, production behavior: **UNCHANGED**.
 - Implementation / A10 / Runtime Adoption / production / SEAL: **NOT AUTHORIZED**.
 
