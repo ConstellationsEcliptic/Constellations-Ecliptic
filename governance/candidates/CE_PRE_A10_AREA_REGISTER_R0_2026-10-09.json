@@ -549,11 +549,11 @@
       "status": "NOT_STARTED",
       "owner_decision_required": false,
       "source_refs": [
-        "Box:2515599999999",
-        "Box:2515600000000",
+        "Box:2491386800755",
+        "Box:2491385407120",
         "Box:2485336984594",
         "Box:2491702000320",
-        "Web:IANA-2026e"
+        "Web:https://www.iana.org/time-zones/releases/2026e"
       ],
       "review_focus": "Preserve the owner-recorded policy that CE V1 does not use birth-time input and Gregorian-only is the sole supported calendar; inspect the technical zero-birth interval and historical timezone conversion separately. IANA 2026e supersedes external latest status of pinned 2026d, but no automatic in-place update is authorized; identify affected behavior and required profile/candidate verification."
     },
