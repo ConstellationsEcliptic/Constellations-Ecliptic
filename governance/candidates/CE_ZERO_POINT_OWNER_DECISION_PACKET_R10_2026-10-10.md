@@ -9,6 +9,7 @@ Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
 ## 1. Current portable records
 
 - [Owner decision — autonomous evolution, pre-launch completeness, and adaptive change control R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md)
+- [Owner decision — Standing Delegation and Adaptive Change Rule R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_STANDING_DELEGATION_AND_ADAPTIVE_CHANGE_RULE_R0_2026-10-10.md)
 - [Remaining four area source-bound review and owner decision brief R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_REMAINING_FOUR_AREA_RECONCILIATION_R0_2026-10-10.md)
 - [Bounded owner disposition E2/F2 R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md)
 - [Bounded owner disposition A4/B3/E4 R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md)
@@ -20,9 +21,11 @@ Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
 
 ## 2. Owner-approved operating direction
 
-The owner approved broad source-first autonomous work for research, diagnosis, isolated candidate engineering, test/evidence development and routine follow-through; finite evidence-based pre-launch readiness; pre-launch evaluation of relevant upstream updates; and adaptive revision when new facts/cases arise. If a novel case materially changes product principles, Canon scope, privacy, commercial semantics, or protected authority, it must be discussed with the owner before the new choice is treated as approved.
+The owner approved broad source-first autonomous work for research, diagnosis, isolated candidate engineering, test/evidence development and routine follow-through; finite evidence-based pre-launch readiness; pre-launch evaluation of relevant upstream updates; and adaptive revision when new facts/cases arise. The owner subsequently explicitly approved the operational rule **AUTONOMOUS BY DEFAULT; OWNER CONSULTATION AT PROTECTED BOUNDARIES**. See the [Standing Delegation and Adaptive Change Rule R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_STANDING_DELEGATION_AND_ADAPTIVE_CHANGE_RULE_R0_2026-10-10.md).
 
-This grants an operating direction, not formal normative adoption, an always-running agent, a populated Canon, a verified semantic validator, an approved payment provider, or release/production authorization.
+Operationally, routine source-first research, diagnosis, bounded candidate work, available testing, evidence capture and documentation proceed without repeated owner approval. Previously approved recommendations may be revised when material new evidence warrants; the rationale and impact must be recorded. Consultation is required before treating a material, unresolved protected choice as approved. Hold only the affected decision/transition and continue unrelated safe work when doing so does not prejudice it. Silence is not approval.
+
+This grants an operating direction, not formal normative adoption, an always-running agent, a populated Canon, a verified semantic validator, an approved payment provider, or release/production authorization. It does not authorize merge, A10, Runtime Adoption, production or SEAL, nor bypass any source-lineage, independent-review, dual-approval or fail-closed requirement.
 
 ## 3. Current register and candidate identity
 
