@@ -206,7 +206,7 @@
     {
       "id": "B4",
       "title": "Feedback, mismatch, and anti-confirmation safeguards",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193",
@@ -214,8 +214,16 @@
         "Box:2485337228722"
       ],
       "review_focus": "Preserve session-scoped categorical feedback, no narrative rescue, and no feedback-to-accuracy conversion.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Current V1 source review confirms Look Back is experience-first with controlled categorical, session-only input; feedback is USER_REPORTED and cannot be accuracy proof, permanent trait/profile, Canon rule, or change to evidence/qualification. Tomorrow Check records balanced categories and compares only with yesterday's eligible Testable Sky Signal; mismatch must not be forced into a match. Canon v1.2 prohibits adding interpretations to rescue a mismatch, and AI/Output Validation requires mismatch-rescue rejection. Preserve this contract; no learning/accuracy loop or persistence for V1. Test Register contains ERR-06/INT-01/AI-09 for adjacent Quiet Sky/failure boundaries, but no tests were executed by this review. Runtime/UI conformance is not established by source review alone.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §§3.3–3.7, 4.1–4.4, 6",
+        "Box:2491699264134 Implementation Plan v1.3.1 §§13.1–13.3",
+        "Box:2485335414676 Signal Engine v1.4 §19",
+        "Box:2485337228722 Interpretive Canon v1.2 §§10–13",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§9–12, 21–22",
+        "Box:2485336117840 Test Register v1.5 ERR-06, INT-01, AI-09",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
