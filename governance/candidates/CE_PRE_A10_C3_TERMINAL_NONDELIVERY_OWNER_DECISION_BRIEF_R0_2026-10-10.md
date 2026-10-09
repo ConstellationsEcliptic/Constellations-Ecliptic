@@ -73,6 +73,8 @@ This is the recommendation for owner consideration, **not an owner decision**. N
 
 ## 6. Source-lineage and change-control blocker
 
+Detailed clause-to-source coverage, verified member hashes, cap-specific gaps and candidate test oracles are collected in the [C3 Source-Bound Contract Crosswalk R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_C3_SOURCE_BOUND_CONTRACT_CROSSWALK_R0_2026-10-10.md).
+
 The earlier source-lineage update (Box 2515750096004) recorded that the individual normative Markdown files used by the earlier cap crosswalk had not been proven byte-identical to the current governing archive. The follow-up checks below now close the archive-to-Box identity check and all six cited current-set source-member hash checks (Document Index, Product Constitution, Account/Commercial Specification, Business Model, Implementation Plan and Technical Contracts). They do **not** establish the official Test Register's identity/location or the project's global `SOURCE_AUTHORITY`. Therefore:
 
 - this brief is conceptual/product analysis only;
