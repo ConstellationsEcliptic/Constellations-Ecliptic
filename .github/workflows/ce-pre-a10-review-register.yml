@@ -1,0 +1,34 @@
+name: CE Pre-A10 Area Register Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json
+      - scripts/governance/**
+      - .github/workflows/ce-pre-a10-review-register.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-area-register:
+    name: Validate pre-A10 review tracking
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Reviewed immutable action commit for actions/checkout v7.0.1.
+      - name: Checkout candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Validate review register integrity
+        run: >-
+          python3 scripts/governance/pre_a10_area_gate.py
+          governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json
+
+      - name: Run validator unit tests
+        run: python3 scripts/governance/test_pre_a10_area_gate.py -v
