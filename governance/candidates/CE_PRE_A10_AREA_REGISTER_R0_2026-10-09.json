@@ -51,7 +51,7 @@
     {
       "id": "A2",
       "title": "Look Back, Look Today, Tomorrow Check, Look Future and Quiet Sky",
-      "status": "SOURCE_RECONCILED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193",
@@ -59,7 +59,7 @@
         "Box:2485336984594"
       ],
       "review_focus": "Review product time model and distinguish a valid no-signal observation from technical failure.",
-      "review_summary": "Source-level semantic review completed against the characterized V1 stack. Look Back is experience-first, controlled-category, session-only and not truth proof; Look Today may show only qualified Testable Sky Signal; Tomorrow Check receives the user's categorical report and compares it with yesterday's testable signal without forcing mismatch to match; Look Future is grounded in upcoming calculations, Canon, and only explicitly permitted current-session input, and remains possibility not guarantee. Quiet Sky is the aggregate result of a valid completed observation with zero qualifying signals. Any non-VALID technical state remains a separate failure/unavailable state: no signal, Canon claim, Quiet Sky promotion, or stale substitution. This is semantic/source reconciliation only, not runtime conformance or test execution; exact byte lineage of the characterized copies to the representative governing archive remains NOT_ESTABLISHED.",
+      "review_summary": "Source-level semantic review completed against the characterized V1 stack. Look Back is experience-first, controlled-category, session-only and not truth proof; Look Today may show only qualified Testable Sky Signal; Tomorrow Check receives the user's categorical report and compares it with yesterday's testable signal without forcing mismatch to match; Look Future is grounded in upcoming calculations, Canon, and only explicitly permitted current-session input, and remains possibility not guarantee. Quiet Sky is the aggregate result of a valid completed observation with zero qualifying signals. Any non-VALID technical state remains a separate failure/unavailable state: no signal, Canon claim, Quiet Sky promotion, or stale substitution. This is semantic/source reconciliation only, not runtime conformance or test execution; exact byte lineage of the characterized copies to the representative governing archive remains NOT_ESTABLISHED. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve source-level product time model and Quiet Sky/failure separation. This does not establish byte lineage or runtime/test conformance.",
       "evidence_refs": [
         "Box:2491704535193 §§2–6, 8.2–8.3, 14",
         "Box:2485336984594 §§2–3, 29–30, 35–37",
@@ -69,7 +69,8 @@
         "Box:2491699264134 §§13.1–13.4",
         "Box:2485336117840 §11, INT-01, ERR-06, AI-09, §21",
         "Box:2515023681086 §3 area 1 and §6",
-        "Box:2515742713865 §§2, 5–6"
+        "Box:2515742713865 §§2, 5–6",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
       ],
       "disposition_ref": "",
       "owner_disposition": ""
@@ -255,21 +256,22 @@
     {
       "id": "C2",
       "title": "Credits, ownership, entitlement and idempotency",
-      "status": "SOURCE_RECONCILED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2485319995048",
         "Box:2515023681086"
       ],
       "review_focus": "Reconcile balance ownership, non-expiry, reading entitlement, duplicate prevention, deletion and remedies.",
-      "review_summary": "Account/Privacy/Commercial v1.7 §§10–17 and Business Model v1.5 establish account-owned, device-independent, non-expiring Credits; reread of an already-opened retained paid reading without another debit; preview disclosure; server-issued idempotency; database-level uniqueness/atomic Credit grant; provider event deduplication; minimal transaction/fulfillment records; reconcilable unknown/failure state; and post-deletion financial purpose limitation/linkage severance. Test Register v1.5 includes INT-02, PAY-01–05, VERS-12, SCALE-04 and related deletion cases as expected test behavior, but no fresh test run was executed. Commerce Persistence Source-Discovery Finding R0 (Box 2515659021563) records that no live commerce/persistence source, DB migration, provider or Credits ledger is established in the inspected GitHub main/A9 and active Box scope; this is bounded and does not exclude a separate unindexed/private worktree. Recommendation: preserve normative contract, do not invent a schema/provider, and identify the authoritative commerce source before implementation. Daily purchase cap trigger/remedy mechanics remain separate C3.",
+      "review_summary": "Account/Privacy/Commercial v1.7 §§10–17 and Business Model v1.5 establish account-owned, device-independent, non-expiring Credits; reread of an already-opened retained paid reading without another debit; preview disclosure; server-issued idempotency; database-level uniqueness/atomic Credit grant; provider event deduplication; minimal transaction/fulfillment records; reconcilable unknown/failure state; and post-deletion financial purpose limitation/linkage severance. Test Register v1.5 includes INT-02, PAY-01–05, VERS-12, SCALE-04 and related deletion cases as expected test behavior, but no fresh test run was executed. Commerce Persistence Source-Discovery Finding R0 (Box 2515659021563) records that no live commerce/persistence source, DB migration, provider or Credits ledger is established in the inspected GitHub main/A9 and active Box scope; this is bounded and does not exclude a separate unindexed/private worktree. Recommendation: preserve normative contract, do not invent a schema/provider, and identify the authoritative commerce source before implementation. Daily purchase cap trigger/remedy mechanics remain separate C3. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve Credits/entitlement/idempotency contract; live commerce persistence remains NOT_ESTABLISHED in inspected scope.",
       "evidence_refs": [
         "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§10–17",
         "Box:2485331476456 Business Model Minimal V1 v1.5 §§2–10, 15",
         "Box:2491699264134 Implementation Plan v1.3.1 §7.8 and Phase 10",
         "Box:2485336117840 Execution Profile & Test Register v1.5 INT-02, PAY-01–05, VERS-12, SCALE-04, PRIV deletion cases",
         "Box:2515659021563 Commerce/Persistence Source-Discovery Finding R0",
-        "Box:2515488894918 Source-First Recommendation Protocol"
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
       ],
       "disposition_ref": "",
       "owner_disposition": ""
@@ -333,21 +335,22 @@
     {
       "id": "D1",
       "title": "Account identity, trusted devices and recovery",
-      "status": "SOURCE_RECONCILED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2485319995048",
         "Box:2491704535193"
       ],
       "review_focus": "Verify account ownership, device security, recovery, birth-data versioning and deletion boundaries.",
-      "review_summary": "Product Constitution v1.6.1 §§7–9, Account/Privacy/Commercial v1.7 §§1–6, Privacy Architecture V1 v1.5 and Test Register v1.5 establish a pseudonymous account with username/password/birth date/birth city/recovery mechanism (no mandatory email/real-name/phone/social login), account-owned Personal Sky/profile versions/retained readings/Credits, device as security layer, user-controlled 12-word recovery phrase with no plaintext server storage, server-issued challenge/one-use nonce/server time, max five active trusted devices, passkey preferred, 30-minute default idle re-auth, recovery revokes previous sessions/devices, no alternate/manual support ownership bypass, separate age eligibility + authentication + current user verification, and historical profile-version binding. Test Register specifies SEC-01–12, PRIV-03, PRIV-08/VERS-02, but no test execution was performed here. Normative semantic contract can be preserved; actual deployed account/auth/recovery service is not established in the inspected connected main/A9 source scope, a bounded implementation-source gap. Recommendation: PRESERVE contract, do not invent email/identity/override/device-ownership paths, and verify actual implementation only after its authorized source/worktree identity is identified.",
+      "review_summary": "Product Constitution v1.6.1 §§7–9, Account/Privacy/Commercial v1.7 §§1–6, Privacy Architecture V1 v1.5 and Test Register v1.5 establish a pseudonymous account with username/password/birth date/birth city/recovery mechanism (no mandatory email/real-name/phone/social login), account-owned Personal Sky/profile versions/retained readings/Credits, device as security layer, user-controlled 12-word recovery phrase with no plaintext server storage, server-issued challenge/one-use nonce/server time, max five active trusted devices, passkey preferred, 30-minute default idle re-auth, recovery revokes previous sessions/devices, no alternate/manual support ownership bypass, separate age eligibility + authentication + current user verification, and historical profile-version binding. Test Register specifies SEC-01–12, PRIV-03, PRIV-08/VERS-02, but no test execution was performed here. Normative semantic contract can be preserved; actual deployed account/auth/recovery service is not established in the inspected connected main/A9 source scope, a bounded implementation-source gap. Recommendation: PRESERVE contract, do not invent email/identity/override/device-ownership paths, and verify actual implementation only after its authorized source/worktree identity is identified. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve account/trusted-device/recovery contract; deployed service remains NOT_ESTABLISHED in inspected scope.",
       "evidence_refs": [
         "Box:2491704535193 Product Constitution v1.6.1 §§7–9",
         "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§1–6",
         "Box:2485335589220 Privacy Architecture Minimal V1 v1.5 §§1–3, 8",
         "Box:2485336117840 Execution Profile & Test Register v1.5 SEC-01–12, PRIV-03, PRIV-08, VERS-02",
         "Box:2491699264134 Implementation Plan v1.3.1 account/security/migration sections",
-        "Box:2515488894918 Source-First Recommendation Protocol"
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
       ],
       "disposition_ref": "",
       "owner_disposition": ""
@@ -422,7 +425,7 @@
     {
       "id": "E1",
       "title": "Normative stack, source lineage and document metadata",
-      "status": "SOURCE_RECONCILED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491702000320",
@@ -431,7 +434,7 @@
         "Box:2515023681086"
       ],
       "review_focus": "Verify exact source identity, hierarchy, supersession and bounded metadata discrepancies.",
-      "review_summary": "Normative Stack Index/Manifest R1 are explicitly non-authoritative orientation aids identifying Product Constitution v1.6.1, Calculation v1.9, Technical Contracts v1.1, Implementation Plan v1.3.1, Execution Profile v1.3/rev4 and Data Lock rev4. Box governance baseline says folder location does not create authority and 99_LOCAL_INVENTORY_INTAKE/90_PARALLEL_NOT_AUTHORITY are not current authority. Source-Lineage Update R1 (Box 2515750096004) confirms exact internal member/byte comparison against governing ZIP Box 2485715303669 could not be performed with available connector operations; neither identity nor difference of readable copies is established. NORM-META-001 (Tech Contracts v1.1 embeds v1.0 status/baseline) and NORM-META-002 (Execution Profile v1.3/rev4 embeds v1.0/v1.2 references) remain open metadata findings; older index copy mismatch does not prove a defect in the current stack. Recommendation: preserve sources; do not apply exact-location redlines; prepare metadata-only candidate patches but hold application pending exact lineage and controlled change-control. No normative file/index/manifest was edited.",
+      "review_summary": "Normative Stack Index/Manifest R1 are explicitly non-authoritative orientation aids identifying Product Constitution v1.6.1, Calculation v1.9, Technical Contracts v1.1, Implementation Plan v1.3.1, Execution Profile v1.3/rev4 and Data Lock rev4. Box governance baseline says folder location does not create authority and 99_LOCAL_INVENTORY_INTAKE/90_PARALLEL_NOT_AUTHORITY are not current authority. Source-Lineage Update R1 (Box 2515750096004) confirms exact internal member/byte comparison against governing ZIP Box 2485715303669 could not be performed with available connector operations; neither identity nor difference of readable copies is established. NORM-META-001 (Tech Contracts v1.1 embeds v1.0 status/baseline) and NORM-META-002 (Execution Profile v1.3/rev4 embeds v1.0/v1.2 references) remain open metadata findings; older index copy mismatch does not prove a defect in the current stack. Recommendation: preserve sources; do not apply exact-location redlines; prepare metadata-only candidate patches but hold application pending exact lineage and controlled change-control. No normative file/index/manifest was edited. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve source stack and continue holding normative redlines. Archive byte lineage remains NOT_ESTABLISHED and NORM-META-001/002 remain OPEN.",
       "evidence_refs": [
         "Box:2504532906216 Normative Stack Index R1",
         "Box:2504536826366 Normative Stack Manifest R1",
@@ -442,7 +445,8 @@
         "Box:2488628002810 Box Current Read First",
         "Box:2515750096004 Source-Lineage Update R1",
         "Box:2485715303669 Governing archive (member identity comparison not completed)",
-        "Box:2515488894918 Source-First Recommendation Protocol"
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
       ],
       "disposition_ref": "",
       "owner_disposition": ""
@@ -476,7 +480,7 @@
     {
       "id": "E3",
       "title": "Independent testing, expected-value oracle and release controls",
-      "status": "SOURCE_RECONCILED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2485336984594",
@@ -485,7 +489,7 @@
         "Box:2485336117840"
       ],
       "review_focus": "Check candidate identity, oracle validity, CI enforcement, independent verification and rollback.",
-      "review_summary": "Calculation Constitution §36, Technical Contracts v1.1 §§26.2–26.4, Implementation Plan v1.3.1 §§7.6/Phases 3,12,18–19, and Test Register v1.5 §§20–21 require verified expected-value oracles, exact candidate/test/fixture identity, independent mathematical/reference/edge-case review, mapping from official test IDs to executable tests, and actual execution evidence; test count alone is not completeness. A9 R2/formal authorization records bind Trusted Build and 261 tests/build to exact c8dab354… source tree/control-plane/dependency lock, and report two full-range captures with 293,657 instants, 3,817,541 objects, 201 shards, exact 201/201 parity. For that candidate, Source Authority and formal Trusted Build are established; Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain not established/unauthorized. PR #26 remains OPEN/DRAFT/DO NOT MERGE. Autonomy validator/test source exists on the isolated branch but tests/CI not executed in this session; current branch-protection/ruleset/required-CI configuration not fully exposed. Recommendation: preserve independent oracle/evaluator and scoped authority boundaries, then execute and retain exact candidate test/CI evidence before treating the pre-A10 gate as operational. No tests or CI pass claimed here.",
+      "review_summary": "Calculation Constitution §36, Technical Contracts v1.1 §§26.2–26.4, Implementation Plan v1.3.1 §§7.6/Phases 3,12,18–19, and Test Register v1.5 §§20–21 require verified expected-value oracles, exact candidate/test/fixture identity, independent mathematical/reference/edge-case review, mapping from official test IDs to executable tests, and actual execution evidence; test count alone is not completeness. A9 R2/formal authorization records bind Trusted Build and 261 tests/build to exact c8dab354… source tree/control-plane/dependency lock, and report two full-range captures with 293,657 instants, 3,817,541 objects, 201 shards, exact 201/201 parity. For that candidate, Source Authority and formal Trusted Build are established; Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain not established/unauthorized. PR #26 remains OPEN/DRAFT/DO NOT MERGE. Autonomy validator/test source exists on the isolated branch but tests/CI not executed in this session; current branch-protection/ruleset/required-CI configuration not fully exposed. Recommendation: preserve independent oracle/evaluator and scoped authority boundaries, then execute and retain exact candidate test/CI evidence before treating the pre-A10 gate as operational. No tests or CI pass claimed here. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve independent-oracle/reproducibility controls. Candidate validator tests pass in run #47 (14 tests); full CE behavior suite and required-check enforcement remain NOT_ESTABLISHED.",
       "evidence_refs": [
         "Box:2485336984594 Calculation Constitution v1.9 §36",
         "Box:2491699792103 Technical Contracts v1.1 §§26.2–26.4",
@@ -497,7 +501,9 @@
         "GitHub:PR-26 open draft DO NOT MERGE",
         "GitHub:governance/candidates/scripts/governance/pre_a10_area_gate.py (not executed)",
         "GitHub:governance/candidates/scripts/governance/test_pre_a10_area_gate.py (not executed)",
-        "GitHub:PR-27 autonomous mandate candidate"
+        "GitHub:PR-27 autonomous mandate candidate",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md",
+        "GitHub:Actions-run-37958688461 (validator job success; 14 tests OK; strict completeness job blocked)"
       ],
       "disposition_ref": "",
       "owner_disposition": ""
