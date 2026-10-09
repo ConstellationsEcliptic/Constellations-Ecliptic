@@ -128,7 +128,7 @@ def validate_register(data: Any) -> dict[str, Any]:
             errors.append(f"{area_id}.title is required")
 
         status = area.get("status")
-        if status not in ALLOWED_STATUSES:
+        if not _nonempty(status) or status not in ALLOWED_STATUSES:
             errors.append(f"{area_id}.status is not an allowed status")
             status = "NOT_STARTED"
 
