@@ -109,10 +109,23 @@ Official provider checks on 2026-10-10 found material constraints:
 
 Recommendation: first establish the actual seller/legal-entity jurisdiction; then seek truthful written provider eligibility for CE's precise astrology-oriented reflection and Credits model; compare only eligible payment options; choose the paid-enabled buyer market/allowlist; then separately choose UI locale and currency/SKU pricing. Customer geography alone does not make a seller eligible to open an account in that jurisdiction. No provider, legal market, currency or paid checkout is approved by this note. D4 remains a real owner decision once a source-backed feasibility comparison can be tied to the planned seller entity.
 
+## B1 prototype status update — exact research candidate, 2026-10-10
+
+The bounded source/test review has now produced a separate prototype, without changing exact A9:
+
+- [B1 source/test-surface review and proposed regression matrix](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_B1_RULE_TO_GEOMETRY_BINDING_TEST_SURFACE_R0_2026-10-10.md) records source blobs and the initial observed test gap.
+- Prototype exact HEAD: `802408757e33d3d8a255d29b0d912f28b5770224`; [PR #31](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/31) is OPEN / DRAFT / NOT MERGED.
+- [Dedicated B1 test workflow #37978828630](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978828630) passed on Ubuntu, macOS and Windows using Python 3.13.15. Each platform ran 59 selected B1/adjacent-boundary tests and reported `OK`; source/tests AST parsing and zero Python bytecode/cache checks also passed.
+- First candidate test run [#37978660234](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37978660234) exposed a real prototype defect: immutable EvidencePacket geometry records are Mapping objects, not plain dictionaries. The candidate was corrected; the successful later run is tied to the corrected exact head above. The failed run remains in history.
+- The A9-specific identity/Trusted Build workflows fail on this modified branch at the source/control-plane identity gate. This is expected for a changed candidate and is not a failure of the exact A9 evidence or a valid Trusted Build for this prototype. No A9 identity gate was changed or bypassed.
+- This targeted 59-test matrix is not the complete CE suite and does not establish a populated/approved Canon registry, production semantic verifier, source authority, Trusted Build, Runtime Adoption, production authorization, or SEAL. The current four-area completion gate remains blocked.
+
+Next B1 technical work is additional selector/immutability/ambiguity and compatibility review plus independent review of the candidate change. Only afterward should sourced candidate rules and scope options be prepared for the protected V1 Canon decision. No real Canon rule is created by this prototype.
+
 ## 8. Next admissible work
 
 1. Prepare the narrow A3 note-source/display candidate and identify exact approved content sources without inventing UI/copy.
-2. Build a source-reviewed B1 Canon candidate scope and explicit geometry-to-rule binding design; keep output blocked until approved rules and independent semantic conformance are established.
+2. Continue source-bound B1 prototype validation (PR #31) with extra adversarial/compatibility cases and independent review; then prepare a source-reviewed candidate Canon scope/options and keep output blocked until approved rules and independent semantic conformance are established.
 3. Present C3 terminal-failure remedy options A/B with explicit ledger/order/day consequences, then record the owner’s scoped choice before writing the contract/test oracle.
 4. Complete D4 market-provider feasibility only against a real/selected seller-entity scenario; do not assume U.S., Indonesia, USD or Paddle/Stripe eligibility.
 5. Keep A10 deferred and do not merge/deploy or claim launch readiness.
