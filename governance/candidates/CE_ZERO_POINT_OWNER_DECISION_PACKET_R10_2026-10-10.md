@@ -19,6 +19,7 @@ Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
 - [Current 23-area register](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json)
 - [Canon / Claim / Language release-boundary reconciliation R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md)
 - [B1 Canon rule-to-geometry binding test-surface review R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_B1_RULE_TO_GEOMETRY_BINDING_TEST_SURFACE_R0_2026-10-10.md)
+- [C3 Terminal Non-Delivery Owner Decision Brief R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_C3_TERMINAL_NONDELIVERY_OWNER_DECISION_BRIEF_R0_2026-10-10.md)
 - [A3 Editorial Library and Today's Note Test Contract R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_A3_EDITORIAL_LIBRARY_AND_TODAYS_NOTE_TEST_CONTRACT_R0_2026-10-10.md)
 - [D4 Payment Provider Eligibility Snapshot R1](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_D4_PAYMENT_PROVIDER_ELIGIBILITY_SNAPSHOT_R1_2026-10-10.md)
 - [TZDB 2026d→2026e impact qualification R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TZDB_2026D_TO_2026E_IMPACT_QUALIFICATION_R0_2026-10-10.md)
@@ -89,10 +90,7 @@ Fresh source-bound artifacts (Boxes 2515747060613 and 2515757204983) show that a
 
 Reservation, effective purchase/redemption, accessible fulfillment, unknown/reconciling state, Credits restoration, payment refund and linked no-charge replacement must remain distinct.
 
-Material owner decision still required for a confirmed terminal non-delivery after debit on the same UTC date:
-- **Option A:** only after terminal reversal/restoration, and closure of all downstream operations, release that date’s slot for a new order; or
-- **Option B:** the cap remains consumed, but CE supplies a no-charge retry/replacement under the original order identity.
-A timeout is not terminal failure; a remedy must not leave the consumer both without service and without the relevant value. Preferred direction is a deterministic remedy that does not penalize the consumer for CE-side failure, with one-time restoration, original-order identity and applicable consumer-rights review explicitly tested. No owner choice is inferred.
+The focused [C3 Terminal Non-Delivery Owner Decision Brief R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_C3_TERMINAL_NONDELIVERY_OWNER_DECISION_BRIEF_R0_2026-10-10.md) separates the two first-line remedies and recommends **Option B** (retain the original purchase/debit and use a linked no-charge retry) for recoverable CE-side failure, while preserving a distinct terminal non-fulfillment/refund route when service cannot be delivered. It explicitly does not restore Credits and provide a no-charge reading simultaneously as the same remedy, which could create double recovery. The choice is not owner-approved; source lineage for normative redlines remains NOT_ESTABLISHED, so do not change current normative files/Test Register.
 
 ## 7. D4 — Actual seller jurisdiction, paid market, locale and currency
 
@@ -135,7 +133,7 @@ Next B1 technical work is independent review plus further selector, immutability
 
 1. Continue A3 by checking the canonical product/UI authority location if identifiable, then prepare source-backed locale/cycle/fallback options; keep the editorial library/copy and implementation unapproved until controlled review.
 2. Continue B1 validation on the shared-helper candidate (PR #32) with additional selector/immutability/duplicate-conflict compatibility cases and independent review; then prepare source-reviewed Canon scope options and keep output blocked until approved rules and independent semantic conformance are established.
-3. Present C3 terminal-failure remedy options A/B with explicit ledger/order/day consequences, then record the owner’s scoped choice before writing the contract/test oracle.
+3. Use the C3 decision brief to resolve the exact normative-source lineage and finish the source-bound remedy comparison; bring the narrow Option A vs B choice to the owner only when the current-source and consumer-rights consequences are ready. Do not write normative files/Test Register before that.
 4. Complete D4 market-provider feasibility only against a real/selected seller-entity scenario; do not assume U.S., Indonesia, USD or Paddle/Stripe eligibility.
 5. Keep A10 deferred and do not merge/deploy or claim launch readiness.
 
