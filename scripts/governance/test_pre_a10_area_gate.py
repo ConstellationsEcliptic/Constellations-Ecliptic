@@ -99,6 +99,12 @@ class GateValidatorTests(unittest.TestCase):
         with self.assertRaisesRegex(gate.RegisterError, "duplicate area id"):
             gate.validate_register(data)
 
+    def test_malformed_unhashable_status_is_invalid_not_uncaught_exception(self):
+        data = sample_register()
+        data["areas"][0]["status"] = []
+        with self.assertRaisesRegex(gate.RegisterError, "status is not an allowed status"):
+            gate.validate_register(data)
+
     def test_current_gate_drift_is_invalid(self):
         data = sample_register()
         data["current_gate"] = "OPEN"
