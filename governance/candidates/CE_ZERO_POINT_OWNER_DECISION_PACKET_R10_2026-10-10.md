@@ -20,6 +20,7 @@ Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
 - [Canon / Claim / Language release-boundary reconciliation R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md)
 - [B1 Canon rule-to-geometry binding test-surface review R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_B1_RULE_TO_GEOMETRY_BINDING_TEST_SURFACE_R0_2026-10-10.md)
 - [A3 Editorial Library and Today's Note Test Contract R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_A3_EDITORIAL_LIBRARY_AND_TODAYS_NOTE_TEST_CONTRACT_R0_2026-10-10.md)
+- [D4 Payment Provider Eligibility Snapshot R1](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_D4_PAYMENT_PROVIDER_ELIGIBILITY_SNAPSHOT_R1_2026-10-10.md)
 - [TZDB 2026d→2026e impact qualification R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TZDB_2026D_TO_2026E_IMPACT_QUALIFICATION_R0_2026-10-10.md)
 - [PR #27](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/27)
 
@@ -97,19 +98,14 @@ A timeout is not terminal failure; a remedy must not leave the consumer both wit
 
 The U.S. legal-policy baseline does not make CE U.S.-only, approve nationwide paid checkout, or select USD. Business Model v1.5's `4 Credits = US$2.99` remains illustrative, not final pricing.
 
-Official provider checks on 2026-10-10 found material constraints:
-- Stripe lists Indonesia as Preview and the U.S. on its global availability page: https://stripe.com/global
-- Stripe's official Indonesia onboarding page describes an invite-only program; its Indonesia account page limits payment currency/settlement to IDR and says cross-border/international transactions are not supported for Indonesia-based Stripe accounts:
-  https://support.stripe.com/questions/requirements-to-open-a-stripe-account-in-indonesia?locale=en-GB
-  https://support.stripe.com/questions/supported-payment-methods-currencies-and-businesses-for-stripe-accounts-in-indonesia
-- Stripe's U.S. account criteria require a verifiable U.S. registered business, or for an unregistered business a representative physically located in the U.S., among other checks:
-  https://support.stripe.com/questions/requirements-for-having-a-us-stripe-account?locale=en-GB
-- Stripe's current restricted-business rules indicate that some seller-maintained stored-value/credits can be limited and some jurisdiction-specific psychic/fortune-telling services need extra restrictions/review. This does not establish a universal CE prohibition; provider eligibility for CE's precise product/Credits model must be verified:
-  https://stripe.com/legal/restricted-businesses?tp=1
-- Paddle's current Acceptable Use Policy expressly prohibits digital services associated with pseudo-science including horoscopes, and virtual currency/stored value including store credits, gift cards and vouchers. Do not assume Paddle is suitable for CE's current product/Credits model absent explicit written confirmation:
-  https://www.paddle.com/help/start/intro-to-paddle/what-am-i-not-allowed-to-sell-on-paddle
+Official provider check on 2026-10-10 is detailed in the [D4 Payment Provider Eligibility Snapshot R1](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_D4_PAYMENT_PROVIDER_ELIGIBILITY_SNAPSHOT_R1_2026-10-10.md). Key verified constraints:
+- Stripe's current Indonesia onboarding program is invite-only; accounts based in Indonesia are limited to IDR and do not support cross-border/international transactions, so it cannot simply be assumed to support a global launch.
+- A Stripe account in another country requires the actual eligibility criteria/business arrangements for that country; foreign registration or an address alone must not be treated as sufficient.
+- Stripe's restricted-business policy calls for classification/review of the exact account-held Credits/stored-value mechanics and CE's astrology/reading product; no approval or prohibition for CE's exact flow is inferred.
+- Paddle's published AUP expressly lists horoscopes/fortune-telling/pseudoscience and virtual currency/stored value as prohibited categories. Given CE's current product and Credits model, do not shortlist it absent explicit written confirmation that the exact offering is accepted.
+- These are provider-policy findings, not a legal conclusion that CE is prohibited or unlawful.
 
-Recommendation: first establish the actual seller/legal-entity jurisdiction; then seek truthful written provider eligibility for CE's precise astrology-oriented reflection and Credits model; compare only eligible payment options; choose the paid-enabled buyer market/allowlist; then separately choose UI locale and currency/SKU pricing. Customer geography alone does not make a seller eligible to open an account in that jurisdiction. No provider, legal market, currency or paid checkout is approved by this note. D4 remains a real owner decision once a source-backed feasibility comparison can be tied to the planned seller entity.
+Recommendation remains: establish the genuine seller entity/jurisdiction first; then obtain truthful written provider eligibility for the exact astrology + Credits flow; compare only eligible providers; decide serveable buyer market; then locale and pricing currency. U.S.-first, Indonesia-first, USD and IDR are not inferred. No provider, market, currency or paid checkout is approved.
 
 ## B1 prototype status update — exact research candidates, 2026-10-10
 
