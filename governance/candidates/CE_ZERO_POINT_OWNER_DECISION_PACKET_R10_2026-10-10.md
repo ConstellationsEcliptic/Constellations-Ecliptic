@@ -58,13 +58,13 @@ https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/3
 
 Run #98 is associated with register update commit `82e20f3e73f927619c9e967692846313d16fb8ac`, not the subsequent packet/document-only head. No exact-current-head all-green claim is made.
 
-The latest exact-head validation confirmed during this review was run #100 on PR head `0000314ec5bcfb8b24f4d2797f93777779681015`:
-https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37975479114
+The latest observed exact-head validation for the C3-linked documentation snapshot is run #136 on commit `16cd04f62ca5c6f254de0a0942304f262def3ace`:
+https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37985963039
 - register-integrity validator: SUCCESS;
 - 14 validator unit tests: SUCCESS;
 - separate strict Pre-A10 completion gate: blocked/failure at `Require all review areas to be complete`, because A3, B1, C3 and D4 remain `RECOMMENDATION_READY`. This is the expected fail-closed outcome, not a unit-test failure.
 
-The R10 packet record itself is being updated after that run; therefore run #100 is evidence for its exact tested commit, not a claim that any later documentation-only head was also tested. Check live PR metadata/workflow association before stating a result for a subsequent head.
+This packet edit is a later documentation-only commit than the commit tested in run #136. No claim is made that run #136 tested this subsequent edit or that the current branch head is all-green. Recheck the workflow association for any later head before describing it as validated.
 
 ## 4. A3 — Today’s Note × Quiet Sky
 
