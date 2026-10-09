@@ -84,11 +84,21 @@ Key source records:
 - Normative Source-Lineage Boundary Update R1 (Box 2515750096004): https://app.box.com/file/2515750096004
 - R2 Source and Test Disposition R1 (Box 2515695712759): https://app.box.com/file/2515695712759
 
-### Fresh bounded source-lineage check — 2026-10-10
+### Source-lineage investigation — initial identification and 2026-10-10 follow-up
 
-The Box folder listing for `01_CURRENT_GOVERNING` (folder ID `420832009587`) confirms an archive item named `CE_V1_CLEAN_CURRENT_SET_R3-2026-09-24.zip` (Box file ID `2485715303669`, listed SHA-1 `58f8c3dcccc0ccb2e79a79ddd46ab0014c2783d6`) and the pointer record `CE_CURRENT_GOVERNING_BOUNDARY_2026-09-24.md` (Box file ID `2485721889298`). This strengthens archive identification, but does **not** resolve the exact lineage requirement: the connected interface did not provide usable raw ZIP bytes in this pass, so the required member manifest/content hashes were not compared against the individually readable normative Markdown sources.
+The Box folder listing for `01_CURRENT_GOVERNING` (folder ID `420832009587`) identifies `CE_V1_CLEAN_CURRENT_SET_R3-2026-09-24.zip` (Box file ID `2485715303669`, listed SHA-1 `58f8c3dcccc0ccb2e79a79ddd46ab0014c2783d6`) and pointer record `CE_CURRENT_GOVERNING_BOUNDARY_2026-09-24.md` (Box file ID `2485721889298`). Dropbox also exposes the corresponding clean-current-set archive at `/CE_V1_CLEAN_CURRENT_SET_R3_2026-09-24.zip` (2,654,872 bytes) and a separately extracted folder.
 
-Exact normative-file identity to the current archive therefore remains **NOT ESTABLISHED**. No normative file or official Test Register was changed.
+**New verified evidence:**
+
+1. The operator ran Windows PowerShell `Get-FileHash -Algorithm SHA256` on the local `CE_V1_C1_SOURCE_AUTHORITY_CUMULATIVE_REHARDENING_AUDIT_R3-2026-09-24.zip`. The resulting SHA-256, `023dbe53216cd859ec1e5f49b2736ea0f70af568071b7b6117426d9b11c93cad`, exactly matches the sidecar `CE_V1_C1_SOURCE_AUTHORITY_CUMULATIVE_REHARDENING_AUDIT_R3-2026-09-24.zip.sha256` available in Dropbox. This verifies the local C1-R3 ZIP against its listed sidecar; it does not itself establish production authority or authenticate every historical assertion.
+2. The C1-R3 archive is available in Dropbox at `/CE_V1_C1_SOURCE_AUTHORITY_CUMULATIVE_REHARDENING_AUDIT_R3-2026-09-24.zip` (124,019,414 bytes), with extracted companion files. Its `C1_STATUS.json` continues to report `SOURCE_AUTHORITY=NOT_ESTABLISHED`, `TRUSTED_BUILD=NOT_ESTABLISHED`, `AUTHORIZATION=NON_AUTHORIZED`, `SEAL=NO`, and `FAIL_CLOSED=TRUE`. The audit result remains `AUDIT_COMPLETE_WITH_HARD_BLOCKERS_AND_HARNESS_DEFECTS`.
+3. Dropbox's text extraction for the 2,654,872-byte Clean Current Set R3 ZIP made its internal file text available. A full-text comparison against the separate Dropbox copies of `01_NORMATIVE/06_ACCOUNT_PRIVACY_COMMERCIAL_SPECIFICATION.md` and `01_NORMATIVE/CE_V1_TECHNICAL_CONTRACTS.md` matched after normalizing only trailing blank lines at the text-extraction boundary. The internal manifest lists these expected member SHA-256 values: Account/Commercial Specification `470efd7d95299e8e9a7002b355c967f982a3582412b5664f4c86e7cbc4a152e5`; Technical Contracts `e7dae6d0de4becf6aa748667d01758e1cc8499b724539930af9212d64b4cc117`. Those member hashes have **not** been recomputed from raw member bytes in this pass, and no outer SHA-256 sidecar for the Clean Current Set ZIP was located.
+
+The relevant normative contracts therefore can now be reviewed on a source-grounded **content** basis, but exact current normative-member byte identity to the governing ZIP remains **NOT ESTABLISHED**. A text-extraction match is not represented as a raw-byte match. The original lineage boundary remains fail-closed.
+
+The current Account/Commercial Specification v1.7 §§13–17 requires payment idempotency, a minimal fulfillment record, deterministic reconciliation, no duplicate Credits debit, and no silent loss of entitlement. Technical Contracts §§21.4–21.6 require uniqueness for purchase/order and provider identities, atomic Credits/entitlement fulfillment, and an explicit `UNKNOWN / RECONCILIATION_REQUIRED` state for uncertain provider outcomes; §25.1 permits retry only for classified retryable failure. These constraints support the technical integrity boundary but do **not** decide the product remedy between Option A and Option B.
+
+No normative file or official Test Register was changed. Option B remains a recommendation only; terminal remedy and post-reversal cap semantics remain a protected owner decision.
 
 ## 7. Current state
 
