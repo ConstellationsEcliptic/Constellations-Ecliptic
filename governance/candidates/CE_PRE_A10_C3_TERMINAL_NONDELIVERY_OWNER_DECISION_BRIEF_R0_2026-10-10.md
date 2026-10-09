@@ -2,7 +2,7 @@
 # PRE-A10 C3 — TERMINAL NON-DELIVERY OWNER DECISION BRIEF R0
 
 **Date:** 2026-10-10  
-**Classification:** FOCUSED OWNER DECISION BRIEF / NON-NORMATIVE / SOURCE-LINEAGE CONDITIONAL  
+**Classification:** FOCUSED OWNER DECISION BRIEF / NON-NORMATIVE / SOURCE-BYTES VERIFIED; TEST-REGISTER BINDING UNRESOLVED  
 **Authority effect:** NONE  
 **Normative source / official Test Register change:** NONE  
 **Implementation / runtime / production / SEAL effect:** NONE
@@ -63,7 +63,7 @@ Why not make PATH-REVERSAL-RELEASE the universal default? It puts a second user-
 
 The source records do not settle whether the owner wants the preferred PATH-LINKED-RECOVERY as the first-line remedy or wants PATH-REVERSAL-RELEASE (full reversal/restoration and same-day slot release) even when a same-order repair is possible. The owner is not being asked to redo the already approved UTC boundary or to choose again between purchase-cap and fulfilled-reading-cap wording.
 
-Recommended owner disposition, once the source-lineage prerequisite is resolved:
+Recommended for owner review now that the six cited archive-member byte identities are verified; this remains a proposal, not an approval:
 
 - **PATH-LINKED-RECOVERY — linked no-charge retry under the original order** as first-line remedy where safe delivery can still be achieved.
 - Separate terminal inability-to-fulfill path: one-time debit restoration/refund under applicable policy, and a precisely defined slot effect after complete terminal closure. No silent quota reset.
@@ -77,10 +77,10 @@ Detailed clause-to-source coverage, verified member hashes, cap-specific gaps an
 
 The earlier source-lineage update (Box 2515750096004) recorded that the individual normative Markdown files used by the earlier cap crosswalk had not been proven byte-identical to the current governing archive. The follow-up checks below now close the archive-to-Box identity check and all six cited current-set source-member hash checks (Document Index, Product Constitution, Account/Commercial Specification, Business Model, Implementation Plan and Technical Contracts). They do **not** establish the official Test Register's identity/location or the project's global `SOURCE_AUTHORITY`. Therefore:
 
-- this brief is conceptual/product analysis only;
-- do not write a normative redline, alter the governing archive, or update the official Test Register on this basis;
-- resolve the exact current normative source lineage first;
-- then prepare a controlled product-contract amendment and only the missing cap-specific tests;
+- exact byte identity is now verified for the six cited source members in Clean Current Set R3; the earlier Box source-lineage notes remain valid records of what their earlier passes could not establish and are not rewritten retroactively;
+- candidate-level contract drafting and source-bound review may proceed against those verified source bytes, but no normative edit, official Test Register edit, implementation or production transition is authorized by these checks;
+- current Test Register binding remains a separate blocker: the candidate [Test Register, Golden Oracle & Current-Binding Audit R2](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TEST_REGISTER_ORACLE_LINEAGE_AUDIT_R2_2026-10-10.md) records `R3-PKG-INDEX-001` (R3 excludes legacy Test Register v1.5 while Document Index v1.9 still lists document 07) and reports that the characterized current Stack Index/Manifest does not bind a full successor register;
+- continue the cap/remedy crosswalk and keep candidate test oracles unregistered until the applicable semantic disposition and official register binding are reconciled;
 - independent review and required governance gates still apply.
 
 Key source records:
@@ -89,6 +89,7 @@ Key source records:
 - Cap Semantic Options & Test Consequences R0 (Box 2515757204983): https://app.box.com/file/2515757204983
 - Normative Source-Lineage Boundary Update R1 (Box 2515750096004): https://app.box.com/file/2515750096004
 - R2 Source and Test Disposition R1 (Box 2515695712759): https://app.box.com/file/2515695712759
+- Test Register, Golden Oracle & Current-Binding Audit R2 (candidate, non-authoritative): https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TEST_REGISTER_ORACLE_LINEAGE_AUDIT_R2_2026-10-10.md
 
 ### Source-lineage investigation — initial identification and 2026-10-10 follow-up
 
@@ -108,7 +109,7 @@ The Box folder listing for `01_CURRENT_GOVERNING` (folder ID `420832009587`) ide
    - Business Model v1.5 (`01_NORMATIVE/08_BUSINESS_MODEL_MINIMAL_V1_FINAL.md`): `b6a51ea4b40cf08715ca64843278e8ca6400572c67a39a1f1f34804c26133bd6`.
    - Implementation Plan v1.3 (`01_NORMATIVE/CE_V1_IMPLEMENTATION_PLAN.md`): `ca385b00a77bff963c91bdf76fa9dea54c72c4fff4de63def473b28f5e847df4`.
 
-   A separate ZIP-member check reported `EntryCount=0` and `ABSENT_FROM_CLEAN_CURRENT_SET` for `01_NORMATIVE/07_EXECUTION_PROFILE_TEST_REGISTER.md`. The absence proves only that the register is not in this archive. The archive's exclusion note says the legacy Execution Profile/Test Register v1.5 and other Rev.1 implementation manifests were intentionally excluded. Therefore the register's current authorized identity/location must be reconciled separately; do not use an excluded staging copy as current authority by filename or version alone.
+   A separate ZIP-member check reported `EntryCount=0` and `ABSENT_FROM_CLEAN_CURRENT_SET` for `01_NORMATIVE/07_EXECUTION_PROFILE_TEST_REGISTER.md`. The absence proves only that the register is not in this archive. The package exclusion, viewed with Document Index v1.9's remaining reference to document 07, forms the bounded `R3-PKG-INDEX-001` inconsistency described in the [Test Register/Oracle Lineage Audit R2](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TEST_REGISTER_ORACLE_LINEAGE_AUDIT_R2_2026-10-10.md): the characterized current Stack Index/Manifest does not bind a full successor CE behavior-test register. Do not use an excluded staging copy or the A9 implementation-candidate manifest as the official register by filename, version, matching duplicate hash, or folder alone.
 
 Thus the exact bytes of all six cited current-set source members match their expected manifest identities in the local ZIP, in addition to the outer ZIP matching both the Box-listed SHA-1 and the SHA-256 recorded in the governing-boundary pointer (Box ID `2485721889298`). The archive identity and all six scoped member-identity checks are closed. The official Test Register identity/location remains unresolved and must be reconciled separately; neither this result nor file absence from the archive establishes global `SOURCE_AUTHORITY`.
 
@@ -124,7 +125,7 @@ No normative file or official Test Register was changed. PATH-LINKED-RECOVERY re
 - Terminal remedy/cap mechanics: **OPEN OWNER-ONLY PRODUCT SEMANTIC**.
 - Archive-to-Box identity: **PASS**; all six cited current-set source-member hashes (Document Index, Product Constitution, Account/Commercial Specification, Business Model, Implementation Plan and Technical Contracts): **PASS**.
 - Other crosswalk member hashes (Product Constitution, Document Index, Business Model, Implementation Plan): **PASS** (all four direct member-stream SHA-256 checks matched).
-- Test Register member presence: **ABSENT_FROM_CLEAN_CURRENT_SET**. Official Test Register identity/location: **NOT ESTABLISHED; SEPARATE RECONCILIATION REQUIRED**.
+- Test Register member presence: **ABSENT_FROM_CLEAN_CURRENT_SET**. Official full-register binding: **NOT ESTABLISHED IN THE CHARACTERIZED CURRENT STACK**; R3-PKG-INDEX-001 remains open.
 - Normative files, Test Register, production behavior: **UNCHANGED**.
 - Implementation / A10 / Runtime Adoption / production / SEAL: **NOT AUTHORIZED**.
 
