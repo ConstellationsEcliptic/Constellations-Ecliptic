@@ -422,7 +422,7 @@
     {
       "id": "E1",
       "title": "Normative stack, source lineage and document metadata",
-      "status": "NOT_STARTED",
+      "status": "SOURCE_RECONCILED",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491702000320",
@@ -431,8 +431,19 @@
         "Box:2515023681086"
       ],
       "review_focus": "Verify exact source identity, hierarchy, supersession and bounded metadata discrepancies.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Normative Stack Index/Manifest R1 are explicitly non-authoritative orientation aids identifying Product Constitution v1.6.1, Calculation v1.9, Technical Contracts v1.1, Implementation Plan v1.3.1, Execution Profile v1.3/rev4 and Data Lock rev4. Box governance baseline says folder location does not create authority and 99_LOCAL_INVENTORY_INTAKE/90_PARALLEL_NOT_AUTHORITY are not current authority. Source-Lineage Update R1 (Box 2515750096004) confirms exact internal member/byte comparison against governing ZIP Box 2485715303669 could not be performed with available connector operations; neither identity nor difference of readable copies is established. NORM-META-001 (Tech Contracts v1.1 embeds v1.0 status/baseline) and NORM-META-002 (Execution Profile v1.3/rev4 embeds v1.0/v1.2 references) remain open metadata findings; older index copy mismatch does not prove a defect in the current stack. Recommendation: preserve sources; do not apply exact-location redlines; prepare metadata-only candidate patches but hold application pending exact lineage and controlled change-control. No normative file/index/manifest was edited.",
+      "evidence_refs": [
+        "Box:2504532906216 Normative Stack Index R1",
+        "Box:2504536826366 Normative Stack Manifest R1",
+        "Box:2504532765287 Normative Stack Metadata Audit R1",
+        "Box:2514999615917 Source-First Findings R2",
+        "Box:2514994691354 Source-Pointer Reconciliation R3",
+        "Box:2488649984668 Box Governance Baseline",
+        "Box:2488628002810 Box Current Read First",
+        "Box:2515750096004 Source-Lineage Update R1",
+        "Box:2485715303669 Governing archive (member identity comparison not completed)",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
