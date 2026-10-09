@@ -11,6 +11,7 @@ from ce.signal.engine import SignalEngine
 from ce.signal.record import (
     QUALIFIED_SIGNAL_RECORD_SCHEMA_VERSION,
     issue_qualified_signal_record,
+    signal_geometry_identities,
 )
 
 
@@ -105,6 +106,13 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             calculation_flags={"calculation_status": "VALID"},
             runtime_identity_sha256=runtime_digest,
             provenance_root_sha256=root,
+        )
+
+    def test_geometry_identity_extractor_matches_qsr_identity_contract(self) -> None:
+        packet = self._packet()
+        self.assertEqual(
+            signal_geometry_identities(packet),
+            {("SUN", "MOON", "CONJUNCTION", 0.0)},
         )
 
     def test_robust_exact_record_is_materialized(self) -> None:
@@ -225,6 +233,7 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
             runtime_identity_sha256=runtime_identity_sha256(runtime),
             provenance_root_sha256=root,
         )
+        self.assertEqual(len(signal_geometry_identities(packet)), 2)
         with self.assertRaisesRegex(ValueError, "qualified_signal_identity_ambiguous"):
             issue_qualified_signal_record(packet)
 
