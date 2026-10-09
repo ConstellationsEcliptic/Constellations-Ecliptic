@@ -434,7 +434,7 @@
         "Box:2515023681086"
       ],
       "review_focus": "Verify exact source identity, hierarchy, supersession and bounded metadata discrepancies.",
-      "review_summary": "Normative Stack Index/Manifest R1 are explicitly non-authoritative orientation aids identifying Product Constitution v1.6.1, Calculation v1.9, Technical Contracts v1.1, Implementation Plan v1.3.1, Execution Profile v1.3/rev4 and Data Lock rev4. Box governance baseline says folder location does not create authority and 99_LOCAL_INVENTORY_INTAKE/90_PARALLEL_NOT_AUTHORITY are not current authority. Source-Lineage Update R1 (Box 2515750096004) confirms exact internal member/byte comparison against governing ZIP Box 2485715303669 could not be performed with available connector operations; neither identity nor difference of readable copies is established. NORM-META-001 (Tech Contracts v1.1 embeds v1.0 status/baseline) and NORM-META-002 (Execution Profile v1.3/rev4 embeds v1.0/v1.2 references) remain open metadata findings; older index copy mismatch does not prove a defect in the current stack. Recommendation: preserve sources; do not apply exact-location redlines; prepare metadata-only candidate patches but hold application pending exact lineage and controlled change-control. No normative file/index/manifest was edited. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve source stack and continue holding normative redlines. Archive byte lineage remains NOT_ESTABLISHED and NORM-META-001/002 remain OPEN.",
+      "review_summary": "Normative Stack Index/Manifest R1 are non-authoritative pointers identifying Product Constitution v1.6.1, Calculation v1.9, Technical Contracts v1.1, Implementation Plan v1.3.1, Execution Profile v1.3/rev4 and Data Lock rev4. Fresh byte audit on 2026-10-10 materialized Clean Current Set R3 from the ChatGPT Library and verified exact outer identity against Box boundary: size 2,654,872 bytes, SHA-1 58f8c3dcccc0ccb2e79a79ddd46ab0014c2783d6, SHA-256 d9c2f4abbe0a482e982488d5d2e332202c0c0dc8fceca3b5faaceb3d2c4a8abc, ZIP test PASS, and 72/72 internal SHA256SUMS entries match. Seven current-characterized document copies (Calculation Constitution v1.9, Signal Engine Core v1.4, Interpretive Canon v1.2, Evidence/AI Output Validation v1.4, Account/Privacy/Commercial v1.7, Business Model v1.5, Privacy Architecture v1.5) are exact member matches by SHA-1+size. Product Constitution v1.6.1, Implementation Plan v1.3.1 and Technical Contracts v1.1 are different bytes from archive v1.6/1.3/1.0 members; this is documented successor materialization per Application Record Box 2491700051951 and Post-Apply Verification Box 2491702950277, which preserve historical bytes. Execution Profile v1.3/rev4 is a separate successor artifact, not a member of R3. Test Register v1.5 is not in R3 and is expressly excluded as legacy in EXCLUDED_SUPERSEDED_FILES_R3.md; an old document index still references it, creating candidate finding R3-PKG-INDEX-001. Current CE behavior-test oracle is NOT_ESTABLISHED within the characterized current pointer set. NORM-META-001/002 remain OPEN. Area disposition closes only the preserve/hold decision; it does not close these findings, establish semantic authority, or authorize normative redlines. No normative artifact changed.",
       "evidence_refs": [
         "Box:2504532906216 Normative Stack Index R1",
         "Box:2504536826366 Normative Stack Manifest R1",
@@ -444,9 +444,13 @@
         "Box:2488649984668 Box Governance Baseline",
         "Box:2488628002810 Box Current Read First",
         "Box:2515750096004 Source-Lineage Update R1",
-        "Box:2485715303669 Governing archive (member identity comparison not completed)",
+        "Box:2485715303669 governing archive; exact outer identity and 72/72 internal SHA256 entries verified 2026-10-10",
         "Box:2515488894918 Source-First Recommendation Protocol",
-        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md",
+        "Box:2485721889298 Current Governing Boundary",
+        "Box:2491700051951 Constitutional Harmonization Application Record — successor materialization",
+        "Box:2491702950277 Constitutional Harmonization Post-Apply Verification",
+        "GitHub:governance/candidates/CE_PRE_A10_GOVERNING_ARCHIVE_MEMBER_IDENTITY_AUDIT_R0_2026-10-10.md"
       ],
       "disposition_ref": "",
       "owner_disposition": ""
@@ -489,11 +493,10 @@
         "Box:2485336117840"
       ],
       "review_focus": "Check candidate identity, oracle validity, CI enforcement, independent verification and rollback.",
-      "review_summary": "Calculation Constitution §36, Technical Contracts v1.1 §§26.2–26.4, Implementation Plan v1.3.1 §§7.6/Phases 3,12,18–19, and Test Register v1.5 §§20–21 require verified expected-value oracles, exact candidate/test/fixture identity, independent mathematical/reference/edge-case review, mapping from official test IDs to executable tests, and actual execution evidence; test count alone is not completeness. A9 R2/formal authorization records bind Trusted Build and 261 tests/build to exact c8dab354… source tree/control-plane/dependency lock, and report two full-range captures with 293,657 instants, 3,817,541 objects, 201 shards, exact 201/201 parity. For that candidate, Source Authority and formal Trusted Build are established; Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain not established/unauthorized. PR #26 remains OPEN/DRAFT/DO NOT MERGE. Autonomy validator/test source exists on the isolated branch but tests/CI not executed in this session; current branch-protection/ruleset/required-CI configuration not fully exposed. Recommendation: preserve independent oracle/evaluator and scoped authority boundaries, then execute and retain exact candidate test/CI evidence before treating the pre-A10 gate as operational. No tests or CI pass claimed here. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve independent-oracle/reproducibility controls. Candidate validator tests pass in run #47 (14 tests); full CE behavior suite and required-check enforcement remain NOT_ESTABLISHED.",
+      "review_summary": "Preserve independent-oracle/reproducibility controls and strict separation between candidate-test success and release authority. GitHub Actions run #49 succeeded on validator+unit-test job (14 unit tests, OK); its separate --require-complete job exited 2 because ten review areas remained incomplete, correctly keeping pre-A10 blocked. These are tests of the register-gating tool, not the CE calculation/product behavior suite. New byte audit found that the historical Execution Profile/Test Register v1.5 is explicitly excluded from Clean Current Set R3 as legacy and is absent from the current characterized Stack Index/Manifest; no current successor test register is bound by those current pointers. Therefore the active authoritative CE behavior-test oracle is NOT_ESTABLISHED in the inspected characterized stack. Do not falsely cite Test Register v1.5 as the currently established test oracle, and do not fill the gap with candidate or historical test registry data. Branch-protection/ruleset and required-check enforcement remain NOT_ESTABLISHED. A9 Source Authority and Trusted Build stay scoped to exact candidate c8dab354…; Runtime Adoption/full runtime/TZIF/production/deployment/SEAL remain not established/unauthorized. The area closure preserves the testing/authority control principle only; the full CE behavior suite has not been run by the validator workflow.",
       "evidence_refs": [
         "Box:2485336984594 Calculation Constitution v1.9 §36",
         "Box:2491699792103 Technical Contracts v1.1 §§26.2–26.4",
-        "Box:2485336117840 Test Register v1.5 §§20–21",
         "Box:2491699264134 Implementation Plan v1.3.1 §§7.6/Phases 3,12,18–19",
         "Box:2514341553097 A9 Runtime / Trusted-Build Reconciliation R2",
         "Box:2513654771321 A9 Trusted Build Formal Authorization",
@@ -503,7 +506,12 @@
         "GitHub:governance/candidates/scripts/governance/test_pre_a10_area_gate.py (not executed)",
         "GitHub:PR-27 autonomous mandate candidate",
         "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md",
-        "GitHub:Actions-run-37958688461 (validator job success; 14 tests OK; strict completeness job blocked)"
+        "GitHub:Actions-run-37958688461 (validator job success; 14 tests OK; strict completeness job blocked)",
+        "Box:2485336117840 legacy Test Register v1.5; not included in Clean Current Set R3 and not established as current authoritative oracle",
+        "Box:2485715303669 Clean Current Set R3 internal members 00_START_HERE/EXCLUDED_SUPERSEDED_FILES_R3.md and 01_NORMATIVE/00_DOCUMENT_INDEX.md; old index reference conflicts with explicit legacy exclusion",
+        "Box:2504536826366 Normative Stack Manifest R1 — does not bind a current successor test register",
+        "GitHub:Actions-run-37960238191 — validator success/14 tests and strict completeness gate blocked",
+        "GitHub:governance/candidates/CE_PRE_A10_GOVERNING_ARCHIVE_MEMBER_IDENTITY_AUDIT_R0_2026-10-10.md"
       ],
       "disposition_ref": "",
       "owner_disposition": ""
