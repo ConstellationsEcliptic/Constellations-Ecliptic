@@ -476,7 +476,7 @@
     {
       "id": "E3",
       "title": "Independent testing, expected-value oracle and release controls",
-      "status": "NOT_STARTED",
+      "status": "SOURCE_RECONCILED",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2485336984594",
@@ -485,8 +485,20 @@
         "Box:2485336117840"
       ],
       "review_focus": "Check candidate identity, oracle validity, CI enforcement, independent verification and rollback.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Calculation Constitution §36, Technical Contracts v1.1 §§26.2–26.4, Implementation Plan v1.3.1 §§7.6/Phases 3,12,18–19, and Test Register v1.5 §§20–21 require verified expected-value oracles, exact candidate/test/fixture identity, independent mathematical/reference/edge-case review, mapping from official test IDs to executable tests, and actual execution evidence; test count alone is not completeness. A9 R2/formal authorization records bind Trusted Build and 261 tests/build to exact c8dab354… source tree/control-plane/dependency lock, and report two full-range captures with 293,657 instants, 3,817,541 objects, 201 shards, exact 201/201 parity. For that candidate, Source Authority and formal Trusted Build are established; Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain not established/unauthorized. PR #26 remains OPEN/DRAFT/DO NOT MERGE. Autonomy validator/test source exists on the isolated branch but tests/CI not executed in this session; current branch-protection/ruleset/required-CI configuration not fully exposed. Recommendation: preserve independent oracle/evaluator and scoped authority boundaries, then execute and retain exact candidate test/CI evidence before treating the pre-A10 gate as operational. No tests or CI pass claimed here.",
+      "evidence_refs": [
+        "Box:2485336984594 Calculation Constitution v1.9 §36",
+        "Box:2491699792103 Technical Contracts v1.1 §§26.2–26.4",
+        "Box:2485336117840 Test Register v1.5 §§20–21",
+        "Box:2491699264134 Implementation Plan v1.3.1 §§7.6/Phases 3,12,18–19",
+        "Box:2514341553097 A9 Runtime / Trusted-Build Reconciliation R2",
+        "Box:2513654771321 A9 Trusted Build Formal Authorization",
+        "Box:2513607899386 A9 GitHub Governance Observation R2",
+        "GitHub:PR-26 open draft DO NOT MERGE",
+        "GitHub:governance/candidates/scripts/governance/pre_a10_area_gate.py (not executed)",
+        "GitHub:governance/candidates/scripts/governance/test_pre_a10_area_gate.py (not executed)",
+        "GitHub:PR-27 autonomous mandate candidate"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
