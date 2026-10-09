@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   validate-area-register:
-    name: Validate pre-A10 review tracking
+    name: Validate register structure and run unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -32,3 +32,20 @@ jobs:
 
       - name: Run validator unit tests
         run: python3 scripts/governance/test_pre_a10_area_gate.py -v
+
+  pre-a10-completion-gate:
+    name: Pre-A10 completion gate (must remain blocked until review complete)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Reviewed immutable action commit for actions/checkout v7.0.1.
+      - name: Checkout candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Require all review areas to be complete
+        run: >-
+          python3 scripts/governance/pre_a10_area_gate.py
+          governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json
+          --require-complete
