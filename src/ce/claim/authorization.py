@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 from ce.calculation.contracts import CalculationResult
 from ce.calculation.evidence import EvidencePacket
@@ -15,12 +16,22 @@ from ce.runtime.gates import authorize_runtime
 from ce.signal.record import QualifiedSignalRecord, issue_qualified_signal_record
 
 
-_SUPPORTED_RULE_CONDITION_FIELDS = {
+_SUPPORTED_RULE_SIGNAL_CONDITION_FIELDS = {
     "classification",
     "kinematic_phase",
     "phase_uniformity",
     "requires_uncertainty_disclaimer",
 }
+_SUPPORTED_RULE_GEOMETRY_CONDITION_FIELDS = {
+    "transit_object",
+    "natal_object_or_scenario",
+    "aspect",
+    "directed_branch",
+}
+_SUPPORTED_RULE_CONDITION_FIELDS = (
+    _SUPPORTED_RULE_SIGNAL_CONDITION_FIELDS
+    | _SUPPORTED_RULE_GEOMETRY_CONDITION_FIELDS
+)
 
 
 @dataclass(frozen=True)
@@ -31,19 +42,84 @@ class ClaimReleaseDecision:
     manifest_id: str | None = None
 
 
-def _rule_matches_signal(rule: object, signal: QualifiedSignalRecord) -> bool:
+def _unique_geometry_values(evidence_packet: EvidencePacket) -> dict[str, object] | None:
+    """Return one exact geometry identity from the issued packet, or fail closed."""
+    identities: set[tuple[str, str, str, float]] = set()
+    for record in evidence_packet.geometry_records:
+        if not isinstance(record, dict):
+            return None
+        transit = record.get("transit_object")
+        natal = record.get("natal_object_or_scenario")
+        aspect = record.get("aspect")
+        branch = record.get("directed_branch")
+        if (
+            not isinstance(transit, str) or not transit
+            or not isinstance(natal, str) or not natal
+            or not isinstance(aspect, str) or not aspect
+            or not isinstance(branch, (int, float))
+            or isinstance(branch, bool)
+            or not math.isfinite(float(branch))
+        ):
+            return None
+        identities.add((transit, natal, aspect, float(branch)))
+    if len(identities) != 1:
+        return None
+    transit, natal, aspect, branch = next(iter(identities))
+    return {
+        "transit_object": transit,
+        "natal_object_or_scenario": natal,
+        "aspect": aspect,
+        "directed_branch": branch,
+    }
+
+
+def _rule_matches_signal(
+    rule: object,
+    signal: QualifiedSignalRecord,
+    evidence_packet: EvidencePacket,
+) -> bool:
     condition = getattr(rule, "condition", None)
     if not isinstance(condition, dict) or not condition:
         return False
-    values = {
+    if any(key not in _SUPPORTED_RULE_CONDITION_FIELDS for key in condition):
+        return False
+
+    signal_values = {
         "classification": signal.classification,
         "kinematic_phase": signal.kinematic_phase,
         "phase_uniformity": signal.phase_uniformity,
         "requires_uncertainty_disclaimer": signal.requires_uncertainty_disclaimer,
     }
-    if any(key not in _SUPPORTED_RULE_CONDITION_FIELDS for key in condition):
+    signal_conditions = {
+        key: value for key, value in condition.items()
+        if key in _SUPPORTED_RULE_SIGNAL_CONDITION_FIELDS
+    }
+    if any(signal_values[key] != value for key, value in signal_conditions.items()):
         return False
-    return all(values[key] == value for key, value in condition.items())
+
+    geometry_conditions = {
+        key: value for key, value in condition.items()
+        if key in _SUPPORTED_RULE_GEOMETRY_CONDITION_FIELDS
+    }
+    if not geometry_conditions:
+        return True
+
+    geometry_values = _unique_geometry_values(evidence_packet)
+    if geometry_values is None:
+        return False
+    for key, expected in geometry_conditions.items():
+        if key == "directed_branch":
+            if (
+                not isinstance(expected, (int, float))
+                or isinstance(expected, bool)
+                or not math.isfinite(float(expected))
+            ):
+                return False
+        elif not isinstance(expected, str) or not expected.strip():
+            return False
+        if geometry_values[key] != expected:
+            return False
+    return True
 
 
 def evaluate_claim_release(
@@ -120,7 +196,7 @@ def evaluate_claim_release(
             or expected_manifest.canon_registry_digest != registry.digest()
         ):
             reasons.append("manifest_registry_binding_mismatch")
-        if derived_signal is not None and not _rule_matches_signal(rule, derived_signal):
+        if derived_signal is not None and not _rule_matches_signal(rule, derived_signal, evidence_packet):
             reasons.append("canon_rule_signal_condition_mismatch")
     except (CanonRegistryNotEstablished, CanonRuleNotFound, ManifestInvalid, ValueError):
         reasons.append("manifest_registry_binding_failed")
