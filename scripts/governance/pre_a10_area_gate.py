@@ -27,7 +27,21 @@ COMPLETE_STATUSES = {
     "CLOSED_PRESERVE",
     "DEFERRED_BY_EXPLICIT_DISPOSITION",
 }
-REVIEW_FIELDS = ("review_summary", "evidence_refs")
+EXPECTED_AREA_IDS = (
+    "A1", "A2", "A3", "A4",
+    "B1", "B2", "B3", "B4",
+    "C1", "C2", "C3", "C4",
+    "D1", "D2", "D3", "D4",
+    "E1", "E2", "E3", "E4",
+    "F1", "F2", "F3",
+)
+EXPECTED_OWNER_DECISION_REQUIRED_IDS = {
+    "A3", "A4", "B1", "B3", "C3", "C4", "D4", "E2", "E4", "F2",
+}
+EXPECTED_DOCUMENT_ID = "CE-PRE-A10-ZERO-POINT-AREA-REGISTER-R0"
+EXPECTED_CURRENT_GATE = (
+    "BLOCKED_PENDING_PRE_A10_AREA_REVIEW_AND_SEPARATE_RUNTIME_ADOPTION_GOVERNANCE"
+)
 
 
 class RegisterError(ValueError):
@@ -36,6 +50,27 @@ class RegisterError(ValueError):
 
 def _nonempty(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _validate_string_list_metadata(
+    data: dict[str, Any], field: str, expected: set[str], errors: list[str]
+) -> None:
+    value = data.get(field)
+    if not isinstance(value, list):
+        errors.append(f"{field} must be a list")
+        return
+    if not all(_nonempty(item) for item in value):
+        errors.append(f"{field} must contain only non-empty strings")
+        return
+    if len(value) != len(set(value)):
+        errors.append(f"{field} must not contain duplicates")
+    if set(value) != expected:
+        missing = sorted(expected - set(value))
+        unexpected = sorted(set(value) - expected)
+        errors.append(
+            f"{field} does not match validator policy "
+            f"(missing={missing}, unexpected={unexpected})"
+        )
 
 
 def validate_register(data: Any) -> dict[str, Any]:
@@ -47,6 +82,8 @@ def validate_register(data: Any) -> dict[str, Any]:
         errors.append("schema_version must equal '1.0'")
     if data.get("project") != "CONSTELLATIONS ECLIPTIC":
         errors.append("project identifier is missing or incorrect")
+    if data.get("document_id") != EXPECTED_DOCUMENT_ID:
+        errors.append(f"document_id must equal {EXPECTED_DOCUMENT_ID!r}")
     if data.get("classification") != "WORKING_CONTROL_PLANE_CANDIDATE_NON_AUTHORITATIVE":
         errors.append("classification must remain non-authoritative")
     for field in ("authority_effect", "normative_effect", "runtime_authorization_effect"):
@@ -54,6 +91,11 @@ def validate_register(data: Any) -> dict[str, Any]:
             errors.append(f"{field} must remain 'NONE'")
     if data.get("a10_authorized") is not False:
         errors.append("a10_authorized must remain false in this register")
+    if data.get("current_gate") != EXPECTED_CURRENT_GATE:
+        errors.append(f"current_gate must remain {EXPECTED_CURRENT_GATE!r}")
+
+    _validate_string_list_metadata(data, "allowed_statuses", ALLOWED_STATUSES, errors)
+    _validate_string_list_metadata(data, "required_completion_statuses", COMPLETE_STATUSES, errors)
 
     areas = data.get("areas")
     if not isinstance(areas, list) or not areas:
@@ -78,6 +120,9 @@ def validate_register(data: Any) -> dict[str, Any]:
             errors.append(f"duplicate area id: {area_id}")
         ids.add(area_id)
 
+        if area_id not in EXPECTED_AREA_IDS:
+            errors.append(f"{area_id}: unexpected area id; required area scope is fixed")
+
         title = area.get("title")
         if not _nonempty(title):
             errors.append(f"{area_id}.title is required")
@@ -95,43 +140,78 @@ def validate_register(data: Any) -> dict[str, Any]:
         if not isinstance(owner_required, bool):
             errors.append(f"{area_id}.owner_decision_required must be boolean")
             owner_required = True
+        elif area_id in EXPECTED_AREA_IDS:
+            expected_owner_required = area_id in EXPECTED_OWNER_DECISION_REQUIRED_IDS
+            if owner_required is not expected_owner_required:
+                errors.append(
+                    f"{area_id}.owner_decision_required must remain {expected_owner_required}"
+                )
 
         summary = area.get("review_summary")
         evidence_refs = area.get("evidence_refs")
         is_closed_status = status in COMPLETE_STATUSES
         has_summary = _nonempty(summary)
-        has_evidence = isinstance(evidence_refs, list) and len(evidence_refs) > 0 and all(_nonempty(x) for x in evidence_refs)
+        has_evidence = (
+            isinstance(evidence_refs, list)
+            and len(evidence_refs) > 0
+            and all(_nonempty(x) for x in evidence_refs)
+        )
 
         disposition_ref = area.get("disposition_ref")
         owner_disposition = area.get("owner_disposition")
 
-        if status == "OWNER_DECISION_RECORDED" and not (_nonempty(disposition_ref) and _nonempty(owner_disposition)):
-            errors.append(f"{area_id}: OWNER_DECISION_RECORDED requires disposition_ref and owner_disposition")
-        if status == "DEFERRED_BY_EXPLICIT_DISPOSITION" and not (_nonempty(disposition_ref) and _nonempty(owner_disposition)):
-            errors.append(f"{area_id}: DEFERRED_BY_EXPLICIT_DISPOSITION requires explicit disposition reference")
+        if status == "OWNER_DECISION_RECORDED" and not (
+            _nonempty(disposition_ref) and _nonempty(owner_disposition)
+        ):
+            errors.append(
+                f"{area_id}: OWNER_DECISION_RECORDED requires disposition_ref and owner_disposition"
+            )
+        if status == "DEFERRED_BY_EXPLICIT_DISPOSITION" and not (
+            _nonempty(disposition_ref) and _nonempty(owner_disposition)
+        ):
+            errors.append(
+                f"{area_id}: DEFERRED_BY_EXPLICIT_DISPOSITION requires explicit disposition reference"
+            )
         if owner_required and status == "CLOSED_PRESERVE":
-            errors.append(f"{area_id}: owner decision is required; use OWNER_DECISION_RECORDED or explicit deferral")
+            errors.append(
+                f"{area_id}: owner decision is required; use OWNER_DECISION_RECORDED or explicit deferral"
+            )
         if is_closed_status and not has_summary:
             errors.append(f"{area_id}: completed status requires review_summary")
         if is_closed_status and not has_evidence:
             errors.append(f"{area_id}: completed status requires evidence_refs")
 
         if is_closed_status and has_summary and has_evidence:
-            if owner_required and status not in {"OWNER_DECISION_RECORDED", "DEFERRED_BY_EXPLICIT_DISPOSITION"}:
+            if owner_required and status not in {
+                "OWNER_DECISION_RECORDED", "DEFERRED_BY_EXPLICIT_DISPOSITION"
+            }:
                 incomplete.append(area_id)
-            elif status in {"OWNER_DECISION_RECORDED", "DEFERRED_BY_EXPLICIT_DISPOSITION"} and not (
-                _nonempty(disposition_ref) and _nonempty(owner_disposition)
-            ):
+            elif status in {
+                "OWNER_DECISION_RECORDED", "DEFERRED_BY_EXPLICIT_DISPOSITION"
+            } and not (_nonempty(disposition_ref) and _nonempty(owner_disposition)):
                 incomplete.append(area_id)
             else:
                 complete.append(area_id)
         else:
             incomplete.append(area_id)
 
+    actual_ids = {area_id for area_id in ids if area_id in EXPECTED_AREA_IDS}
+    missing_ids = sorted(set(EXPECTED_AREA_IDS) - actual_ids)
+    if missing_ids:
+        errors.append(f"required area ids are missing: {missing_ids}")
+    if len(areas) != len(EXPECTED_AREA_IDS):
+        errors.append(
+            f"areas must contain exactly {len(EXPECTED_AREA_IDS)} required entries; got {len(areas)}"
+        )
+
     if errors:
         raise RegisterError("; ".join(errors))
 
-    review_complete = len(areas) > 0 and not incomplete
+    review_complete = (
+        len(areas) == len(EXPECTED_AREA_IDS)
+        and actual_ids == set(EXPECTED_AREA_IDS)
+        and not incomplete
+    )
     return {
         "document_id": data.get("document_id"),
         "area_count": len(areas),
@@ -149,7 +229,7 @@ def validate_register(data: Any) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("register", type=Path, help="path to the pre-A10 area register JSON")
+    parser.add_argument("register", type=Path, help="path to the pre-A10 review register JSON")
     parser.add_argument(
         "--require-complete",
         action="store_true",
