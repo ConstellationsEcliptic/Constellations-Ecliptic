@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 from ce.calculation.contracts import CalculationResult
 from ce.calculation.evidence import EvidencePacket
@@ -53,6 +54,7 @@ def _unique_geometry_values(evidence_packet: EvidencePacket) -> dict[str, object
         "aspect": aspect,
         "directed_branch": branch,
     }
+
 
 def _rule_matches_signal(
     rule: object,
