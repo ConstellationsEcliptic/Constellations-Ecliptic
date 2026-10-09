@@ -38,7 +38,40 @@
     },
     "condition": {
       "type": "object",
-      "additionalProperties": true
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "classification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kinematic_phase": {
+          "type": "string",
+          "enum": ["EXACT", "APPLYING", "SEPARATING", "MIXED"]
+        },
+        "phase_uniformity": {
+          "type": "string",
+          "enum": ["UNIFORM", "MIXED"]
+        },
+        "requires_uncertainty_disclaimer": {
+          "type": "boolean"
+        },
+        "transit_object": {
+          "type": "string",
+          "minLength": 1
+        },
+        "natal_object_or_scenario": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aspect": {
+          "type": "string",
+          "minLength": 1
+        },
+        "directed_branch": {
+          "type": "number"
+        }
+      }
     },
     "allowed_interpretation": {
       "type": "object",
