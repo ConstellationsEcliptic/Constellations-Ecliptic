@@ -15,6 +15,10 @@ Do not silently replace “purchase” with “successfully fulfilled reading.�
 
 This brief addresses a narrower remaining choice: what to do when Credits have been debited but the order is **proven terminally unable to deliver the reading on that same UTC date**.
 
+### Terminology guard — keep the two decision axes separate
+
+The earlier cap-semantic analysis in Box 2515757204983 uses **Option A** for a purchase/redemption cap and **Option B** for a fulfilled-reading cap. Those labels refer to *when the daily cap is consumed*. They are not the remedies compared in this brief. To avoid that collision, this brief uses only **PATH-REVERSAL-RELEASE** and **PATH-LINKED-RECOVERY** for the post-debit remedy paths. Neither path by itself decides the independent purchase-versus-fulfilled cap trigger; that trigger remains open until the controlled contract is finalized.
+
 ## 2. Facts common to either remedy
 
 Neither remedy is allowed to:
@@ -53,7 +57,7 @@ Rationale:
 
 This recommendation applies only where a retry/replacement can safely fulfill the original order. It is **not** a rule that CE may keep Credits indefinitely if fulfillment is impossible. If CE cannot deliver within the approved retry/reconciliation policy, the order must move into the separately approved cancellation/refund/restoration remedy and any mandatory consumer rights still apply. The cap effect after that terminal reversal must be explicitly specified and tested. No retry may run forever or conceal an unrecoverable failure.
 
-Why not make Option A the universal default? It puts a second user-initiated paid attempt between the consumer and the service already purchased, and it assumes that reversal automatically makes another purchase eligible. That might be a legitimate policy, but it is a larger interpretation of the current purchase cap and should not be introduced implicitly.
+Why not make PATH-REVERSAL-RELEASE the universal default? It puts a second user-initiated paid attempt between the consumer and the service already purchased, and it assumes that reversal automatically makes another purchase eligible. That might be a legitimate policy, but it is a larger interpretation of the current purchase cap and should not be introduced implicitly.
 
 ## 5. Decision that still belongs to the owner
 
@@ -69,7 +73,7 @@ This is the recommendation for owner consideration, **not an owner decision**. N
 
 ## 6. Source-lineage and change-control blocker
 
-The current source-lineage update (Box 2515750096004) explicitly says the individual normative Markdown files used by earlier redlines have not been proven byte-identical or otherwise linked to the current governing archive. Therefore:
+The earlier source-lineage update (Box 2515750096004) recorded that the individual normative Markdown files used by the earlier cap crosswalk had not been proven byte-identical to the current governing archive. The follow-up checks below now close the archive-to-Box identity check and the member-hash checks for the Account/Commercial Specification and Technical Contracts. They do **not** automatically establish the other files or test-register authority used by the wider R3 crosswalk. Therefore:
 
 - this brief is conceptual/product analysis only;
 - do not write a normative redline, alter the governing archive, or update the official Test Register on this basis;
@@ -96,12 +100,13 @@ The Box folder listing for `01_CURRENT_GOVERNING` (folder ID `420832009587`) ide
    - Account/Commercial Specification: `470efd7d95299e8e9a7002b355c967f982a3582412b5664f4c86e7cbc4a152e5` — `MemberHashMatches=True`.
    - Technical Contracts: `e7dae6d0de4becf6aa748667d01758e1cc8499b724539930af9212d64b4cc117` — `MemberHashMatches=True`.
    The operator has now provided the complete PowerShell output for the outer Clean Current Set ZIP: size `2,654,872` bytes; actual SHA-1 `58f8c3dcccc0ccb2e79a79ddd46ab0014c2783d6`; Box-listed SHA-1 is the same; `SHA1Matches=True`. The actual outer SHA-256 recorded by the operator is `d9c2f4abbe0a482e982488d5d2e332202c0c0dc8fceca3b5faaceb3d2c4a8abc`. Both normative member SHA-256 comparisons previously recorded are `True`. No outer SHA-256 sidecar for the Clean Current Set ZIP was located.
+4. The archive manifest also contains the Product Constitution v1.6.1, Document Index v1.9, Business Model v1.5, and Implementation Plan v1.3.1. Those four members are cited by the earlier crosswalk but their raw member hashes have not yet been computed in the operator's local ZIP. The `07_EXECUTION_PROFILE_TEST_REGISTER.md` member is absent from this Clean Current Set archive; the archive's exclusion note says the legacy Execution Profile/Test Register v1.5 and other Rev.1 implementation manifests were intentionally excluded. Therefore the register's current authorized identity/location must be reconciled separately; do not use the excluded staging copy as current authority by filename or version alone.
 
 Thus the exact bytes of these two normative members match their expected manifest identities in the local ZIP, and this is stronger than the earlier text-extraction-only evidence. Do not imply that the outer ZIP has been matched to the Box-listed archive identity until its SHA-1 result is recorded. The archive identity anchor is now matched to the Box-listed SHA-1, and both relevant normative-member hashes match the internal manifest. The specific archive-identity/member-hash evidence gap recorded above is closed.
 
-The current Account/Commercial Specification v1.7 §§13–17 requires payment idempotency, a minimal fulfillment record, deterministic reconciliation, no duplicate Credits debit, and no silent loss of entitlement. Technical Contracts §§21.4–21.6 require uniqueness for purchase/order and provider identities, atomic Credits/entitlement fulfillment, and an explicit `UNKNOWN / RECONCILIATION_REQUIRED` state for uncertain provider outcomes; §25.1 permits retry only for classified retryable failure. These constraints support the technical integrity boundary but do **not** decide the product remedy between Option A and Option B.
+The current Account/Commercial Specification v1.7 §§13–17 requires payment idempotency, a minimal fulfillment record, deterministic reconciliation, no duplicate Credits debit, and no silent loss of entitlement. Technical Contracts §§21.4–21.6 require uniqueness for purchase/order and provider identities, atomic Credits/entitlement fulfillment, and an explicit `UNKNOWN / RECONCILIATION_REQUIRED` state for uncertain provider outcomes; §25.1 permits retry only for classified retryable failure. These constraints support the technical integrity boundary but do **not** decide the product remedy path or the separate purchase-versus-fulfilled cap trigger.
 
-No normative file or official Test Register was changed. Option B remains a recommendation only; terminal remedy and post-reversal cap semantics remain a protected owner decision.
+No normative file or official Test Register was changed. PATH-LINKED-RECOVERY remains a recommendation only; the purchase-versus-fulfilled cap trigger and the terminal remedy/cap effect remain separate unresolved product-contract questions.
 
 ## 7. Current state
 
@@ -109,7 +114,9 @@ No normative file or official Test Register was changed. Option B remains a reco
 - UTC boundary: **OWNER-APPROVED, LIMITED TO THE DATE BOUNDARY**.
 - PATH-LINKED-RECOVERY: **RECOMMENDED, NOT APPROVED**.
 - Terminal remedy/cap mechanics: **OPEN OWNER-ONLY PRODUCT SEMANTIC**.
-- Exact current normative-source lineage: **NOT ESTABLISHED**.
+- Archive-to-Box identity: **PASS**; Account/Commercial Specification and Technical Contracts member hashes: **PASS**.
+- Other crosswalk member hashes (Product Constitution, Document Index, Business Model, Implementation Plan): **PENDING**.
+- Official Test Register identity/location: **NOT ESTABLISHED BY THE CLEAN CURRENT SET ARCHIVE; SEPARATE RECONCILIATION REQUIRED**.
 - Normative files, Test Register, production behavior: **UNCHANGED**.
 - Implementation / A10 / Runtime Adoption / production / SEAL: **NOT AUTHORIZED**.
 
