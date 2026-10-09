@@ -542,6 +542,33 @@
       "evidence_refs": [],
       "disposition_ref": "",
       "owner_disposition": ""
+    },
+    {
+      "id": "F2",
+      "title": "Birth-time input, Gregorian policy and pinned timezone-data release",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2515599999999",
+        "Box:2515600000000",
+        "Box:2485336984594",
+        "Box:2491702000320",
+        "Web:IANA-2026e"
+      ],
+      "review_focus": "Preserve the owner-recorded policy that CE V1 does not use birth-time input and Gregorian-only is the sole supported calendar; inspect the technical zero-birth interval and historical timezone conversion separately. IANA 2026e supersedes external latest status of pinned 2026d, but no automatic in-place update is authorized; identify affected behavior and required profile/candidate verification."
+    },
+    {
+      "id": "F3",
+      "title": "Relationship matching, relationship profiles and third-party personal calculations",
+      "status": "NOT_STARTED",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193 §13",
+        "Box:2485331476456 §§2,14-15",
+        "Box:2485319995048 §8",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Reconcile prior relationship-profile ideas/historical drafts against current V1 hard exclusions; preserve the exclusion unless explicit controlled change reopens it. Third-party birth data/profile must not be inferred from the existence of two accounts or marketing narratives."
     }
   ]
 }
