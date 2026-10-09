@@ -77,7 +77,7 @@
     {
       "id": "A3",
       "title": "Today's Note and Quiet Sky",
-      "status": "NOT_STARTED",
+      "status": "RECOMMENDATION_READY",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2491699264134",
@@ -85,8 +85,18 @@
         "Box:2515023681086"
       ],
       "review_focus": "Locate an already-approved product/UI/copy decision before proposing behavior.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "A prior owner disposition was found and read (Box 2515533522798): it approves only that an optional, separate, non-personal TODAY'S NOTE may accompany valid QUIET_SKY when an approved item exists; omit if no approved item and never let it disguise failure. The same disposition expressly does not approve editorial source/library, exact copy/UI, selection algorithm, schema/code, runtime AI generation, normative amendment or deployment. Source/UI Discovery R1 (Box 2515543958136) records a bounded Box/GitHub search with no separate approved UI specification or editorial library identified; this is not a universal non-existence finding. Recommendation: use a curated, versioned, reviewed non-personal editorial library with deterministic selection, no personal data/signal/account history/feedback/credits as selector inputs, no free-form runtime LLM in V1, separate display, exclude from Tomorrow Check, omit if no approved item/locale, and suppress on failed observation surface. Detailed contract and change-control remain proposal only; implementation and normative amendment are not authorized.",
+      "evidence_refs": [
+        "Box:2515533522798 Owner Disposition R0 (limited semantic scope)",
+        "Box:2515543958136 Source/UI Authority Discovery R1 (bounded, non-authoritative)",
+        "Box:2515537459111 Today's Note × Quiet Sky Contract Recommendation R0 (proposal)",
+        "Box:2515541872217 Voice Integrity & Today's Note Change-Control Packet R1 (proposal)",
+        "Box:2491704535193 Product Constitution v1.6.1 §4.2, §§5, 8.2–8.3, §11",
+        "Box:2491699264134 Implementation Plan v1.3.1 §13.2",
+        "Box:2485337228722 Interpretive Canon v1.2 §§4–6",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–4, 9–12",
+        "Box:2485335589220 Privacy Architecture (V1 data boundary)"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
