@@ -17,6 +17,7 @@ Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
 - [Bounded owner disposition C4 R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_C4_R0_2026-10-10.md)
 - [Current 23-area register](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json)
 - [Canon / Claim / Language release-boundary reconciliation R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md)
+- [B1 Canon rule-to-geometry binding test-surface review R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_B1_RULE_TO_GEOMETRY_BINDING_TEST_SURFACE_R0_2026-10-10.md)
 - [TZDB 2026d→2026e impact qualification R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TZDB_2026D_TO_2026E_IMPACT_QUALIFICATION_R0_2026-10-10.md)
 - [PR #27](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/27)
 
@@ -67,6 +68,9 @@ Owner disposition Box 2515533522798 is limited: an optional separate non-persona
 Recommendation: create a curated, versioned, reviewed non-personal editorial library; deterministic selection; no personal signal/history/feedback/Credits selector inputs; no unrestricted runtime LLM; note separate from the signal and excluded from Tomorrow Check; omit where no item is approved or observation is invalid. This detailed contract is not yet owner-approved. Owner choice: whether the V1 note surface ships only once the library/contract are approved, or is omitted until that requirement is ready. No UI/code change authorized.
 
 ## 5. B1 — Canon Rule Registry / semantic conformance
+
+**Additional exact-A9 test-surface finding:** see the [B1 rule-to-geometry test-surface review and proposed regression matrix](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_B1_RULE_TO_GEOMETRY_BINDING_TEST_SURFACE_R0_2026-10-10.md). This bounded review distinguishes unsupported geometry conditions (currently fail closed) from the more precise enablement gap: a broad-only rule does not itself demonstrate applicability to a particular geometry. No production exploit or active Canon meaning is asserted by the review.
+
 
 Canon v1.2 requires a versioned, provenance-bound Rule Registry. No matching rule means no interpretation; AI/runtime cannot invent Canon. In exact A9 candidate `c8dab3542d3d4725cf591630c07f76366f7949d0`, `src/ce/canon/registry.py` blob `ae1bc1a83f712c8ca15a2d05b56310bec341332d` raises because a registry is not materialized. `src/ce/output/semantic.py` blob `b33e37111770e55521c50f01ee6c7b699b5d9c61` returns `None` until a controlled independent semantic verifier exists, so the claim-release path fails closed.
 
