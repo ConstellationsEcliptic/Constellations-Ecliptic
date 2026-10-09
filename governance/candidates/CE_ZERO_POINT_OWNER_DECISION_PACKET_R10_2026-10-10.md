@@ -41,8 +41,12 @@ The four areas still requiring substantive recommendation/owner review are A3, B
 Current gate: `BLOCKED_PENDING_PRE_A10_AREA_REVIEW_AND_SEPARATE_RUNTIME_ADOPTION_GOVERNANCE`.  
 `a10_authorized=false`.
 
-The register update triggered GitHub Actions run #98 (at the time of this packet creation, the run was reported in progress):
+The register update triggered GitHub Actions run #98, now completed:
 https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/37975345840
+- **Validate register structure and run unit tests: SUCCESS** — register-integrity validator and 14 validator unit tests passed.
+- **Pre-A10 completion gate: BLOCKED/FAILURE as designed** — the `Require all review areas to be complete` step failed because the four remaining areas are still `RECOMMENDATION_READY`. This is not a failure of the validator or its unit tests.
+
+Run #98 is associated with register update commit `82e20f3e73f927619c9e967692846313d16fb8ac`, not the subsequent packet/document-only head. No exact-current-head all-green claim is made.
 
 The latest preceding fully confirmed run #96 showed:
 - register integrity validator: SUCCESS;
