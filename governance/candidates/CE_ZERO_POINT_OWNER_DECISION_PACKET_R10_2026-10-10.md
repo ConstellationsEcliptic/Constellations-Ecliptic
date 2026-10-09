@@ -11,6 +11,7 @@ Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
 - [Owner decision — autonomous evolution, pre-launch completeness, and adaptive change control R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md)
 - [Owner decision — Standing Delegation and Adaptive Change Rule R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_STANDING_DELEGATION_AND_ADAPTIVE_CHANGE_RULE_R0_2026-10-10.md)
 - [Owner concurrence — Evidence-First Working Discipline R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_CONCURRENCE_EVIDENCE_FIRST_WORKING_DISCIPLINE_R0_2026-10-10.md)
+- [Autonomous Execution Capability Specification R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_AUTONOMOUS_EXECUTION_CAPABILITY_SPEC_R0_2026-10-10.md)
 - [Remaining four area source-bound review and owner decision brief R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_REMAINING_FOUR_AREA_RECONCILIATION_R0_2026-10-10.md)
 - [Bounded owner disposition E2/F2 R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md)
 - [Bounded owner disposition A4/B3/E4 R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md)
@@ -18,6 +19,7 @@ Gate: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED
 - [Current 23-area register](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json)
 - [Canon / Claim / Language release-boundary reconciliation R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md)
 - [B1 Canon rule-to-geometry binding test-surface review R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_B1_RULE_TO_GEOMETRY_BINDING_TEST_SURFACE_R0_2026-10-10.md)
+- [A3 Editorial Library and Today's Note Test Contract R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_A3_EDITORIAL_LIBRARY_AND_TODAYS_NOTE_TEST_CONTRACT_R0_2026-10-10.md)
 - [TZDB 2026d→2026e impact qualification R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TZDB_2026D_TO_2026E_IMPACT_QUALIFICATION_R0_2026-10-10.md)
 - [PR #27](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/27)
 
@@ -135,8 +137,8 @@ Next B1 technical work is independent review plus further selector, immutability
 
 ## 8. Next admissible work
 
-1. Prepare the narrow A3 note-source/display candidate and identify exact approved content sources without inventing UI/copy.
-2. Continue source-bound B1 prototype validation (PR #31) with extra adversarial/compatibility cases and independent review; then prepare a source-reviewed candidate Canon scope/options and keep output blocked until approved rules and independent semantic conformance are established.
+1. Continue A3 by checking the canonical product/UI authority location if identifiable, then prepare source-backed locale/cycle/fallback options; keep the editorial library/copy and implementation unapproved until controlled review.
+2. Continue B1 validation on the shared-helper candidate (PR #32) with additional selector/immutability/duplicate-conflict compatibility cases and independent review; then prepare source-reviewed Canon scope options and keep output blocked until approved rules and independent semantic conformance are established.
 3. Present C3 terminal-failure remedy options A/B with explicit ledger/order/day consequences, then record the owner’s scoped choice before writing the contract/test oracle.
 4. Complete D4 market-provider feasibility only against a real/selected seller-entity scenario; do not assume U.S., Indonesia, USD or Paddle/Stripe eligibility.
 5. Keep A10 deferred and do not merge/deploy or claim launch readiness.
