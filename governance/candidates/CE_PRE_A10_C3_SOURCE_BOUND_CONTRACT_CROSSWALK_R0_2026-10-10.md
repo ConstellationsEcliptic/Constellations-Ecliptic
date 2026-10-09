@@ -39,6 +39,9 @@ The operator-provided PowerShell output establishes:
 
 The ZIP check returned `EntryCount=0` and `ABSENT_FROM_CLEAN_CURRENT_SET` for `01_NORMATIVE/07_EXECUTION_PROFILE_TEST_REGISTER.md`. That proves archive absence only.
 
+A broader current-binding check is recorded in the non-authoritative [Test Register, Golden Oracle & Current-Binding Audit R2](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TEST_REGISTER_ORACLE_LINEAGE_AUDIT_R2_2026-10-10.md). It identifies **R3-PKG-INDEX-001**: Clean Current Set R3 excludes legacy Test Register v1.5 as superseded while its older Document Index still lists document 07. The characterized current Stack Index/Manifest (2026-10-04) does not bind a full successor CE behavior-test register. This is a bounded package/index inconsistency, not proof that no tests exist and not permission to promote a raw-intake register or A9 candidate manifest.
+
+
 The verified Document Index v1.9 nevertheless lists document 07 as Execution Profile & Test Register v1.5 and states that the register verifies the other documents rather than redefining them; it also requires a deterministic fixture-specific oracle for each registered test. The current authorized identity/location of that register remains unresolved:
 
 - Box file IDs `2485336117840` and `2485323796025` have the same SHA-1 `973749ba88112a7b4202c807bcc7635d286a5ea9` and 27,957-byte size, but are both located beneath `99_LOCAL_INVENTORY_INTAKE_2026-09-24/00_RAW_UNSORTED/...` in excluded staging lineage.
