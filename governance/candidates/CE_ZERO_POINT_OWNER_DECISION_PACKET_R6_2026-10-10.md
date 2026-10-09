@@ -110,7 +110,7 @@ Current state: PRE-A10 REVIEW INCOMPLETE; A10 NOT AUTHORIZED; RUNTIME ADOPTION N
 
 - Added candidate-only TZDB source-tag note R1, updated F2 evidence, and added the A9 28-ID test-surface crosswalk R0. E3 evidence now links that crosswalk; register blob is `303e19bb160c948bf25d7c6eb3aaeaeca7dd5f21`.
 - Register remains 23 areas: 13 `CLOSED_PRESERVE`, 1 `SOURCE_RECONCILED` (E4), 9 `RECOMMENDATION_READY`; incomplete: `A3, A4, B1, B3, C3, C4, D4, E2, E4, F2`. No area was marked complete by inference.
-- Latest previously observed validator evidence remains Actions run #68: register-integrity/unit-test job passed 14 tests; strict completion gate correctly exited 2. The current post-R1 head `11b2991ccbee2e5d53469f1d2b39d150347fa919` has not been independently confirmed by a new Actions result via available connector lookup; do not claim run #68 validates this later head.
+- Latest previously observed validator evidence remains Actions run #68: register-integrity/unit-test job passed 14 tests; strict completion gate correctly exited 2. The F2 register update and later crosswalk/packet commits postdate run #68. No fresh Actions result has been confirmed for the latest branch head through the available connector lookup; do not claim run #68 validates those later objects.
 - This TZDB source comparison did not compile either release, compare the 597-entry binary package, or change a fixture, profile, runtime identity, authority state, or release gate.
 
 End of packet R6.
