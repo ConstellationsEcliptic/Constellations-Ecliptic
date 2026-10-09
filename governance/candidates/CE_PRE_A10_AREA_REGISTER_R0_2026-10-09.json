@@ -379,30 +379,43 @@
     {
       "id": "D3",
       "title": "Share Card retirement from V1",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193",
         "Box:2515023681086"
       ],
       "review_focus": "Preserve current V1 removal and historical artifacts; do not reopen as an active feature decision.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Explicit owner decision CE PRODUCT DECISION — SHARE CARD RETIRED (Box 2510397781891) states Share Card is retired, not V1, not to be implemented/activated/maintained as an acquisition mechanism. Current Product Constitution v1.6.1 §13 and Business Model v1.5 §§2, 3, 14–15 exclude public sharing/social-sharing/sharing rewards/public UGC. Global Reconciliation R5 (Box 2510417318335) corroborates G-022 CLOSED and emphasizes history does not grant authority. Recommendation/disposition: CLOSE / PRESERVE. Keep historical artifacts intact as historical evidence; no public-share URL, social path, reward or acquisition workflow in V1. No implementation/cleanup/test was done by this review.",
+      "evidence_refs": [
+        "Box:2510397781891 Owner Share Card Retirement Decision",
+        "Box:2510417318335 Global Reconciliation R5 (governance support)",
+        "Box:2491704535193 Product Constitution v1.6.1 §13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2, 3, 14–15",
+        "Box:2515023681086 Source-Bound Matrix R0"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
     {
       "id": "D4",
       "title": "Locale, currency and market assumptions",
-      "status": "NOT_STARTED",
+      "status": "RECOMMENDATION_READY",
       "owner_decision_required": true,
       "source_refs": [
         "Box:2485319995048",
         "Box:2515023681086"
       ],
       "review_focus": "Verify prior owner decisions; do not infer English-only, en-US-only, USD-only or US-first from examples.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Owner U.S. legal-baseline disposition Box 2515620798775 establishes a U.S. internal legal-policy/research baseline but explicitly does not establish U.S.-exclusive positioning, governing law for every transaction, state allowlist, nationwide paid checkout, currency or launch market. Zero-Point Human Decision Register R0 Box 2514894635417 has DR-04 initial jurisdiction, DR-05 locale and DR-06 currency/price as NOT_RECORDED in that working register; the record itself is non-authoritative, so this is a scoped planning gap, not universal proof of no decision anywhere. Business Model v1.5 treats 4 Credits = US$2.99 as configurable illustrative value. No inspected characterized source establishes English-only/en-US-only, USD-only or U.S.-first launch policy. Recommendation: keep initial paid-enabled jurisdiction, UI locale, and currency/SKU price as separate owner choices ordered by dependency; select and review the actual market first, then configure locale and prices explicitly and verify checkout/legal controls. No code, checkout, pricing or normative source changed.",
+      "evidence_refs": [
+        "Box:2515620798775 Owner Disposition U.S. Legal Framework as Internal Policy Baseline",
+        "Box:2514894635417 Zero-Point Human Decision Register R0, DR-04/DR-05/DR-06",
+        "Box:2485331476456 Business Model Minimal V1 v1.5",
+        "Box:2491704535193 Product Constitution v1.6.1",
+        "Box:2515715498189 Paid Checkout Readiness Matrix R0",
+        "Box:2515023681086 Source-Bound Matrix R0"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
