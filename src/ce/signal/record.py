@@ -81,7 +81,8 @@ def _issue_qualified_signal_record(**kwargs: object) -> QualifiedSignalRecord:
     return record
 
 
-def _signal_geometry_identity(packet: EvidencePacket) -> set[tuple[str, str, str, float]]:
+def signal_geometry_identities(packet: EvidencePacket) -> set[tuple[str, str, str, float]]:
+    """Extract the canonical geometry identity set used by QSR issuance and Canon matching."""
     identities: set[tuple[str, str, str, float]] = set()
     for record in packet.geometry_records:
         if not isinstance(record, Mapping):
@@ -147,7 +148,7 @@ def issue_qualified_signal_record(packet: EvidencePacket) -> QualifiedSignalReco
     if not isinstance(observation_start, str) or not observation_start:
         raise ValueError("qualified_signal_observation_start_missing")
 
-    identities = _signal_geometry_identity(packet)
+    identities = signal_geometry_identities(packet)
     if not identities:
         raise ValueError("qualified_signal_identity_geometry_missing")
     if len(identities) != 1:
