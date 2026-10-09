@@ -156,15 +156,23 @@
     {
       "id": "B2",
       "title": "Historical three-AI architecture versus current V1",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2485336395859",
         "Box:2515023681086"
       ],
       "review_focus": "Keep historic V8 orchestration separate from current V1 language architecture unless controlled scope change is decided.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Historical V8 Model Orchestration Contract (Box 2485683100092) sets Claude primary, GPT adversarial reviewer, Gemini secondary/fallback. Source-Lineage Update R1 (Box 2515019564821) classifies this as historical V8 design with no established promotion into current V1. Current Evidence, AI & Output Validation v1.4 §§3–6 (Box 2485336395859) says AI is bounded Language Infrastructure; V1 Core uses deterministic templates and does not require an LLM; Deep Sky may use one constrained LLM with structured authorized inputs, JSON output and mandatory validation. Recommendation/disposition: remove three-AI orchestration from current V1 assumptions while preserving the historical artifact unchanged. Future reintroduction would require a separate controlled architecture/privacy/product change. No implementation, code, vendor wiring or normative source changed.",
+      "evidence_refs": [
+        "Box:2485683100092 Historical Model Orchestration Contract (V8)",
+        "Box:2515019564821 Zero-Point Source-Lineage Update R1",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–6, 7–13, 25",
+        "Box:2491704535193 Product Constitution v1.6.1 §§3, 10–13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§1–6",
+        "Box:2515023681086 Zero-Point Source-Bound Matrix R0",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
