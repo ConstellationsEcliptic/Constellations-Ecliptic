@@ -34,6 +34,30 @@ class SchemaStructureR1Tests(unittest.TestCase):
             self.assertEqual(schema["type"], "object")
             self.assertFalse(schema["additionalProperties"])
 
+    def test_canon_rule_condition_schema_is_closed_and_matches_supported_selectors(self) -> None:
+        schema = self._load_without_duplicate_keys(ROOT / "schemas" / "canon_rule.schema.json")
+        condition = schema["properties"]["condition"]
+        self.assertFalse(condition["additionalProperties"])
+        self.assertEqual(condition["minProperties"], 1)
+        self.assertEqual(
+            set(condition["properties"]),
+            {
+                "classification",
+                "kinematic_phase",
+                "phase_uniformity",
+                "requires_uncertainty_disclaimer",
+                "transit_object",
+                "natal_object_or_scenario",
+                "aspect",
+                "directed_branch",
+            },
+        )
+        self.assertEqual(
+            condition["properties"]["kinematic_phase"]["enum"],
+            ["EXACT", "APPLYING", "SEPARATING", "MIXED"],
+        )
+        self.assertEqual(condition["properties"]["directed_branch"]["type"], "number")
+
     def test_runtime_capture_r2_schema_pins_control_plane_and_abi(self) -> None:
         schema = self._load_without_duplicate_keys(ROOT / "schemas" / "runtime_capture_r2.schema.json")
         self.assertIn("control_plane_sha256", schema["required"])
