@@ -1,6 +1,15 @@
 name: CE B1 Geometry Binding Prototype Tests (Non-Authoritative)
 
 on:
+  push:
+    branches:
+      - research/b1-geometry-rule-binding-r0-2026-10-10
+    paths:
+      - src/ce/claim/authorization.py
+      - schemas/canon_rule.schema.json
+      - tests/test_ce_r0_full_boundary_r1.py
+      - tests/test_schema_structure_r1.py
+      - .github/workflows/ce-b1-geometry-prototype.yml
   pull_request:
     branches:
       - main
