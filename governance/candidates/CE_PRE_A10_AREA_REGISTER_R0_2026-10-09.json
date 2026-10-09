@@ -230,7 +230,7 @@
     {
       "id": "C1",
       "title": "Deep Sky product and fulfillment contract",
-      "status": "NOT_STARTED",
+      "status": "CLOSED_PRESERVE",
       "owner_decision_required": false,
       "source_refs": [
         "Box:2491704535193",
@@ -238,8 +238,17 @@
         "Box:2515023681086"
       ],
       "review_focus": "Verify Deep Sky entitlement, constrained synthesis, validation, delivery, reread, and failure contracts.",
-      "review_summary": "",
-      "evidence_refs": [],
+      "review_summary": "Product Constitution §4.5 and §§10–13, Business Model Minimal V1 v1.5 §§2–7, Account/Privacy/Commercial v1.7 §§10–17 and Evidence/AI/Output Validation v1.4 §§3–13 establish Deep Sky as the sole paid core V1 product selling depth of synthesis—not truth, accuracy, certainty, guarantee or psychological authority. Core templates are deterministic; Deep Sky may use one constrained LLM with structured input/output and mandatory claim validation. Credits cannot change evidence, qualification, Canon, uncertainty or feedback. Paid-reading entitlement/reread is separate from active cross-reading AI context. Owner disposition Box 2515528652667 explicitly defers cross-reading continuity from active scope. B1 registry investigation finds approved populated Canon rules are not established in inspected A9/current source locations, so full semantic coverage/runtime readiness is not established. Close the product-promise semantics as PRESERVE; keep checkout/fulfillment, Credits mechanics, daily cap mechanics, jurisdictional readiness, Canon registry and runtime proof in their own areas. No code/spec/tests changed; no tests executed.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §4.5, §§10–13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2–7, §§9–15",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§10–17",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–13, 21–23",
+        "Box:2515528652667 Owner Disposition — Future Deep Sky Cross-Reading Continuity Deferred",
+        "Box:2515464255967 Proposed Deep Sky Continuity Change Map R0 (deferred; historical working artifact)",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_B1_CANON_RULE_REGISTRY_R0_2026-10-09.md",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
       "disposition_ref": "",
       "owner_disposition": ""
     },
