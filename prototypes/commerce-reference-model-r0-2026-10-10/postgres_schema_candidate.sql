@@ -156,8 +156,11 @@ BEGIN
         RAISE EXCEPTION 'admission event must match the current state and next version';
     END IF;
     IF NEW.new_state = 'READY'
-       AND NEW.ready_expires_at <= statement_timestamp() THEN
-        RAISE EXCEPTION 'READY admission requires a future expiry and current health attestation';
+       AND (NEW.health_attestation_reference IS NULL
+            OR btrim(NEW.health_attestation_reference) = ''
+            OR NEW.ready_expires_at IS NULL
+            OR NEW.ready_expires_at <= statement_timestamp()) THEN
+        RAISE EXCEPTION 'READY admission requires a non-empty health attestation and future expiry';
     END IF;
     RETURN NEW;
 END;
