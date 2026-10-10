@@ -773,6 +773,15 @@ DECLARE
     utc_today DATE;
 BEGIN
     utc_today := (statement_timestamp() AT TIME ZONE 'UTC')::date;
+    IF TG_OP = 'UPDATE' THEN
+        IF NEW.state_version <> OLD.state_version + 1 THEN
+            RAISE EXCEPTION 'daily purchase slot updates must increment the state version exactly once';
+        END IF;
+        IF NEW.active_logical_purchase_id IS DISTINCT FROM OLD.active_logical_purchase_id
+           AND NOT (OLD.slot_state = 'RELEASED' AND NEW.slot_state = 'RESERVED') THEN
+            RAISE EXCEPTION 'active purchase identity can change only through evidence-backed same-day D2-B slot reuse';
+        END IF;
+    END IF;
     IF TG_OP = 'UPDATE'
        AND (
            NEW.account_id IS DISTINCT FROM OLD.account_id
