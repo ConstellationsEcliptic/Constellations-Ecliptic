@@ -25,6 +25,12 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.conn.execute(f'CREATE SCHEMA "{self.schema}"')
         self.conn.execute(f'SET search_path TO "{self.schema}"')
         self.conn.execute(SCHEMA_SQL, prepare=False)
+        self.conn.execute(
+            """INSERT INTO ce_credits_sku
+            (sku_id, sku_revision, amount_minor, currency, credits_granted, sku_status, created_at)
+            VALUES ('sku-test','r0',299,'USD',4,'AVAILABLE',%s)""",
+            (NOW,),
+        )
 
     def tearDown(self):
         self.conn.execute("SET search_path TO public")
@@ -45,14 +51,15 @@ class PostgresCommerceContractTests(unittest.TestCase):
         )
 
     def insert_provider_success(self, topup_id="topup-1", provider="provider-test",
-                                tx_ref="provider-tx-1", event_id="evt-1"):
+                                tx_ref="provider-tx-1", event_id="evt-1",
+                                amount=299, currency="USD"):
         self.conn.execute(
             """INSERT INTO ce_provider_event
             (provider_name, provider_event_id, logical_topup_id, provider_transaction_ref,
-             payload_fingerprint, observed_status, observation_source,
-             verification_reference, received_at)
-            VALUES (%s,%s,%s,%s,'sha256:fingerprint','SUCCEEDED','WEBHOOK','verify-ref',%s)""",
-            (provider, event_id, topup_id, tx_ref, NOW),
+             payload_fingerprint, verified_amount_minor, verified_currency,
+             observed_status, observation_source, verification_reference, received_at)
+            VALUES (%s,%s,%s,%s,'sha256:fingerprint',%s,%s,'SUCCEEDED','WEBHOOK','verify-ref',%s)""",
+            (provider, event_id, topup_id, tx_ref, amount, currency, NOW),
         )
 
     def insert_reading_order(self, order_id="order-1", account="acct-1",
@@ -87,10 +94,29 @@ class PostgresCommerceContractTests(unittest.TestCase):
             ).fetchall()
         }
         self.assertTrue({
-            "ce_topup_order", "ce_provider_event", "ce_credit_ledger_entry",
+            "ce_credits_sku", "ce_topup_order", "ce_provider_event", "ce_credit_ledger_entry",
             "ce_deep_sky_order", "ce_daily_purchase_slot", "ce_quota_event",
             "ce_reading_entitlement", "ce_terminal_failure_evidence",
         }.issubset(names))
+
+    def test_topup_terms_must_match_an_available_server_owned_sku(self):
+        with self.assertRaises(errors.RaiseException):
+            self.insert_topup(amount=150)
+        self.conn.execute(
+            "UPDATE ce_credits_sku SET sku_status='RETIRED' WHERE sku_id='sku-test' AND sku_revision='r0'"
+        ) if False else None
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                "UPDATE ce_credits_sku SET sku_status='RETIRED' WHERE sku_id='sku-test' AND sku_revision='r0'"
+            )
+
+    def test_provider_event_amount_and_currency_must_match_the_topup(self):
+        self.insert_topup()
+        with self.assertRaises(errors.RaiseException):
+            self.insert_provider_success(amount=300)
+        with self.assertRaises(errors.RaiseException):
+            self.insert_provider_success(event_id="evt-currency", currency="IDR")
+        self.assertEqual(self.conn.execute("SELECT COUNT(*) FROM ce_provider_event").fetchone()[0], 0)
 
     def test_account_idempotency_key_is_unique(self):
         self.insert_topup()
