@@ -195,6 +195,16 @@ CREATE TRIGGER ce_purchase_admission_state_validate_update
 BEFORE UPDATE ON ce_purchase_admission_state
 FOR EACH ROW EXECUTE FUNCTION ce_validate_purchase_admission_state_update();
 
+CREATE FUNCTION ce_reject_purchase_admission_state_delete() RETURNS trigger AS $CE$
+BEGIN
+    RAISE EXCEPTION 'current purchase-admission state cannot be deleted; transition it through an audit event';
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_purchase_admission_state_no_delete
+BEFORE DELETE ON ce_purchase_admission_state
+FOR EACH ROW EXECUTE FUNCTION ce_reject_purchase_admission_state_delete();
+
 CREATE FUNCTION ce_apply_purchase_admission_event() RETURNS trigger AS $CE$
 BEGIN
     UPDATE ce_purchase_admission_state
