@@ -42,6 +42,7 @@ class OrderStatus(str, Enum):
     RECONCILIATION_REQUIRED = "RECONCILIATION_REQUIRED"
     FULFILLED = "FULFILLED"
     TERMINAL_NONDELIVERY = "TERMINAL_NONDELIVERY"
+    RESERVATION_REJECTED = "RESERVATION_REJECTED"
 
 
 class QuotaResolution(str, Enum):
@@ -54,6 +55,8 @@ class QuotaResolution(str, Enum):
     TERMINAL_FAILURE_RETAINED = "TERMINAL_FAILURE_RETAINED"
     RELEASED_ON_ORIGINAL_DATE = "RELEASED_ON_ORIGINAL_DATE"
     ORIGINAL_DATE_EXPIRED_NO_TRANSFER = "ORIGINAL_DATE_EXPIRED_NO_TRANSFER"
+    PREDEBIT_RESERVATION_RELEASED = "PREDEBIT_RESERVATION_RELEASED"
+    PREDEBIT_RESERVATION_EXPIRED_NO_TRANSFER = "PREDEBIT_RESERVATION_EXPIRED_NO_TRANSFER"
 
 
 @dataclass(frozen=True)
@@ -139,6 +142,23 @@ class TerminalFailureEvidence:
         ))
 
 
+@dataclass(frozen=True)
+class PreDebitFailureEvidence:
+    no_reading_debit_committed: bool
+    no_operation_can_still_commit_or_deliver: bool
+    all_relevant_operations_closed: bool
+    evidence_reference: str
+
+    @property
+    def complete(self) -> bool:
+        return all((
+            self.no_reading_debit_committed,
+            self.no_operation_can_still_commit_or_deliver,
+            self.all_relevant_operations_closed,
+            bool(self.evidence_reference and self.evidence_reference.strip()),
+        ))
+
+
 @dataclass
 class Order:
     logical_purchase_id: str
@@ -152,6 +172,7 @@ class Order:
     quota_effect: Optional[bool] = None
     quota_resolution: QuotaResolution = QuotaResolution.RESERVATION_ONLY
     terminal_restoration_id: Optional[str] = None
+    predebit_failure_evidence_reference: Optional[str] = None
     provider_events: Dict[Tuple[str, str], str] = field(default_factory=dict)
 
 
@@ -357,6 +378,37 @@ class CommerceReferenceModel:
         order.quota_resolution = (
             QuotaResolution.FULFILLMENT_TRIGGER_COMMITTED
             if self.cap_trigger is not None else QuotaResolution.CAP_TRIGGER_NOT_SELECTED
+        )
+        return True
+
+    def confirm_predebit_failure(self, logical_purchase_id: str, *,
+                                 evidence: PreDebitFailureEvidence,
+                                 close_at: datetime) -> bool:
+        """Close a positively evidenced reservation failure before any reading debit."""
+        order = self._order(logical_purchase_id)
+        closed_utc = self._utc(close_at)
+        if order.status == OrderStatus.RESERVATION_REJECTED:
+            if order.predebit_failure_evidence_reference == evidence.evidence_reference:
+                return False
+            raise LedgerConflict("pre-debit failure replay conflicts with the recorded evidence")
+        if order.status not in {OrderStatus.RESERVED, OrderStatus.RECONCILIATION_REQUIRED}:
+            raise InvalidTransition("pre-debit failure applies only to an unresolved order")
+        if order.reading_debit_entry_id is not None:
+            raise InvalidTransition("a committed reading debit must use the D2-B post-debit remedy path")
+        if any(entry.purpose == "DEEP_SKY_READING_DEBIT" and entry.reference_id == logical_purchase_id
+               for entry in self.ledger.entries.values()):
+            raise LedgerConflict("ledger contains a reading debit despite the order's uncommitted state")
+        if order.entitlement_id is not None:
+            raise InvalidTransition("pre-debit failure cannot close an order with a reading entitlement")
+        if not evidence.complete:
+            raise InvalidTransition("pre-debit failure evidence is incomplete")
+        order.status = OrderStatus.RESERVATION_REJECTED
+        order.predebit_failure_evidence_reference = evidence.evidence_reference
+        order.quota_effect = False
+        order.quota_resolution = (
+            QuotaResolution.PREDEBIT_RESERVATION_RELEASED
+            if closed_utc.date() == order.service_date_utc
+            else QuotaResolution.PREDEBIT_RESERVATION_EXPIRED_NO_TRANSFER
         )
         return True
 
