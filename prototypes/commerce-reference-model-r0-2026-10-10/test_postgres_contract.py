@@ -172,6 +172,14 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.assertEqual(
             self.conn.execute("SELECT COUNT(*) FROM ce_purchase_admission_event").fetchone()[0], 1
         )
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute("DELETE FROM ce_purchase_admission_state WHERE singleton_id=1")
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT admission_state FROM ce_purchase_admission_state WHERE singleton_id=1"
+            ).fetchone()[0],
+            "BLOCKED",
+        )
 
     def test_ready_admission_requires_health_evidence_and_expiry(self):
         with self.assertRaises(errors.RaiseException):
