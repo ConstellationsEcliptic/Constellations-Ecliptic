@@ -1,0 +1,27 @@
+name: Commerce Reference Model Tests
+
+on:
+  pull_request:
+    paths:
+      - "prototypes/commerce-reference-model-r0-2026-10-10/**"
+      - ".github/workflows/commerce-reference-model-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-model-tests:
+    name: Isolated Python reference-model unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run unit tests
+        working-directory: prototypes/commerce-reference-model-r0-2026-10-10
+        run: python -m unittest -v
