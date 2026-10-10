@@ -135,6 +135,9 @@ BEGIN
     IF NOT FOUND OR gate.admission_state <> 'READY' THEN
         RAISE EXCEPTION 'new Deep Sky purchase blocked: fulfillment admission is not explicitly READY';
     END IF;
+    IF NEW.status <> 'RESERVED' OR NEW.reading_debit_entry_id IS NOT NULL THEN
+        RAISE EXCEPTION 'new logical purchase must begin RESERVED without a committed reading debit';
+    END IF;
     IF NEW.service_date_utc <> (statement_timestamp() AT TIME ZONE 'UTC')::date THEN
         RAISE EXCEPTION 'new Deep Sky purchase service date must be the server-derived current UTC date';
     END IF;
@@ -427,11 +430,22 @@ BEGIN
     IF NEW.logical_purchase_id <> OLD.logical_purchase_id
        OR NEW.account_id <> OLD.account_id
        OR NEW.service_date_utc <> OLD.service_date_utc
-       OR NEW.created_at <> OLD.created_at THEN
-        RAISE EXCEPTION 'logical purchase identity, account, and service date are immutable';
+       OR NEW.created_at <> OLD.created_at
+       OR NEW.cap_trigger_decision <> OLD.cap_trigger_decision THEN
+        RAISE EXCEPTION 'logical purchase identity, account, service date, and selected D1 policy are immutable';
+    END IF;
+    IF OLD.reading_debit_entry_id IS NOT NULL
+       AND NEW.reading_debit_entry_id IS DISTINCT FROM OLD.reading_debit_entry_id THEN
+        RAISE EXCEPTION 'committed reading debit identity is immutable';
     END IF;
     IF OLD.status = 'FULFILLED' AND NEW.status <> OLD.status THEN
         RAISE EXCEPTION 'fulfilled order history is immutable; use a separate remedy record';
+    END IF;
+    IF NEW.status = 'RESERVED' AND NEW.reading_debit_entry_id IS NOT NULL THEN
+        RAISE EXCEPTION 'a RESERVED order cannot already carry a committed reading debit';
+    END IF;
+    IF NEW.status = 'DEBIT_COMMITTED' AND NEW.reading_debit_entry_id IS NULL THEN
+        RAISE EXCEPTION 'D1-A requires the committed reading debit on the effective-purchase transition';
     END IF;
     IF NEW.reading_debit_entry_id IS NOT NULL AND NOT EXISTS (
         SELECT 1 FROM ce_credit_ledger_entry le
@@ -441,6 +455,16 @@ BEGIN
            AND le.reference_id = NEW.logical_purchase_id
     ) THEN
         RAISE EXCEPTION 'order debit reference does not match its ledger debit';
+    END IF;
+    -- D1-A: once the verified reading debit is bound, the daily cap effect is true.
+    -- D2-B: validated terminal non-delivery removes that effect only after evidence
+    -- and exact restoration pass the terminal-state guard below.
+    IF NEW.status = 'TERMINAL_NONDELIVERY' THEN
+        NEW.quota_effect := FALSE;
+    ELSIF NEW.reading_debit_entry_id IS NOT NULL THEN
+        NEW.quota_effect := TRUE;
+    ELSIF NEW.quota_effect IS TRUE THEN
+        RAISE EXCEPTION 'a daily-cap effect cannot exist without a committed reading debit';
     END IF;
     IF NEW.status = 'FULFILLED' AND OLD.status <> 'FULFILLED' THEN
         IF NEW.reading_debit_entry_id IS NULL OR NEW.completed_at IS NULL
@@ -557,6 +581,22 @@ BEGIN
     END IF;
     IF NEW.slot_state = 'CONSUMED' AND o.quota_effect IS DISTINCT FROM TRUE THEN
         RAISE EXCEPTION 'slot cannot be marked consumed before an explicit cap effect is established';
+    END IF;
+    IF TG_OP = 'UPDATE' AND OLD.slot_state = 'RELEASED' AND NEW.slot_state = 'RESERVED' THEN
+        IF NEW.service_date_utc <> utc_today
+           OR NEW.active_logical_purchase_id = OLD.active_logical_purchase_id
+           OR NEW.state_version <> OLD.state_version + 1
+           OR NOT EXISTS (
+             SELECT 1 FROM ce_quota_event e
+              WHERE e.logical_purchase_id = OLD.active_logical_purchase_id
+                AND e.account_id = OLD.account_id
+                AND e.service_date_utc = OLD.service_date_utc
+                AND e.event_type = 'SLOT_RELEASED'
+                AND e.policy_decision_reference IS NOT NULL
+                AND e.terminal_evidence_reference IS NOT NULL
+           ) THEN
+            RAISE EXCEPTION 'same-date slot reuse requires D2-B release evidence and a versioned new reservation';
+        END IF;
     END IF;
     IF NEW.slot_state = 'RELEASED' AND NEW.service_date_utc <> utc_today THEN
         RAISE EXCEPTION 'D2-B releases only the current UTC service date; do not transfer expired slots';
