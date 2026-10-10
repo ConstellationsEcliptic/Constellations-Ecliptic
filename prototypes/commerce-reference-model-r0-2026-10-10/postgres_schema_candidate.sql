@@ -773,6 +773,13 @@ DECLARE
     utc_today DATE;
 BEGIN
     utc_today := (statement_timestamp() AT TIME ZONE 'UTC')::date;
+    IF TG_OP = 'UPDATE'
+       AND (
+           NEW.account_id IS DISTINCT FROM OLD.account_id
+           OR NEW.service_date_utc IS DISTINCT FROM OLD.service_date_utc
+       ) THEN
+        RAISE EXCEPTION 'daily purchase slot account and UTC service-date identity are immutable';
+    END IF;
     SELECT * INTO o FROM ce_deep_sky_order
      WHERE logical_purchase_id = NEW.active_logical_purchase_id
      FOR KEY SHARE;
@@ -833,6 +840,18 @@ $CE$ LANGUAGE plpgsql;
 CREATE TRIGGER ce_daily_purchase_slot_validate
 BEFORE INSERT OR UPDATE ON ce_daily_purchase_slot
 FOR EACH ROW EXECUTE FUNCTION ce_validate_daily_slot();
+
+-- Slot rows are durable quota history; deleting a row would free the account/date
+-- key and bypass the daily cap. Retain it through the controlled state machine.
+CREATE FUNCTION ce_reject_daily_purchase_slot_delete() RETURNS trigger AS $CE$
+BEGIN
+    RAISE EXCEPTION 'daily purchase slot records cannot be deleted; retain the quota state history';
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_daily_purchase_slot_no_delete
+BEFORE DELETE ON ce_daily_purchase_slot
+FOR EACH ROW EXECUTE FUNCTION ce_reject_daily_purchase_slot_delete();
 
 CREATE FUNCTION ce_immutable_provider_event() RETURNS trigger AS $CE$
 BEGIN
