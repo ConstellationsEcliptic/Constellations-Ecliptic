@@ -443,3 +443,33 @@ $ LANGUAGE plpgsql;
 CREATE TRIGGER ce_quota_event_no_update
 BEFORE UPDATE OR DELETE ON ce_quota_event
 FOR EACH ROW EXECUTE FUNCTION ce_immutable_quota_event();
+
+
+CREATE FUNCTION ce_validate_entitlement_insert() RETURNS trigger AS $$
+DECLARE
+    o ce_deep_sky_order%ROWTYPE;
+BEGIN
+    SELECT * INTO o
+      FROM ce_deep_sky_order
+     WHERE logical_purchase_id = NEW.logical_purchase_id
+     FOR UPDATE;
+    IF NOT FOUND
+       OR o.account_id <> NEW.account_id
+       OR o.status NOT IN ('DEBIT_COMMITTED', 'RECONCILIATION_REQUIRED')
+       OR o.reading_debit_entry_id IS NULL
+       OR NOT EXISTS (
+          SELECT 1 FROM ce_credit_ledger_entry le
+           WHERE le.entry_id = o.reading_debit_entry_id
+             AND le.account_id = o.account_id
+             AND le.entry_type = 'DEEP_SKY_READING_DEBIT'
+             AND le.reference_id = o.logical_purchase_id
+       ) THEN
+        RAISE EXCEPTION 'entitlement requires the same account order with a committed reading debit';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_reading_entitlement_validate_insert
+BEFORE INSERT ON ce_reading_entitlement
+FOR EACH ROW EXECUTE FUNCTION ce_validate_entitlement_insert();
