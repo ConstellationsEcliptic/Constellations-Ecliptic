@@ -199,3 +199,28 @@ Still open:
 This is an audit evidence/status artifact only. It changes no retained Index, Constitution, official Test Register, Source Authority, production code, schema, runtime profile, A10, Trusted Build, deployment, release or SEAL state. Findings are bound to the exact sources and commits identified above.
 
 End of R1.
+
+
+## 12. Claim-release pipeline recheck — why a passing candidate suite is not a release
+
+Additional exact-A9 source files reviewed:
+- src/ce/output/semantic.py, blob SHA-1 b33e37111770e55521c50f01ee6c7b699b5d9c61.
+- src/ce/claim/authorization.py, blob SHA-1 59a88041cbf39c86faeffdef65a50dcb866b93d5.
+- src/ce/claim/manifest.py, blob SHA-1 20e64047510a98aa34c5a84abc50885b12ca76b3.
+- src/ce/product/boundary.py, blob SHA-1 2759fea7f3f0ed4cc6554c8416e1f2d271983898.
+- src/ce/runtime/gates.py, blob SHA-1 40a1874392af704cb1bd837a40275c27b5adbb87.
+- tests/test_product_boundary_fail_closed_r1.py, blob SHA-1 7969fcf8ce38e5a1d4540269ebd3f9de95b017b7.
+- tests/test_runtime_gate.py, blob SHA-1 7f397ebb1fe8d0ab634f1db1ffb33bbafc9e7eab.
+
+Observed behavior:
+1. get_verified_semantic_conformance() explicitly returns None and comments that a controlled, independently verified semantic verifier is not yet established.
+2. validate_claim_output appends semantic_conformance_unavailable when no verifier is supplied; any conformance callback error becomes semantic_conformance_check_error, so this layer fails closed.
+3. evaluate_claim_release() uses the Canon registry to fetch the approved rule and validate the manifest against a registry digest; missing/unpopulated rule authority produces manifest_registry_binding_failed.
+4. The same claim-release function calls authorize_runtime(). At the exact A9 source reviewed, that function always appends source_authority_attestation_not_established and independent_runtime_identity_verification_not_established, returning NON_AUTHORIZED.
+5. product.boundary.preserve_calculation_truth explicitly allows downstream signal processing after VALID calculation but continues to deny direct Canon claim, AI release and Quiet Sky; it requires downstream qualification.
+6. Existing tests verify non-VALID states cannot imply release and that runtime remains non-authorized without authority evidence.
+
+Conclusion: the inspected candidate source is currently guarded such that there is no supported active claim-release path under its present unmaterialized Canon registry / missing verified semantic conformance / non-authorized runtime gates. This is consistent with the known non-authorized status and must not be “fixed” by removing guards, substituting a historical rule corpus, or injecting caller-supplied semantic verification. A future claim-release path requires approved Canon data, a controlled semantic verifier, valid source/build/runtime authority, and official tests/source authority established through the proper process.
+
+This is a direct implementation-control finding, not evidence that a release should proceed or that the gates are incorrect.
+
