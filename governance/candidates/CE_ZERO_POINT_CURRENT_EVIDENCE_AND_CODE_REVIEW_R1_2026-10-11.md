@@ -224,3 +224,43 @@ Conclusion: the inspected candidate source is currently guarded such that there 
 
 This is a direct implementation-control finding, not evidence that a release should proceed or that the gates are incorrect.
 
+
+
+## 13. Structural scan of all 111 Python files in the exact A9 tree
+
+After the initial core-file review, a structural/pattern scan was run across all 111 Python-file blobs enumerated by the recursive tree at exact commit c8dab3542d3d4725cf591630c07f76366f7949d0. Each file's retrieved content was scanned for:
+- a module-level __main__ block and a later unittest.main() call;
+- test-method definitions placed after unittest.main();
+- obvious lexical markers for eval, exec, pickle, shell=True, TODO/FIXME and NotImplemented;
+- broad Exception/BaseException handlers for focused follow-up.
+
+Result within that bounded scan:
+- Exactly one misplaced test-method pattern was found: tests/test_source_tree_identity_r1.py, described in Section 4.
+- The scan found no lexical matches in the inspected Python blobs for eval, exec, pickle, shell=True, TODO, FIXME or NotImplemented.
+- Broad exception handlers were found in calculation/contracts.py, calculation/evidence.py, calculation/scenario_evaluator.py, output/validation.py, runtime/retry.py and timezone/runtime.py. Representative instances were opened and followed:
+  - scenario_evaluator catches an evaluation exception and returns CALCULATION_FAILURE with no possible/robust windows;
+  - runtime/retry catches an unclassified failure and returns CALCULATION_FAILURE with value=None and stale_result_substitution=False;
+  - timezone/runtime wraps zone-file parse failures as TzifRuntimeError after its path, size and SHA-256 checks;
+  - output/validation treats a missing semantic verifier as semantic_conformance_unavailable and verifier exceptions as semantic_conformance_check_error;
+  - evidence/contracts convert provenance-validation errors into invalid result diagnostics.
+
+No further confirmed defect was concluded from these broad-exception observations alone. They were screened as leads, not mechanically marked bugs.
+
+This is a **whole-tree structural/pattern scan of the 111 Python file texts at one exact candidate commit**, not a semantic line-by-line review of all their behavior, dependencies, numerical algorithms or operating-system behavior. It reduces uncertainty about a narrow set of common test-discovery/unsafe-call patterns but does not prove the absence of other defects.
+
+## 14. Newly completed scope versus remaining full-review limitation
+
+Completed after the first drafting of R1:
+- all 111 Python file blobs in the exact A9 tree were enumerated and subjected to the structural/pattern scan described in §13;
+- the sole surfaced misplaced test-method pattern was inspected and is linked to exact-head Actions collection evidence;
+- the broad exception handling locations surfaced by the scan were inspected at relevant return paths.
+
+Still not completed:
+- semantic review of every line in all 111 Python modules;
+- independent rerun of the entire project test suite inside a locally materialized checkout;
+- full numerical oracle/property-based review of every geometry/window/time case;
+- full test-runner coverage of every test file (the A9 Actions run uses named workflow module lists and does not imply all repository tests were collected);
+- native Windows/MSVC controlled runtime capture and other human-boundary evidence recorded as not established in A9 governance;
+- production or authority transition of any kind.
+
+The scope statement in §3 remains in force: this is more than a governance-only review but less than a complete production-code certification.
