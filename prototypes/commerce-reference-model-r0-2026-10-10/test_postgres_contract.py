@@ -1,6 +1,6 @@
 """Integration tests for candidate persistence invariants against PostgreSQL."""
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 import os
 from pathlib import Path
 import threading
@@ -182,10 +182,10 @@ class PostgresCommerceContractTests(unittest.TestCase):
         # A valid short-lived attestation is accepted, but stale readiness fails closed.
         expiry = self.set_admission_state(
             "READY", reason="short-lease-test",
-            health_reference="short-lived-health-attestation", lease_seconds=0.15,
+            health_reference="short-lived-health-attestation", lease_seconds=0.6,
         )
         self.assertGreater(expiry, datetime.now(UTC))
-        time.sleep(0.20)
+        time.sleep(0.75)
         with self.assertRaises(errors.RaiseException):
             self.insert_reading_order(order_id="expired-health-order", ensure_ready=False)
         self.assertEqual(
@@ -240,6 +240,31 @@ class PostgresCommerceContractTests(unittest.TestCase):
             ).fetchone()[0],
             True,
             "D1-A must consume quota when the reading debit is committed",
+        )
+
+        # Health admission gates only NEW purchases/debits. It must not abandon a
+        # previously committed order that can still deliver a validated reading.
+        self.set_admission_state("BLOCKED", reason="new-purchases-paused-during-existing-fulfillment")
+        self.conn.execute(
+            """INSERT INTO ce_reading_entitlement
+               (entitlement_id, logical_purchase_id, account_id, reading_reference,
+                reading_content_hash, validated_at, accessible_at)
+               VALUES ('existing-entitlement','accepted-before-health-change','acct-1',
+                       'reading-existing','hash-existing',%s,%s)""",
+            (NOW, NOW),
+        )
+        self.conn.execute(
+            """UPDATE ce_deep_sky_order
+                  SET status='FULFILLED', completed_at=%s
+                WHERE logical_purchase_id='accepted-before-health-change'""",
+            (NOW,),
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT status FROM ce_deep_sky_order WHERE logical_purchase_id='accepted-before-health-change'"
+            ).fetchone()[0],
+            "FULFILLED",
+            "health interlock must not cancel existing fulfillable operations",
         )
 
     def test_topup_terms_must_match_an_available_server_owned_sku(self):
