@@ -124,10 +124,7 @@ class PostgresCommerceContractTests(unittest.TestCase):
             VALUES ('grant-1','acct-1','TOPUP_CREDIT_GRANT',4,'topup-1',%s)""",
             (NOW,),
         )
-        self.conn.execute(
-            "UPDATE ce_topup_order SET status='CREDIT_FULFILLED', completed_at=%s WHERE logical_topup_id='topup-1'",
-            (NOW,),
-        )
+        # A distinct ledger identity still cannot create a second grant for the same top-up.
         with self.assertRaises(errors.UniqueViolation):
             self.conn.execute(
                 """INSERT INTO ce_credit_ledger_entry
@@ -135,6 +132,10 @@ class PostgresCommerceContractTests(unittest.TestCase):
                 VALUES ('grant-2','acct-1','TOPUP_CREDIT_GRANT',4,'topup-1',%s)""",
                 (NOW,),
             )
+        self.conn.execute(
+            "UPDATE ce_topup_order SET status='CREDIT_FULFILLED', completed_at=%s WHERE logical_topup_id='topup-1'",
+            (NOW,),
+        )
         self.assertEqual(self.conn.execute("SELECT status FROM ce_topup_order").fetchone()[0], "CREDIT_FULFILLED")
 
     def test_provider_event_evidence_is_unique_and_append_only(self):
