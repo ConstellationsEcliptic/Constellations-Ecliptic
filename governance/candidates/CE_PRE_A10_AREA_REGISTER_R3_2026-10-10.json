@@ -720,7 +720,7 @@
       ]
     }
   ],
-  "revision": "R1",
-  "supersedes": "CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json",
-  "change_summary": "R1 reconciles current owner decisions for C3 (D1-A, D2-B and fulfillment-health interlock) without mutating R0. A3, B1 and D4 remain incomplete; this register does not authorize A10/runtime/production/SEAL."
+  "revision": "R3",
+  "supersedes": "CE_PRE_A10_AREA_REGISTER_R2_2026-10-10.json",
+  "change_summary": "R3 preserves the stable series document_id ending in R0, carries forward recorded owner dispositions including the C3 D1-A/D2-B and fulfillment-health interlock, and updates A3 from RECOMMENDATION_READY to OWNER_DISCUSSION_REQUIRED after source reconciliation identified the distinct signal-present Today\u2019s Note decision. B1 and D4 remain incomplete. This candidate does not authorize A10/runtime/production/SEAL."
 }
