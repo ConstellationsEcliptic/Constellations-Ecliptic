@@ -19,6 +19,8 @@ def observation(*, event="evt-1", status=ProviderPaymentStatus.SUCCEEDED,
                 verified=True, source=ObservationSource.WEBHOOK):
     return ProviderObservation(
         provider="provider-test", event_id=event, provider_transaction_ref=txn,
+        logical_topup_id="topup-1", account_id="acct-1",
+        amount_minor=299, currency="USD",
         payment_status=status, payload_fingerprint=fingerprint, source=source,
         verification_ref="verification-record-1" if verified else "",
         adapter_validation_passed=verified,
@@ -62,6 +64,53 @@ class CreditsTopUpModelTests(unittest.TestCase):
                 idempotency_key="idem-1", sku_id="credits-pack-test",
                 server_created_at=T0,
             )
+
+    def test_provider_observation_must_match_server_owned_amount_and_currency(self):
+        mismatched = ProviderObservation(
+            provider="provider-test", event_id="evt-amount",
+            provider_transaction_ref="provider-tx-1",
+            logical_topup_id="topup-1", account_id="acct-1",
+            amount_minor=1, currency="USD",
+            payment_status=ProviderPaymentStatus.SUCCEEDED,
+            payload_fingerprint="sha256:bad-amount",
+            source=ObservationSource.WEBHOOK,
+            verification_ref="verification-record-1",
+            adapter_validation_passed=True,
+        )
+        with self.assertRaises(ProviderObservationError):
+            self.model.apply_provider_observation("topup-1", mismatched, T0)
+        self.assertEqual(self.ledger.balance("acct-1"), 0)
+
+    def test_provider_observation_must_match_server_owned_order_and_account(self):
+        mismatched = ProviderObservation(
+            provider="provider-test", event_id="evt-account",
+            provider_transaction_ref="provider-tx-1",
+            logical_topup_id="some-other-order", account_id="acct-2",
+            amount_minor=299, currency="USD",
+            payment_status=ProviderPaymentStatus.SUCCEEDED,
+            payload_fingerprint="sha256:bad-account",
+            source=ObservationSource.WEBHOOK,
+            verification_ref="verification-record-1",
+            adapter_validation_passed=True,
+        )
+        with self.assertRaises(ProviderObservationError):
+            self.model.apply_provider_observation("topup-1", mismatched, T0)
+        self.assertEqual(self.ledger.balance("acct-1"), 0)
+
+    def test_unknown_intermediate_state_does_not_bypass_authoritative_reconciliation_after_failure(self):
+        self.model.apply_provider_observation(
+            "topup-1", observation(status=ProviderPaymentStatus.FAILED), T0
+        )
+        self.model.apply_provider_observation(
+            "topup-1", observation(event="evt-unknown", status=ProviderPaymentStatus.UNKNOWN,
+                                   fingerprint="sha256:unknown"), T0
+        )
+        with self.assertRaises(ProviderObservationError):
+            self.model.apply_provider_observation(
+                "topup-1", observation(event="evt-late-success",
+                                      fingerprint="sha256:late-success"), T0
+            )
+        self.assertEqual(self.ledger.balance("acct-1"), 0)
 
     def test_unverified_provider_observation_is_rejected(self):
         with self.assertRaises(ProviderObservationError):
