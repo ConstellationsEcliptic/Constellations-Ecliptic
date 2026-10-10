@@ -77,6 +77,7 @@ class TopUpOrder:
     provider_transaction_ref: Optional[str] = None
     credits_granted: int = 0
     completed_at_utc: Optional[datetime] = None
+    failure_observed: bool = False
 
 
 class CreditsTopUpModel:
@@ -149,6 +150,15 @@ class CreditsTopUpModel:
         ):
             raise LedgerConflict("logical top-up cannot silently switch provider transaction identity")
 
+        if (
+            order.failure_observed
+            and observation.payment_status == ProviderPaymentStatus.SUCCEEDED
+            and observation.source != ObservationSource.AUTHORITATIVE_STATUS_LOOKUP
+        ):
+            raise ProviderObservationError(
+                "success after a prior failure observation requires authoritative provider status lookup"
+            )
+
         event_key = (observation.provider, observation.event_id)
         event_value = (
             logical_topup_id,
@@ -198,6 +208,8 @@ class CreditsTopUpModel:
         if observation.payment_status == ProviderPaymentStatus.FAILED:
             if order.status != TopUpStatus.CREDIT_FULFILLED:
                 order.status = TopUpStatus.PAYMENT_FAILED
+                order.failure_observed = True
+                order.failure_observed = True
             return True
 
         # The trusted adapter must already have verified provider state and its
