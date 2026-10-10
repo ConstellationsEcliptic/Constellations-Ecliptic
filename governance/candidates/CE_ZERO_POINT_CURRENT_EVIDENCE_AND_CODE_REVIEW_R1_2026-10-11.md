@@ -264,3 +264,28 @@ Still not completed:
 - production or authority transition of any kind.
 
 The scope statement in §3 remains in force: this is more than a governance-only review but less than a complete production-code certification.
+
+
+## 15. Additional provenance integrity finding — malformed H2 mapping digest strings
+
+Exact A9 source objects were re-opened and the H2 mapping digest strings counted as hexadecimal characters:
+
+| File | Blob SHA-1 | Field / observed value | Character count |
+|---|---|---|---:|
+| manifests/convergent_test_register_r1.json | 5364dc2e1eda7b5cd3ecb00203594c64f5f36625 | recovered_h2_mapping_sha256 = babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441 | 63 |
+| manifests/convergent_test_register_r2.json | 0a014f5f33498328c3f86e687469372df0e375b2 | same value | 63 |
+| manifests/convergent_test_register_r3.json | 13eb21577d7deca5f47ab5fe78b4c0ec8cc37e71 | same value | 63 |
+| provenance/b1_h2_registry_recovery.json | fa120bad1034228e1de93ef3a1a709a5edb6d5cf | mapping SHA-256 value matches the same 63-character string | 63 |
+| provenance/rev4_registry_rebind_candidate_r1.json | 3e6268e0cfce96a4a9e6f9def11ff939ddd0f0ab | mapping_sha256 = babcccf81636df1e5eb92fe9119d474787fc3801b547fa5703e9048993d441 | 62 |
+
+A SHA-256 hex digest must have 64 characters. These are malformed digest strings regardless of whether the underlying H2 source is genuine. This is a concrete candidate provenance-integrity defect: the pointer/manifests do not faithfully encode a valid complete SHA-256 value.
+
+Related external source record:
+- Box file 2506851548670, CE_V1_H2_PROVENANCE_RAW_INTAKE_VERIFICATION_R1, records the expected 64-character H2 mapping SHA-256 as:
+  BABCCCF81636DF1E65EB92FE9119D474787FCF3801B547FA5703E9048993D441
+- That same source record explicitly states direct SHA-256 re-hashing of the Box binary payload was NOT performed. It reports exact size, Box SHA-1 consistency across copies, and logical content equality with canonical Dropbox H2 copies, while treating SHA-256 as an expected identity from prior provenance.
+- The canonical Dropbox mapping object is discoverable as Dropbox file id id:C0IKLeFCqbMAAAAAAAAAAQ, 9,553 bytes, with matching duplicate copies reported by Dropbox search. This review retrieved the extracted text and metadata; it did not download/materialize the original bytes and compute their SHA-256.
+
+Therefore the corrected 64-character string is **an expected value present in prior provenance documentation**, not a new direct hash computation from the mapping bytes in this review. Do not fill the missing character(s) by assumption in the pinned A9 branch. The correct remediation sequence is to retrieve the original canonical mapping bytes, compute SHA-256 directly, reconcile that result to the archive and prior H2 record, and then update the digest through a controlled candidate successor with exact-head tests. Keep the malformed predecessor artifacts unchanged and preserve their history.
+
+A read-only finding was posted to PR #26 (comment id 6101429127). No candidate source, manifest, authority or production state was modified by this finding.
