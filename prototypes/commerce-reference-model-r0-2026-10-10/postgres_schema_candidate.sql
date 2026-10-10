@@ -578,6 +578,16 @@ BEGIN
     IF OLD.status = 'FULFILLED' AND NEW.status <> OLD.status THEN
         RAISE EXCEPTION 'fulfilled order history is immutable; use a separate remedy record';
     END IF;
+    -- D2-B terminal non-delivery closes the logical purchase permanently. A restored
+    -- debit cannot be reactivated into a payable/fulfillable state or gain a new entitlement.
+    IF OLD.status = 'TERMINAL_NONDELIVERY'
+       AND (
+           NEW.status IS DISTINCT FROM OLD.status
+           OR NEW.quota_effect IS DISTINCT FROM OLD.quota_effect
+           OR NEW.completed_at IS DISTINCT FROM OLD.completed_at
+       ) THEN
+        RAISE EXCEPTION 'terminal non-delivery is immutable; create a separately authorized new logical purchase';
+    END IF;
     IF NEW.status = 'RESERVED' AND NEW.reading_debit_entry_id IS NOT NULL THEN
         RAISE EXCEPTION 'a RESERVED order cannot already carry a committed reading debit';
     END IF;
@@ -810,8 +820,16 @@ BEGIN
              AND le.account_id = o.account_id
              AND le.entry_type = 'DEEP_SKY_READING_DEBIT'
              AND le.reference_id = o.logical_purchase_id
+       )
+       OR EXISTS (
+          SELECT 1 FROM ce_credit_ledger_entry restoration
+           WHERE restoration.entry_type = 'DEEP_SKY_READING_DEBIT_RESTORATION'
+             AND restoration.parent_entry_id = o.reading_debit_entry_id
+             AND restoration.reference_id = o.reading_debit_entry_id
+             AND restoration.account_id = o.account_id
+             AND restoration.delta > 0
        ) THEN
-        RAISE EXCEPTION 'entitlement requires the same account order with a committed reading debit';
+        RAISE EXCEPTION 'entitlement requires an active order with a committed, unrestored reading debit';
     END IF;
     RETURN NEW;
 END;
