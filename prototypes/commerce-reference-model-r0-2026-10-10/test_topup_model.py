@@ -3,6 +3,7 @@ import unittest
 
 from commerce_model import (
     CapTrigger, CommerceReferenceModel, LedgerConflict, CreditLedger, InvalidIdentity,
+    FulfillmentAdmissionState,
 )
 from topup_model import (
     CreditsSku, CreditsTopUpModel, ObservationSource, ProviderObservation,
@@ -204,7 +205,8 @@ class CreditsTopUpModelTests(unittest.TestCase):
 
     def test_topup_does_not_create_a_deep_sky_purchase_or_consume_its_daily_cap(self):
         cap_model = CommerceReferenceModel(
-            cap_trigger=CapTrigger.PURCHASE_DEBIT_COMMITTED
+            cap_trigger=CapTrigger.PURCHASE_DEBIT_COMMITTED,
+            fulfillment_admission=FulfillmentAdmissionState.READY,
         )
         cap_model.confirm_and_reserve(
             "acct-1", "deep-sky-order-1", T0
