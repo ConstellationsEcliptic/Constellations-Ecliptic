@@ -6,7 +6,7 @@ from commerce_model import (
     CapTrigger, CommerceReferenceModel, CreditEntry, InvalidFulfillment,
     InvalidIdentity, InvalidTransition, LedgerConflict, OrderStatus,
     PolicyDecisionRequired, QuotaBlocked, QuotaResolution,
-    TerminalFailureEvidence, TerminalFailurePolicy,
+    TerminalFailureEvidence, TerminalFailurePolicy, PreDebitFailureEvidence,
     FulfillmentAdmissionState, FulfillmentAdmissionBlocked,
 )
 
@@ -145,6 +145,75 @@ class CommerceReferenceModelTests(unittest.TestCase):
         with self.assertRaises(InvalidTransition):
             model.confirm_terminal_non_delivery("order-1", evidence=FULL_TERMINAL_EVIDENCE,
                 restoration_id="restore-1", close_at=datetime(2026, 10, 10, 13, tzinfo=UTC))
+
+    def test_predebit_failure_releases_reservation_only_with_complete_evidence(self):
+        model = self.model(cap_trigger=CapTrigger.PURCHASE_DEBIT_COMMITTED)
+        self.funded(model)
+        first = model.confirm_and_reserve(
+            "acct", "order-pre-1", datetime(2026, 10, 10, 12, tzinfo=UTC)
+        )
+        incomplete = PreDebitFailureEvidence(True, False, True, "predebit-evidence-1")
+        with self.assertRaises(InvalidTransition):
+            model.confirm_predebit_failure(
+                "order-pre-1", evidence=incomplete,
+                close_at=datetime(2026, 10, 10, 13, tzinfo=UTC)
+            )
+        self.assertEqual(first.status, OrderStatus.RESERVED)
+        self.assertEqual(model.ledger.balance("acct"), 20)
+
+        evidence = PreDebitFailureEvidence(True, True, True, "predebit-evidence-1")
+        self.assertTrue(model.confirm_predebit_failure(
+            "order-pre-1", evidence=evidence,
+            close_at=datetime(2026, 10, 10, 13, tzinfo=UTC)
+        ))
+        self.assertEqual(first.status, OrderStatus.RESERVATION_REJECTED)
+        self.assertFalse(first.quota_effect)
+        self.assertEqual(first.quota_resolution, QuotaResolution.PREDEBIT_RESERVATION_RELEASED)
+        self.assertIsNone(first.reading_debit_entry_id)
+        self.assertEqual(model.ledger.balance("acct"), 20)
+
+        second = model.confirm_and_reserve(
+            "acct", "order-pre-2", datetime(2026, 10, 10, 14, tzinfo=UTC)
+        )
+        self.assertEqual(second.status, OrderStatus.RESERVED)
+        self.assertEqual(second.service_date_utc, first.service_date_utc)
+
+    def test_predebit_failure_is_not_a_credits_restoration_or_postdebit_remedy(self):
+        model = self.model(cap_trigger=CapTrigger.PURCHASE_DEBIT_COMMITTED)
+        self.funded(model)
+        model.confirm_and_reserve(
+            "acct", "order-pre-1", datetime(2026, 10, 10, 12, tzinfo=UTC)
+        )
+        model.commit_reading_debit("order-pre-1", "debit-pre-1", 4)
+        evidence = PreDebitFailureEvidence(True, True, True, "incorrect-predebit-evidence")
+        with self.assertRaises(InvalidTransition):
+            model.confirm_predebit_failure(
+                "order-pre-1", evidence=evidence,
+                close_at=datetime(2026, 10, 10, 13, tzinfo=UTC)
+            )
+        self.assertEqual(model.ledger.balance("acct"), 16)
+        self.assertEqual(model.orders["order-pre-1"].status, OrderStatus.DEBIT_COMMITTED)
+
+    def test_predebit_failure_after_utc_midnight_never_transfers_old_date(self):
+        model = self.model()
+        self.funded(model)
+        old = model.confirm_and_reserve(
+            "acct", "order-pre-1", datetime(2026, 10, 10, 23, 55, tzinfo=UTC)
+        )
+        evidence = PreDebitFailureEvidence(True, True, True, "predebit-evidence-expired")
+        model.confirm_predebit_failure(
+            "order-pre-1", evidence=evidence,
+            close_at=datetime(2026, 10, 11, 0, 5, tzinfo=UTC)
+        )
+        self.assertEqual(old.service_date_utc.isoformat(), "2026-10-10")
+        self.assertEqual(
+            old.quota_resolution,
+            QuotaResolution.PREDEBIT_RESERVATION_EXPIRED_NO_TRANSFER,
+        )
+        new = model.confirm_and_reserve(
+            "acct", "order-pre-2", datetime(2026, 10, 11, 0, 6, tzinfo=UTC)
+        )
+        self.assertEqual(new.service_date_utc.isoformat(), "2026-10-11")
 
     def test_terminal_failure_requires_complete_evidence_and_exact_credit_restore(self):
         model = self.model(cap_trigger=CapTrigger.PURCHASE_DEBIT_COMMITTED,
