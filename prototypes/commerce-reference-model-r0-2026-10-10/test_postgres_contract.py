@@ -187,6 +187,12 @@ class PostgresCommerceContractTests(unittest.TestCase):
                 "READY", reason="missing-health-attestation",
                 health_reference=None,
             )
+        with self.assertRaises(errors.RaiseException):
+            self.set_admission_state(
+                "READY", reason="overlong-health-lease",
+                health_reference="health-attestation-overlong",
+                lease_seconds=301,
+            )
         # A valid short-lived attestation is accepted, but stale readiness fails closed.
         expiry = self.set_admission_state(
             "READY", reason="short-lease-test",
