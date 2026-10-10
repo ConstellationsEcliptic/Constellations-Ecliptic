@@ -392,3 +392,30 @@ The exact A9 tree at `c8dab3542d3d4725cf591630c07f76366f7949d0` has now been enu
 - Binary/timezone fixtures are not part of this text pattern scan and were not claimed inspected byte-by-byte here; separate TZif code/runtime controls exist but native runtime qualification is still unestablished.
 
 This gives a stronger code/configuration structural view than the initial bounded governance-only review, but it still is not a semantic line-by-line audit of all source logic or every operating-system execution. The candidate must remain non-authoritative until the provenance, tests, source lineage and release gates are corrected/verified through their proper routes.
+
+
+## 20. PR #5 versus PR #26 — direct file comparison
+
+To distinguish an actual lineage relationship from assumptions based only on dates, the 11 paths changed by PR #5 were read at both exact heads:
+- PR #5 HEAD `3db976fd7293f0d4c5d367a81fc87489a97ba900`
+- PR #26 A9 HEAD `c8dab3542d3d4725cf591630c07f76366f7949d0`
+
+Observed identity comparison:
+
+| Path | PR #5 vs A9 result | Interpretation |
+|---|---|---|
+| `configs/runtime_profile.dev.json` | identical blob SHA `a4a087ac553ca59e9c6bf6d7feddbb25481ff90f` | shared file content |
+| `docs/NORMATIVE_BASELINE_REFERENCES.md` | identical blob SHA `342383e1a9dfbca05019d33d906266759c1b2ee0` | both trees cite the same summary-level normative bases |
+| `src/ce/calculation/engine.py` | identical blob SHA `19d23c545ed48d4bc2a4e9a68ea0d6f63a91a0b6` | this specific engine file is shared |
+| `manifests/SOURCE_TREE_SHA256_V2.txt` | differs: PR #5 SHA `b85c24f388877247248ffa4d333728c9a5a60be7`; A9 SHA `3b0408cbfca6d626ac673391afafd53f90b9745c` | different whole-tree identities |
+| `manifests/implementation_manifest.json` | differs; PR #5 1,026 chars, A9 1,113 chars | different candidate manifest state |
+| `src/ce/calculation/contracts.py` | differs; PR #5 1,431 chars, A9 32,908 chars | the A9 source tree is substantially extended here |
+| `src/ce/calculation/time.py` | differs; PR #5 5,213 chars, A9 3,917 chars | differing time-layer implementation |
+| `src/ce/foundation/status.py` | differs; PR #5 1,132 chars, A9 1,098 chars | differing status definitions |
+| `tests/test_evidence.py` | differs; PR #5 1,379 chars, A9 1,561 chars | differing test implementation |
+| `tests/test_runtime_gate.py` | differs; PR #5 7,299 chars, A9 9,099 chars | differing runtime-gate coverage |
+| `tests/test_time_signal_boundaries.py` | differs; PR #5 5,001 chars, A9 12,072 chars | differing time/signal boundary coverage |
+
+This gives a concrete conclusion: the later A9 candidate is neither a byte-identical copy of the PR #5 source tree nor an unrelated tree with no shared lineage. It shares selected implementation/baseline files but also has material source, test and manifest divergence. The older implementation pointer's SHA `3ff8c6fdd8e78a8466c4b556912de0a70b62624222d1ab52a990d7e648600898` and the A9 tree's `1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b` therefore cannot be substituted for each other.
+
+**Disposition:** source-lineage / active-pointer reconciliation remains open. Do not infer that A9 supersedes PR #5 solely because it is later, and do not infer PR #5 contains the A9 extension solely because some files match. A controlled successor must name the selected candidate basis, list the precise predecessor(s) and retained hashes, and update the active implementation pointer only through the valid source-authority route. PR #5 and PR #26 remain untouched and unmerged.
