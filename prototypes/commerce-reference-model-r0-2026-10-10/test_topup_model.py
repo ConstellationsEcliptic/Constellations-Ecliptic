@@ -16,11 +16,12 @@ SKU = CreditsSku("credits-pack-test", 299, "USD", 4)
 
 def observation(*, event="evt-1", status=ProviderPaymentStatus.SUCCEEDED,
                 txn="provider-tx-1", fingerprint="sha256:abc",
+                topup="topup-1", account="acct-1", amount=299, currency="USD",
                 verified=True, source=ObservationSource.WEBHOOK):
     return ProviderObservation(
         provider="provider-test", event_id=event, provider_transaction_ref=txn,
-        logical_topup_id="topup-1", account_id="acct-1",
-        amount_minor=299, currency="USD",
+        logical_topup_id=topup, account_id=account,
+        amount_minor=amount, currency=currency,
         payment_status=status, payload_fingerprint=fingerprint, source=source,
         verification_ref="verification-record-1" if verified else "",
         adapter_validation_passed=verified,
@@ -179,7 +180,7 @@ class CreditsTopUpModelTests(unittest.TestCase):
         )
         with self.assertRaises(LedgerConflict):
             self.model.apply_provider_observation(
-                "topup-2", observation(event="evt-other"), T0
+                "topup-2", observation(event="evt-other", topup="topup-2", account="acct-2"), T0
             )
         self.assertEqual(self.ledger.balance("acct-2"), 0)
 
@@ -215,7 +216,7 @@ class CreditsTopUpModelTests(unittest.TestCase):
             server_created_at=T0,
         )
         topups.apply_provider_observation(
-            "topup-independent", observation(txn="provider-tx-topup"), T0
+            "topup-independent", observation(txn="provider-tx-topup", topup="topup-independent"), T0
         )
         self.assertEqual(len(cap_model.orders), 1)
         self.assertEqual(cap_model.ledger.balance("acct-1"), 4)
