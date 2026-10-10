@@ -312,16 +312,29 @@ CREATE TABLE ce_quota_event (
     logical_purchase_id TEXT NOT NULL REFERENCES ce_deep_sky_order(logical_purchase_id),
     event_type TEXT NOT NULL CHECK (event_type IN (
         'RESERVED', 'CAP_CONSUMED', 'RECONCILIATION_REQUIRED',
-        'SLOT_RELEASED', 'SLOT_EXPIRED_UNTRANSFERRED', 'SLOT_RETAINED'
+        'SLOT_RELEASED', 'SLOT_EXPIRED_UNTRANSFERRED', 'SLOT_RETAINED',
+        'PREDEBIT_RESERVATION_RELEASED', 'PREDEBIT_RESERVATION_EXPIRED'
     )),
     policy_decision_reference TEXT,
     terminal_evidence_reference TEXT,
+    predebit_evidence_reference TEXT,
     occurred_at TIMESTAMPTZ NOT NULL,
     CHECK (
         event_type <> 'SLOT_RELEASED'
         OR (
             policy_decision_reference IS NOT NULL
+            AND btrim(policy_decision_reference) <> ''
             AND terminal_evidence_reference IS NOT NULL
+            AND btrim(terminal_evidence_reference) <> ''
+        )
+    ),
+    CHECK (
+        event_type NOT IN ('PREDEBIT_RESERVATION_RELEASED', 'PREDEBIT_RESERVATION_EXPIRED')
+        OR (
+            policy_decision_reference IS NOT NULL
+            AND btrim(policy_decision_reference) <> ''
+            AND predebit_evidence_reference IS NOT NULL
+            AND btrim(predebit_evidence_reference) <> ''
         )
     )
 );
@@ -353,6 +366,27 @@ CREATE TABLE ce_terminal_failure_evidence (
     evidence_reference TEXT NOT NULL,
     confirmed_at TIMESTAMPTZ NOT NULL
 );
+
+-- Candidate-only contract for a definitive failure before any reading debit.
+-- This is separate from D2-B and remains subject to final contract review.
+CREATE TABLE ce_predebit_failure_evidence (
+    logical_purchase_id TEXT PRIMARY KEY REFERENCES ce_deep_sky_order(logical_purchase_id),
+    no_reading_debit_committed BOOLEAN NOT NULL CHECK (no_reading_debit_committed),
+    no_operation_can_still_commit_or_deliver BOOLEAN NOT NULL CHECK (no_operation_can_still_commit_or_deliver),
+    all_relevant_operations_closed BOOLEAN NOT NULL CHECK (all_relevant_operations_closed),
+    evidence_reference TEXT NOT NULL CHECK (btrim(evidence_reference) <> ''),
+    confirmed_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE FUNCTION ce_immutable_predebit_failure_evidence() RETURNS trigger AS $CE$
+BEGIN
+    RAISE EXCEPTION 'pre-debit failure evidence is append-only';
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_predebit_failure_evidence_no_update
+BEFORE UPDATE OR DELETE ON ce_predebit_failure_evidence
+FOR EACH ROW EXECUTE FUNCTION ce_immutable_predebit_failure_evidence();
 
 -- Enforce financial invariants in the database in addition to application checks.
 CREATE FUNCTION ce_validate_credit_ledger_entry() RETURNS trigger AS $CE$
@@ -633,13 +667,37 @@ BEGIN
     END IF;
     -- D2-B terminal non-delivery closes the logical purchase permanently. A restored
     -- debit cannot be reactivated into a payable/fulfillable state or gain a new entitlement.
-    IF OLD.status = 'TERMINAL_NONDELIVERY'
+    IF OLD.status IN ('TERMINAL_NONDELIVERY', 'RESERVATION_REJECTED')
        AND (
            NEW.status IS DISTINCT FROM OLD.status
            OR NEW.quota_effect IS DISTINCT FROM OLD.quota_effect
            OR NEW.completed_at IS DISTINCT FROM OLD.completed_at
+           OR NEW.reading_debit_entry_id IS DISTINCT FROM OLD.reading_debit_entry_id
        ) THEN
-        RAISE EXCEPTION 'terminal non-delivery is immutable; create a separately authorized new logical purchase';
+        RAISE EXCEPTION 'terminal non-delivery and pre-debit rejection are immutable logical-order outcomes';
+    END IF;
+    IF NEW.status = 'RESERVATION_REJECTED' AND OLD.status <> 'RESERVATION_REJECTED' THEN
+        IF OLD.status NOT IN ('RESERVED', 'RECONCILIATION_REQUIRED')
+           OR NEW.reading_debit_entry_id IS NOT NULL
+           OR EXISTS (
+               SELECT 1 FROM ce_credit_ledger_entry le
+                WHERE le.entry_type = 'DEEP_SKY_READING_DEBIT'
+                  AND le.reference_id = NEW.logical_purchase_id
+           )
+           OR EXISTS (
+               SELECT 1 FROM ce_reading_entitlement e
+                WHERE e.logical_purchase_id = NEW.logical_purchase_id
+           )
+           OR NOT EXISTS (
+               SELECT 1 FROM ce_predebit_failure_evidence p
+                WHERE p.logical_purchase_id = NEW.logical_purchase_id
+                  AND p.no_reading_debit_committed
+                  AND p.no_operation_can_still_commit_or_deliver
+                  AND p.all_relevant_operations_closed
+                  AND btrim(p.evidence_reference) <> ''
+           ) THEN
+            RAISE EXCEPTION 'pre-debit rejection requires an unresolved order, no debit or entitlement, and complete pre-debit evidence';
+        END IF;
     END IF;
     IF NEW.status = 'RESERVED' AND NEW.reading_debit_entry_id IS NOT NULL THEN
         RAISE EXCEPTION 'a RESERVED order cannot already carry a committed reading debit';
@@ -659,7 +717,7 @@ BEGIN
     -- D1-A: once the verified reading debit is bound, the daily cap effect is true.
     -- D2-B: validated terminal non-delivery removes that effect only after evidence
     -- and exact restoration pass the terminal-state guard below.
-    IF NEW.status = 'TERMINAL_NONDELIVERY' THEN
+    IF NEW.status IN ('TERMINAL_NONDELIVERY', 'RESERVATION_REJECTED') THEN
         NEW.quota_effect := FALSE;
     ELSIF NEW.reading_debit_entry_id IS NOT NULL THEN
         NEW.quota_effect := TRUE;
@@ -725,6 +783,38 @@ BEGIN
      FOR KEY SHARE;
     IF NOT FOUND OR o.account_id <> NEW.account_id OR o.service_date_utc <> NEW.service_date_utc THEN
         RAISE EXCEPTION 'quota event must match its immutable order, account, and service date';
+    END IF;
+    IF NEW.event_type IN ('PREDEBIT_RESERVATION_RELEASED', 'PREDEBIT_RESERVATION_EXPIRED') THEN
+        IF NEW.policy_decision_reference IS NULL OR btrim(NEW.policy_decision_reference) = ''
+           OR NEW.predebit_evidence_reference IS NULL OR btrim(NEW.predebit_evidence_reference) = ''
+           OR o.status <> 'RESERVATION_REJECTED'
+           OR o.reading_debit_entry_id IS NOT NULL
+           OR EXISTS (
+              SELECT 1 FROM ce_credit_ledger_entry le
+               WHERE le.entry_type = 'DEEP_SKY_READING_DEBIT'
+                 AND le.reference_id = NEW.logical_purchase_id
+           )
+           OR EXISTS (
+              SELECT 1 FROM ce_reading_entitlement e
+               WHERE e.logical_purchase_id = NEW.logical_purchase_id
+           )
+           OR NOT EXISTS (
+              SELECT 1 FROM ce_predebit_failure_evidence p
+               WHERE p.logical_purchase_id = NEW.logical_purchase_id
+                 AND p.no_reading_debit_committed
+                 AND p.no_operation_can_still_commit_or_deliver
+                 AND p.all_relevant_operations_closed
+                 AND p.evidence_reference = NEW.predebit_evidence_reference
+           ) THEN
+            RAISE EXCEPTION 'pre-debit reservation closure requires rejection state and complete pre-debit evidence';
+        END IF;
+        IF NEW.event_type = 'PREDEBIT_RESERVATION_RELEASED'
+           AND NEW.service_date_utc <> utc_today THEN
+            RAISE EXCEPTION 'pre-debit release is permitted only while the original UTC service date is current';
+        ELSIF NEW.event_type = 'PREDEBIT_RESERVATION_EXPIRED'
+           AND NEW.service_date_utc >= utc_today THEN
+            RAISE EXCEPTION 'pre-debit expiry requires the original UTC service date to have passed';
+        END IF;
     END IF;
     IF NEW.event_type IN ('SLOT_RELEASED', 'SLOT_EXPIRED_UNTRANSFERRED') THEN
         IF NEW.policy_decision_reference IS NULL OR btrim(NEW.policy_decision_reference) = ''
@@ -807,9 +897,13 @@ BEGIN
               WHERE e.logical_purchase_id = OLD.active_logical_purchase_id
                 AND e.account_id = OLD.account_id
                 AND e.service_date_utc = OLD.service_date_utc
-                AND e.event_type = 'SLOT_RELEASED'
+                AND e.event_type IN ('SLOT_RELEASED', 'PREDEBIT_RESERVATION_RELEASED')
                 AND e.policy_decision_reference IS NOT NULL
-                AND e.terminal_evidence_reference IS NOT NULL
+                AND (
+                    (e.event_type = 'SLOT_RELEASED' AND e.terminal_evidence_reference IS NOT NULL)
+                    OR
+                    (e.event_type = 'PREDEBIT_RESERVATION_RELEASED' AND e.predebit_evidence_reference IS NOT NULL)
+                )
            ) THEN
             RAISE EXCEPTION 'same-date slot reuse requires D2-B release evidence and a versioned new reservation';
         END IF;
@@ -825,22 +919,30 @@ BEGIN
          WHERE e.logical_purchase_id = NEW.active_logical_purchase_id
            AND e.account_id = NEW.account_id
            AND e.service_date_utc = NEW.service_date_utc
-           AND e.event_type = 'SLOT_RELEASED'
+           AND e.event_type IN ('SLOT_RELEASED', 'PREDEBIT_RESERVATION_RELEASED')
            AND e.policy_decision_reference IS NOT NULL
-           AND e.terminal_evidence_reference IS NOT NULL
+           AND (
+               (e.event_type = 'SLOT_RELEASED' AND e.terminal_evidence_reference IS NOT NULL)
+               OR
+               (e.event_type = 'PREDEBIT_RESERVATION_RELEASED' AND e.predebit_evidence_reference IS NOT NULL)
+           )
     ) THEN
-        RAISE EXCEPTION 'released slot requires an append-only quota event with policy/evidence references';
+        RAISE EXCEPTION 'released slot requires an append-only evidence-backed release event';
     END IF;
     IF NEW.slot_state = 'EXPIRED_UNTRANSFERRED' AND NOT EXISTS (
         SELECT 1 FROM ce_quota_event e
          WHERE e.logical_purchase_id = NEW.active_logical_purchase_id
            AND e.account_id = NEW.account_id
            AND e.service_date_utc = NEW.service_date_utc
-           AND e.event_type = 'SLOT_EXPIRED_UNTRANSFERRED'
+           AND e.event_type IN ('SLOT_EXPIRED_UNTRANSFERRED', 'PREDEBIT_RESERVATION_EXPIRED')
            AND e.policy_decision_reference IS NOT NULL
-           AND e.terminal_evidence_reference IS NOT NULL
+           AND (
+               (e.event_type = 'SLOT_EXPIRED_UNTRANSFERRED' AND e.terminal_evidence_reference IS NOT NULL)
+               OR
+               (e.event_type = 'PREDEBIT_RESERVATION_EXPIRED' AND e.predebit_evidence_reference IS NOT NULL)
+           )
     ) THEN
-        RAISE EXCEPTION 'expired slot requires an append-only quota event documenting no transfer';
+        RAISE EXCEPTION 'expired slot requires an append-only evidence event documenting no transfer';
     END IF;
     RETURN NEW;
 END;
@@ -852,6 +954,57 @@ FOR EACH ROW EXECUTE FUNCTION ce_validate_daily_slot();
 
 -- Slot rows are durable quota history; deleting a row would free the account/date
 -- key and bypass the daily cap. Retain it through the controlled state machine.
+CREATE FUNCTION ce_validate_predebit_slot_closure() RETURNS trigger AS $CE$
+DECLARE
+    s ce_daily_purchase_slot%ROWTYPE;
+    utc_today DATE;
+BEGIN
+    IF NEW.status <> 'RESERVATION_REJECTED' OR OLD.status = 'RESERVATION_REJECTED' THEN
+        RETURN NULL;
+    END IF;
+    utc_today := (statement_timestamp() AT TIME ZONE 'UTC')::date;
+    SELECT * INTO s
+      FROM ce_daily_purchase_slot
+     WHERE account_id = NEW.account_id
+       AND service_date_utc = NEW.service_date_utc
+       AND active_logical_purchase_id = NEW.logical_purchase_id;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'pre-debit rejection must preserve the original account/date slot record';
+    END IF;
+    IF NEW.service_date_utc = utc_today THEN
+        IF s.slot_state <> 'RELEASED'
+           OR NOT EXISTS (
+               SELECT 1 FROM ce_quota_event e
+                WHERE e.logical_purchase_id = NEW.logical_purchase_id
+                  AND e.account_id = NEW.account_id
+                  AND e.service_date_utc = NEW.service_date_utc
+                  AND e.event_type = 'PREDEBIT_RESERVATION_RELEASED'
+                  AND e.predebit_evidence_reference IS NOT NULL
+           ) THEN
+            RAISE EXCEPTION 'current-date pre-debit failure must release its slot with evidence in the same transaction';
+        END IF;
+    ELSE
+        IF s.slot_state <> 'EXPIRED_UNTRANSFERRED'
+           OR NOT EXISTS (
+               SELECT 1 FROM ce_quota_event e
+                WHERE e.logical_purchase_id = NEW.logical_purchase_id
+                  AND e.account_id = NEW.account_id
+                  AND e.service_date_utc = NEW.service_date_utc
+                  AND e.event_type = 'PREDEBIT_RESERVATION_EXPIRED'
+                  AND e.predebit_evidence_reference IS NOT NULL
+           ) THEN
+            RAISE EXCEPTION 'expired-date pre-debit failure must close the old slot without transfer in the same transaction';
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE CONSTRAINT TRIGGER ce_predebit_rejection_requires_slot_closure
+AFTER UPDATE ON ce_deep_sky_order
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW EXECUTE FUNCTION ce_validate_predebit_slot_closure();
+
 CREATE FUNCTION ce_reject_daily_purchase_slot_delete() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'daily purchase slot records cannot be deleted; retain the quota state history';
