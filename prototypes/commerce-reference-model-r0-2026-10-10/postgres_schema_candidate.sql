@@ -165,7 +165,7 @@ CREATE TABLE ce_terminal_failure_evidence (
 );
 
 -- Enforce financial invariants in the database in addition to application checks.
-CREATE FUNCTION ce_validate_credit_ledger_entry() RETURNS trigger AS $
+CREATE FUNCTION ce_validate_credit_ledger_entry() RETURNS trigger AS $CE$
 DECLARE
     t ce_topup_order%ROWTYPE;
     d ce_credit_ledger_entry%ROWTYPE;
@@ -237,23 +237,23 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_credit_ledger_entry_validate
 BEFORE INSERT ON ce_credit_ledger_entry
 FOR EACH ROW EXECUTE FUNCTION ce_validate_credit_ledger_entry();
 
-CREATE FUNCTION ce_immutable_credit_ledger_entry() RETURNS trigger AS $
+CREATE FUNCTION ce_immutable_credit_ledger_entry() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'credit ledger entries are append-only';
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_credit_ledger_entry_no_update
 BEFORE UPDATE OR DELETE ON ce_credit_ledger_entry
 FOR EACH ROW EXECUTE FUNCTION ce_immutable_credit_ledger_entry();
 
-CREATE FUNCTION ce_validate_topup_transition() RETURNS trigger AS $
+CREATE FUNCTION ce_validate_topup_transition() RETURNS trigger AS $CE$
 BEGIN
     IF NEW.logical_topup_id <> OLD.logical_topup_id
        OR NEW.account_id <> OLD.account_id
@@ -287,14 +287,14 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_topup_order_validate_transition
 BEFORE UPDATE ON ce_topup_order
 FOR EACH ROW EXECUTE FUNCTION ce_validate_topup_transition();
 
 -- Record failure observation monotonically; recovery after failure needs authoritative lookup.
-CREATE OR REPLACE FUNCTION ce_validate_topup_transition() RETURNS trigger AS $
+CREATE OR REPLACE FUNCTION ce_validate_topup_transition() RETURNS trigger AS $CE$
 BEGIN
     IF NEW.logical_topup_id <> OLD.logical_topup_id
        OR NEW.account_id <> OLD.account_id
@@ -360,9 +360,9 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
-CREATE FUNCTION ce_validate_order_transition() RETURNS trigger AS $
+CREATE FUNCTION ce_validate_order_transition() RETURNS trigger AS $CE$
 BEGIN
     IF NEW.logical_purchase_id <> OLD.logical_purchase_id
        OR NEW.account_id <> OLD.account_id
@@ -424,13 +424,13 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_deep_sky_order_validate_transition
 BEFORE UPDATE ON ce_deep_sky_order
 FOR EACH ROW EXECUTE FUNCTION ce_validate_order_transition();
 
-CREATE FUNCTION ce_validate_quota_event() RETURNS trigger AS $
+CREATE FUNCTION ce_validate_quota_event() RETURNS trigger AS $CE$
 DECLARE
     o ce_deep_sky_order%ROWTYPE;
 BEGIN
@@ -458,13 +458,13 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_quota_event_validate
 BEFORE INSERT ON ce_quota_event
 FOR EACH ROW EXECUTE FUNCTION ce_validate_quota_event();
 
-CREATE FUNCTION ce_validate_daily_slot() RETURNS trigger AS $
+CREATE FUNCTION ce_validate_daily_slot() RETURNS trigger AS $CE$
 DECLARE
     o ce_deep_sky_order%ROWTYPE;
 BEGIN
@@ -490,27 +490,27 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_daily_purchase_slot_validate
 BEFORE INSERT OR UPDATE ON ce_daily_purchase_slot
 FOR EACH ROW EXECUTE FUNCTION ce_validate_daily_slot();
 
-CREATE FUNCTION ce_immutable_provider_event() RETURNS trigger AS $
+CREATE FUNCTION ce_immutable_provider_event() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'provider event evidence is append-only';
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_provider_event_no_update
 BEFORE UPDATE OR DELETE ON ce_provider_event
 FOR EACH ROW EXECUTE FUNCTION ce_immutable_provider_event();
 
-CREATE FUNCTION ce_immutable_quota_event() RETURNS trigger AS $
+CREATE FUNCTION ce_immutable_quota_event() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'quota event evidence is append-only';
 END;
-$ LANGUAGE plpgsql;
+$CE$1
 
 CREATE TRIGGER ce_quota_event_no_update
 BEFORE UPDATE OR DELETE ON ce_quota_event
