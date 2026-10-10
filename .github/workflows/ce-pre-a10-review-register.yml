@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json
-      - governance/candidates/CE_PRE_A10_AREA_REGISTER_R1_2026-10-10.json
+      - governance/candidates/CE_PRE_A10_AREA_REGISTER_R2_2026-10-10.json
       - scripts/governance/**
       - .github/workflows/ce-pre-a10-review-register.yml
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
       - name: Validate review register integrity
         run: >-
           python3 scripts/governance/pre_a10_area_gate.py
-          governance/candidates/CE_PRE_A10_AREA_REGISTER_R1_2026-10-10.json
+          governance/candidates/CE_PRE_A10_AREA_REGISTER_R2_2026-10-10.json
 
       - name: Run validator unit tests
         run: python3 scripts/governance/test_pre_a10_area_gate.py -v
@@ -48,5 +48,5 @@ jobs:
       - name: Require all review areas to be complete
         run: >-
           python3 scripts/governance/pre_a10_area_gate.py
-          governance/candidates/CE_PRE_A10_AREA_REGISTER_R1_2026-10-10.json
+          governance/candidates/CE_PRE_A10_AREA_REGISTER_R2_2026-10-10.json
           --require-complete
