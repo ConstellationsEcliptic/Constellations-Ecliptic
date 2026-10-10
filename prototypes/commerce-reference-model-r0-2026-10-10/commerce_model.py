@@ -164,20 +164,57 @@ class CommerceReferenceModel:
         cap_trigger: Optional[CapTrigger] = CapTrigger.PURCHASE_DEBIT_COMMITTED,
         terminal_failure_policy: Optional[TerminalFailurePolicy] = TerminalFailurePolicy.RELEASE_IF_ORIGINAL_DATE_CURRENT,
         fulfillment_admission: FulfillmentAdmissionState = FulfillmentAdmissionState.UNKNOWN,
+        fulfillment_admission_expires_at: Optional[datetime] = None,
+        fulfillment_attestation_reference: Optional[str] = None,
     ) -> None:
         self.cap_trigger = cap_trigger
         self.terminal_failure_policy = terminal_failure_policy
-        self.fulfillment_admission = fulfillment_admission
+        self.fulfillment_admission = FulfillmentAdmissionState.UNKNOWN
+        self.fulfillment_admission_expires_at: Optional[datetime] = None
+        self.fulfillment_attestation_reference: Optional[str] = None
+        self.set_fulfillment_admission(
+            fulfillment_admission,
+            attestation_reference=fulfillment_attestation_reference,
+            valid_until=fulfillment_admission_expires_at,
+        )
         self.orders: Dict[str, Order] = {}
         self.ledger = CreditLedger()
         # Provider event IDs are unique within each provider across all orders.
         self._provider_events: Dict[Tuple[str, str], Tuple[str, str]] = {}
 
-    def set_fulfillment_admission(self, state: FulfillmentAdmissionState) -> None:
-        """Set the simulated operational gate; production health evaluation is out of scope."""
+    def set_fulfillment_admission(
+        self,
+        state: FulfillmentAdmissionState,
+        *,
+        attestation_reference: Optional[str] = None,
+        valid_until: Optional[datetime] = None,
+    ) -> None:
+        """Set the simulated gate; READY requires evidence and a future expiry."""
         if not isinstance(state, FulfillmentAdmissionState):
             raise InvalidIdentity("fulfillment admission must be an explicit known enum state")
+        if state == FulfillmentAdmissionState.READY:
+            if not attestation_reference or not valid_until:
+                raise InvalidIdentity("READY admission requires health attestation and expiry")
+            valid_until_utc = self._utc(valid_until)
+            if valid_until_utc <= datetime.now(timezone.utc):
+                raise InvalidIdentity("READY admission attestation must not already be expired")
+            self.fulfillment_admission_expires_at = valid_until_utc
+            self.fulfillment_attestation_reference = attestation_reference
+        else:
+            if attestation_reference is not None or valid_until is not None:
+                raise InvalidIdentity("non-READY admission must not carry active READY attestation")
+            self.fulfillment_admission_expires_at = None
+            self.fulfillment_attestation_reference = None
         self.fulfillment_admission = state
+
+    def _admission_is_ready(self) -> bool:
+        expires = self.fulfillment_admission_expires_at
+        return bool(
+            self.fulfillment_admission == FulfillmentAdmissionState.READY
+            and self.fulfillment_attestation_reference
+            and expires is not None
+            and expires > datetime.now(timezone.utc)
+        )
 
     @staticmethod
     def _utc(timestamp: datetime) -> datetime:
@@ -198,9 +235,9 @@ class CommerceReferenceModel:
             # Existing logical-order retries remain available for reconciliation even
             # while the gate is closed; they do not create a new purchase.
             return existing
-        if self.fulfillment_admission != FulfillmentAdmissionState.READY:
+        if not self._admission_is_ready():
             raise FulfillmentAdmissionBlocked(
-                "new Deep Sky purchase requires explicit fulfillment admission READY"
+                "new Deep Sky purchase requires a current READY health attestation"
             )
 
         service_date = confirmed_utc.date()
@@ -247,9 +284,9 @@ class CommerceReferenceModel:
             raise InvalidTransition("new debit requires RESERVED state; reconcile unknown outcomes first")
         # Recheck admission at D1-A's effective-purchase debit boundary.
         # Idempotent replay of an already committed debit returned above.
-        if self.fulfillment_admission != FulfillmentAdmissionState.READY:
+        if not self._admission_is_ready():
             raise FulfillmentAdmissionBlocked(
-                "new reading debit requires explicit fulfillment admission READY"
+                "new reading debit requires a current READY health attestation"
             )
         self.ledger.post(CreditEntry(
             debit_id, order.account_id, -cost, "DEEP_SKY_READING_DEBIT", logical_purchase_id
