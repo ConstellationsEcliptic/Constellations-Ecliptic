@@ -237,6 +237,13 @@ class QualifiedSignalRecordR1Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "qualified_signal_identity_ambiguous"):
             issue_qualified_signal_record(packet)
 
+    def test_duplicate_geometry_records_share_one_canonical_identity(self) -> None:
+        packet = self._packet(kinematic_states=("EXACT", "EXACT"))
+        self.assertEqual(
+            signal_geometry_identities(packet),
+            {("SUN", "MOON", "CONJUNCTION", 0.0)},
+        )
+
     def test_unissued_packet_is_rejected_before_qsr(self) -> None:
         packet = EvidencePacket(
             evidence_packet_id="fixture",
