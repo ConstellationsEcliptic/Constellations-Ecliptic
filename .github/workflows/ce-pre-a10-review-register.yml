@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - governance/candidates/CE_PRE_A10_AREA_REGISTER_R1_2026-10-10.json
+      - governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json
       - governance/candidates/CE_PRE_A10_AREA_REGISTER_R1_2026-10-10.json
       - scripts/governance/**
       - .github/workflows/ce-pre-a10-review-register.yml
