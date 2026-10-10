@@ -289,3 +289,63 @@ Related external source record:
 Therefore the corrected 64-character string is **an expected value present in prior provenance documentation**, not a new direct hash computation from the mapping bytes in this review. Do not fill the missing character(s) by assumption in the pinned A9 branch. The correct remediation sequence is to retrieve the original canonical mapping bytes, compute SHA-256 directly, reconcile that result to the archive and prior H2 record, and then update the digest through a controlled candidate successor with exact-head tests. Keep the malformed predecessor artifacts unchanged and preserve their history.
 
 A read-only finding was posted to PR #26 (comment id 6101429127). No candidate source, manifest, authority or production state was modified by this finding.
+
+
+## 16. Structural scan of all 41 JSON files in the exact A9 tree
+
+A second bounded automated inspection parsed all 41 JSON blobs enumerated by the exact A9 recursive tree. This scan only treats a leaf value whose field name contains `sha256` as an expected digest; JSON Schema's legitimate `type` and `pattern` children were excluded from the digest-length check.
+
+### 16.1 Concrete malformed H2 digest references (nine locations)
+
+Nine candidate metadata fields carry the same H2 mapping value with invalid SHA-256 length:
+
+| File | Exact A9 blob SHA-1 | Field | Length |
+|---|---|---|---:|
+| `manifests/convergent_a1_b1_manifest.json` | `83938d1c60e7383cfb5edd37837aa683735e2500` | `registry_candidate.mapping_sha256` | 62 |
+| `manifests/convergent_test_register_r1.json` | `5364dc2e1eda7b5cd3ecb00203594c64f5f36625` | `recovered_h2_mapping_sha256` | 63 |
+| `manifests/convergent_test_register_r2.json` | `0a014f5f33498328c3f86e687469372df0e375b2` | `recovered_h2_mapping_sha256` | 63 |
+| `manifests/convergent_test_register_r3.json` | `13eb21577d7deca5f47ab5fe78b4c0ec8cc37e71` | `recovered_h2_mapping_sha256` | 63 |
+| `provenance/b1_h2_registry_recovery.json` | `fa120bad1034228e1de93ef3a1a709a5edb6d5cf` | `recovered_candidates.test_mapping_100_h2_provenance_reconciled.sha256` | 63 |
+| `provenance/CONVERGENT_A1_B1_STATE_R1.json` | `82aefc05b2a7a79213e39e3dd17e5cd6abf6253e` | `recovered_h2_registry.mapping_sha256` | 63 |
+| `provenance/CONVERGENT_A1_B1_STATE_R2.json` | `93c1028b39c17fb3bba98f711de7d878b2f2a666` | `recovered_h2_registry.mapping_sha256` | 63 |
+| `provenance/CONVERGENT_A1_B1_STATE_R4.json` | `763b1a70b237795c8b6c0d90ae871639a505ee86` | `current_candidate_basis.h2_mapping_sha256` | 63 |
+| `provenance/rev4_registry_rebind_candidate_r1.json` | `3e6268e0cfce96a4a9e6f9def11ff939ddd0f0ab` | `source_h2_recovery.mapping_sha256` | 62 |
+
+Two exact malformed literal patterns recur:
+- 63 characters: `babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441`
+- 62 characters: `babcccf81636df1e5eb92fe9119d474787fc3801b547fa5703e9048993d441`
+
+The prior Box H2 intake verification record (Box `2506851548670`) reports an expected 64-character digest:
+`babcccf81636df1e65eb92fe9119d474787fcf3801b547fa5703e9048993d441`
+but explicitly states that direct SHA-256 re-hashing of the original Box binary payload was NOT performed in that verification. The Dropbox source mapping artifact is identifiable and its metadata reports size 9,553 bytes, Dropbox content hash `7fcec8db732ddfbb82112c6690158180e8c9770d2270cc96339f3f8be64ccb68`, with duplicate content objects. However, the raw file bytes have not been downloaded and independently rehashed in this audit. Therefore the 64-character expected value remains a prior-provenance value, not an independently recomputed raw-byte result here.
+
+Disposition: **confirmed malformed candidate digest pointers; raw underlying mapping hash remains to be independently confirmed.** Do not guess a missing character, rewrite a pinned manifest in place, or treat these candidate pointer files as the official full Test Register. Reacquire the exact mapping bytes, compute SHA-256 directly, compare with archive/previous provenance, then create a controlled successor with a new source identity and exact-head tests.
+
+### 16.2 Invalid JSON syntax in a historical governance-observation R1 object
+
+File: `provenance/github_platform_governance_observation_r1.json`
+Exact blob SHA-1: `42e3bd4287321a34bf3a439cc864611efc3330ac`.
+
+The file fails JSON parsing because its `a7_candidate_scope.branch` value is the unquoted token `branch`:
+```json
+"a7_candidate_scope": {
+  "branch": branch,
+  "head": "a2ba5067f36247086ed3049371fc471c5a320585"
+}
+```
+
+The exact A9 tree also contains `provenance/github_platform_governance_observation_r2.json`, blob SHA-1 `a7ea88234ce9958bb19efa7f7a772db24fd3ffce`, which parses as valid JSON and explicitly records R1 as `HISTORICAL_STALE_SNAPSHOT`. Thus R1 is a malformed retained historical snapshot, and R2 is a syntactically valid successor. The defect has been identified; the pinned bytes remain unchanged. If the malformed historical file is intended to remain referenced in future control packages, its historical form must remain preserved and a corrected/superseding valid artifact should be produced under a new identity, with R2 and all other consumers reviewed rather than retroactively rewriting history.
+
+### 16.3 Explicit placeholders are not treated as digest errors
+
+Other hash-named fields include explicit non-hex placeholders such as `NOT_ESTABLISHED`, `NOT_ESTABLISHED_AFTER_HARDENING`, `RECORDED_IN_SOURCE_TREE_SHA256_V2_MANIFEST` and `RECORDED_IN_PROVENANCE_CONTROL_PLANE_SHA256_R1`. These are not SHA-256 digests; they appear to be deliberately unresolved/external-reference states. They should be evaluated against each artifact's declared schema/contract and status, not mislabeled as valid hashes. No candidate value has been silently replaced during this scan.
+
+### 16.4 Scan scope and result
+
+- Total JSON blobs enumerated and checked: 41.
+- Malformed H2 mapping SHA-256 references: 9 fields in 9 JSON files.
+- Syntactically invalid JSON artifact: 1 historical R1 file, with a valid R2 successor that marks R1 stale.
+- No other non-placeholder malformed SHA-256 leaf values were returned by this bounded scan.
+- This was a parse/shape/value-length scan at one exact commit, not a semantic review of all JSON meanings or runtime consumers.
+
+The malformed mapping references and invalid historical JSON are recorded as candidate/lineage findings. The A9 source tree remains unchanged. Any candidate repair affecting its source-tree/control-plane identities needs a successor branch, accurate identity recomputation, and new exact-head checks.
