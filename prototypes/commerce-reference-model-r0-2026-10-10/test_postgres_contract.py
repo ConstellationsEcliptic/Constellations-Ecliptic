@@ -102,9 +102,6 @@ class PostgresCommerceContractTests(unittest.TestCase):
     def test_topup_terms_must_match_an_available_server_owned_sku(self):
         with self.assertRaises(errors.RaiseException):
             self.insert_topup(amount=150)
-        self.conn.execute(
-            "UPDATE ce_credits_sku SET sku_status='RETIRED' WHERE sku_id='sku-test' AND sku_revision='r0'"
-        ) if False else None
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
                 "UPDATE ce_credits_sku SET sku_status='RETIRED' WHERE sku_id='sku-test' AND sku_revision='r0'"
