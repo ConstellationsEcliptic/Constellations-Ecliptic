@@ -209,7 +209,6 @@ class CreditsTopUpModel:
             if order.status != TopUpStatus.CREDIT_FULFILLED:
                 order.status = TopUpStatus.PAYMENT_FAILED
                 order.failure_observed = True
-                order.failure_observed = True
             return True
 
         # The trusted adapter must already have verified provider state and its
