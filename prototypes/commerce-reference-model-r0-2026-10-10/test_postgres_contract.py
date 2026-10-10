@@ -456,22 +456,24 @@ class PostgresCommerceContractTests(unittest.TestCase):
             VALUES ('order-1',TRUE,TRUE,TRUE,TRUE,'terminal-evidence-ref',%s)""",
             (NOW,),
         )
-        self.conn.execute(
-            """INSERT INTO ce_credit_ledger_entry
-            (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
-            VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
-            (NOW,),
-        )
-        with self.assertRaises(errors.UniqueViolation):
+        with self.conn.transaction():
             self.conn.execute(
                 """INSERT INTO ce_credit_ledger_entry
                 (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
-                VALUES ('restore-2','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
+                VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
                 (NOW,),
             )
-        self.conn.execute(
-            "UPDATE ce_deep_sky_order SET status='TERMINAL_NONDELIVERY' WHERE logical_purchase_id='order-1'"
-        )
+            with self.assertRaises(errors.UniqueViolation):
+                with self.conn.transaction():
+                    self.conn.execute(
+                        """INSERT INTO ce_credit_ledger_entry
+                        (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
+                        VALUES ('restore-2','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
+                        (NOW,),
+                    )
+            self.conn.execute(
+                "UPDATE ce_deep_sky_order SET status='TERMINAL_NONDELIVERY' WHERE logical_purchase_id='order-1'"
+            )
 
     def test_terminal_nondelivery_cannot_be_reactivated_or_grant_entitlement_after_restore(self):
         self.insert_reading_order()
@@ -483,27 +485,29 @@ class PostgresCommerceContractTests(unittest.TestCase):
             VALUES ('order-1',TRUE,TRUE,TRUE,TRUE,'terminal-evidence-ref',%s)""",
             (NOW,),
         )
-        self.conn.execute(
-            """INSERT INTO ce_credit_ledger_entry
-            (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
-            VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
-            (NOW,),
-        )
 
-        # A restored debit must not regain a reading entitlement even during the
-        # interval before terminal state is persisted by the calling transaction.
-        with self.assertRaises(errors.RaiseException):
+        with self.conn.transaction():
             self.conn.execute(
-                """INSERT INTO ce_reading_entitlement
-                (entitlement_id, logical_purchase_id, account_id, reading_reference,
-                 reading_content_hash, validated_at, accessible_at)
-                VALUES ('ent-after-restore','order-1','acct-1','read-1','hash-1',%s,%s)""",
-                (NOW, NOW),
+                """INSERT INTO ce_credit_ledger_entry
+                (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
+                VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
+                (NOW,),
+            )
+            # A restored debit cannot regain a reading entitlement even before the
+            # terminal state update within the same transaction.
+            with self.assertRaises(errors.RaiseException):
+                with self.conn.transaction():
+                    self.conn.execute(
+                        """INSERT INTO ce_reading_entitlement
+                        (entitlement_id, logical_purchase_id, account_id, reading_reference,
+                         reading_content_hash, validated_at, accessible_at)
+                        VALUES ('ent-after-restore','order-1','acct-1','read-1','hash-1',%s,%s)""",
+                        (NOW, NOW),
+                    )
+            self.conn.execute(
+                "UPDATE ce_deep_sky_order SET status='TERMINAL_NONDELIVERY' WHERE logical_purchase_id='order-1'"
             )
 
-        self.conn.execute(
-            "UPDATE ce_deep_sky_order SET status='TERMINAL_NONDELIVERY' WHERE logical_purchase_id='order-1'"
-        )
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
                 "UPDATE ce_deep_sky_order SET status='DEBIT_COMMITTED' WHERE logical_purchase_id='order-1'"
@@ -529,6 +533,72 @@ class PostgresCommerceContractTests(unittest.TestCase):
             0,
         )
 
+    def test_debit_restoration_cannot_commit_without_terminal_transition(self):
+        self.insert_reading_order()
+        self.insert_debit_and_bind_order()
+        self.conn.execute(
+            """INSERT INTO ce_terminal_failure_evidence
+            (logical_purchase_id, no_valid_reading_accessible, no_operation_can_still_deliver,
+             no_entitlement_exists, all_relevant_operations_closed, evidence_reference, confirmed_at)
+            VALUES ('order-1',TRUE,TRUE,TRUE,TRUE,'terminal-evidence-ref',%s)""",
+            (NOW,),
+        )
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                """INSERT INTO ce_credit_ledger_entry
+                (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
+                VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
+                (NOW,),
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT status FROM ce_deep_sky_order WHERE logical_purchase_id='order-1'"
+            ).fetchone()[0],
+            "DEBIT_COMMITTED",
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM ce_credit_ledger_entry WHERE entry_type='DEEP_SKY_READING_DEBIT_RESTORATION'"
+            ).fetchone()[0],
+            0,
+        )
+
+    def test_debit_restoration_cannot_reverse_a_fulfilled_order(self):
+        self.insert_reading_order()
+        self.insert_debit_and_bind_order()
+        self.conn.execute(
+            """INSERT INTO ce_reading_entitlement
+            (entitlement_id, logical_purchase_id, account_id, reading_reference,
+             reading_content_hash, validated_at, accessible_at)
+            VALUES ('ent-1','order-1','acct-1','read-1','hash-1',%s,%s)""",
+            (NOW, NOW),
+        )
+        self.conn.execute(
+            "UPDATE ce_deep_sky_order SET status='FULFILLED', completed_at=%s WHERE logical_purchase_id='order-1'",
+            (NOW,),
+        )
+        self.conn.execute("DELETE FROM ce_reading_entitlement WHERE logical_purchase_id='order-1'")
+        self.conn.execute(
+            """INSERT INTO ce_terminal_failure_evidence
+            (logical_purchase_id, no_valid_reading_accessible, no_operation_can_still_deliver,
+             no_entitlement_exists, all_relevant_operations_closed, evidence_reference, confirmed_at)
+            VALUES ('order-1',TRUE,TRUE,TRUE,TRUE,'false-terminal-evidence',%s)""",
+            (NOW,),
+        )
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                """INSERT INTO ce_credit_ledger_entry
+                (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
+                VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
+                (NOW,),
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT status, quota_effect FROM ce_deep_sky_order WHERE logical_purchase_id='order-1'"
+            ).fetchone(),
+            ("FULFILLED", True),
+        )
+
     def test_slot_release_needs_terminal_evidence_and_a_policy_event(self):
         self.insert_reading_order()
         self.insert_debit_and_bind_order()
@@ -545,15 +615,16 @@ class PostgresCommerceContractTests(unittest.TestCase):
             VALUES ('order-1',TRUE,TRUE,TRUE,TRUE,'terminal-evidence-ref',%s)""",
             (NOW,),
         )
-        self.conn.execute(
-            """INSERT INTO ce_credit_ledger_entry
-            (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
-            VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
-            (NOW,),
-        )
-        self.conn.execute(
-            "UPDATE ce_deep_sky_order SET status='TERMINAL_NONDELIVERY' WHERE logical_purchase_id='order-1'"
-        )
+        with self.conn.transaction():
+            self.conn.execute(
+                """INSERT INTO ce_credit_ledger_entry
+                (entry_id, account_id, entry_type, delta, reference_id, parent_entry_id, created_at)
+                VALUES ('restore-1','acct-1','DEEP_SKY_READING_DEBIT_RESTORATION',4,'debit-1','debit-1',%s)""",
+                (NOW,),
+            )
+            self.conn.execute(
+                "UPDATE ce_deep_sky_order SET status='TERMINAL_NONDELIVERY' WHERE logical_purchase_id='order-1'"
+            )
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
                 "UPDATE ce_daily_purchase_slot SET slot_state='RELEASED', state_version=2, updated_at=%s WHERE account_id='acct-1' AND service_date_utc=%s",
