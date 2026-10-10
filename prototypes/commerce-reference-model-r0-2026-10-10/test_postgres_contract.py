@@ -13,8 +13,8 @@ from psycopg import errors
 DATABASE_URL = os.environ.get("CE_TEST_DATABASE_URL")
 SCHEMA_SQL = Path(__file__).with_name("postgres_schema_candidate.sql").read_text(encoding="utf-8")
 UTC = timezone.utc
-NOW = datetime(2026, 10, 10, 12, 0, tzinfo=UTC)
-SERVICE_DATE = date(2026, 10, 10)
+NOW = datetime.now(UTC).replace(microsecond=0)
+SERVICE_DATE = NOW.date()
 
 
 @unittest.skipUnless(DATABASE_URL, "CE_TEST_DATABASE_URL is not set; PostgreSQL integration tests skipped")
@@ -25,6 +25,13 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.conn.execute(f'CREATE SCHEMA "{self.schema}"')
         self.conn.execute(f'SET search_path TO "{self.schema}"')
         self.conn.execute(SCHEMA_SQL, prepare=False)
+        # Integration tests explicitly attest a healthy service; the schema default is UNKNOWN.
+        self.conn.execute(
+            """UPDATE ce_purchase_admission_state
+                  SET admission_state='READY', reason_reference='test-fixture-health-ready', updated_at=%s
+                WHERE singleton_id=1""",
+            (NOW,),
+        )
         self.conn.execute(
             """INSERT INTO ce_credits_sku
             (sku_id, sku_revision, amount_minor, currency, credits_granted, sku_status, created_at)
@@ -96,8 +103,61 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.assertTrue({
             "ce_credits_sku", "ce_topup_order", "ce_provider_event", "ce_credit_ledger_entry",
             "ce_deep_sky_order", "ce_daily_purchase_slot", "ce_quota_event",
-            "ce_reading_entitlement", "ce_terminal_failure_evidence",
+            "ce_reading_entitlement", "ce_terminal_failure_evidence", "ce_purchase_admission_state",
         }.issubset(names))
+
+
+    def test_fulfillment_health_interlock_blocks_new_order_and_effective_purchase_debit(self):
+        self.conn.execute(
+            """UPDATE ce_purchase_admission_state
+                  SET admission_state='BLOCKED', reason_reference='test-service-known-unavailable', updated_at=%s
+                WHERE singleton_id=1""",
+            (NOW,),
+        )
+        with self.assertRaises(errors.RaiseException):
+            self.insert_reading_order(order_id="blocked-order")
+        self.assertEqual(
+            self.conn.execute("SELECT COUNT(*) FROM ce_deep_sky_order").fetchone()[0], 0
+        )
+
+        self.conn.execute(
+            """UPDATE ce_purchase_admission_state
+                  SET admission_state='READY', reason_reference='test-service-recovered', updated_at=%s
+                WHERE singleton_id=1""",
+            (NOW,),
+        )
+        self.insert_reading_order(order_id="accepted-before-health-change")
+        self.conn.execute(
+            """UPDATE ce_purchase_admission_state
+                  SET admission_state='UNKNOWN', reason_reference='test-health-no-longer-attested', updated_at=%s
+                WHERE singleton_id=1""",
+            (NOW,),
+        )
+        with self.assertRaises(errors.RaiseException):
+            self.insert_debit_and_bind_order(
+                order_id="accepted-before-health-change", debit_id="debit-gated"
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM ce_credit_ledger_entry WHERE entry_type='DEEP_SKY_READING_DEBIT'"
+            ).fetchone()[0],
+            0,
+        )
+        self.conn.execute(
+            """UPDATE ce_purchase_admission_state
+                  SET admission_state='READY', reason_reference='test-health-explicitly-ready', updated_at=%s
+                WHERE singleton_id=1""",
+            (NOW,),
+        )
+        self.insert_debit_and_bind_order(
+            order_id="accepted-before-health-change", debit_id="debit-gated"
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM ce_credit_ledger_entry WHERE entry_type='DEEP_SKY_READING_DEBIT'"
+            ).fetchone()[0],
+            1,
+        )
 
     def test_topup_terms_must_match_an_available_server_owned_sku(self):
         with self.assertRaises(errors.RaiseException):
