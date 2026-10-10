@@ -349,3 +349,46 @@ Other hash-named fields include explicit non-hex placeholders such as `NOT_ESTAB
 - This was a parse/shape/value-length scan at one exact commit, not a semantic review of all JSON meanings or runtime consumers.
 
 The malformed mapping references and invalid historical JSON are recorded as candidate/lineage findings. The A9 source tree remains unchanged. Any candidate repair affecting its source-tree/control-plane identities needs a successor branch, accurate identity recomputation, and new exact-head checks.
+
+
+## 17. H2 digest defect also appears in Markdown lineage records
+
+The exact A9 non-JSON tree was scanned for the same mapping hash and long hexadecimal strings. Two additional artifacts reproduce the invalid 63-character mapping digest:
+- `CE_CONVERGENT_A1_B1_CHECKPOINT_R1.md`, blob SHA-1 `7c8215bc6641282482d74afcccb346ca856fafdd`, line 32.
+- `docs/CE_A1_B1_CONVERGENT_LINEAGE_STATUS_R1.md`, blob SHA-1 `56d16017294137bb1f79451985754c765ac3ca9d`, line 16.
+
+Their registry digest is 64 characters, while the adjacent mapping digest is 63. Combined with Section 16's nine JSON fields, the same malformed mapping identity is reproduced in **11 artifacts in the pinned A9 tree** (9 JSON artifacts + 2 Markdown records). This shows copied candidate metadata drift, not independent evidence for the missing byte. The expected 64-character value recorded in H2 verification remains to be matched against raw bytes before any successor corrects those records.
+
+Other 56–72-character hash-like tokens observed in the remaining non-code text files were checked at their local context; the additional ones were valid 64-character source/build identities or environment image/dependency digests. The A9 source-tree manifest currently records `1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b`, and control-plane manifest records `0bc4f88dc43549a1033434a2a3653c02b46002024630b4294c22ddb8a5f7c357`. These are identities bound to this candidate control package; do not transplant them to a successor branch.
+
+## 18. Active implementation pointer vs later A9 candidate — source route is not self-evident
+
+A fresh read of the current retained harmonization records found:
+- Box `2492339224632`, `CE_ACTIVE_IMPLEMENTATION_POINTER_2026-09-28_R23-PROVENANCE-REMEDIATED.md`, points to PR #5 at exact HEAD `3db976fd7293f0d4c5d367a81fc87489a97ba900`, branch `development/constitutional-harmonization/2026-09-28-r1`, OPEN / DRAFT / NOT MERGED.
+- Box `2492332324704`, `CE_V1_CURRENT_DECISION_REGISTER_2026-09-28_R23-PROVENANCE-REMEDIATED.md`, repeats the same PR #5 HEAD and says the current-head Source Authority attestation is pending reissue; Trusted Build NOT_ESTABLISHED; Production Runtime NOT_AUTHORIZED.
+- PR #5 is still OPEN / DRAFT / NOT MERGED at that same exact HEAD, and its 11 changed files focus on the birth-time/calendar harmonization.
+- PR #26 is a separate OPEN / DRAFT / NOT MERGED A9 technical candidate at HEAD `c8dab3542d3d4725cf591630c07f76366f7949d0`, with 185 files including runtime, test, profile, schema and build-control content.
+
+This does **not** prove PR #26 is an authorized successor to the PR #5 implementation pointer, nor does it prove that PR #5 contains the full newer A9 engineering state. It proves the control documents still explicitly name PR #5 as the active candidate pointer, while later technical candidate work exists separately. Until a valid successor pointer/decision establishes supersession, treat the implementation lineage as **NOT RECONCILED**, and do not infer Source Authority from either candidate's existence or test success.
+
+The prior harmonization apply/post-apply records (Box `2491700051951`, `2491702950277`) correctly state that their work applied Product Constitution v1.6.1, Implementation Plan v1.3.1, Technical Contracts v1.1, and Execution Profile v1.3/revision 4 through successor materialization, while explicitly preserving SOURCE_AUTHORITY=NOT_ESTABLISHED, TRUSTED_BUILD=NOT_ESTABLISHED, PRODUCTION_RUNTIME=NOT_AUTHORIZED and SEAL=NO. This application is not an implementation-pointer update and does not solve the active full Test Register conflict.
+
+Relevant source links:
+- Implementation pointer: https://app.box.com/file/2492339224632
+- Current Decision Register: https://app.box.com/file/2492332324704
+- Harmonization application: https://app.box.com/file/2491700051951
+- Post-apply verification: https://app.box.com/file/2491702950277
+- PR #5: https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/5
+- PR #26: https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/26
+
+Disposition: keep PR #5 and PR #26 untouched as historical/candidate branches; prepare a source-bound implementation-pointer successor only through a proven authority route, showing which tree is the current candidate basis and which predecessor remains preserved. This is a governance/source lineage task, not a request to merge either PR.
+
+## 19. Consolidated structural scan status (A9 exact HEAD)
+
+The exact A9 tree at `c8dab3542d3d4725cf591630c07f76366f7949d0` has now been enumerated by type and scanned structurally:
+- 111 Python files: all blobs fetched and scanned for selected test-discovery and unsafe-call patterns; one confirmed misplaced test method found.
+- 41 JSON files: syntax/field scan; one invalid historical R1 JSON, nine invalid-length H2 mapping digest fields, plus explicit non-materialized hash placeholders that were kept distinct from malformed digest values.
+- 31 text/config/workflow/build files excluding Python/JSON and binary TZIF fixtures: scanned for the H2 digest and long digest-like strings. Two Markdown H2 mapping references were also found malformed, making 11 artifact copies of the same bad mapping digest.
+- Binary/timezone fixtures are not part of this text pattern scan and were not claimed inspected byte-by-byte here; separate TZif code/runtime controls exist but native runtime qualification is still unestablished.
+
+This gives a stronger code/configuration structural view than the initial bounded governance-only review, but it still is not a semantic line-by-line audit of all source logic or every operating-system execution. The candidate must remain non-authoritative until the provenance, tests, source lineage and release gates are corrected/verified through their proper routes.
