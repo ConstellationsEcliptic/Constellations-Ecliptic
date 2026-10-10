@@ -404,6 +404,21 @@ BEGIN
         IF NOT FOUND THEN
             RAISE EXCEPTION 'reading debit must match a reserved order for the same account';
         END IF;
+        -- The one-per-account/UTC-date reservation is the admission lock. A caller
+        -- cannot bypass it by inserting an order row directly and posting a debit.
+        IF NOT EXISTS (
+            SELECT 1
+              FROM ce_daily_purchase_slot s
+              JOIN ce_deep_sky_order o
+                ON o.logical_purchase_id = s.active_logical_purchase_id
+             WHERE s.active_logical_purchase_id = NEW.reference_id
+               AND s.account_id = NEW.account_id
+               AND s.service_date_utc = o.service_date_utc
+               AND s.slot_state = 'RESERVED'
+               AND o.status = 'RESERVED'
+        ) THEN
+            RAISE EXCEPTION 'reading debit requires the matching reserved account/UTC-date slot';
+        END IF;
     ELSIF NEW.entry_type = 'DEEP_SKY_READING_DEBIT_RESTORATION' THEN
         SELECT * INTO d
           FROM ce_credit_ledger_entry
