@@ -146,6 +146,8 @@ CREATE FUNCTION ce_validate_purchase_admission_event() RETURNS trigger AS $CE$
 DECLARE
     current_state ce_purchase_admission_state%ROWTYPE;
 BEGIN
+    -- Timestamp is database-owned; clients cannot backdate/forward-date a health transition.
+    NEW.changed_at := statement_timestamp();
     SELECT * INTO current_state
       FROM ce_purchase_admission_state
      WHERE singleton_id = 1
@@ -159,8 +161,9 @@ BEGIN
        AND (NEW.health_attestation_reference IS NULL
             OR btrim(NEW.health_attestation_reference) = ''
             OR NEW.ready_expires_at IS NULL
-            OR NEW.ready_expires_at <= statement_timestamp()) THEN
-        RAISE EXCEPTION 'READY admission requires a non-empty health attestation and future expiry';
+            OR NEW.ready_expires_at <= statement_timestamp()
+            OR NEW.ready_expires_at > statement_timestamp() + INTERVAL '5 minutes') THEN
+        RAISE EXCEPTION 'READY admission requires a non-empty health attestation and expiry within the provisional five-minute lease ceiling';
     END IF;
     RETURN NEW;
 END;
