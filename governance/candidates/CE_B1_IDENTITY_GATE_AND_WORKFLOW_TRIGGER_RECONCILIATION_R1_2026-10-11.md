@@ -12,7 +12,7 @@ A10 / Source Authority / Trusted Build / Runtime Adoption / merge / release / pr
 
 R0 documented the workflow path/branch trigger defect and expected identity-gate mismatch:
 - R0: https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/89661c62a3a1c84596cfa997997994ce44a74e27/governance/candidates/CE_B1_IDENTITY_GATE_AND_WORKFLOW_TRIGGER_RECONCILIATION_R0_2026-10-11.md
-- R0 blob SHA-1 at creation: `e07c8f0f00000000000000000000000000000000` (predecessor identity must be re-fetched for current metadata; this addendum does not depend on a remembered digest).
+- R0 blob SHA-1: `642d74df1681957edcd0a71e5b9fbe19dcfd75f8`.
 
 The workflow correction was committed at:
 `5b0c430b9a74d6d3f7ea1de7d6806c8b4016dc89`
