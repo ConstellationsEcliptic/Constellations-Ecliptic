@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from enum import Enum
 from typing import Dict, Optional, Tuple
 
@@ -193,11 +193,14 @@ class CommerceReferenceModel:
         if not isinstance(state, FulfillmentAdmissionState):
             raise InvalidIdentity("fulfillment admission must be an explicit known enum state")
         if state == FulfillmentAdmissionState.READY:
-            if not attestation_reference or not valid_until:
+            if not attestation_reference or not attestation_reference.strip() or not valid_until:
                 raise InvalidIdentity("READY admission requires health attestation and expiry")
             valid_until_utc = self._utc(valid_until)
-            if valid_until_utc <= datetime.now(timezone.utc):
+            now_utc = datetime.now(timezone.utc)
+            if valid_until_utc <= now_utc:
                 raise InvalidIdentity("READY admission attestation must not already be expired")
+            if valid_until_utc > now_utc + timedelta(minutes=5):
+                raise InvalidIdentity("READY admission lease exceeds the provisional five-minute candidate ceiling")
             self.fulfillment_admission_expires_at = valid_until_utc
             self.fulfillment_attestation_reference = attestation_reference
         else:
