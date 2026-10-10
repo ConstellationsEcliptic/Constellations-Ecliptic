@@ -119,3 +119,43 @@ A source may be proven historical but not current authority. A decision may be r
 This document is a controlled reconstruction of the **content supplied by the owner in this conversation**, plus a source-conscious crosswalk to known project context. It is not the original historical file, not a byte-identical recovery of that file, not a full repository audit, and not a normative amendment. It changes no Index, Constitution, official Test Register, Source Authority, production code, schema, runtime, A10, Trusted Build, release or SEAL state.
 
 End of R0.
+
+
+## 8. Follow-up source-anchor lookup performed after the owner supplied this crosswalk
+
+On 2026-10-11, the three reported SHA-1 values were searched against Box file metadata and exact-name source objects. This produced a concrete match for each reported anchor.
+
+| Anchor | Canonical candidate-folder match(es) | Box metadata SHA-1 / size | Extracted title / version | Older raw-inventory version found |
+|---|---|---|---|---|
+| `02_CALCULATION_CONSTITUTION.md` | Box `2485324197349`, `2485336984594` | `72abaeee50c3d49607cd99756df58f90ff96f8bf`; 19,235 bytes | CALCULATION CONSTITUTION v1.9 | Box `2485756254419`, SHA-1 `5cb9d9aa2b15077455e8b9aeaa1296e0e7781c33`, 11,076 bytes; title v1.7 |
+| `03_SIGNAL_ENGINE_CORE_V1_SPECIFICATION.md` | Box `2485326806096`, `2485335414676` | `2408a9c84d4148c9f2cb37506b238b82a020a67b`; 9,438 bytes | SIGNAL ENGINE CORE V1.4 | Box `2485753593547`, SHA-1 `62d1190533b05e03d3d86a4ad0110373347739c0`, 7,649 bytes; title SIGNAL ENGINE CORE V1.1 SPECIFICATION |
+| `04_INTERPRETIVE_CANON.md` | Box `2485336345504`, `2485337228722` | `7ee32ee5f74477cf2674b50182be42aa8c5d439a`; 6,817 bytes | INTERPRETIVE CANON v1.2 | Box `2485754538411`, SHA-1 `2cde1e43c9a57df77e7040fd31b018f1721bf58d`, 4,903 bytes; title INTERPRETIVE CANON v1.0 |
+
+The two Box canonical-folder copies for each anchor returned identical extracted text content:
+- Calculation Constitution: 19,069 characters per retrieved text representation.
+- Signal Engine Core: 9,353 characters per retrieved text representation.
+- Interpretive Canon: 6,774 characters per retrieved text representation.
+
+Each older raw-inventory item differs from its named canonical v1.9 / v1.4 / v1.2 counterpart, and carries a different Box SHA-1, size, and earlier title version. This verifies that the owner-reported SHA-1 values correspond to two duplicated retained source objects for each of these three documents and identifies older, non-identical historical objects.
+
+**Evidence limit:** these are exact Box metadata values and content-representation comparisons. I have not downloaded the underlying file bytes and independently re-computed SHA-1/SHA-256 from those raw bytes in this step. The result therefore corroborates the reported identity and duplicate content through Box metadata, not an independent byte-hash recomputation.
+
+Source links:
+- Calculation v1.9 copies: https://account.box.com/file/2485324197349 and https://account.box.com/file/2485336984594
+- Calculation v1.7 raw-inventory copy: https://account.box.com/file/2485756254419
+- Signal v1.4 copies: https://account.box.com/file/2485326806096 and https://account.box.com/file/2485335414676
+- Signal v1.1 raw-inventory copy: https://account.box.com/file/2485753593547
+- Canon v1.2 copies: https://account.box.com/file/2485336345504 and https://account.box.com/file/2485337228722
+- Canon v1.0 raw-inventory copy: https://account.box.com/file/2485754538411
+
+The exact source identities are now corroborated, but the next source-authority step is still required: map these exact objects to the retained Clean Current Set R3 member/hash, current Index pointer, harmonized successor, Source Authority and relevant implementation/test fixtures. Matching SHA-1 and identical copies do not by themselves prove which one is the active authoritative source across all layers.
+
+## 9. What this changes in the full audit from the beginning
+
+This crosswalk closes two limited evidence gaps in the previous Full Revalidation Audit R0:
+1. the **substantive contents** of the owner's original 11 findings and 3 notes are now present in this conversation and preserved here; and
+2. the three reported Calculation / Signal / Canon anchor identities are now found as Box metadata matches, with older non-identical source versions distinguished.
+
+It does **not** mean that the overall audit or the source-authority review is complete. It does not close the retained Index / Test Register active binding conflict, approve the GDE-01 / Index adoption route, establish a populated approved Canon Rule Registry, complete A3/B1/D4, or prove that every source tree and every production line has been audited. Those remain independent work items in the dependency-aware audit plan.
+
+The full-audit report's sentence that the literal original 11+3 was not recovered is now historical as of its R0 timestamp. Current continuation must refer to this owner-supplied recovered content and preserve the remaining provenance gap (original artifact itself not independently recovered), instead of carrying forward the old missing-content status.
