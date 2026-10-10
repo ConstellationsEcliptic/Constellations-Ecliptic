@@ -4,6 +4,7 @@ from datetime import date, datetime, timezone
 import os
 from pathlib import Path
 import threading
+import time
 import unittest
 import uuid
 
@@ -25,13 +26,6 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.conn.execute(f'CREATE SCHEMA "{self.schema}"')
         self.conn.execute(f'SET search_path TO "{self.schema}"')
         self.conn.execute(SCHEMA_SQL, prepare=False)
-        # Integration tests explicitly attest a healthy service; the schema default is UNKNOWN.
-        self.conn.execute(
-            """UPDATE ce_purchase_admission_state
-                  SET admission_state='READY', reason_reference='test-fixture-health-ready', updated_at=%s
-                WHERE singleton_id=1""",
-            (NOW,),
-        )
         self.conn.execute(
             """INSERT INTO ce_credits_sku
             (sku_id, sku_revision, amount_minor, currency, credits_granted, sku_status, created_at)
@@ -43,6 +37,32 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.conn.execute("SET search_path TO public")
         self.conn.execute(f'DROP SCHEMA IF EXISTS "{self.schema}" CASCADE')
         self.conn.close()
+
+    def set_admission_state(self, new_state, *, reason, health_reference=None, lease_seconds=300):
+        current = self.conn.execute(
+            "SELECT admission_state, state_version FROM ce_purchase_admission_state WHERE singleton_id=1"
+        ).fetchone()
+        previous_state, previous_version = current
+        changed_at = datetime.now(UTC)
+        expires = (
+            changed_at + timedelta(seconds=lease_seconds)
+            if new_state == "READY" else None
+        )
+        event_id = "admission-" + uuid.uuid4().hex
+        self.conn.execute(
+            """INSERT INTO ce_purchase_admission_event
+               (event_id, singleton_id, state_version, previous_state, new_state,
+                reason_reference, health_attestation_reference, ready_expires_at,
+                actor_reference, changed_at)
+               VALUES (%s,1,%s,%s,%s,%s,%s,%s,'test-operator',%s)""",
+            (event_id, previous_version + 1, previous_state, new_state,
+             reason, health_reference if new_state == "READY" else None, expires, changed_at),
+        )
+        updated = self.conn.execute(
+            "SELECT admission_state, state_version FROM ce_purchase_admission_state WHERE singleton_id=1"
+        ).fetchone()
+        self.assertEqual(updated, (new_state, previous_version + 1))
+        return expires
 
     def insert_topup(self, topup_id="topup-1", account="acct-1", idem="idem-1",
                      provider="provider-test", tx_ref="provider-tx-1",
@@ -70,7 +90,17 @@ class PostgresCommerceContractTests(unittest.TestCase):
         )
 
     def insert_reading_order(self, order_id="order-1", account="acct-1",
-                             service_date=SERVICE_DATE, status="RESERVED"):
+                             service_date=SERVICE_DATE, status="RESERVED", ensure_ready=True):
+        if ensure_ready:
+            state = self.conn.execute(
+                "SELECT admission_state, ready_expires_at FROM ce_purchase_admission_state WHERE singleton_id=1"
+            ).fetchone()
+            if (state[0] != "READY" or state[1] is None
+                    or state[1] <= datetime.now(UTC)):
+                self.set_admission_state(
+                    "READY", reason="test-fixture-attested-ready",
+                    health_reference="test-health-attestation",
+                )
         self.conn.execute(
             """INSERT INTO ce_deep_sky_order
             (logical_purchase_id, account_id, service_date_utc, status, created_at)
@@ -106,35 +136,81 @@ class PostgresCommerceContractTests(unittest.TestCase):
             "ce_credits_sku", "ce_topup_order", "ce_provider_event", "ce_credit_ledger_entry",
             "ce_deep_sky_order", "ce_daily_purchase_slot", "ce_quota_event",
             "ce_reading_entitlement", "ce_terminal_failure_evidence", "ce_purchase_admission_state",
+            "ce_purchase_admission_event",
         }.issubset(names))
 
 
-    def test_fulfillment_health_interlock_blocks_new_order_and_effective_purchase_debit(self):
-        self.conn.execute(
-            """UPDATE ce_purchase_admission_state
-                  SET admission_state='BLOCKED', reason_reference='test-service-known-unavailable', updated_at=%s
-                WHERE singleton_id=1""",
-            (NOW,),
-        )
+
+    def test_admission_state_cannot_change_without_matching_versioned_event(self):
         with self.assertRaises(errors.RaiseException):
-            self.insert_reading_order(order_id="blocked-order")
+            self.conn.execute(
+                """UPDATE ce_purchase_admission_state
+                      SET admission_state='BLOCKED', reason_reference='unsourced-direct-update',
+                          state_version=1, updated_at=%s
+                    WHERE singleton_id=1""",
+                (NOW,),
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT admission_state, state_version FROM ce_purchase_admission_state WHERE singleton_id=1"
+            ).fetchone(),
+            ("UNKNOWN", 0),
+        )
+        self.set_admission_state("BLOCKED", reason="approved-test-reason")
+        event_id = self.conn.execute(
+            "SELECT event_id FROM ce_purchase_admission_event WHERE state_version=1"
+        ).fetchone()[0]
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                "UPDATE ce_purchase_admission_event SET reason_reference='rewritten' WHERE event_id=%s",
+                (event_id,),
+            )
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                "DELETE FROM ce_purchase_admission_event WHERE event_id=%s", (event_id,)
+            )
+        self.assertEqual(
+            self.conn.execute("SELECT COUNT(*) FROM ce_purchase_admission_event").fetchone()[0], 1
+        )
+
+    def test_ready_admission_requires_health_evidence_and_expiry(self):
+        with self.assertRaises(errors.RaiseException):
+            self.set_admission_state(
+                "READY", reason="missing-health-attestation",
+                health_reference=None,
+            )
+        # A valid short-lived attestation is accepted, but stale readiness fails closed.
+        expiry = self.set_admission_state(
+            "READY", reason="short-lease-test",
+            health_reference="short-lived-health-attestation", lease_seconds=0.15,
+        )
+        self.assertGreater(expiry, datetime.now(UTC))
+        time.sleep(0.20)
+        with self.assertRaises(errors.RaiseException):
+            self.insert_reading_order(order_id="expired-health-order", ensure_ready=False)
         self.assertEqual(
             self.conn.execute("SELECT COUNT(*) FROM ce_deep_sky_order").fetchone()[0], 0
         )
 
-        self.conn.execute(
-            """UPDATE ce_purchase_admission_state
-                  SET admission_state='READY', reason_reference='test-service-recovered', updated_at=%s
-                WHERE singleton_id=1""",
-            (NOW,),
+    def test_fulfillment_health_interlock_blocks_new_order_and_effective_purchase_debit(self):
+        # Schema default is UNKNOWN; non-ready states require explicit audited transition.
+        initial = self.conn.execute(
+            "SELECT admission_state, state_version, ready_expires_at FROM ce_purchase_admission_state WHERE singleton_id=1"
+        ).fetchone()
+        self.assertEqual(initial, ("UNKNOWN", 0, None))
+        self.set_admission_state("BLOCKED", reason="test-service-known-unavailable")
+        with self.assertRaises(errors.RaiseException):
+            self.insert_reading_order(order_id="blocked-order", ensure_ready=False)
+        self.assertEqual(
+            self.conn.execute("SELECT COUNT(*) FROM ce_deep_sky_order").fetchone()[0], 0
         )
-        self.insert_reading_order(order_id="accepted-before-health-change")
-        self.conn.execute(
-            """UPDATE ce_purchase_admission_state
-                  SET admission_state='UNKNOWN', reason_reference='test-health-no-longer-attested', updated_at=%s
-                WHERE singleton_id=1""",
-            (NOW,),
+
+        self.set_admission_state(
+            "READY", reason="test-service-recovered",
+            health_reference="test-health-attestation",
         )
+        self.insert_reading_order(order_id="accepted-before-health-change", ensure_ready=False)
+        self.set_admission_state("UNKNOWN", reason="test-health-no-longer-attested")
         with self.assertRaises(errors.RaiseException):
             self.insert_debit_and_bind_order(
                 order_id="accepted-before-health-change", debit_id="debit-gated"
@@ -145,11 +221,9 @@ class PostgresCommerceContractTests(unittest.TestCase):
             ).fetchone()[0],
             0,
         )
-        self.conn.execute(
-            """UPDATE ce_purchase_admission_state
-                  SET admission_state='READY', reason_reference='test-health-explicitly-ready', updated_at=%s
-                WHERE singleton_id=1""",
-            (NOW,),
+        self.set_admission_state(
+            "READY", reason="test-health-explicitly-ready",
+            health_reference="test-health-attestation",
         )
         self.insert_debit_and_bind_order(
             order_id="accepted-before-health-change", debit_id="debit-gated"
@@ -239,6 +313,10 @@ class PostgresCommerceContractTests(unittest.TestCase):
             self.conn.execute("DELETE FROM ce_provider_event WHERE provider_event_id='evt-1'")
 
     def test_daily_account_date_slot_is_unique_under_concurrent_reservation(self):
+        self.set_admission_state(
+            "READY", reason="concurrency-test-health-ready",
+            health_reference="test-health-attestation",
+        )
         barrier = threading.Barrier(2)
 
         def attempt(order_id: str) -> bool:
