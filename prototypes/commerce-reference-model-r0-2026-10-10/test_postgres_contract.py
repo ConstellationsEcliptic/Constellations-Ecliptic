@@ -607,7 +607,9 @@ class PostgresCommerceContractTests(unittest.TestCase):
 
     def test_predebit_evidence_requires_all_terminal_preconditions(self):
         self.insert_reading_order()
-        with self.assertRaises(errors.CheckViolation):
+        # The BEFORE INSERT contract guard rejects incomplete evidence before
+        # the table-level CHECK constraint is evaluated.
+        with self.assertRaises(errors.RaiseException):
             self.conn.execute(
                 """INSERT INTO ce_predebit_failure_evidence
                 (logical_purchase_id, no_reading_debit_committed,
