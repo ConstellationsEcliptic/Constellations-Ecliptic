@@ -416,6 +416,18 @@ BEGIN
            OR NEW.reference_id <> d.entry_id THEN
             RAISE EXCEPTION 'reading debit restoration must exactly reverse its referenced debit';
         END IF;
+        -- Only an order that is still reconciling may enter the terminal non-delivery
+        -- path. A fulfilled order keeps its historical purchase effect and is not a
+        -- candidate for D2-B debit restoration.
+        IF NOT EXISTS (
+            SELECT 1 FROM ce_deep_sky_order o
+             WHERE o.logical_purchase_id = d.reference_id
+               AND o.account_id = NEW.account_id
+               AND o.reading_debit_entry_id = d.entry_id
+               AND o.status IN ('DEBIT_COMMITTED', 'RECONCILIATION_REQUIRED')
+        ) THEN
+            RAISE EXCEPTION 'reading debit restoration requires a non-fulfilled, unresolved order';
+        END IF;
         SELECT * INTO f
           FROM ce_terminal_failure_evidence
          WHERE logical_purchase_id = d.reference_id
@@ -452,6 +464,32 @@ $CE$ LANGUAGE plpgsql;
 CREATE TRIGGER ce_credit_ledger_entry_no_update
 BEFORE UPDATE OR DELETE ON ce_credit_ledger_entry
 FOR EACH ROW EXECUTE FUNCTION ce_immutable_credit_ledger_entry();
+
+-- A debit restoration and terminal non-delivery must commit atomically. The deferred
+-- constraint trigger prevents an autocommitted Credits restoration from leaving the
+-- order active or unresolved if the terminal state transition never commits.
+CREATE FUNCTION ce_validate_restoration_commits_terminal_order() RETURNS trigger AS $CE$
+DECLARE
+    o ce_deep_sky_order%ROWTYPE;
+BEGIN
+    SELECT * INTO o
+      FROM ce_deep_sky_order
+     WHERE reading_debit_entry_id = NEW.parent_entry_id;
+    IF NOT FOUND
+       OR o.account_id <> NEW.account_id
+       OR o.status <> 'TERMINAL_NONDELIVERY' THEN
+        RAISE EXCEPTION 'reading debit restoration must commit atomically with terminal non-delivery';
+    END IF;
+    RETURN NULL;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE CONSTRAINT TRIGGER ce_restoration_requires_terminal_order
+AFTER INSERT ON ce_credit_ledger_entry
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW
+WHEN (NEW.entry_type = 'DEEP_SKY_READING_DEBIT_RESTORATION')
+EXECUTE FUNCTION ce_validate_restoration_commits_terminal_order();
 
 CREATE FUNCTION ce_validate_topup_transition() RETURNS trigger AS $CE$
 BEGIN
