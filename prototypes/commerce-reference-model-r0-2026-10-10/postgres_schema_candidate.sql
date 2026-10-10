@@ -813,6 +813,34 @@ CREATE TRIGGER ce_deep_sky_order_validate_transition
 BEFORE UPDATE ON ce_deep_sky_order
 FOR EACH ROW EXECUTE FUNCTION ce_validate_order_transition();
 
+-- D1-A takes effect at the immutable reading-debit commit. Keep the persisted slot
+-- state aligned with that effect inside the same transaction as the order transition.
+CREATE FUNCTION ce_apply_d1a_slot_consumption() RETURNS trigger AS $CE$
+DECLARE
+    changed_rows INTEGER;
+BEGIN
+    IF OLD.reading_debit_entry_id IS NULL AND NEW.reading_debit_entry_id IS NOT NULL THEN
+        UPDATE ce_daily_purchase_slot
+           SET slot_state = 'CONSUMED',
+               state_version = state_version + 1,
+               updated_at = statement_timestamp()
+         WHERE account_id = NEW.account_id
+           AND service_date_utc = NEW.service_date_utc
+           AND active_logical_purchase_id = NEW.logical_purchase_id
+           AND slot_state = 'RESERVED';
+        GET DIAGNOSTICS changed_rows = ROW_COUNT;
+        IF changed_rows <> 1 THEN
+            RAISE EXCEPTION 'D1-A debit commit requires exactly one matching RESERVED slot to become CONSUMED';
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_deep_sky_order_apply_d1a_slot_consumption
+AFTER UPDATE ON ce_deep_sky_order
+FOR EACH ROW EXECUTE FUNCTION ce_apply_d1a_slot_consumption();
+
 CREATE FUNCTION ce_validate_quota_event() RETURNS trigger AS $CE$
 DECLARE
     o ce_deep_sky_order%ROWTYPE;
