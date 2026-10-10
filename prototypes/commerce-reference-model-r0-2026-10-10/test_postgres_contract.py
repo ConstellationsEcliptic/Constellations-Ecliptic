@@ -511,6 +511,111 @@ class PostgresCommerceContractTests(unittest.TestCase):
                 "UPDATE ce_deep_sky_order SET status='DEBIT_COMMITTED' WHERE logical_purchase_id='order-1'"
             )
 
+    def test_predebit_failure_requires_evidence_and_same_transaction_slot_release(self):
+        self.insert_reading_order()
+        with self.conn.transaction():
+            self.conn.execute(
+                """INSERT INTO ce_predebit_failure_evidence
+                (logical_purchase_id, no_reading_debit_committed,
+                 no_operation_can_still_commit_or_deliver, all_relevant_operations_closed,
+                 evidence_reference, confirmed_at)
+                VALUES ('order-1',TRUE,TRUE,TRUE,'predebit-evidence-1',%s)""",
+                (NOW,),
+            )
+            self.conn.execute(
+                "UPDATE ce_deep_sky_order SET status='RESERVATION_REJECTED' WHERE logical_purchase_id='order-1'"
+            )
+            self.conn.execute(
+                """INSERT INTO ce_quota_event
+                (quota_event_id, idempotency_key, account_id, service_date_utc,
+                 logical_purchase_id, event_type, policy_decision_reference,
+                 predebit_evidence_reference, occurred_at)
+                VALUES ('predebit-qe-1','predebit-qe-idem-1','acct-1',%s,'order-1',
+                        'PREDEBIT_RESERVATION_RELEASED','approved-predebit-policy',
+                        'predebit-evidence-1',%s)""",
+                (SERVICE_DATE, NOW),
+            )
+            self.conn.execute(
+                """UPDATE ce_daily_purchase_slot
+                   SET slot_state='RELEASED', state_version=state_version+1, updated_at=%s
+                 WHERE account_id='acct-1' AND service_date_utc=%s""",
+                (NOW, SERVICE_DATE),
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT status, quota_effect, reading_debit_entry_id FROM ce_deep_sky_order WHERE logical_purchase_id='order-1'"
+            ).fetchone(),
+            ("RESERVATION_REJECTED", False, None),
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT slot_state, state_version FROM ce_daily_purchase_slot WHERE account_id='acct-1' AND service_date_utc=%s",
+                (SERVICE_DATE,),
+            ).fetchone(),
+            ("RELEASED", 2),
+        )
+        self.insert_reading_order(order_id="order-2", account="acct-1", reserve_slot=False)
+        self.conn.execute(
+            """UPDATE ce_daily_purchase_slot
+                  SET active_logical_purchase_id='order-2', slot_state='RESERVED',
+                      state_version=state_version+1, updated_at=%s
+                WHERE account_id='acct-1' AND service_date_utc=%s""",
+            (NOW, SERVICE_DATE),
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT active_logical_purchase_id, slot_state, state_version FROM ce_daily_purchase_slot WHERE account_id='acct-1' AND service_date_utc=%s",
+                (SERVICE_DATE,),
+            ).fetchone(),
+            ("order-2", "RESERVED", 3),
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM ce_credit_ledger_entry WHERE entry_type='DEEP_SKY_READING_DEBIT'"
+            ).fetchone()[0],
+            0,
+        )
+
+    def test_predebit_rejection_cannot_close_an_order_after_reading_debit(self):
+        self.insert_reading_order()
+        self.insert_debit_and_bind_order()
+        self.conn.execute(
+            """INSERT INTO ce_predebit_failure_evidence
+            (logical_purchase_id, no_reading_debit_committed,
+             no_operation_can_still_commit_or_deliver, all_relevant_operations_closed,
+             evidence_reference, confirmed_at)
+            VALUES ('order-1',TRUE,TRUE,TRUE,'false-predebit-evidence',%s)""",
+            (NOW,),
+        )
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                "UPDATE ce_deep_sky_order SET status='RESERVATION_REJECTED' WHERE logical_purchase_id='order-1'"
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT status, reading_debit_entry_id FROM ce_deep_sky_order WHERE logical_purchase_id='order-1'"
+            ).fetchone(),
+            ("DEBIT_COMMITTED", "debit-1"),
+        )
+
+    def test_predebit_evidence_requires_all_terminal_preconditions(self):
+        self.insert_reading_order()
+        with self.assertRaises(errors.CheckViolation):
+            self.conn.execute(
+                """INSERT INTO ce_predebit_failure_evidence
+                (logical_purchase_id, no_reading_debit_committed,
+                 no_operation_can_still_commit_or_deliver, all_relevant_operations_closed,
+                 evidence_reference, confirmed_at)
+                VALUES ('order-1',TRUE,FALSE,TRUE,'incomplete-predebit-evidence',%s)""",
+                (NOW,),
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM ce_predebit_failure_evidence WHERE logical_purchase_id='order-1'"
+            ).fetchone()[0],
+            0,
+        )
+
     def test_terminal_failure_requires_evidence_and_exact_restoration(self):
         self.insert_reading_order()
         self.insert_debit_and_bind_order()
