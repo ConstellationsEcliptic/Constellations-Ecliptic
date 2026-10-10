@@ -579,13 +579,20 @@ class PostgresCommerceContractTests(unittest.TestCase):
     def test_predebit_rejection_cannot_close_an_order_after_reading_debit(self):
         self.insert_reading_order()
         self.insert_debit_and_bind_order()
-        self.conn.execute(
-            """INSERT INTO ce_predebit_failure_evidence
-            (logical_purchase_id, no_reading_debit_committed,
-             no_operation_can_still_commit_or_deliver, all_relevant_operations_closed,
-             evidence_reference, confirmed_at)
-            VALUES ('order-1',TRUE,TRUE,TRUE,'false-predebit-evidence',%s)""",
-            (NOW,),
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                """INSERT INTO ce_predebit_failure_evidence
+                (logical_purchase_id, no_reading_debit_committed,
+                 no_operation_can_still_commit_or_deliver, all_relevant_operations_closed,
+                 evidence_reference, confirmed_at)
+                VALUES ('order-1',TRUE,TRUE,TRUE,'false-predebit-evidence',%s)""",
+                (NOW,),
+            )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM ce_predebit_failure_evidence WHERE logical_purchase_id='order-1'"
+            ).fetchone()[0],
+            0,
         )
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
