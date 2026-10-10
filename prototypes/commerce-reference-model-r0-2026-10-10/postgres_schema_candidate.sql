@@ -237,7 +237,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_credit_ledger_entry_validate
 BEFORE INSERT ON ce_credit_ledger_entry
@@ -247,7 +247,7 @@ CREATE FUNCTION ce_immutable_credit_ledger_entry() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'credit ledger entries are append-only';
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_credit_ledger_entry_no_update
 BEFORE UPDATE OR DELETE ON ce_credit_ledger_entry
@@ -287,7 +287,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_topup_order_validate_transition
 BEFORE UPDATE ON ce_topup_order
@@ -360,7 +360,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE FUNCTION ce_validate_order_transition() RETURNS trigger AS $CE$
 BEGIN
@@ -424,7 +424,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_deep_sky_order_validate_transition
 BEFORE UPDATE ON ce_deep_sky_order
@@ -458,7 +458,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_quota_event_validate
 BEFORE INSERT ON ce_quota_event
@@ -490,7 +490,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_daily_purchase_slot_validate
 BEFORE INSERT OR UPDATE ON ce_daily_purchase_slot
@@ -500,7 +500,7 @@ CREATE FUNCTION ce_immutable_provider_event() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'provider event evidence is append-only';
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_provider_event_no_update
 BEFORE UPDATE OR DELETE ON ce_provider_event
@@ -510,7 +510,7 @@ CREATE FUNCTION ce_immutable_quota_event() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'quota event evidence is append-only';
 END;
-$CE$1
+$CE$ LANGUAGE plpgsql;
 
 CREATE TRIGGER ce_quota_event_no_update
 BEFORE UPDATE OR DELETE ON ce_quota_event
