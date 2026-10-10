@@ -1,7 +1,8 @@
 -- CE commerce persistence contract candidate R0.
--- PostgreSQL syntax; candidate-only. D1/D2 policy is intentionally not selected here.
--- Production use requires approved policy, schema review, migrations, access controls,
--- data-retention review, and concurrency/recovery testing beyond this prototype.
+-- PostgreSQL syntax; candidate-only. Owner disposition dated 2026-10-10 selects D1-A, D2-B,
+-- and the fail-closed fulfillment-health interlock for candidate implementation.
+-- Production use still requires normative/source review, migrations, access controls,
+-- health-state audit/recovery design, data-retention review, and independent testing.
 
 CREATE TABLE ce_credits_sku (
     sku_id TEXT NOT NULL,
@@ -87,6 +88,20 @@ CREATE TABLE ce_credit_ledger_entry (
     )
 );
 
+-- Explicit service-admission state. UNKNOWN is the initial fail-closed state.
+-- The operational process that establishes/updates this state is not implemented here.
+CREATE TABLE ce_purchase_admission_state (
+    singleton_id SMALLINT PRIMARY KEY CHECK (singleton_id = 1),
+    admission_state TEXT NOT NULL CHECK (admission_state IN ('READY', 'BLOCKED', 'UNKNOWN')),
+    reason_reference TEXT NOT NULL CHECK (btrim(reason_reference) <> ''),
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+INSERT INTO ce_purchase_admission_state
+    (singleton_id, admission_state, reason_reference, updated_at)
+VALUES
+    (1, 'UNKNOWN', 'INITIAL_HEALTH_NOT_ATTESTED', CURRENT_TIMESTAMP);
+
 CREATE TABLE ce_deep_sky_order (
     logical_purchase_id TEXT PRIMARY KEY,
     account_id TEXT NOT NULL,
@@ -95,9 +110,7 @@ CREATE TABLE ce_deep_sky_order (
         'RESERVED', 'DEBIT_COMMITTED', 'RECONCILIATION_REQUIRED',
         'FULFILLED', 'TERMINAL_NONDELIVERY', 'RESERVATION_REJECTED'
     )),
-    cap_trigger_decision TEXT CHECK (
-        cap_trigger_decision IS NULL OR cap_trigger_decision IN ('D1_A', 'D1_B')
-    ),
+    cap_trigger_decision TEXT NOT NULL DEFAULT 'D1_A' CHECK (cap_trigger_decision = 'D1_A'),
     quota_effect BOOLEAN,
     reading_debit_entry_id TEXT UNIQUE REFERENCES ce_credit_ledger_entry(entry_id),
     created_at TIMESTAMPTZ NOT NULL,
@@ -108,10 +121,34 @@ CREATE TABLE ce_deep_sky_order (
     )
 );
 
--- Exactly one current slot record per authenticated account and UTC service date.
--- Business logic must lock this row and consult the approved D1/D2 policy before
--- making a transition. This table does not choose whether a terminally reversed
--- purchase consumes the cap.
+-- Exactly one slot record per authenticated account and UTC service date.
+-- D1-A makes the slot effective at committed reading debit; D2-B governs terminal release.
+-- Transitions require evidence and must not transfer an expired date's slot.
+CREATE FUNCTION ce_require_purchase_admission_ready() RETURNS trigger AS $CE$
+DECLARE
+    gate ce_purchase_admission_state%ROWTYPE;
+BEGIN
+    SELECT * INTO gate
+      FROM ce_purchase_admission_state
+     WHERE singleton_id = 1
+     FOR SHARE;
+    IF NOT FOUND OR gate.admission_state <> 'READY' THEN
+        RAISE EXCEPTION 'new Deep Sky purchase blocked: fulfillment admission is not explicitly READY';
+    END IF;
+    IF NEW.service_date_utc <> (statement_timestamp() AT TIME ZONE 'UTC')::date THEN
+        RAISE EXCEPTION 'new Deep Sky purchase service date must be the server-derived current UTC date';
+    END IF;
+    IF NEW.cap_trigger_decision <> 'D1_A' THEN
+        RAISE EXCEPTION 'new Deep Sky purchase must bind the selected D1-A policy';
+    END IF;
+    RETURN NEW;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_deep_sky_order_admission_guard
+BEFORE INSERT ON ce_deep_sky_order
+FOR EACH ROW EXECUTE FUNCTION ce_require_purchase_admission_ready();
+
 CREATE TABLE ce_daily_purchase_slot (
     account_id TEXT NOT NULL,
     service_date_utc DATE NOT NULL,
@@ -209,6 +246,15 @@ BEGIN
             RAISE EXCEPTION 'top-up grant requires a matching verified success observation';
         END IF;
     ELSIF NEW.entry_type = 'DEEP_SKY_READING_DEBIT' THEN
+        -- Recheck the health gate at the effective-purchase debit boundary.
+        PERFORM 1
+          FROM ce_purchase_admission_state
+         WHERE singleton_id = 1
+           AND admission_state = 'READY'
+         FOR SHARE;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'new reading debit blocked: fulfillment admission is not explicitly READY';
+        END IF;
         PERFORM 1
           FROM ce_deep_sky_order o
          WHERE o.logical_purchase_id = NEW.reference_id
@@ -447,27 +493,46 @@ FOR EACH ROW EXECUTE FUNCTION ce_validate_order_transition();
 CREATE FUNCTION ce_validate_quota_event() RETURNS trigger AS $CE$
 DECLARE
     o ce_deep_sky_order%ROWTYPE;
+    utc_today DATE;
 BEGIN
+    utc_today := (statement_timestamp() AT TIME ZONE 'UTC')::date;
     SELECT * INTO o FROM ce_deep_sky_order
      WHERE logical_purchase_id = NEW.logical_purchase_id
      FOR KEY SHARE;
     IF NOT FOUND OR o.account_id <> NEW.account_id OR o.service_date_utc <> NEW.service_date_utc THEN
         RAISE EXCEPTION 'quota event must match its immutable order, account, and service date';
     END IF;
-    IF NEW.event_type = 'SLOT_RELEASED' THEN
-        IF NEW.policy_decision_reference IS NULL OR NEW.terminal_evidence_reference IS NULL
+    IF NEW.event_type IN ('SLOT_RELEASED', 'SLOT_EXPIRED_UNTRANSFERRED') THEN
+        IF NEW.policy_decision_reference IS NULL OR btrim(NEW.policy_decision_reference) = ''
+           OR NEW.terminal_evidence_reference IS NULL OR btrim(NEW.terminal_evidence_reference) = ''
            OR o.status <> 'TERMINAL_NONDELIVERY'
            OR EXISTS (
              SELECT 1 FROM ce_reading_entitlement e
               WHERE e.logical_purchase_id = NEW.logical_purchase_id
            )
            OR NOT EXISTS (
+             SELECT 1 FROM ce_terminal_failure_evidence f
+              WHERE f.logical_purchase_id = NEW.logical_purchase_id
+                AND f.no_valid_reading_accessible
+                AND f.no_operation_can_still_deliver
+                AND f.no_entitlement_exists
+                AND f.all_relevant_operations_closed
+                AND f.evidence_reference = NEW.terminal_evidence_reference
+           )
+           OR NOT EXISTS (
              SELECT 1 FROM ce_credit_ledger_entry restoration
               WHERE restoration.entry_type = 'DEEP_SKY_READING_DEBIT_RESTORATION'
                 AND restoration.reference_id = o.reading_debit_entry_id
                 AND restoration.account_id = o.account_id
+                AND restoration.delta > 0
+                AND restoration.parent_entry_id = o.reading_debit_entry_id
            ) THEN
-            RAISE EXCEPTION 'slot release requires explicit policy, terminal evidence, and exact restoration';
+            RAISE EXCEPTION 'terminal slot transition requires complete failure evidence, exact restoration, and policy reference';
+        END IF;
+        IF NEW.event_type = 'SLOT_RELEASED' AND NEW.service_date_utc <> utc_today THEN
+            RAISE EXCEPTION 'D2-B permits release only while the original UTC service date is current';
+        ELSIF NEW.event_type = 'SLOT_EXPIRED_UNTRANSFERRED' AND NEW.service_date_utc >= utc_today THEN
+            RAISE EXCEPTION 'a slot may be marked expired-untransferred only after its original UTC date';
         END IF;
     END IF;
     RETURN NEW;
@@ -481,7 +546,9 @@ FOR EACH ROW EXECUTE FUNCTION ce_validate_quota_event();
 CREATE FUNCTION ce_validate_daily_slot() RETURNS trigger AS $CE$
 DECLARE
     o ce_deep_sky_order%ROWTYPE;
+    utc_today DATE;
 BEGIN
+    utc_today := (statement_timestamp() AT TIME ZONE 'UTC')::date;
     SELECT * INTO o FROM ce_deep_sky_order
      WHERE logical_purchase_id = NEW.active_logical_purchase_id
      FOR KEY SHARE;
@@ -490,6 +557,12 @@ BEGIN
     END IF;
     IF NEW.slot_state = 'CONSUMED' AND o.quota_effect IS DISTINCT FROM TRUE THEN
         RAISE EXCEPTION 'slot cannot be marked consumed before an explicit cap effect is established';
+    END IF;
+    IF NEW.slot_state = 'RELEASED' AND NEW.service_date_utc <> utc_today THEN
+        RAISE EXCEPTION 'D2-B releases only the current UTC service date; do not transfer expired slots';
+    END IF;
+    IF NEW.slot_state = 'EXPIRED_UNTRANSFERRED' AND NEW.service_date_utc >= utc_today THEN
+        RAISE EXCEPTION 'slot expiry requires the original UTC service date to have passed';
     END IF;
     IF NEW.slot_state = 'RELEASED' AND NOT EXISTS (
         SELECT 1 FROM ce_quota_event e
@@ -501,6 +574,17 @@ BEGIN
            AND e.terminal_evidence_reference IS NOT NULL
     ) THEN
         RAISE EXCEPTION 'released slot requires an append-only quota event with policy/evidence references';
+    END IF;
+    IF NEW.slot_state = 'EXPIRED_UNTRANSFERRED' AND NOT EXISTS (
+        SELECT 1 FROM ce_quota_event e
+         WHERE e.logical_purchase_id = NEW.active_logical_purchase_id
+           AND e.account_id = NEW.account_id
+           AND e.service_date_utc = NEW.service_date_utc
+           AND e.event_type = 'SLOT_EXPIRED_UNTRANSFERRED'
+           AND e.policy_decision_reference IS NOT NULL
+           AND e.terminal_evidence_reference IS NOT NULL
+    ) THEN
+        RAISE EXCEPTION 'expired slot requires an append-only quota event documenting no transfer';
     END IF;
     RETURN NEW;
 END;
