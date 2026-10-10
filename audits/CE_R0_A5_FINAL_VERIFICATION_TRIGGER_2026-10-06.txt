@@ -1,0 +1,1 @@
+Audit-only trigger; no identity-bearing implementation.

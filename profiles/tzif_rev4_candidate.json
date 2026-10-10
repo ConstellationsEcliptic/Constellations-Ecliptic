@@ -1,0 +1,28 @@
+{
+  "artifact_id": "CE-V1-TZIF-REV4-CANDIDATE",
+  "status": "CONTROLLED_CURRENT_CANDIDATE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "iana_release": "2026d",
+  "release_commit": "d633fe7ed3de8e00ce7cac991376a064a1373bb1",
+  "archive": {
+    "name": "tzdata2026d.tar.gz",
+    "sha256": "0cb2aa8e333c3dc049badc42a0c61f21987b8cd44e107fa900bad764aacc7767",
+    "sha512": "1a27de5af50bbc28a2f64c506ab3678b09d9e5ab6c118f39eb38bb823aa8f57069bf5e465848e71df8274c6b8bcd0fc736a88107e5792d816a1db5d867cbc219"
+  },
+  "signer": {
+    "primary_fingerprint": "7E3792A9D8ACF7D633BC1588ED97E90E62AA7E34",
+    "key_sha256": "68C3652F44D6D443A6B25555BFC8F71B72D68A4C29B6931479783AD195916893",
+    "operational_trust": "KEEP_PENDING"
+  },
+  "runtime_rule": "POLICY_OWNED_TZIF_REQUIRED",
+  "authority": "NOT_ESTABLISHED",
+  "runtime_package": {
+    "sha256": "f3edd74a1bb77d092d6c2ed3eead8ebea9657954f5bb30b0ac031a08a5eed942",
+    "entry_count": 597,
+    "manifest_sha256": "a12881024bee3b801d63b0d9cb74118b6329512f63020f36c42412de1e0a6205",
+    "validation_metadata_sha256": "4f4699f51f52470937006e359612c099a15a72ea0f9eb2c0fd7876ad546e58bf"
+  },
+  "runtime_manifest_algorithm": "SHA256_UTF8_LF_JOIN_SORTED_PATH_HASH",
+  "runtime_package_binding": "OPERATOR_EVIDENCE_BINDING_PENDING_CURRENT_RUNTIME_ADOPTION"
+}

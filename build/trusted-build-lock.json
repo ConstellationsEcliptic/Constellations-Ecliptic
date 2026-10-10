@@ -1,0 +1,41 @@
+{
+  "schema_version": "CE-V1-TBL-2",
+  "status": "CANDIDATE_NON_AUTHORIZED",
+  "python": {
+    "distribution": "CPython",
+    "version": "3.13.15",
+    "architecture": "x86_64"
+  },
+  "environment": {
+    "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
+    "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "platform": "linux/amd64",
+    "digest": "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "host_substrate": "GitHub-hosted ubuntu-24.04 runner; external execution substrate only"
+  },
+  "build_frontend": {
+    "pip_version": "26.2.1",
+    "pip_wheel_sha256": "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e"
+  },
+  "build_backend": {
+    "setuptools_version": "82.0.1",
+    "setuptools_wheel_sha256": "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb"
+  },
+  "build_policy": {
+    "source_date_epoch": 0,
+    "dependency_installation": "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS",
+    "network_during_build": false,
+    "runtime_dependencies": [],
+    "source_package_excludes": [
+      "evidence/",
+      "provenance/"
+    ]
+  },
+  "authorization": {
+    "trusted_build": "NOT_ESTABLISHED",
+    "production_runtime": "NOT_AUTHORIZED",
+    "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
+    "fail_closed": true
+  }
+}

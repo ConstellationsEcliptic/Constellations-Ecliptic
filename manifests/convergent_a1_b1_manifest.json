@@ -1,0 +1,49 @@
+{
+  "artifact_id": "CE-V1-CONVERGENT-A1-B1-R1",
+  "status": "DEVELOPMENT_CANDIDATE",
+  "authority": "NON_AUTHORITATIVE",
+  "parent_commit": "033e90cfd29e047578e70bbd20183e48682d7614",
+  "human_decisions": {
+    "A": "A1",
+    "B": "B1"
+  },
+  "historical_substrate": {
+    "archive": "CE_V1_STAGE_B3_CALC_CORE_V1_R1_ZERO_BIRTH_AUTHORITY_HARDENED_A-2026-09-23.zip",
+    "sha256": "2eb0d3b152b4d7d0cf026abeb7d3b1ecf10d03f15b820856555003c161e0d9c5",
+    "source_tree_sha256": "7454195ff665d9c5cbff8ac037e83f0e25e3efb60af8243929162ccc894c9d68",
+    "role": "HISTORICAL_SUBSTRATE_ONLY"
+  },
+  "registry_candidate": {
+    "registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+    "mapping_sha256": "babcccf81636df1e5eb92fe9119d474787fc3801b547fa5703e9048993d441",
+    "role": "CONTROLLED_CURRENT_CANDIDATE_BASIS"
+  },
+  "current_target": {
+    "execution_profile_id": "CE-CALC-V1-EP-001",
+    "execution_profile_revision": 4,
+    "calculation_constitution": "CURRENT_NORMATIVE",
+    "technical_contracts": "CURRENT_NORMATIVE",
+    "no_historical_profile_identity_inheritance": true
+  },
+  "authority_state": {
+    "SOURCE_AUTHORITY": "NOT_ESTABLISHED",
+    "TRUSTED_BUILD": "NOT_ESTABLISHED",
+    "RUNTIME_ADOPTION": "NOT_ESTABLISHED",
+    "FULL_RUNTIME_COVERAGE": "NOT_ESTABLISHED",
+    "TZIF_RUNTIME_IDENTITY": "NOT_ESTABLISHED",
+    "PRODUCTION_RUNTIME": "NOT_AUTHORIZED",
+    "DUAL_APPROVAL": "NOT_ESTABLISHED",
+    "SEAL": "NO",
+    "AUTHORIZATION": "NON_AUTHORIZED",
+    "FAIL_CLOSED": true
+  },
+  "convergence_rules": [
+    "Fresh reimplementation; no wholesale merge of historical B3.",
+    "B4 controls are reference patterns only and must be rebound to current V1 semantics.",
+    "Historical artifacts remain byte-preserved.",
+    "Current V1 semantics override stale historical semantics.",
+    "No calculation fallback, synthetic astronomy, or downstream repair.",
+    "Current rev4 runtime identity must be explicit and validated.",
+    "Independent oracle/evidence is required before authoritative claims."
+  ]
+}

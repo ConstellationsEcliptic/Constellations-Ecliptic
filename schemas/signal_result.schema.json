@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Signal Result R2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "classification",
+    "phase",
+    "uncertainty_state",
+    "evidence_packet_ref",
+    "canon_input_valid"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "VALID",
+        "NON_AUTHORIZED",
+        "INVALID_INPUT",
+        "CALCULATION_FAILURE",
+        "NOT_IMPLEMENTED",
+        "KNOWN_UNAVAILABLE",
+        "INPUT_UNSUPPORTED"
+      ]
+    },
+    "classification": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "phase": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "uncertainty_state": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "evidence_packet_ref": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "canon_input_valid": {
+      "type": "boolean"
+    }
+  }
+}

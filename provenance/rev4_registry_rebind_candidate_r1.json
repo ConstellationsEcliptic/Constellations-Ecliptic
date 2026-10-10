@@ -1,0 +1,32 @@
+{
+  "artifact_id": "CE-V1-REV4-REGISTRY-REBIND-CANDIDATE-R1",
+  "status": "CANDIDATE_POINTER_RAW_BYTES_NOT_MATERIALIZED",
+  "normative_register": {
+    "file": "07_EXECUTION_PROFILE_TEST_REGISTER(3).md",
+    "library_file_id": "file_0000000071d4820899941b51f4b38c75",
+    "sha256": "97a977feb051999dcefec7ee9322c5980ba73ed961608bc021a4b889ed659de0"
+  },
+  "source_h2_recovery": {
+    "archive": {
+      "name": "CE_V1_H2_TEST_PROVENANCE_REPAIRED_CANDIDATE_HARDENED_FINAL_2026-09-22.zip",
+      "sha256": "9ec26a4c3cee1a7aaa9d20b93a693c43c45eca24eba2efd62a976ce6eae790a8",
+      "size_bytes": 164705
+    },
+    "registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+    "mapping_sha256": "babcccf81636df1e5eb92fe9119d474787fc3801b547fa5703e9048993d441"
+  },
+  "historical_superseded": {
+    "registry_sha256": "60a96d6d467a3fa7049bbcd29e9509b45d3a50cf2728ee074d1af18118d77d62",
+    "mapping_sha256": "7921a4ebac32879b8da2444e6f833116c5e6c61c5ddecbdac022ab93d4e20856",
+    "stale_r4_registry_sha256": "a6b2a4a03c3dceaeafb34dfb742e99db4a33a55be596b7a8b1f2dba22d08b93b"
+  },
+  "controlled_constraints": {
+    "execution_profile_id": "CE-CALC-V1-EP-001",
+    "execution_profile_revision": 4,
+    "never_rewrite_h2_bytes": true,
+    "never_promote_without_raw_byte_reacquisition": true,
+    "authority": "NOT_ESTABLISHED",
+    "fail_closed": true
+  },
+  "note": "This pointer records preserved H2 identities for later candidate rebinding. It does not create or reconstruct the H2 registry/mapping bytes."
+}

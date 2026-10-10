@@ -1,0 +1,36 @@
+{
+  "artifact_id": "CE-V1-B1-H2-REGISTRY-RECOVERY-R1",
+  "status": "RECOVERED_EXACT_BYTES_EXTERNAL_BINDING",
+  "archive": {
+    "name": "CE_V1_H2_TEST_PROVENANCE_REPAIRED_CANDIDATE_HARDENED_FINAL_2026-09-22.zip",
+    "sha256": "9ec26a4c3cee1a7aaa9d20b93a693c43c45eca24eba2efd62a976ce6eae790a8",
+    "size_bytes": 164705
+  },
+  "recovered_candidates": {
+    "test_registry_100_h2_provenance_reconciled": {
+      "sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+      "role": "CONTROLLED_CURRENT_CANDIDATE_BASIS"
+    },
+    "test_mapping_100_h2_provenance_reconciled": {
+      "sha256": "babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441",
+      "role": "CONTROLLED_CURRENT_CANDIDATE_BASIS"
+    }
+  },
+  "historical_superseded": {
+    "test_registry_100_sha256": "60a96d6d467a3fa7049bbcd29e9509b45d3a50cf2728ee074d1af18118d77d62",
+    "test_mapping_sha256": "7921a4ebac32879b8da2444e6f833116c5e6c61c5ddecbdac022ab93d4e20856"
+  },
+  "classification": {
+    "total_ids": 100,
+    "implemented_provenance_verified": 9,
+    "planned_executable_not_implemented": 19,
+    "deferred_by_layer": 66,
+    "planned_benchmark_not_implemented": 6
+  },
+  "current_binding": {
+    "execution_profile_id": "CE-CALC-V1-EP-001",
+    "execution_profile_revision": 4,
+    "new_current_profile_required": true
+  },
+  "authority": "NOT_ESTABLISHED"
+}

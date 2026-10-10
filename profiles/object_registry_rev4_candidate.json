@@ -1,0 +1,27 @@
+{
+  "artifact_id": "CE-V1-OBJECT-REGISTRY-REV4-CANDIDATE",
+  "status": "CONTROLLED_CURRENT_CANDIDATE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "objects": [
+    {"object_id": "SUN", "swiss_object_id": 0, "object_profile": "A"},
+    {"object_id": "MOON", "swiss_object_id": 1, "object_profile": "A"},
+    {"object_id": "MERCURY", "swiss_object_id": 2, "object_profile": "A"},
+    {"object_id": "VENUS", "swiss_object_id": 3, "object_profile": "A"},
+    {"object_id": "MARS", "swiss_object_id": 4, "object_profile": "A"},
+    {"object_id": "JUPITER", "swiss_object_id": 5, "object_profile": "B"},
+    {"object_id": "SATURN", "swiss_object_id": 6, "object_profile": "B"},
+    {"object_id": "URANUS", "swiss_object_id": 7, "object_profile": "B"},
+    {"object_id": "NEPTUNE", "swiss_object_id": 8, "object_profile": "B"},
+    {"object_id": "PLUTO", "swiss_object_id": 9, "object_profile": "B"},
+    {"object_id": "CHIRON", "swiss_object_id": 15, "object_profile": "B"},
+    {"object_id": "TRUE_NODE", "swiss_object_id": 11, "object_profile": "B"},
+    {"object_id": "MEAN_LILITH", "swiss_object_id": 12, "object_profile": "B"}
+  ],
+  "source_basis": {
+    "historical_stage_b3_archive_sha256": "2eb0d3b152b4d7d0cf026abeb7d3b1ecf10d03f15b820856555003c161e0d9c5",
+    "historical_profile_revision": 2,
+    "current_target_revision": 4
+  },
+  "authority": "NOT_ESTABLISHED"
+}

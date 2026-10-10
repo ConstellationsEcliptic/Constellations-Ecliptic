@@ -1,0 +1,57 @@
+{
+  "schema_version": "CE-V1-TBP-3",
+  "status": "CANDIDATE_NON_AUTHORIZED",
+  "source_tree_sha256": "da6a1d622940a4674a54d98656a940aee90aa32ec149ec9b0e8800e467a90ad9",
+  "build_environment": {
+    "kind": "CONTENT_ADDRESSED_CONTAINER_IMAGE",
+    "image_ref": "python:3.13.15-slim-bookworm@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "platform": "linux/amd64",
+    "digest": "sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a",
+    "local_image_id_observed": "sha256:915835de46a63f9598442159437904042f1c69a9b41c4965fba1db9ceab66578"
+  },
+  "toolchain": {
+    "python": "3.13.15",
+    "architecture": "x86_64",
+    "pip": "26.2.1",
+    "setuptools": "82.0.1"
+  },
+  "dependency_artifacts": {
+    "pip_26_2_1_sha256": "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e",
+    "setuptools_82_0_1_sha256": "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb",
+    "dependency_lock_sha256": "708f9230ce520ffdfa0d0b02da5a6871d439e533e814c8722f0a89e84a0c6f8e"
+  },
+  "build_control_records": {
+    "trusted_build_lock_sha256": "6f9ef3a29b69a8aa81a34b2cec7d85b6cf04b915bc8c535f8eee9e6fc6799b7c",
+    "environment_record_sha256": "5321acb42c949a5b82f679a7c26dfa84f3435103ecda0bcbbd063f262fa1da75"
+  },
+  "build_policy": {
+    "runtime_dependencies": [],
+    "dependency_acquisition": "PREFETCH_OUTSIDE_BUILD_NETWORK",
+    "network_during_build": false,
+    "source_date_epoch": 0,
+    "bytecode_generation": false,
+    "source_package_excludes": [
+      "evidence/",
+      "provenance/"
+    ],
+    "dependency_installation": "FORCE_REINSTALL_FROM_PRE_FETCHED_HASHED_ARTIFACTS"
+  },
+  "verification": {
+    "test_suite_count": 27,
+    "test_suite_result": "PASS",
+    "wheel_reproducible": true,
+    "wheel_sha256": "8f5616e3835e73adcb58c50f9c6983a6ae3d011d2f2607d58cddb3339786513a",
+    "source_package_reproducible": true,
+    "source_package_sha256": "1ff45a68b6ce05ae4ab1c0ef6d58874a01a535014fe69c0ac1a550dd38f9968e",
+    "note": "Audit execution is external evidence and is referenced by the human-gate attestation/report, not embedded in the durable candidate provenance, preventing stale or circular run identifiers."
+  },
+  "governance": {
+    "source_authority_model": "SOLO_OWNER",
+    "trusted_build": "NOT_ESTABLISHED",
+    "production_runtime": "NOT_AUTHORIZED",
+    "dual_approval": "NOT_ESTABLISHED",
+    "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
+    "fail_closed": true
+  }
+}

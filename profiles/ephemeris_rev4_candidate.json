@@ -1,0 +1,43 @@
+{
+  "artifact_id": "CE-V1-EPHEMERIS-REV4-CANDIDATE",
+  "status": "CONTROLLED_CURRENT_CANDIDATE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "software": {
+    "release": "v2.10.3bfinal",
+    "commit": "f4dcd18e8005dde95fd8a8d2312ed12f9accd1b0",
+    "upstream_basis": "JPL_DE441"
+  },
+  "data_files": [
+    {
+      "name": "seas_18.se1",
+      "size_bytes": 223004,
+      "sha256": "a2cd8fc33807c78ca9a700c91c2e042258b12fc4796519e00781440b5ad8b2e2"
+    },
+    {
+      "name": "semo_18.se1",
+      "size_bytes": 1304771,
+      "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7"
+    },
+    {
+      "name": "sepl_18.se1",
+      "size_bytes": 484061,
+      "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66"
+    }
+  ],
+  "aggregate_sha256": "0cfc76a9dc51296f2241492e3376f1e71d13dd4f36b476253d4b82df57dfc990",
+  "engine_rule": "SWIEPH_ONLY",
+  "fallback_policy": "FORBIDDEN",
+  "authority": "NOT_ESTABLISHED",
+  "runtime_package": {
+    "sha256": "a0604b7143b3fb508596dda3e84d0fd9aa3fe32e52603791094f735a3561b2ae",
+    "dll_sha256": "04aedc75191ce7d257a20d6141ab889073a1cb6a501ecad98faa6305b24861f2",
+    "runtime_version": "2.10.03"
+  },
+  "canonical_data_lock": {
+    "id": "CE-V1-CANONICAL-DATA-2026D-SE-V2.10.3BFINAL",
+    "revision": 4,
+    "sha256": "0309a9d9385925f2c5eda478e2a7704e8600cf10abf258a8bcc9c4bdcb7689a2"
+  },
+  "runtime_package_binding": "OPERATOR_EVIDENCE_BINDING_PENDING_CURRENT_RUNTIME_ADOPTION"
+}

@@ -1,0 +1,88 @@
+{
+  "artifact_id": "CE-V1-CONVERGENT-A1-B1-STATE-R2",
+  "recorded_at": "2026-10-04",
+  "repository": "ConstellationsEcliptic/Constellations-Ecliptic",
+  "branch": "development/convergent-a1-b1/2026-10-04-r1",
+  "head": "ae9c295f970f4cf445d5dbdace84e65596ecba87",
+  "source_tree_sha256_v2": "af0eb1d98c940801b8b0fbb365506f6cdbbf8d9df7aa9f75a20b8201e0b883b4",
+  "verification": {
+    "github_actions_run_id": 37168136451,
+    "result": "SUCCESS",
+    "python": "3.13.15",
+    "tests_executed": 128,
+    "source_tree_identity": "PASS"
+  },
+  "delta_from_r1": {
+    "previous_snapshot_head": "d8c09304e580c265f431aa6d606d07df9dadc672",
+    "previous_snapshot_source_tree_sha256_v2": "5bd232083985672a73e282e6efa80dcaf6fcf9737815e6470765032ab0a48c57",
+    "contract_hardening": [
+      "ObjectRecord now requires speed when SPEED is requested or actually returned.",
+      "Orb registry values must be finite and strictly positive.",
+      "TrustedBuildEvidence runtime_manifest_digest is shape-validated as SHA-256.",
+      "Build-policy scanning now covers GitHub workflow YAML/YML."
+    ],
+    "regression_tests_added": 4,
+    "source_tree_manifest_rebound_by_ci": true
+  },
+  "historical_substrate": {
+    "b3_archive_sha256": "2eb0d3b152b4d7d0cf026abeb7d3b1ecf10d03f15b820856555003c161e0d9c5",
+    "b3_treatment": "technical_substrate_reference_only_no_authority_inheritance",
+    "b4_item11_treatment": "control_reference_only_no_wholesale_merge"
+  },
+  "recovered_h2_registry": {
+    "registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+    "mapping_sha256": "babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441",
+    "historical_bytes_preserved": true,
+    "controlled_current_candidate_basis": true
+  },
+  "current_hardening": {
+    "zero_birth_interval_semantics": true,
+    "sampled_possible_robust_mixed_none": true,
+    "strict_object_record_boundary": true,
+    "speed_flag_semantics": true,
+    "finite_orb_validation": true,
+    "native_swiss_abi_boundary": true,
+    "swiss_canonical_data_verification": true,
+    "tzif_manifest_binding": true,
+    "civil_time_centralization": true,
+    "retry_failure_taxonomy": true,
+    "out_of_range_object_handling": true,
+    "evidence_content_addressed": true,
+    "result_evidence_calculation_identity_binding": true,
+    "calculation_result_draft_lifecycle": true,
+    "authority_chain_pure_verifier": true,
+    "build_policy_scanner": true,
+    "workflow_yaml_policy_scan": true
+  },
+  "governance": {
+    "source_authority": "NOT_ESTABLISHED",
+    "trusted_build": "NOT_ESTABLISHED",
+    "runtime_adoption": "NOT_ESTABLISHED",
+    "full_runtime_coverage": "NOT_ESTABLISHED",
+    "tzif_runtime_identity": "NOT_ESTABLISHED",
+    "production_runtime": "NOT_AUTHORIZED",
+    "dual_approval": "NOT_ESTABLISHED",
+    "seal": "NO",
+    "authorization": "NON_AUTHORIZED",
+    "fail_closed": true
+  },
+  "open_boundaries": [
+    "N-MID-03 native object reproducibility",
+    "Windows/MSVC controlled runtime evidence",
+    "1900-2100 complete runtime coverage evidence",
+    "cross-platform runtime parity",
+    "authoritative golden astronomical oracle coverage",
+    "final CE source-authority evidence",
+    "trusted-build provenance",
+    "IANA signer operational trust"
+  ],
+  "non_claims": [
+    "No production readiness or authorization.",
+    "No Source Authority or Trusted Build.",
+    "No runtime adoption or SEAL.",
+    "No authority inheritance from B3/B4.",
+    "No claim of complete continuous zero-birth mathematical coverage.",
+    "Passing 128 tests does not establish astronomical correctness.",
+    "CI success does not establish runtime or source authority."
+  ]
+}

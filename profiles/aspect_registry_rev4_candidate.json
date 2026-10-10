@@ -1,0 +1,19 @@
+{
+  "artifact_id": "CE-V1-ASPECT-REGISTRY-REV4-CANDIDATE",
+  "status": "CONTROLLED_CURRENT_CANDIDATE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "aspects": [
+    {"aspect_id": "CONJUNCTION", "angle_deg": 0.0, "branches_deg": [0.0]},
+    {"aspect_id": "SEXTILE", "angle_deg": 60.0, "branches_deg": [60.0, -60.0]},
+    {"aspect_id": "SQUARE", "angle_deg": 90.0, "branches_deg": [90.0, -90.0]},
+    {"aspect_id": "TRINE", "angle_deg": 120.0, "branches_deg": [120.0, -120.0]},
+    {"aspect_id": "OPPOSITION", "angle_deg": 180.0, "branches_deg": [180.0]}
+  ],
+  "source_basis": {
+    "historical_stage_b3_archive_sha256": "2eb0d3b152b4d7d0cf026abeb7d3b1ecf10d03f15b820856555003c161e0d9c5",
+    "historical_profile_revision": 2,
+    "current_target_revision": 4
+  },
+  "authority": "NOT_ESTABLISHED"
+}

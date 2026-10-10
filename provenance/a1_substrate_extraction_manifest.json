@@ -1,0 +1,38 @@
+{
+  "artifact_id": "CE-V1-A1-SUBSTRATE-EXTRACTION-MANIFEST-R1",
+  "status": "HISTORICAL_INPUT_BOUND",
+  "historical_archive": {
+    "name": "CE_V1_STAGE_B3_CALC_CORE_V1_R1_ZERO_BIRTH_AUTHORITY_HARDENED_A-2026-09-23.zip",
+    "sha256": "2eb0d3b152b4d7d0cf026abeb7d3b1ecf10d03f15b820856555003c161e0d9c5",
+    "size_bytes": 180505,
+    "source_tree_sha256": "7454195ff665d9c5cbff8ac037e83f0e25e3efb60af8243929162ccc894c9d68",
+    "functional_tests": "91/91 PASS"
+  },
+  "extractable_modules": [
+    "src/ce/calculation/contracts.py",
+    "src/ce/calculation/engine.py",
+    "src/ce/calculation/evidence.py",
+    "src/ce/calculation/geometry.py",
+    "src/ce/calculation/scenario_windows.py",
+    "src/ce/calculation/scenarios.py",
+    "src/ce/calculation/solver.py",
+    "src/ce/calculation/time.py",
+    "src/ce/ephemeris/adapter.py",
+    "src/ce/authority/provenance.py"
+  ],
+  "fresh_port_required": [
+    "execution-profile rev2 assumptions",
+    "host ZoneInfo authority",
+    "historical source/build identities",
+    "historical authority manifests",
+    "historical serialization domain",
+    "historical schema assumptions"
+  ],
+  "current_target": {
+    "execution_profile_id": "CE-CALC-V1-EP-001",
+    "execution_profile_revision": 4,
+    "source_authority": "NOT_ESTABLISHED",
+    "trusted_build": "NOT_ESTABLISHED"
+  },
+  "role": "SUBSTRATE_ONLY"
+}

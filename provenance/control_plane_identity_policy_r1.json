@@ -1,0 +1,12 @@
+{
+  "artifact_id": "CE-V1-CONTROL-PLANE-IDENTITY-POLICY-R1",
+  "status": "CONTROLLED_CURRENT_CANDIDATE",
+  "algorithm": "UTF8_BYTES_AND_CANONICAL_RELATIVE_PATH",
+  "include_roots": [".github"],
+  "include_files": ["CHANGE_CONTROL.md"],
+  "filesystem_mode_identity": false,
+  "exclude_components": [".git", "__pycache__", ".pytest_cache"],
+  "identity_separate_from": "SOURCE_TREE_SHA256_V2",
+  "rationale": "Repository-controlled workflow and change-control bytes affect build/release control and must have a distinct identity without changing the numerical source-tree identity definition.",
+  "authority": "NOT_ESTABLISHED"
+}

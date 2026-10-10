@@ -1,0 +1,34 @@
+name: CE Privacy Scrub Validation
+
+on:
+  push:
+    branches:
+      - "development/calculation-core-clean-reimpl-r1-privacy/**"
+  pull_request:
+    branches:
+      - "development/calculation-core-clean-reimpl-r1-privacy/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Set up Python 3.13.15
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.13.15"
+          check-latest: false
+      - name: Compile source and tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m compileall -q src tests tools
+      - name: Compute source-tree identity
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          echo "SOURCE_TREE_SHA256_V2=$(python tools/compute_source_identity_v2.py)"
+      - name: Run test suite
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: python -m unittest discover -s tests -p 'test_*.py' -v

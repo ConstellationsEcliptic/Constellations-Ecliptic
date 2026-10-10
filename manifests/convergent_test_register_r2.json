@@ -1,0 +1,126 @@
+{
+  "artifact_id": "CE-V1-CONVERGENT-TEST-REGISTER-R2",
+  "status": "CURRENT_IMPLEMENTATION_CANDIDATE",
+  "execution_profile_id": "CE-CALC-V1-EP-001",
+  "execution_profile_revision": 4,
+  "recovered_h2_registry_sha256": "d7a3b16e9a346785affde430d2431a763ea1a65dc75bb7baae00305c74780ced",
+  "recovered_h2_mapping_sha256": "babcccf81636df1e65eb92fe9119d474787fc3801b547fa5703e9048993d441",
+  "tests": [
+    [
+      "GEO-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_geo_01_circular_boundary"
+    ],
+    [
+      "GEO-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_geo_02_exact_square"
+    ],
+    [
+      "KIN-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_01_applying"
+    ],
+    [
+      "KIN-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_02_separating"
+    ],
+    [
+      "KIN-03",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_03_retrograde_separating"
+    ],
+    [
+      "KIN-04",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_kin_04_exact_precedence"
+    ],
+    [
+      "ORB-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_orb_01_profile_a"
+    ],
+    [
+      "ORB-02",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_orb_02_profile_b"
+    ],
+    [
+      "STA-01",
+      "tests/test_core_golden_r1.py::CoreGoldenR1Tests::test_sta_01_circular_span"
+    ],
+    [
+      "WIN-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_win_01_disjoint_possible_windows"
+    ],
+    [
+      "WIN-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_win_02_continuous_multi_peak"
+    ],
+    [
+      "WIN-03",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_win_03_tangential_contact"
+    ],
+    [
+      "UNC-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_unc_01_stable_robust"
+    ],
+    [
+      "UNC-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_unc_02_variable_possible"
+    ],
+    [
+      "UNC-03",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_unc_03_variable_mixed_phase"
+    ],
+    [
+      "UNC-04",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_unc_04_variable_no_qualification"
+    ],
+    [
+      "EPH-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_eph_01_actual_mismatch_is_failure"
+    ],
+    [
+      "ERR-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_err_01_corrupt_evidence_packet"
+    ],
+    [
+      "ERR-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_err_02_malformed_calculation_input"
+    ],
+    [
+      "ERR-05",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_err_05_failure_not_quiet_sky"
+    ],
+    [
+      "ERR-06",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_err_06_non_valid_boundary_preserved"
+    ],
+    [
+      "INT-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_int_01_quiet_sky"
+    ],
+    [
+      "TIME-01",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_time_01_historical_timezone"
+    ],
+    [
+      "TIME-02",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_time_02_ambiguous_rejected"
+    ],
+    [
+      "TIME-03",
+      "tests/test_planned_core_controls_r1.py::PlannedCoreControlsR1::test_time_03_nonexistent_rejected"
+    ]
+  ],
+  "execution_evidence": "CI_RUN_37156184819_73_PASS + CI_RUN_37165468849_89_PASS",
+  "authoritative_coverage": "NOT_ESTABLISHED",
+  "current_verified_commit": "9bd4ee06e85958a59023e9c089ea718df83312f6",
+  "historical_registry_preserved": true,
+  "latest_ci_run": {
+    "id": 37167069759,
+    "conclusion": "success",
+    "tests_executed": 115,
+    "python": "3.13.15"
+  },
+  "recovered_planned_core_controls": {
+    "total": 19,
+    "currently_executable": 19,
+    "verified_by_ci": true
+  },
+  "reclassification_note": "Historical H2 classifications are preserved. This register records current executable coverage evidence only; it does not retroactively alter historical implementation claims."
+}

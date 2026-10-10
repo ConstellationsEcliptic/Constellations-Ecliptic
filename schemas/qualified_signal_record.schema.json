@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CE Qualified Signal Record V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "signal_id",
+    "evidence_packet_ref",
+    "timestamp_observation_utc",
+    "qualification_status",
+    "classification",
+    "kinematic_phase",
+    "phase_uniformity",
+    "canon_input_valid",
+    "requires_uncertainty_disclaimer",
+    "environment_pin"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "CE-QUALIFIED-SIGNAL-RECORD-V1"
+    },
+    "signal_id": {
+      "type": "string",
+      "pattern": "^CE-SIGNAL-[0-9a-f]{64}$"
+    },
+    "evidence_packet_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp_observation_utc": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+    },
+    "qualification_status": {
+      "type": "string",
+      "enum": [
+        "VALID",
+        "NON_AUTHORIZED",
+        "INVALID_INPUT",
+        "CALCULATION_FAILURE",
+        "NOT_IMPLEMENTED",
+        "KNOWN_UNAVAILABLE",
+        "INPUT_UNSUPPORTED"
+      ]
+    },
+    "classification": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kinematic_phase": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase_uniformity": {
+      "type": "string",
+      "enum": [
+        "UNIFORM",
+        "MIXED"
+      ]
+    },
+    "canon_input_valid": {
+      "const": true
+    },
+    "requires_uncertainty_disclaimer": {
+      "type": "boolean"
+    },
+    "environment_pin": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

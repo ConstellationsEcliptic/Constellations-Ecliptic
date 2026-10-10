@@ -1,0 +1,1 @@
+{"build_definition_id":"CE-V1-SOURCE-FOUNDATION-R1-BUILD","build_system":"setuptools","build_backend":"setuptools.build_meta","python_requires":">=3.13,<3.14","build_requirements":["setuptools==82.0.1"],"runtime_dependencies":[],"bytecode_generation":"disabled_in_verification_runner","prohibited":["uncontrolled-fast-math","implicit-runtime-download","mutable-runtime-data"]}
