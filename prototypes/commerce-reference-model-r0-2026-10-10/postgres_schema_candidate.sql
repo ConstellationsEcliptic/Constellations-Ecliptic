@@ -293,6 +293,75 @@ CREATE TRIGGER ce_topup_order_validate_transition
 BEFORE UPDATE ON ce_topup_order
 FOR EACH ROW EXECUTE FUNCTION ce_validate_topup_transition();
 
+-- Record failure observation monotonically; recovery after failure needs authoritative lookup.
+CREATE OR REPLACE FUNCTION ce_validate_topup_transition() RETURNS trigger AS $
+BEGIN
+    IF NEW.logical_topup_id <> OLD.logical_topup_id
+       OR NEW.account_id <> OLD.account_id
+       OR NEW.idempotency_key <> OLD.idempotency_key
+       OR NEW.sku_id <> OLD.sku_id
+       OR NEW.sku_revision <> OLD.sku_revision
+       OR NEW.amount_minor <> OLD.amount_minor
+       OR NEW.currency <> OLD.currency
+       OR NEW.credits_to_grant <> OLD.credits_to_grant
+       OR NEW.created_at <> OLD.created_at THEN
+        RAISE EXCEPTION 'server-owned top-up identity and commercial terms are immutable';
+    END IF;
+    IF OLD.provider_transaction_ref IS NOT NULL
+       AND (NEW.provider_transaction_ref <> OLD.provider_transaction_ref
+            OR NEW.provider_name <> OLD.provider_name) THEN
+        RAISE EXCEPTION 'provider transaction identity cannot be silently replaced';
+    END IF;
+    IF OLD.status = 'CREDIT_FULFILLED' AND NEW.status <> OLD.status THEN
+        RAISE EXCEPTION 'fulfilled top-up state is immutable; use a separate remedy record';
+    END IF;
+    NEW.failure_observed := OLD.failure_observed OR NEW.status = 'PAYMENT_FAILED';
+    IF NEW.status = 'PAYMENT_CONFIRMED' AND OLD.failure_observed
+       AND NOT EXISTS (
+          SELECT 1 FROM ce_provider_event e
+           WHERE e.logical_topup_id = NEW.logical_topup_id
+             AND e.provider_name = NEW.provider_name
+             AND e.provider_transaction_ref = NEW.provider_transaction_ref
+             AND e.observed_status = 'SUCCEEDED'
+             AND e.observation_source = 'AUTHORITATIVE_STATUS_LOOKUP'
+       ) THEN
+        RAISE EXCEPTION 'success after a prior failure requires authoritative status lookup';
+    END IF;
+    IF NEW.status = 'PAYMENT_CONFIRMED'
+       AND NOT EXISTS (
+          SELECT 1 FROM ce_provider_event e
+           WHERE e.logical_topup_id = NEW.logical_topup_id
+             AND e.provider_name = NEW.provider_name
+             AND e.provider_transaction_ref = NEW.provider_transaction_ref
+             AND e.observed_status = 'SUCCEEDED'
+       ) THEN
+        RAISE EXCEPTION 'payment confirmation requires a matching provider success observation';
+    END IF;
+    IF NEW.status = 'PAYMENT_FAILED'
+       AND NOT EXISTS (
+          SELECT 1 FROM ce_provider_event e
+           WHERE e.logical_topup_id = NEW.logical_topup_id
+             AND e.provider_name = NEW.provider_name
+             AND e.provider_transaction_ref = NEW.provider_transaction_ref
+             AND e.observed_status = 'FAILED'
+       ) THEN
+        RAISE EXCEPTION 'payment failure requires a matching provider failure observation';
+    END IF;
+    IF NEW.status = 'CREDIT_FULFILLED' AND OLD.status <> 'CREDIT_FULFILLED' THEN
+        IF NEW.completed_at IS NULL OR NOT EXISTS (
+            SELECT 1 FROM ce_credit_ledger_entry le
+             WHERE le.entry_type = 'TOPUP_CREDIT_GRANT'
+               AND le.reference_id = NEW.logical_topup_id
+               AND le.account_id = NEW.account_id
+               AND le.delta = NEW.credits_to_grant
+        ) THEN
+            RAISE EXCEPTION 'top-up cannot be fulfilled without its one matching committed credit grant';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$ LANGUAGE plpgsql;
+
 CREATE FUNCTION ce_validate_order_transition() RETURNS trigger AS $
 BEGIN
     IF NEW.logical_purchase_id <> OLD.logical_purchase_id
@@ -300,6 +369,9 @@ BEGIN
        OR NEW.service_date_utc <> OLD.service_date_utc
        OR NEW.created_at <> OLD.created_at THEN
         RAISE EXCEPTION 'logical purchase identity, account, and service date are immutable';
+    END IF;
+    IF OLD.status = 'FULFILLED' AND NEW.status <> OLD.status THEN
+        RAISE EXCEPTION 'fulfilled order history is immutable; use a separate remedy record';
     END IF;
     IF NEW.reading_debit_entry_id IS NOT NULL AND NOT EXISTS (
         SELECT 1 FROM ce_credit_ledger_entry le
@@ -473,3 +545,13 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER ce_reading_entitlement_validate_insert
 BEFORE INSERT ON ce_reading_entitlement
 FOR EACH ROW EXECUTE FUNCTION ce_validate_entitlement_insert();
+
+CREATE FUNCTION ce_immutable_terminal_failure_evidence() RETURNS trigger AS $$
+BEGIN
+    RAISE EXCEPTION 'terminal failure evidence is append-only';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_terminal_failure_evidence_no_update
+BEFORE UPDATE OR DELETE ON ce_terminal_failure_evidence
+FOR EACH ROW EXECUTE FUNCTION ce_immutable_terminal_failure_evidence();
