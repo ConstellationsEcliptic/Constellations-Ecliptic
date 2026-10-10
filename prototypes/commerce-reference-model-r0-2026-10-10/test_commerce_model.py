@@ -273,6 +273,10 @@ class CommerceReferenceModelTests(unittest.TestCase):
             CommerceReferenceModel(
                 fulfillment_admission=FulfillmentAdmissionState.READY
             )
+        with self.assertRaises(InvalidIdentity):
+            self.model(
+                fulfillment_admission_expires_at=datetime.now(UTC) + timedelta(minutes=6),
+            )
         model = self.model(
             fulfillment_admission_expires_at=datetime.now(UTC) + timedelta(seconds=0.15),
         )
