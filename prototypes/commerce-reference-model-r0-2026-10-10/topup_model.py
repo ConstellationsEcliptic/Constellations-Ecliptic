@@ -58,6 +58,10 @@ class ProviderObservation:
     provider: str
     event_id: str
     provider_transaction_ref: str
+    logical_topup_id: str
+    account_id: str
+    amount_minor: int
+    currency: str
     payment_status: ProviderPaymentStatus
     payload_fingerprint: str
     source: ObservationSource
@@ -139,6 +143,15 @@ class CreditsTopUpModel:
         )
         if not all(required) or not observation.adapter_validation_passed:
             raise ProviderObservationError("provider observation is not accepted adapter-verified evidence")
+        if (
+            observation.logical_topup_id != order.logical_topup_id
+            or observation.account_id != order.account_id
+            or observation.amount_minor != order.sku.amount_minor
+            or observation.currency != order.sku.currency
+        ):
+            raise ProviderObservationError(
+                "provider observation does not match server-owned order, account, amount, and currency"
+            )
 
         tx_key = (observation.provider, observation.provider_transaction_ref)
         tx_owner = self._provider_transactions.get(tx_key)
