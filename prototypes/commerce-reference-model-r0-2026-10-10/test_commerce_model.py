@@ -213,10 +213,6 @@ class CommerceReferenceModelTests(unittest.TestCase):
         with self.assertRaises(QuotaBlocked):
             model.confirm_and_reserve("acct", "order-2", datetime(2026, 10, 10, 14, tzinfo=UTC))
 
-
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
-
     def test_owner_selected_policy_defaults_and_health_interlock_fail_closed(self):
         # Constructor defaults carry the owner disposition, while an unknown service
         # health state cannot admit a new order.
@@ -257,3 +253,6 @@ if __name__ == "__main__":
         ready.set_fulfillment_admission(FulfillmentAdmissionState.BLOCKED)
         self.assertFalse(ready.commit_reading_debit("order-1", "debit-1", 4))
         self.assertEqual(ready.ledger.balance("acct"), 16)
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
