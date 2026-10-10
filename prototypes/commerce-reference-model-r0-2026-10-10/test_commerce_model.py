@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+import time
 import unittest
 
 from commerce_model import (
@@ -17,6 +18,8 @@ class CommerceReferenceModelTests(unittest.TestCase):
     def model(self, **kwargs):
         # Existing positive-path tests explicitly simulate an attested healthy service.
         kwargs.setdefault("fulfillment_admission", FulfillmentAdmissionState.READY)
+        kwargs.setdefault("fulfillment_admission_expires_at", datetime.now(UTC) + timedelta(minutes=5))
+        kwargs.setdefault("fulfillment_attestation_reference", "unit-test-health-attestation")
         return CommerceReferenceModel(**kwargs)
 
     def funded(self, model, account="acct", credits=20):
@@ -248,11 +251,31 @@ class CommerceReferenceModelTests(unittest.TestCase):
         ready.set_fulfillment_admission(FulfillmentAdmissionState.UNKNOWN)
         with self.assertRaises(FulfillmentAdmissionBlocked):
             ready.commit_reading_debit("order-1", "debit-1", 4)
-        ready.set_fulfillment_admission(FulfillmentAdmissionState.READY)
+        ready.set_fulfillment_admission(
+            FulfillmentAdmissionState.READY,
+            attestation_reference="test-health-recovered",
+            valid_until=datetime.now(UTC) + timedelta(minutes=5),
+        )
         self.assertTrue(ready.commit_reading_debit("order-1", "debit-1", 4))
         ready.set_fulfillment_admission(FulfillmentAdmissionState.BLOCKED)
         self.assertFalse(ready.commit_reading_debit("order-1", "debit-1", 4))
         self.assertEqual(ready.ledger.balance("acct"), 16)
+
+    def test_expired_or_unattested_ready_state_fails_closed(self):
+        with self.assertRaises(InvalidIdentity):
+            CommerceReferenceModel(
+                fulfillment_admission=FulfillmentAdmissionState.READY
+            )
+        model = self.model(
+            fulfillment_admission_expires_at=datetime.now(UTC) + timedelta(seconds=0.15),
+        )
+        time.sleep(0.20)
+        with self.assertRaises(FulfillmentAdmissionBlocked):
+            model.confirm_and_reserve(
+                "acct", "order-expired-health",
+                datetime(2026, 10, 10, 12, tzinfo=UTC),
+            )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
