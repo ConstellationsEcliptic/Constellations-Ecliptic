@@ -1,0 +1,45 @@
+name: Commerce Reference Model Tests
+
+on:
+  pull_request:
+    paths:
+      - "prototypes/commerce-reference-model-r0-2026-10-10/**"
+      - ".github/workflows/commerce-reference-model-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-model-tests:
+    name: Candidate model and PostgreSQL contract tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_USER: ce_test
+          POSTGRES_PASSWORD: ce_test
+          POSTGRES_DB: ce_commerce_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ce_test -d ce_commerce_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      CE_TEST_DATABASE_URL: postgresql://ce_test:ce_test@localhost:5432/ce_commerce_test
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned PostgreSQL test driver
+        run: python -m pip install "psycopg[binary]==3.3.6"
+      - name: Run in-memory and PostgreSQL contract tests
+        working-directory: prototypes/commerce-reference-model-r0-2026-10-10
+        run: python -m unittest -v
