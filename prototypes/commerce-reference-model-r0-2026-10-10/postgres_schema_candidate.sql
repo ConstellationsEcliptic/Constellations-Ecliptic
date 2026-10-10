@@ -89,18 +89,136 @@ CREATE TABLE ce_credit_ledger_entry (
 );
 
 -- Explicit service-admission state. UNKNOWN is the initial fail-closed state.
--- The operational process that establishes/updates this state is not implemented here.
+-- READY is only valid until ready_expires_at; expired attestations fail closed.
 CREATE TABLE ce_purchase_admission_state (
     singleton_id SMALLINT PRIMARY KEY CHECK (singleton_id = 1),
     admission_state TEXT NOT NULL CHECK (admission_state IN ('READY', 'BLOCKED', 'UNKNOWN')),
     reason_reference TEXT NOT NULL CHECK (btrim(reason_reference) <> ''),
-    updated_at TIMESTAMPTZ NOT NULL
+    health_attestation_reference TEXT,
+    ready_expires_at TIMESTAMPTZ,
+    state_version BIGINT NOT NULL DEFAULT 0 CHECK (state_version >= 0),
+    updated_at TIMESTAMPTZ NOT NULL,
+    CHECK (
+        (admission_state = 'READY'
+          AND health_attestation_reference IS NOT NULL
+          AND btrim(health_attestation_reference) <> ''
+          AND ready_expires_at IS NOT NULL)
+        OR
+        (admission_state <> 'READY'
+          AND health_attestation_reference IS NULL
+          AND ready_expires_at IS NULL)
+    )
 );
 
 INSERT INTO ce_purchase_admission_state
-    (singleton_id, admission_state, reason_reference, updated_at)
+    (singleton_id, admission_state, reason_reference, health_attestation_reference,
+     ready_expires_at, state_version, updated_at)
 VALUES
-    (1, 'UNKNOWN', 'INITIAL_HEALTH_NOT_ATTESTED', CURRENT_TIMESTAMP);
+    (1, 'UNKNOWN', 'INITIAL_HEALTH_NOT_ATTESTED', NULL, NULL, 0, CURRENT_TIMESTAMP);
+
+-- One immutable event per version. Inserting a valid event atomically changes current state
+-- via the AFTER INSERT trigger below; direct state updates without an event are rejected.
+CREATE TABLE ce_purchase_admission_event (
+    event_id TEXT PRIMARY KEY,
+    singleton_id SMALLINT NOT NULL DEFAULT 1 CHECK (singleton_id = 1),
+    state_version BIGINT NOT NULL CHECK (state_version > 0),
+    previous_state TEXT NOT NULL CHECK (previous_state IN ('READY', 'BLOCKED', 'UNKNOWN')),
+    new_state TEXT NOT NULL CHECK (new_state IN ('READY', 'BLOCKED', 'UNKNOWN')),
+    reason_reference TEXT NOT NULL CHECK (btrim(reason_reference) <> ''),
+    health_attestation_reference TEXT,
+    ready_expires_at TIMESTAMPTZ,
+    actor_reference TEXT NOT NULL CHECK (btrim(actor_reference) <> ''),
+    changed_at TIMESTAMPTZ NOT NULL,
+    UNIQUE (singleton_id, state_version),
+    CHECK (
+        (new_state = 'READY'
+          AND health_attestation_reference IS NOT NULL
+          AND btrim(health_attestation_reference) <> ''
+          AND ready_expires_at IS NOT NULL)
+        OR
+        (new_state <> 'READY'
+          AND health_attestation_reference IS NULL
+          AND ready_expires_at IS NULL)
+    )
+);
+
+CREATE FUNCTION ce_validate_purchase_admission_event() RETURNS trigger AS $CE$
+DECLARE
+    current_state ce_purchase_admission_state%ROWTYPE;
+BEGIN
+    SELECT * INTO current_state
+      FROM ce_purchase_admission_state
+     WHERE singleton_id = 1
+     FOR UPDATE;
+    IF NOT FOUND
+       OR NEW.previous_state <> current_state.admission_state
+       OR NEW.state_version <> current_state.state_version + 1 THEN
+        RAISE EXCEPTION 'admission event must match the current state and next version';
+    END IF;
+    IF NEW.new_state = 'READY'
+       AND NEW.ready_expires_at <= statement_timestamp() THEN
+        RAISE EXCEPTION 'READY admission requires a future expiry and current health attestation';
+    END IF;
+    RETURN NEW;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_purchase_admission_event_validate_insert
+BEFORE INSERT ON ce_purchase_admission_event
+FOR EACH ROW EXECUTE FUNCTION ce_validate_purchase_admission_event();
+
+CREATE FUNCTION ce_validate_purchase_admission_state_update() RETURNS trigger AS $CE$
+BEGIN
+    IF NEW.singleton_id <> OLD.singleton_id
+       OR NEW.state_version <> OLD.state_version + 1
+       OR NOT EXISTS (
+          SELECT 1 FROM ce_purchase_admission_event e
+           WHERE e.singleton_id = NEW.singleton_id
+             AND e.state_version = NEW.state_version
+             AND e.previous_state = OLD.admission_state
+             AND e.new_state = NEW.admission_state
+             AND e.reason_reference = NEW.reason_reference
+             AND e.health_attestation_reference IS NOT DISTINCT FROM NEW.health_attestation_reference
+             AND e.ready_expires_at IS NOT DISTINCT FROM NEW.ready_expires_at
+             AND e.changed_at = NEW.updated_at
+       ) THEN
+        RAISE EXCEPTION 'admission state update requires a matching versioned audit event';
+    END IF;
+    RETURN NEW;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_purchase_admission_state_validate_update
+BEFORE UPDATE ON ce_purchase_admission_state
+FOR EACH ROW EXECUTE FUNCTION ce_validate_purchase_admission_state_update();
+
+CREATE FUNCTION ce_apply_purchase_admission_event() RETURNS trigger AS $CE$
+BEGIN
+    UPDATE ce_purchase_admission_state
+       SET admission_state = NEW.new_state,
+           reason_reference = NEW.reason_reference,
+           health_attestation_reference = NEW.health_attestation_reference,
+           ready_expires_at = NEW.ready_expires_at,
+           state_version = NEW.state_version,
+           updated_at = NEW.changed_at
+     WHERE singleton_id = NEW.singleton_id;
+    RETURN NEW;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_purchase_admission_event_apply
+AFTER INSERT ON ce_purchase_admission_event
+FOR EACH ROW EXECUTE FUNCTION ce_apply_purchase_admission_event();
+
+CREATE FUNCTION ce_immutable_purchase_admission_event() RETURNS trigger AS $CE$
+BEGIN
+    RAISE EXCEPTION 'purchase-admission audit events are append-only';
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_purchase_admission_event_no_update
+BEFORE UPDATE OR DELETE ON ce_purchase_admission_event
+FOR EACH ROW EXECUTE FUNCTION ce_immutable_purchase_admission_event();
 
 CREATE TABLE ce_deep_sky_order (
     logical_purchase_id TEXT PRIMARY KEY,
@@ -132,8 +250,10 @@ BEGIN
       FROM ce_purchase_admission_state
      WHERE singleton_id = 1
      FOR SHARE;
-    IF NOT FOUND OR gate.admission_state <> 'READY' THEN
-        RAISE EXCEPTION 'new Deep Sky purchase blocked: fulfillment admission is not explicitly READY';
+    IF NOT FOUND OR gate.admission_state <> 'READY'
+       OR gate.ready_expires_at IS NULL
+       OR gate.ready_expires_at <= statement_timestamp() THEN
+        RAISE EXCEPTION 'new Deep Sky purchase blocked: fulfillment admission is not currently READY';
     END IF;
     IF NEW.status <> 'RESERVED' OR NEW.reading_debit_entry_id IS NOT NULL THEN
         RAISE EXCEPTION 'new logical purchase must begin RESERVED without a committed reading debit';
@@ -254,9 +374,10 @@ BEGIN
           FROM ce_purchase_admission_state
          WHERE singleton_id = 1
            AND admission_state = 'READY'
+           AND ready_expires_at > statement_timestamp()
          FOR SHARE;
         IF NOT FOUND THEN
-            RAISE EXCEPTION 'new reading debit blocked: fulfillment admission is not explicitly READY';
+            RAISE EXCEPTION 'new reading debit blocked: fulfillment admission is not currently READY';
         END IF;
         PERFORM 1
           FROM ce_deep_sky_order o
