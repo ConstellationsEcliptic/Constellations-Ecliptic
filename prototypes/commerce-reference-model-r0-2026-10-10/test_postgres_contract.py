@@ -463,6 +463,30 @@ class PostgresCommerceContractTests(unittest.TestCase):
             ("acct-1", SERVICE_DATE, "order-1", "RESERVED", 1),
         )
 
+    def test_d1a_debit_commit_consumes_matching_daily_slot_atomically(self):
+        self.insert_reading_order()
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT slot_state, state_version FROM ce_daily_purchase_slot WHERE account_id='acct-1' AND service_date_utc=%s",
+                (SERVICE_DATE,),
+            ).fetchone(),
+            ("RESERVED", 1),
+        )
+        self.insert_debit_and_bind_order()
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT slot_state, state_version FROM ce_daily_purchase_slot WHERE account_id='acct-1' AND service_date_utc=%s",
+                (SERVICE_DATE,),
+            ).fetchone(),
+            ("CONSUMED", 2),
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT status, quota_effect, reading_debit_entry_id FROM ce_deep_sky_order WHERE logical_purchase_id='order-1'"
+            ).fetchone(),
+            ("DEBIT_COMMITTED", True, "debit-1"),
+        )
+
     def test_reading_debit_requires_account_day_slot_reservation(self):
         self.insert_reading_order(reserve_slot=False)
         with self.assertRaises(errors.RaiseException):
@@ -804,7 +828,7 @@ class PostgresCommerceContractTests(unittest.TestCase):
             )
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
-                "UPDATE ce_daily_purchase_slot SET slot_state='RELEASED', state_version=2, updated_at=%s WHERE account_id='acct-1' AND service_date_utc=%s",
+                "UPDATE ce_daily_purchase_slot SET slot_state='RELEASED', state_version=state_version+1, updated_at=%s WHERE account_id='acct-1' AND service_date_utc=%s",
                 (NOW, SERVICE_DATE),
             )
         self.conn.execute(
@@ -817,7 +841,7 @@ class PostgresCommerceContractTests(unittest.TestCase):
             (SERVICE_DATE, NOW),
         )
         self.conn.execute(
-            "UPDATE ce_daily_purchase_slot SET slot_state='RELEASED', state_version=2, updated_at=%s WHERE account_id='acct-1' AND service_date_utc=%s",
+            "UPDATE ce_daily_purchase_slot SET slot_state='RELEASED', state_version=state_version+1, updated_at=%s WHERE account_id='acct-1' AND service_date_utc=%s",
             (NOW, SERVICE_DATE),
         )
         self.assertEqual(
