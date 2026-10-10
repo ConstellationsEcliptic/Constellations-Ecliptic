@@ -80,18 +80,20 @@ class PostgresCommerceContractTests(unittest.TestCase):
 
     def insert_debit_and_bind_order(self, order_id="order-1", account="acct-1",
                                     debit_id="debit-1", amount=-4):
-        self.conn.execute(
-            """INSERT INTO ce_credit_ledger_entry
-            (entry_id, account_id, entry_type, delta, reference_id, created_at)
-            VALUES (%s,%s,'DEEP_SKY_READING_DEBIT',%s,%s,%s)""",
-            (debit_id, account, amount, order_id, NOW),
-        )
-        self.conn.execute(
-            """UPDATE ce_deep_sky_order
-               SET status='DEBIT_COMMITTED', reading_debit_entry_id=%s
-             WHERE logical_purchase_id=%s""",
-            (debit_id, order_id),
-        )
+        # The reading debit and D1-A quota effect must commit atomically with order state.
+        with self.conn.transaction():
+            self.conn.execute(
+                """INSERT INTO ce_credit_ledger_entry
+                (entry_id, account_id, entry_type, delta, reference_id, created_at)
+                VALUES (%s,%s,'DEEP_SKY_READING_DEBIT',%s,%s,%s)""",
+                (debit_id, account, amount, order_id, NOW),
+            )
+            self.conn.execute(
+                """UPDATE ce_deep_sky_order
+                   SET status='DEBIT_COMMITTED', reading_debit_entry_id=%s
+                 WHERE logical_purchase_id=%s""",
+                (debit_id, order_id),
+            )
 
     def test_schema_creates_expected_controlled_tables(self):
         names = {
@@ -157,6 +159,13 @@ class PostgresCommerceContractTests(unittest.TestCase):
                 "SELECT COUNT(*) FROM ce_credit_ledger_entry WHERE entry_type='DEEP_SKY_READING_DEBIT'"
             ).fetchone()[0],
             1,
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT quota_effect FROM ce_deep_sky_order WHERE logical_purchase_id='accepted-before-health-change'"
+            ).fetchone()[0],
+            True,
+            "D1-A must consume quota when the reading debit is committed",
         )
 
     def test_topup_terms_must_match_an_available_server_owned_sku(self):
@@ -393,6 +402,24 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.assertEqual(
             self.conn.execute("SELECT slot_state FROM ce_daily_purchase_slot").fetchone()[0],
             "RELEASED",
+        )
+        self.assertEqual(
+            self.conn.execute("SELECT quota_effect FROM ce_deep_sky_order WHERE logical_purchase_id='order-1'").fetchone()[0],
+            False,
+            "D2-B clears the quota effect after a validated terminal non-delivery",
+        )
+        self.insert_reading_order(order_id="order-2", account="acct-1")
+        self.conn.execute(
+            """UPDATE ce_daily_purchase_slot
+                  SET active_logical_purchase_id='order-2', slot_state='RESERVED',
+                      state_version=state_version+1, updated_at=%s
+                WHERE account_id='acct-1' AND service_date_utc=%s""",
+            (NOW, SERVICE_DATE),
+        )
+        self.assertEqual(
+            self.conn.execute("SELECT active_logical_purchase_id, slot_state FROM ce_daily_purchase_slot").fetchone(),
+            ("order-2", "RESERVED"),
+            "a proven D2-B release permits a new same-date reservation",
         )
 
     def test_service_date_and_order_identity_are_immutable(self):
