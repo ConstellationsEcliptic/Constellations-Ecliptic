@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import unittest
 
 from commerce_model import (
@@ -207,6 +207,8 @@ class CreditsTopUpModelTests(unittest.TestCase):
         cap_model = CommerceReferenceModel(
             cap_trigger=CapTrigger.PURCHASE_DEBIT_COMMITTED,
             fulfillment_admission=FulfillmentAdmissionState.READY,
+            fulfillment_admission_expires_at=datetime.now(UTC) + timedelta(minutes=5),
+            fulfillment_attestation_reference="topup-test-health-attestation",
         )
         cap_model.confirm_and_reserve(
             "acct-1", "deep-sky-order-1", T0
