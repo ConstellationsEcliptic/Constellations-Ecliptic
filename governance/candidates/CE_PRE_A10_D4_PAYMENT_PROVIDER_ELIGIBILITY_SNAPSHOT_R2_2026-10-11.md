@@ -84,7 +84,7 @@ Sources:
 - Indonesian merchant account requirements: https://help.xendit.co/hc/en-us/articles/10891368765593-ID-What-are-the-legal-documents-required-to-register-to-Xendit-for-Indonesian-Merchants
 - Current entity onboarding explanation: https://help.xendit.co/hc/en-us/articles/360025721111-How-to-create-a-Xendit-Account-for-business
 
-Xendit describes payment-channel availability, but available methods do not establish product eligibility. Merchant entity type, verified legal documents, website/catal​og, industry classification and any additional licensing/document requirements must be met. The project's actual legal seller entity and jurisdiction remain undecided.
+Xendit describes payment-channel availability, but available methods do not establish product eligibility. Merchant entity type, verified legal documents, website/catalog, industry classification and any additional licensing/document requirements must be met. The project's actual legal seller entity and jurisdiction remain undecided.
 
 **Status:** PRESCREENING CANDIDATE ONLY, NOT APPROVED. Ask Xendit in writing whether it can onboard the exact CE astrology interpretation service and account-bound, non-transferable, non-cash-out Credits used solely for CE's own reading service; ask what entity type, licence, products/channels, customer geographies, currencies, disclosures, refund and dispute rules would apply. Do not characterize a successful general account signup or generic digital-services support as approval of this exact model.
 
