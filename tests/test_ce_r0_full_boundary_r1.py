@@ -283,6 +283,14 @@ class CER0FullBoundaryTests(unittest.TestCase):
                 self.assertIn("canon_rule_signal_condition_mismatch", result.reasons)
                 self.assertFalse(result.authorized)
 
+    def test_boolean_directed_branch_selector_fails_closed(self):
+        result = self._claim_release_with_condition({
+            "classification": "ROBUST_EXACT_SIGNAL",
+            "directed_branch": True,
+        })
+        self.assertIn("canon_rule_signal_condition_mismatch", result.reasons)
+        self.assertFalse(result.authorized)
+
     def test_unsupported_rule_condition_key_fails_closed(self):
         result = self._claim_release_with_condition({
             "classification": "ROBUST_EXACT_SIGNAL",
