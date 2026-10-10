@@ -13,19 +13,27 @@ class InvalidTransition(CommerceError): pass
 class QuotaBlocked(CommerceError): pass
 class PolicyDecisionRequired(CommerceError): pass
 class InvalidFulfillment(CommerceError): pass
+class FulfillmentAdmissionBlocked(CommerceError): pass
 class LedgerConflict(CommerceError): pass
 
 
 class CapTrigger(str, Enum):
-    # D1 alternatives only; neither is approved by this prototype.
+    # Owner selected D1-A on 2026-10-10; D1-B is retained only for counterfactual tests.
     PURCHASE_DEBIT_COMMITTED = "D1_A_PURCHASE_DEBIT_COMMITTED"
     VALID_READING_ACCESSIBLE = "D1_B_VALID_READING_ACCESSIBLE"
 
 
 class TerminalFailurePolicy(str, Enum):
-    # D2 alternatives only; neither is approved by this prototype.
+    # Owner selected D2-B on 2026-10-10; D2-A is retained only for counterfactual tests.
     RETAIN_SAME_DATE_SLOT = "D2_A_RETAIN_SAME_DATE_SLOT"
     RELEASE_IF_ORIGINAL_DATE_CURRENT = "D2_B_RELEASE_IF_ORIGINAL_DATE_CURRENT"
+
+
+class FulfillmentAdmissionState(str, Enum):
+    # New purchases/debits require an explicit healthy admission state.
+    READY = "READY"
+    BLOCKED = "BLOCKED"
+    UNKNOWN = "UNKNOWN"
 
 
 class OrderStatus(str, Enum):
@@ -148,20 +156,28 @@ class Order:
 
 
 class CommerceReferenceModel:
-    """Pure in-memory candidate model. Policy alternatives have no silent defaults."""
+    """Candidate model; owner-selected D1-A/D2-B defaults and fail-closed admission gate."""
 
     def __init__(
         self,
         *,
-        cap_trigger: Optional[CapTrigger] = None,
-        terminal_failure_policy: Optional[TerminalFailurePolicy] = None,
+        cap_trigger: Optional[CapTrigger] = CapTrigger.PURCHASE_DEBIT_COMMITTED,
+        terminal_failure_policy: Optional[TerminalFailurePolicy] = TerminalFailurePolicy.RELEASE_IF_ORIGINAL_DATE_CURRENT,
+        fulfillment_admission: FulfillmentAdmissionState = FulfillmentAdmissionState.UNKNOWN,
     ) -> None:
         self.cap_trigger = cap_trigger
         self.terminal_failure_policy = terminal_failure_policy
+        self.fulfillment_admission = fulfillment_admission
         self.orders: Dict[str, Order] = {}
         self.ledger = CreditLedger()
         # Provider event IDs are unique within each provider across all orders.
         self._provider_events: Dict[Tuple[str, str], Tuple[str, str]] = {}
+
+    def set_fulfillment_admission(self, state: FulfillmentAdmissionState) -> None:
+        """Set the simulated operational gate; production health evaluation is out of scope."""
+        if not isinstance(state, FulfillmentAdmissionState):
+            raise InvalidIdentity("fulfillment admission must be an explicit known enum state")
+        self.fulfillment_admission = state
 
     @staticmethod
     def _utc(timestamp: datetime) -> datetime:
@@ -179,7 +195,13 @@ class CommerceReferenceModel:
         if existing:
             if existing.account_id != account_id:
                 raise InvalidIdentity("logical purchase ID cannot cross accounts")
+            # Existing logical-order retries remain available for reconciliation even
+            # while the gate is closed; they do not create a new purchase.
             return existing
+        if self.fulfillment_admission != FulfillmentAdmissionState.READY:
+            raise FulfillmentAdmissionBlocked(
+                "new Deep Sky purchase requires explicit fulfillment admission READY"
+            )
 
         service_date = confirmed_utc.date()
         account_orders = [o for o in self.orders.values() if o.account_id == account_id]
@@ -223,6 +245,12 @@ class CommerceReferenceModel:
             return False
         if order.status != OrderStatus.RESERVED:
             raise InvalidTransition("new debit requires RESERVED state; reconcile unknown outcomes first")
+        # Recheck admission at D1-A's effective-purchase debit boundary.
+        # Idempotent replay of an already committed debit returned above.
+        if self.fulfillment_admission != FulfillmentAdmissionState.READY:
+            raise FulfillmentAdmissionBlocked(
+                "new reading debit requires explicit fulfillment admission READY"
+            )
         self.ledger.post(CreditEntry(
             debit_id, order.account_id, -cost, "DEEP_SKY_READING_DEBIT", logical_purchase_id
         ))
