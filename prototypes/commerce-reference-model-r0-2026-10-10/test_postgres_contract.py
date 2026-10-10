@@ -90,7 +90,8 @@ class PostgresCommerceContractTests(unittest.TestCase):
         )
 
     def insert_reading_order(self, order_id="order-1", account="acct-1",
-                             service_date=SERVICE_DATE, status="RESERVED", ensure_ready=True):
+                             service_date=SERVICE_DATE, status="RESERVED", ensure_ready=True,
+                             reserve_slot=True):
         if ensure_ready:
             state = self.conn.execute(
                 "SELECT admission_state, ready_expires_at FROM ce_purchase_admission_state WHERE singleton_id=1"
@@ -107,6 +108,13 @@ class PostgresCommerceContractTests(unittest.TestCase):
             VALUES (%s,%s,%s,%s,%s)""",
             (order_id, account, service_date, status, NOW),
         )
+        if reserve_slot:
+            self.conn.execute(
+                """INSERT INTO ce_daily_purchase_slot
+                (account_id, service_date_utc, active_logical_purchase_id, slot_state, updated_at)
+                VALUES (%s,%s,%s,'RESERVED',%s)""",
+                (account, service_date, order_id, NOW),
+            )
 
     def insert_debit_and_bind_order(self, order_id="order-1", account="acct-1",
                                     debit_id="debit-1", amount=-4):
@@ -405,11 +413,28 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.insert_reading_order()
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
-                """INSERT INTO ce_daily_purchase_slot
-                (account_id, service_date_utc, active_logical_purchase_id, slot_state, updated_at)
-                VALUES ('acct-1',%s,'order-1','CONSUMED',%s)""",
-                (SERVICE_DATE, NOW),
+                """UPDATE ce_daily_purchase_slot
+                   SET slot_state='CONSUMED', state_version=state_version+1, updated_at=%s
+                 WHERE account_id='acct-1' AND service_date_utc=%s""",
+                (NOW, SERVICE_DATE),
             )
+
+    def test_reading_debit_requires_account_day_slot_reservation(self):
+        self.insert_reading_order(reserve_slot=False)
+        with self.assertRaises(errors.RaiseException):
+            self.insert_debit_and_bind_order()
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT status, reading_debit_entry_id FROM ce_deep_sky_order WHERE logical_purchase_id='order-1'"
+            ).fetchone(),
+            ("RESERVED", None),
+        )
+        self.assertEqual(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM ce_credit_ledger_entry WHERE entry_type='DEEP_SKY_READING_DEBIT'"
+            ).fetchone()[0],
+            0,
+        )
 
     def test_reading_entitlement_requires_bound_committed_debit(self):
         self.insert_reading_order()
@@ -603,12 +628,6 @@ class PostgresCommerceContractTests(unittest.TestCase):
         self.insert_reading_order()
         self.insert_debit_and_bind_order()
         self.conn.execute(
-            """INSERT INTO ce_daily_purchase_slot
-            (account_id, service_date_utc, active_logical_purchase_id, slot_state, updated_at)
-            VALUES ('acct-1',%s,'order-1','RESERVED',%s)""",
-            (SERVICE_DATE, NOW),
-        )
-        self.conn.execute(
             """INSERT INTO ce_terminal_failure_evidence
             (logical_purchase_id, no_valid_reading_accessible, no_operation_can_still_deliver,
              no_entitlement_exists, all_relevant_operations_closed, evidence_reference, confirmed_at)
@@ -652,7 +671,7 @@ class PostgresCommerceContractTests(unittest.TestCase):
             False,
             "D2-B clears the quota effect after a validated terminal non-delivery",
         )
-        self.insert_reading_order(order_id="order-2", account="acct-1")
+        self.insert_reading_order(order_id="order-2", account="acct-1", reserve_slot=False)
         self.conn.execute(
             """UPDATE ce_daily_purchase_slot
                   SET active_logical_purchase_id='order-2', slot_state='RESERVED',
