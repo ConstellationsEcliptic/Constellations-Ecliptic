@@ -419,17 +419,36 @@ class PostgresCommerceContractTests(unittest.TestCase):
                 (NOW, SERVICE_DATE),
             )
 
-    def test_daily_slot_identity_cannot_be_moved_or_deleted(self):
+    def test_daily_slot_identity_and_active_purchase_cannot_be_rebound(self):
         self.insert_reading_order()
         self.insert_reading_order(
-            order_id="order-2", account="acct-2", reserve_slot=False
+            order_id="order-2", account="acct-1", reserve_slot=False
+        )
+        self.insert_reading_order(
+            order_id="order-3", account="acct-2", reserve_slot=False
         )
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
                 """UPDATE ce_daily_purchase_slot
-                   SET account_id='acct-2', active_logical_purchase_id='order-2'
+                   SET active_logical_purchase_id='order-2',
+                       state_version=state_version+1
                  WHERE account_id='acct-1' AND service_date_utc=%s""",
                 (SERVICE_DATE,),
+            )
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                """UPDATE ce_daily_purchase_slot
+                   SET account_id='acct-2', active_logical_purchase_id='order-3',
+                       state_version=state_version+1
+                 WHERE account_id='acct-1' AND service_date_utc=%s""",
+                (SERVICE_DATE,),
+            )
+        with self.assertRaises(errors.RaiseException):
+            self.conn.execute(
+                """UPDATE ce_daily_purchase_slot
+                   SET updated_at=%s
+                 WHERE account_id='acct-1' AND service_date_utc=%s""",
+                (NOW, SERVICE_DATE),
             )
         with self.assertRaises(errors.RaiseException):
             self.conn.execute(
@@ -438,10 +457,10 @@ class PostgresCommerceContractTests(unittest.TestCase):
             )
         self.assertEqual(
             self.conn.execute(
-                """SELECT account_id, service_date_utc, active_logical_purchase_id, slot_state
+                """SELECT account_id, service_date_utc, active_logical_purchase_id, slot_state, state_version
                      FROM ce_daily_purchase_slot"""
             ).fetchone(),
-            ("acct-1", SERVICE_DATE, "order-1", "RESERVED"),
+            ("acct-1", SERVICE_DATE, "order-1", "RESERVED", 1),
         )
 
     def test_reading_debit_requires_account_day_slot_reservation(self):
