@@ -260,6 +260,13 @@ class CommerceReferenceModelTests(unittest.TestCase):
         ready.set_fulfillment_admission(FulfillmentAdmissionState.BLOCKED)
         self.assertFalse(ready.commit_reading_debit("order-1", "debit-1", 4))
         self.assertEqual(ready.ledger.balance("acct"), 16)
+        # Existing debit/operation can still complete while admission for new
+        # purchases is BLOCKED; the gate is not an automatic cancellation policy.
+        self.assertTrue(ready.fulfill_validated_reading(
+            "order-1", entitlement_id="ent-1", reading_reference="read-1",
+            content_hash="hash-1", output_valid=True, accessible=True,
+        ))
+        self.assertEqual(ready.orders["order-1"].status, OrderStatus.FULFILLED)
 
     def test_expired_or_unattested_ready_state_fails_closed(self):
         with self.assertRaises(InvalidIdentity):
