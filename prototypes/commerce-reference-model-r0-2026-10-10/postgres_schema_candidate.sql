@@ -378,6 +378,47 @@ CREATE TABLE ce_predebit_failure_evidence (
     confirmed_at TIMESTAMPTZ NOT NULL
 );
 
+CREATE FUNCTION ce_validate_predebit_failure_evidence() RETURNS trigger AS $CE$
+DECLARE
+    o ce_deep_sky_order%ROWTYPE;
+BEGIN
+    SELECT * INTO o
+      FROM ce_deep_sky_order
+     WHERE logical_purchase_id = NEW.logical_purchase_id
+     FOR UPDATE;
+    IF NOT FOUND
+       OR o.status NOT IN ('RESERVED', 'RECONCILIATION_REQUIRED')
+       OR o.reading_debit_entry_id IS NOT NULL
+       OR NOT NEW.no_reading_debit_committed
+       OR NOT NEW.no_operation_can_still_commit_or_deliver
+       OR NOT NEW.all_relevant_operations_closed
+       OR btrim(NEW.evidence_reference) = ''
+       OR EXISTS (
+           SELECT 1 FROM ce_credit_ledger_entry le
+            WHERE le.entry_type = 'DEEP_SKY_READING_DEBIT'
+              AND le.reference_id = NEW.logical_purchase_id
+       )
+       OR EXISTS (
+           SELECT 1 FROM ce_reading_entitlement e
+            WHERE e.logical_purchase_id = NEW.logical_purchase_id
+       )
+       OR NOT EXISTS (
+           SELECT 1 FROM ce_daily_purchase_slot s
+            WHERE s.account_id = o.account_id
+              AND s.service_date_utc = o.service_date_utc
+              AND s.active_logical_purchase_id = o.logical_purchase_id
+              AND s.slot_state IN ('RESERVED', 'RECONCILIATION_REQUIRED')
+       ) THEN
+        RAISE EXCEPTION 'pre-debit failure evidence requires an unresolved order with no debit/entitlement and a matching active slot';
+    END IF;
+    RETURN NEW;
+END;
+$CE$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ce_predebit_failure_evidence_validate_insert
+BEFORE INSERT ON ce_predebit_failure_evidence
+FOR EACH ROW EXECUTE FUNCTION ce_validate_predebit_failure_evidence();
+
 CREATE FUNCTION ce_immutable_predebit_failure_evidence() RETURNS trigger AS $CE$
 BEGIN
     RAISE EXCEPTION 'pre-debit failure evidence is append-only';
