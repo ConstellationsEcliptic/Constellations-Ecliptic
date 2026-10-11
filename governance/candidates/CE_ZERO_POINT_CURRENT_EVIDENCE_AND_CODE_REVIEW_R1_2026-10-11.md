@@ -1107,3 +1107,15 @@ The governing Canon v1.2 §§4–7/13–20, Product Constitution v1.6.1 §§2–
 
 This plan invents no Canon content and does not authorize populating a registry. B1 remains incomplete until approved rule source, supported geometry binding, independent semantic verifier, official test-register linkage, controlled successor identity and release-gate evidence are established. No source/code/schema/test register/runtime/A10/production/SEAL state was changed.
 
+## 39. Source-identity precision correction for §38
+
+During post-write verification of the B1 candidate plan, one row in §38.1 could be read as associating the JSON Schema blob with the Python implementation module. These are distinct files and have distinct blob identities. The row is hereby clarified rather than leaving a misleading source-to-code citation.
+
+- A9 `src/ce/claim/manifest.py`: blob SHA-1 `20e64047510a98aa34c5a84abc50885b12ca76b3` (12,612 characters in the connector extraction).
+- A9 `schemas/allowed_claim_manifest.schema.json`: blob SHA-1 `e1b9f46cae1c584a46cf83eb1953ccd376b38028` (2,949 characters).
+- A9 `src/ce/output/validation.py`: blob SHA-1 `7474c55c7323dc446e4799b3db4f6dc16a1b75a6` (10,372 characters).
+
+The candidate plan at the same branch now records the implementation blob separately from the schema: [B1 Canon Rule Geometry Binding & Semantic Release Test Plan R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_B1_CANON_RULE_GEOMETRY_BINDING_AND_SEMANTIC_RELEASE_TEST_PLAN_R0_2026-10-11.md), updated blob `fb6ecf2e54d31060995c59f54a3f997f213ef259`.
+
+This is a citation/identity precision correction only. It does not change the B1 conclusion: current A9 remains fail-closed because the Canon registry is unpopulated and independent semantic verification is not established; geometry-specific rule applicability and its official test mapping remain open. No A9 source byte, schema, normative document, Test Register, runtime, A10, production or SEAL was changed.
+
