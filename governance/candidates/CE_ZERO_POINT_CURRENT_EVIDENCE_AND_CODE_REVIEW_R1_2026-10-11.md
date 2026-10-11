@@ -1119,3 +1119,36 @@ The candidate plan at the same branch now records the implementation blob separa
 
 This is a citation/identity precision correction only. It does not change the B1 conclusion: current A9 remains fail-closed because the Canon registry is unpopulated and independent semantic verification is not established; geometry-specific rule applicability and its official test mapping remain open. No A9 source byte, schema, normative document, Test Register, runtime, A10, production or SEAL was changed.
 
+## 40. Current PR #32 B1 prototype — partial geometry fix, no trusted successor identity
+
+The earlier §38 review accurately describes exact A9 HEAD #26. A subsequent reconciliation of the separate B1 research branch confirms a partial implementation candidate exists; do not treat the A9 code snapshot alone as the only available engineering work.
+
+### 40.1 Current PR identity and dedicated tests
+
+- PR #32 current direct REST head: `1c3459836996ce4cc1a6ffb5ff76cb77e6a488d8`, OPEN / DRAFT / NOT MERGED. The PR body still contains an earlier head in its narrative; the exact PR resource head and workflow logs take precedence.
+- At this head, `src/ce/signal/record.py` blob `6aa54cf11432a731111c40d7b9a2de98535e7f35` defines shared geometry identity extraction.
+- `src/ce/claim/authorization.py` blob `8f580f63f537fe323531c3937cdee6c9296b15f6` adds typed geometry selectors (transit, natal/scenario, aspect, directed branch) and requires one unique canonical geometry identity whenever a geometry condition is used.
+- `schemas/canon_rule.schema.json` blob `6c49333c18dbe312f74c2209479e5d0ff93ebfaa` closes `condition` properties and declares the supported selector fields.
+- Exact dedicated run [#38073807670](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807670) passed the selected 62-test suite on Ubuntu, macOS and Windows. Test names include geometry selector exact match, mismatch while broad signal fields remain constant, shared QSR identity, unsupported-key rejection, boolean directed-branch rejection and strict schema parity. This is stronger than a merely proposed test plan.
+
+### 40.2 Exact-head failures of identity-pinned workflows
+
+On that same exact PR #32 head:
+- [Full Boundary run #38073807732](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807732): fail, all three OS jobs at source identity.
+- [Remediation run #38073807681](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807681): fail, all three OS jobs at source identity.
+- [Trusted Build A9 run #38073807704](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807704): fail at source-tree/control-plane identity comparison.
+
+The logs compute source identity `fbc77e725871147d59bf8c58a1409e34fc64c2d9c660efd63e3f99609bb2d9de` against preserved A9 source identity `1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b`; the Trusted Build job computes control-plane identity `67717c29907c7bc88096ce4f841f016743db72aa1f533b4fb3bd49e1d92d419b` against preserved A9 control-plane identity `0bc4f88dc43549a1033434a2a3653c02b46002024630b4294c22ddb8a5f7c357`. Neither comparison matches.
+
+This mismatch is not a reason to overwrite pinned A9 manifests. It confirms PR #32 is a distinct research candidate with its own source/control-plane identity; it has no inherited A9 Source Authority, Trusted Build or Runtime Adoption. Only its dedicated 62-test prototype workflow passed. The three broader identity-pinned workflows did not pass.
+
+### 40.3 Residual scope and current disposition
+
+- The B1 prototype does materially improve selector/schema parity and has targeted geometry mismatch tests.
+- It remains synthetic `TEST_ONLY` content. An approved populated V1 Canon corpus and independently verified semantic verifier are absent.
+- `CanonRule.applicability_scope` remains a separate item to verify: in the inspected matcher it is not read as part of rule-to-evidence matching. It must either become an explicit tested authorization predicate or be separated from executable selector meaning under controlled source authority.
+- No specific production misinterpretation is proven. Current A9 remains fail-closed. PR #32's source identity drift makes the candidate ineligible to inherit A9 trust; its failed broader identity workflows are a release-blocking provenance result, not a basis for editing A9.
+- [B1 candidate test plan R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_B1_CANON_RULE_GEOMETRY_BINDING_AND_SEMANTIC_RELEASE_TEST_PLAN_R0_2026-10-11.md) now links this existing prototype and its exact-head evidence rather than duplicating the prototype as if it did not exist.
+
+No PR was merged; no A9 manifest, source authority, normative Canon, official Test Register, runtime, A10, production or SEAL state was changed.
+

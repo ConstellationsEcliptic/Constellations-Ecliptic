@@ -134,3 +134,23 @@ The case labels above are local candidate identifiers only, not CE official Test
 - Candidate plan: **PROPOSED / NOT APPROVED / NOT EXECUTED**.
 
 No Canon rule or manifest claim was invented, no registry was populated, and no code/schema/test register/normative document/runtime/A10/production/SEAL state was changed.
+
+
+## 8. Existing B1 prototype reconciliation — PR #32
+
+A follow-up review found that [PR #32](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/32) already implements part of this candidate plan in an isolated research branch. The current PR resource head is `1c3459836996ce4cc1a6ffb5ff76cb77e6a488d8` (not the old head copied into part of its PR description).
+
+At that exact head:
+- `src/ce/signal/record.py` blob `6aa54cf11432a731111c40d7b9a2de98535e7f35` defines the shared `signal_geometry_identities(packet)` extraction used by QSR issuance and matching.
+- `src/ce/claim/authorization.py` blob `8f580f63f537fe323531c3937cdee6c9296b15f6` supports four typed geometry fields (transit object, natal object/scenario, aspect, directed branch) plus the four signal selectors, and requires exactly one canonical geometry identity when a geometry selector is present.
+- `schemas/canon_rule.schema.json` blob `6c49333c18dbe312f74c2209479e5d0ff93ebfaa` sets `additionalProperties: false` under `condition` and declares typed geometry selectors.
+- Dedicated workflow [#38073807670](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807670) passed **62 selected tests on each of Ubuntu, macOS and Windows**. The set includes exact geometry-selector match, geometry mismatch under the same broad signal, boolean directed-branch rejection, unsupported-key rejection, strict condition-schema parity and shared-identity extraction.
+
+However, this does not complete the B1 release prerequisite:
+- Full Boundary [#38073807732](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807732), Remediation [#38073807681](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807681), and Trusted Build A9 [#38073807704](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38073807704) **fail** at identity checks on this exact PR #32 head.
+- Their logs compute candidate source identity `fbc77e725871147d59bf8c58a1409e34fc64c2d9c660efd63e3f99609bb2d9de`, which differs from preserved A9 `SOURCE_TREE_SHA256_V2` `1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b`. The Trusted Build job additionally computes control-plane identity `67717c29907c7bc88096ce4f841f016743db72aa1f533b4fb3bd49e1d92d419b`, different from preserved A9 manifest `0bc4f88dc43549a1033434a2a3653c02b46002024630b4294c22ddb8a5f7c357`.
+- The identity mismatch is consistent with a changed research candidate and is not grounds to overwrite A9 manifests. It means this branch has no inherited A9 identity/trust and cannot be described as a current trusted-build successor.
+- The candidate matcher still does not appear to enforce `CanonRule.applicability_scope`; that semantic field must either be bound to a tested authorization invariant or explicitly separated from executable selector semantics under controlled source review.
+- These results are candidate research evidence. The exact candidate PR remains draft/unmerged, has no source authority or Runtime Adoption, and uses synthetic `TEST_ONLY` rule content only.
+
+Consequently, the present plan is not a duplicate replacement for PR #32. It records the required authority/test gates and residual scope not yet demonstrated by that prototype. The appropriate next step is a controlled successor lineage with source/control-plane identities computed from the exact new tree, the prototype changes and tests reviewed together, all applicable full-boundary workflows rerun on the new exact head, and Source Authority/Trusted Build/Runtime Adoption kept separate. Never update the pinned A9 hash/manifest to make a research branch green.
