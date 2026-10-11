@@ -1152,3 +1152,33 @@ This mismatch is not a reason to overwrite pinned A9 manifests. It confirms PR #
 
 No PR was merged; no A9 manifest, source authority, normative Canon, official Test Register, runtime, A10, production or SEAL state was changed.
 
+## 41. B1 test mapping against the historical v1.5 register — reference only
+
+This crosswalk compares the candidate B1-CANON cases in §38 with the historical [Execution Profile & Test Register v1.5, Box 2485336117840](https://account.box.com/file/2485336117840). The register contains 100 named IDs and states that test count does not substitute for mandatory invariant coverage or deterministic expected-state oracles. Its authority as the currently active full V1 register remains unresolved because of the retained Index/Clean Current Set R3 conflict; the mappings below are **historical reference coverage**, not an assertion that these IDs currently govern release and not an official Test Register update.
+
+| Candidate B1 case (local label only) | Related historical ID(s) | Relationship / limitation |
+|---|---|---|
+| B1-CANON-01 empty/unmaterialized registry | Production gate §21 requires Canon registry approval; no direct numbered ID located in extracted text | Related gate requirement, not proof of existing dedicated automated test |
+| B1-CANON-02 unknown rule ID / no fallback | Canon approval gate §21; existing A9 test `test_bad_canon_rule_does_not_fallback` is implementation test evidence | No direct numbered historical ID located for missing rule/no fallback in extracted Test Register |
+| B1-CANON-03 schema-valid unsupported selector key | Schema validation gate §21; exact selector schema parity test exists in PR #32 targeted prototype | Historical register text inspected does not identify a dedicated Canon condition-schema/matcher-parity ID |
+| B1-CANON-04 applicability-scope mismatch | AI-02 (manifest scope expansion) is adjacent but not equivalent | AI-02 validates output manifest scope, not the Canon rule's own `applicability_scope` against source/evidence |
+| B1-CANON-05 geometry selector mismatch with same broad signal | None identified directly in extracted register text | Principal new explicit geometry-to-Canon matching case covered by PR #32 targeted tests; no exact historical ID should be invented |
+| B1-CANON-06 packet digest/profile/interval mismatch | ERR-01 (corrupt Evidence Packet); VERS-03 (calculation environment change) | Related integrity/version invariants; exact selector-to-rule interval matching still requires an explicit oracle |
+| B1-CANON-07 overlapping/conflicting applicable rules | No exact named ID identified | Requires deterministic conflict oracle; registry iteration order must not choose a meaning silently |
+| B1-CANON-08 manifest rule/version/digest mismatch | AI-01 (manifest subject expansion), AI-02 (manifest scope expansion), AI-05 (claim-ID spoofing), VERS-04 (manifest version change) | Adjacent manifest/provenance coverage, not necessarily complete registry-digest binding test |
+| B1-CANON-09 missing/unverified semantic verifier | AI-07 (unvalidated output retrieval) is adjacent | AI-07 covers retrieval before validation; a controlled independent-verifier identity/absence test is more specific |
+| B1-CANON-10 output outside claim scope or unsupported causality | AI-02, AI-03 (forbidden-domain paraphrase), AI-08 (semantic jailbreak paraphrase) | Directly related output validation controls, while semantic-verifier authority remains separate |
+| B1-CANON-11 numeric/astronomical fact mutation | AI-06 (numeric mutation) | Direct historical invariant for evidence-derived numeric integrity; does not validate all geometry selector semantics |
+| B1-CANON-12 invalid calculation / Quiet Sky fallback | ERR-01, ERR-04, ERR-05, ERR-06, AI-09 | Directly related fail-closed/failure-state coverage; maintain no Quiet Sky on non-VALID failure |
+| B1-CANON-13 registry bytes change without digest/version update | VERS-01 (old reading after Canon update), VERS-04 (manifest version change) are adjacent | No exact historical numbered ID identified for mutation of registry bytes while retaining false same digest |
+| B1-CANON-14 verifier executable/version changes without revalidation | VERS-03, VERS-04, production gate §21 pinned environment | Adjacent version/environment controls, not evidence that semantic verifier itself has exact active identity pin |
+
+### 41.1 Consequences
+
+1. Historical coverage already exists for broad output scope, prohibited domains, numeric mutation, semantic paraphrase, evidence corruption, non-VALID failure propagation and version-bound old readings.
+2. Preserve and reuse that coverage after authority reconciliation; do not discard it because active register binding is unresolved.
+3. It does not remove the need for explicit geometry-specific Canon selector tests and an `applicability_scope` oracle. PR #32 supplies candidate tests for exact selector match/mismatch and schema parity, but that candidate fails full-boundary, remediation and trusted-build source/control-plane identity checks.
+4. Do not mint or announce official IDs, change the historical register in place, or treat this table as test execution. Once the valid current Test Register route is established, use a controlled successor to map/extend IDs, avoid duplicates and define deterministic fixtures/oracles.
+
+No historical Test Register, Index, normative document, source code, official ID, runtime, A10, production or SEAL state was changed.
+
