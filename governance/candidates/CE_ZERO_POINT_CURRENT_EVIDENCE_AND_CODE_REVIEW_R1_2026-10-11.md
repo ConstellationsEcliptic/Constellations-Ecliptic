@@ -73,7 +73,7 @@ Historical exact-head Actions results:
 - Remediation run #37765045314 — success; 261 tests per operating system.
 - Trusted Build A9 run #37765045328 — workflow checks passed.
 
-The trusted-build logs nevertheless state FORMAL_TRUSTED_BUILD=NOT_ESTABLISHED, PRODUCTION_RUNTIME=NOT_AUTHORIZED, SEAL=NO, AUTHORIZATION=NON_AUTHORIZED and FAIL_CLOSED=TRUE. A successful candidate workflow does not grant source authority or production authorization.
+At the workflow-log cutoff, the technical output still carried FORMAL_TRUSTED_BUILD=NOT_ESTABLISHED along with fail-closed runtime/production fields. That documentary interpretation was later superseded for this exact candidate by R2 reconciliation and the formal human authorization record (see §25). The current record-backed state is SOURCE_AUTHORITY=ESTABLISHED UNDER SOLO OWNER MODEL and TRUSTED_BUILD_FORMAL=ESTABLISHED for A9 commit c8dab3542d3d4725cf591630c07f76366f7949d0; RUNTIME_ADOPTION remains NOT_ESTABLISHED, PRODUCTION_RUNTIME remains NOT_AUTHORIZED, SEAL=NO, AUTHORIZATION=NON_AUTHORIZED and FAIL_CLOSED=TRUE. Successful Trusted Build is not runtime or production authorization.
 
 ## 4. Concrete A9 finding: one test is not discovered
 
@@ -124,7 +124,7 @@ At the A9 HEAD reviewed:
 - src/ce/calculation/engine.py can return NON_AUTHORIZED when authoritative adapter evidence is not established.
 - src/ce/runtime/gates.py refuses runtime authorization unless source-authority attestation and independent runtime identity verification are established.
 - src/ce/timezone/runtime.py pins IANA/TZDB to 2026d and rejects missing/mismatched identity/bundles. Investigation of 2026e does not authorize a runtime change.
-- manifests/convergent_test_register_r3.json calls itself CURRENT_IMPLEMENTATION_CANDIDATE, but states authoritative coverage, Source Authority, Trusted Build, runtime adoption and full runtime coverage are NOT_ESTABLISHED.
+- manifests/convergent_test_register_r3.json calls itself CURRENT_IMPLEMENTATION_CANDIDATE and still records authoritative coverage, Source Authority, Trusted Build, runtime adoption and full runtime coverage as NOT_ESTABLISHED. For Source Authority and Trusted Build, those artifact-local state fields are stale against the later exact-candidate R2/formal authorization records; authoritative coverage, Runtime Adoption and full runtime coverage remain NOT_ESTABLISHED. This is an unresolved control-plane/source-state inconsistency, not grounds to discard or silently overwrite the manifest.
 
 These are fail-closed controls to preserve, not release evidence.
 
@@ -555,3 +555,58 @@ This does not ask the owner to approve the mandate again. It records that one sp
 ### 24.4 Immediate permissible work
 
 Continue source searches, candidate evidence, source/test-lineage reconciliation and non-authoritative audit records. Preserve current retained Index, archived sets, Test Register and normative documents unchanged. If the owner later provides the exact disposition, verify it against the candidate digest and §6 preconditions before following that route. Until then: no Index replacement, no in-place edits to the retained archive, no normative promotion, and no A10 start.
+
+
+## 25. A9 Source Authority / Trusted Build — later formal records supersede earlier status interpretation
+
+### 25.1 Exact candidate and controlling evidence
+
+The exact candidate remains:
+- Repository: `ConstellationsEcliptic/Constellations-Ecliptic`
+- Branch: `remediation/ce-r0-a9-trusted-build-r1/2026-10-08`
+- HEAD: `c8dab3542d3d4725cf591630c07f76366f7949d0`
+- Source-tree SHA-256: `1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b`
+- Control-plane SHA-256: `0bc4f88dc43549a1033434a2a3653c02b46002024630b4294c22ddb8a5f7c357`
+- Dependency-lock SHA-256: `ef8ace995340aa53026991644521ed85bbc5282781af9e8d88f030e83b776be5`
+
+The later [A9 Runtime / Trusted-Build Evidence Reconciliation R2, Box 2514341553097](https://account.box.com/file/2514341553097) explicitly supersedes only the state interpretation of its R1 predecessor and reports:
+- formal human Trusted Build authorization exists at [Box 2513654771321](https://account.box.com/file/2513654771321);
+- the authorization binds the exact A9 HEAD and source-tree/control-plane/dependency-lock identities above;
+- C3-1 = APPROVE, C3-2 = VERIFIED, C3-3 = SATISFIED-BY-SOLO-OWNER-MODEL;
+- SOURCE_AUTHORITY_FOR_A9 = ESTABLISHED UNDER SOLO OWNER MODEL;
+- TRUSTED_BUILD_TECHNICAL_GATE_A9 = PASS;
+- TRUSTED_BUILD_FORMAL = ESTABLISHED.
+
+The formal authorization record gives the recorded Trusted Build run as `37765039886`, wheel SHA-256 `293f235d7074a506afb4654aebe99b4cfb88ed393f3abdabcaa5f4c9dbf532b7`, source-package SHA-256 `77f2baddc508c26cb25dcbdbfd74f25fbc206e98d259712f9cbd3154b5c47191`, source package boundary PASS, Git-archive source materialization parity PASS and two independent build/test/package executions with 261 tests each. The separate exact-head Actions results in §3 remain additional technical evidence; they are not the only basis for the formal status.
+
+### 25.2 Corrected current status — scope is exact and narrow
+
+| Gate / state | Current disposition for exact A9 HEAD | Source basis |
+|---|---|---|
+| C3-1 human disposition | **APPROVE** | R2 reconciliation and formal authorization record |
+| C3-2 cryptographic verification | **VERIFIED** | R2 reconciliation; C3-2 record Box 2513652710150 |
+| C3-3 Source Authority | **ESTABLISHED UNDER SOLO OWNER MODEL** | R2 reconciliation; C3-3 record Box 2513650472663 |
+| Trusted Build technical gate | **PASS** | Formal authorization record / recorded run evidence |
+| Formal Trusted Build | **ESTABLISHED** | Human authorization record Box 2513654771321, bound to exact candidate identity |
+| Runtime Adoption | **NOT ESTABLISHED** | A9 R2 and A10 design/boundary records |
+| Full runtime coverage | **NOT ESTABLISHED** | Captured 201/201 annual shards are parity evidence, not proof of the complete production runtime domain |
+| TZIF runtime identity | **NOT ESTABLISHED** | Runtime identity must be independently verified and bound to a separate runtime receipt |
+| Production / deployment / merge authorization | **NOT AUTHORIZED / NOT ESTABLISHED as applicable** | Explicit non-establishments in the authorization record |
+| SEAL | **NO** | Explicit non-establishment |
+| Overall authorization | **NON_AUTHORIZED; FAIL_CLOSED=TRUE** | Exact A9 R2 state |
+
+### 25.3 What this correction does — and does not — change
+
+The earlier sentence in §3 that carried forward `FORMAL_TRUSTED_BUILD=NOT_ESTABLISHED` from technical workflow/log state was an outdated status interpretation. It is corrected here and in the present-tense wording above. The current conclusion follows the later, exact-candidate R2 reconciliation and formal authorization record, rather than preferring a log snapshot merely because it was seen first.
+
+However, the audit's independently identified A9 issues remain material and open:
+1. the intended fourth test in `tests/test_source_tree_identity_r1.py` is misplaced and absent under normal discovery;
+2. the malformed 62-/63-character H2 mapping digest references remain in nine JSON files and two Markdown references, and raw H2 bytes were not available here for a direct SHA-256 recomputation;
+3. the current-candidate manifest still carries state fields that conflict with the later Source Authority / Trusted Build records;
+4. the candidate has not been promoted or merged, and the formal Trusted Build record does not establish Runtime Adoption or production use.
+
+The existence of a formal Trusted Build authorization is a **status fact for the recorded exact candidate**; it is not a claim that the later audit findings have been fixed, that every intended test ran, that the entire candidate's semantic/source/test lineage is clean, or that production is authorized. Any remediation must use a controlled successor with fresh source-tree and control-plane identities, complete digest repairs from verified raw bytes, a re-run/review of the relevant tests and a fresh applicable authority/build disposition. The pinned A9 candidate and its historical evidence remain unchanged.
+
+### 25.4 No authority promotion
+
+This appendix corrects the audit's record interpretation only. It does not alter the source tree, its manifests, Box authorization records, workflow runs, PR #26, runtime, protected branches, Index, official Test Register, A10 state or SEAL. Keep PR #26 OPEN / DRAFT / NOT MERGED. The defensible current boundary is: **A9 Source Authority and formal Trusted Build are established for the exact candidate; Runtime Adoption is not established; production remains unauthorized; new audit findings still require controlled disposition before any successor or use.**
