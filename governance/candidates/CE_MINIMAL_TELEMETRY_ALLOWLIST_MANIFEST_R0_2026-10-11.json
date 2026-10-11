@@ -1,0 +1,65 @@
+{
+  "manifest_id": "CE-MINIMAL-TELEMETRY-ALLOWLIST",
+  "manifest_version": "0.0.0",
+  "classification": "NON_AUTHORITATIVE_CANDIDATE",
+  "authority_effect": "NONE",
+  "normative_effect": "NONE",
+  "implementation_authorization": "NONE",
+  "status": "NOT_ESTABLISHED",
+  "approved_additional_product_telemetry_events": [],
+  "source_recorded_metric_classes": [
+    {
+      "source": "Technical Contracts v1.1 §24.1-§24.2",
+      "classification": "SOURCE_RECORDED_NOT_IMPLEMENTATION_VERIFIED",
+      "operation_classes": [
+        "CALCULATION_POSITION",
+        "CALCULATION_SPEED",
+        "EXACT_EVENT_SOLVE",
+        "WINDOW_SOLVE",
+        "ZERO_BIRTH_TIME_EVALUATION",
+        "EVIDENCE_ISSUANCE",
+        "SIGNAL_DERIVATION",
+        "LANGUAGE_VALIDATION",
+        "COMMERCE_FULFILLMENT"
+      ],
+      "metrics": [
+        "p50_latency",
+        "p95_latency",
+        "p99_latency",
+        "error_rate",
+        "throughput",
+        "concurrency",
+        "cpu_usage",
+        "memory_usage",
+        "timeout_rate"
+      ],
+      "collection_storage_access_retention_status": "NOT_ESTABLISHED_BY_THIS_MANIFEST"
+    },
+    {
+      "source": "Account Privacy Commercial Specification v1.7 / Technical Contracts v1.1 §23",
+      "classification": "SOURCE_RECORDED_NOT_FIELD_LEVEL_VERIFIED",
+      "data_class": "MINIMAL_SECURITY_OPERATIONAL_LOGS",
+      "event_allowlist_status": "NOT_ESTABLISHED"
+    }
+  ],
+  "unresolved_controls": [
+    "field_level_allowlist",
+    "purpose_to_field_binding",
+    "authorized_reader_roles",
+    "storage_and_processor_mapping",
+    "retention_and_deletion",
+    "aggregation_and_sampling",
+    "account_deletion_and_unlinking",
+    "prohibited_join_enforcement",
+    "official_test_register_binding"
+  ],
+  "prohibited_reuse": [
+    "persistent_personality_or_behavioral_profile",
+    "product_personalization",
+    "advertising_or_social_graph",
+    "forecast_accuracy_or_resonance_profile",
+    "reconstruction_of_deleted_personal_sky"
+  ],
+  "source_boundary_note": "Empty approved_additional_product_telemetry_events means this candidate approves no additional product telemetry. It does not revoke source-recorded performance metrics, minimum security logging, or separately governed commercial records.",
+  "fail_closed": true
+}

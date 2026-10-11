@@ -959,3 +959,39 @@ A3 is still incomplete for Pre-A10, but not because the owner has failed to deci
 
 No historical prototype was promoted, no editorial text was copied into the manifest, no owner decision was repeated, and no Product Constitution, Implementation Plan, Privacy/Evidence-AI source, Index, official Test Register, UI/code, schema, runtime, A10, production or SEAL state was changed. This section records bounded evidence only.
 
+## 35. Finding 10 — telemetry and operational observability, refined against implementation contracts
+
+### 35.1 Corrected source conclusion
+
+The earlier description of “minimal telemetry” as needing a tighter operational definition remains correct, but it must not imply that V1 sources say nothing about logging/metrics.
+
+The exact extracted source set contains:
+- [Account, Privacy & Commercial Specification v1.7, Box 2485319995048](https://account.box.com/file/2485319995048): minimal security event logging is expected; recovery secrets are not to be logged; transaction and fulfillment data have separately governed commercial records.
+- [Technical Contracts v1.1 — metadata-reconciled R2, Box 2491799121573](https://account.box.com/file/2491799121573): §23 includes `MINIMAL SECURITY / OPERATIONAL LOGS` as a V1 data class and excludes persistent free-text journal, Personal Context, hidden personality profile, social graph, public identity profile, third-party personal enrichment and behavioral profile. §24.1 names nine operational classes—calculation position/speed, exact event/window solve, zero-birth-time evaluation, evidence issuance, signal derivation, language validation and commerce fulfillment. §24.2 requires p50/p95/p99 latency, error rate, throughput, concurrency, CPU, memory and timeout-rate metrics.
+- [Historical Execution Profile & Test Register v1.5, Box 2485336117840](https://account.box.com/file/2485336117840): SEC-08 explicitly requires abuse controls without creating a persistent behavioral profile; PRIV-13 rejects using retained financial records for `ANALYTICS_PROFILE` and limits use to documented retention purpose. These are historical test requirements until active Test Register binding is resolved.
+- [Privacy Architecture Minimal Data, Box 2485335589220](https://account.box.com/file/2485335589220): supports V1 data-minimization and data-class exclusions.
+
+The gap is therefore specific: **an operational field/event-level allowlist with purpose binding, reader roles, storage/processor mapping, retention and deletion behavior, aggregation/sampling, prohibited-join controls and deterministic tests was not established in the inspected source set.** The listed operation classes/metrics are existing source-recorded requirements, not evidence that the actual logging/metrics implementation, storage path or access configuration has been audited.
+
+### 35.2 Candidate artifacts created without enabling collection
+
+- [Minimal Telemetry / Operational Observability Contract R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_MINIMAL_TELEMETRY_OPERATIONAL_OBSERVABILITY_CONTRACT_R0_2026-10-11.md), blob `6ec716b14d8ab5571de7106662338041b57cc535`. This separates performance metrics, security events and commercial/entitlement ledgers; requires explicit field/purpose/access/retention/deletion/prohibited-join dispositions before adding telemetry; and proposes negative-case tests without allocating official Test Register IDs.
+- [Minimal Telemetry Allowlist Manifest R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_MINIMAL_TELEMETRY_ALLOWLIST_MANIFEST_R0_2026-10-11.json), blob `178069363681d3eb441e98a4211b026da0db92c8`. It has `status=NOT_ESTABLISHED` and an empty `approved_additional_product_telemetry_events` list, while transparently recording source-defined performance metric classes and their lack of implementation verification.
+
+The empty additional-event allowlist does **not** cancel the source-recorded performance measurement or minimum security-log requirements; it means the candidate authorizes no new product telemetry events. It does not assert that no monitoring is currently implemented.
+
+### 35.3 Required distinctions and disposition
+
+| Control | Current state |
+|---|---|
+| Existing source-defined performance metric classes | **SOURCE-RECORDED**; implementation/retention/access binding not established by this review |
+| Broad minimal security/operational log data class | **SOURCE-RECORDED**; field-level allowlist/access/retention/deletion proof not established here |
+| Existing privacy prohibitions on behavioral profiling and misuse of financial records | **SOURCE-RECORDED**; exact production configuration and complete implementation-wide proof not established |
+| Additional user/product telemetry event allowlist | **NOT ESTABLISHED**; empty candidate list |
+| Event/field purpose, access, region/processor, sampling, retention/expiry, deletion/unlinking, anti-join controls | **NOT ESTABLISHED** |
+| Telemetry acceptance tests | SEC-08 / PRIV-13 in the historical register are relevant existing controls; any delta test must first be cross-mapped to the valid official Register. Proposed additional cases are not official IDs or executed. |
+
+### 35.4 Non-actions
+
+No log field, event, SDK, vendor, dashboard, retention value or telemetry pipeline was approved, added, configured or enabled. No guessed retention period or reader-role mapping was invented. No Technical Contracts, Privacy Architecture, Account/Commercial Specification, Index, official Test Register, code, schema, runtime, A10, production or SEAL state was changed.
+
