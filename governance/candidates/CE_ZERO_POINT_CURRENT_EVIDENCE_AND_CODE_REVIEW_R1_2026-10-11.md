@@ -729,3 +729,39 @@ The exact-head strict gate still identifies A3/B1/D4 as the three incomplete are
 - Preserve the PR history and register bytes. A later controlled status/handoff update may correct the prose summary; this report does not mutate the PR body or area register.
 
 No official Test Register, normative source, application code, schema, A10, runtime, Source Authority, Trusted Build, production or SEAL state was changed by this finding.
+
+## 29. Superseding correction to §28 — current Pre-A10 gate target and register lineage
+
+### 29.1 Why the earlier §28 conclusion is narrowed
+
+Section 28 compared the PR #27 narrative to `CE_PRE_A10_AREA_REGISTER_R2_2026-10-10.json` and concluded that the PR narrative's A3 label had drifted. That conclusion was too broad because it treated the R2-named file as the current gate target without verifying which register the exact-head workflow actually gates. The current PR #27 HEAD and its workflow explicitly target R3. **The claim that the current PR #27 description is wrong about A3 is withdrawn.** Its current A3 label matches the R3 register used by the gate.
+
+### 29.2 Exact current-head evidence
+
+- PR #27 exact HEAD at this check: `242bc16ac7ad29a471239b736d5b3915a92d07be`; PR remains OPEN / DRAFT / NOT MERGED.
+- Exact-head Actions run: [#38076234592](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38076234592).
+- The run executes `scripts/governance/pre_a10_area_gate.py governance/candidates/CE_PRE_A10_AREA_REGISTER_R3_2026-10-10.json --require-complete`.
+- R0, R1, R2 and R3 structure validators PASS; all 14 validator unit tests PASS.
+- The strict R3 completion gate fails with exit code 2 by design. Its emitted result has `area_count=23`, `complete_count=20`, `incomplete_count=3`, IDs `A3`, `B1`, `D4`, `pre_a10_area_review=INCOMPLETE`, empty `errors`, and explicit non-authorization of A10/runtime adoption, production and SEAL. Combined-status lookup returned no separate status records; the workflow run is the exact CI evidence cited here.
+- R3 blob SHA-1: `ab6e005bed107d8b909a16af9f24fc239b138ae8`; internal `revision=R3`; current counts: 13 `CLOSED_PRESERVE`, 6 `OWNER_DECISION_RECORDED`, 1 `DEFERRED_BY_EXPLICIT_DISPOSITION` (E4), 1 `OWNER_DISCUSSION_REQUIRED` (A3), and 2 `RECOMMENDATION_READY` (B1, D4).
+
+### 29.3 The real register lineage/name mismatch
+
+Comparing all four exact files on that same PR #27 HEAD gives:
+
+| Path suffix | Blob SHA-1 | Internal revision | Status summary |
+|---|---|---|---|
+| `R0_2026-10-09.json` | `0062647a794f3c20e8b4ca96a66ada96fa5a2442` | absent | 13 closed; 5 owner decisions; 4 recommendation-ready; 1 deferred |
+| `R1_2026-10-10.json` | `16b0666122b699e94a975650cd7cbbc9d8305413` | `R1` | 13 closed; 6 owner decisions; 3 recommendation-ready; 1 deferred |
+| `R2_2026-10-10.json` | `3dad17c41515f7104808dc1d199568e309f09b45` | `R1` | Same blob as R1; same statuses and content identity |
+| `R3_2026-10-10.json` | `ab6e005bed107d8b909a16af9f24fc239b138ae8` | `R3` | 13 closed; 6 owner decisions; 2 recommendation-ready; A3 owner-discussion; 1 deferred |
+
+The concrete discrepancy is therefore the **R2 filename versus its internal R1 revision and identical R1 blob**, not the current PR description's A3 label. The current workflow gates against the R3 path and R3 revision. This audit does not infer that the R2-named copy was intended to be a new semantic revision; it records the naming/lineage anomaly for controlled maintenance.
+
+### 29.4 Corrected disposition
+
+- Keep A3, B1 and D4 incomplete; the latest exact R3 gate remains blocked.
+- Treat §28's accusation of a current PR-description label drift as superseded by this correction; do not use it as an outstanding defect.
+- Retain the R2 filename/internal-revision mismatch as a distinct provenance/naming finding. If corrected, do so only as a separate candidate change with an explicit predecessor/successor identity and exact-head tests; do not rewrite historical candidate evidence in place.
+- No product semantics, owner disposition, normative Index, official Test Register, A9 authority, source code, runtime, A10, production, merge or SEAL state is altered by this correction.
+
