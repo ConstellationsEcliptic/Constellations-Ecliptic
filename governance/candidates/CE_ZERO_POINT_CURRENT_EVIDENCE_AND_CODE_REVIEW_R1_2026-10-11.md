@@ -24,6 +24,10 @@ New direct findings:
 3. The governance candidate branch and the A9 implementation candidate are distinct scopes. The governance branch contains governance docs and an area-register validator, not the CE product/runtime source. A separate A9 candidate branch contains implementation source, profiles, schemas and tests.
 4. One concrete test-discovery defect exists in the exact A9 candidate commit.
 5. A profile/configuration-to-runtime traceability gap is visible in the B1 geometry candidate. It is a candidate control/test gap, not proof that current numerical outputs are wrong.
+6. Later exact-candidate records establish Source Authority and formal Trusted Build for A9 HEAD `c8dab3542d3d4725cf591630c07f76366f7949d0`. Runtime Adoption, full runtime coverage, TZIF runtime identity and production authorization remain unestablished/not authorized.
+7. The separate retained implementation pointer still names PR #5, so the pointer/supersession link from that retained chain to A9 PR #26 remains unreconciled. This does not reverse A9’s exact-candidate authority records.
+8. The A3 search found historical hard-coded frontend prototypes in Box raw-inventory intake, but no approved current V1 Today’s Note editorial library. A3 remains open; the prototype text is demo content and must not be promoted into V1.
+9. A successor R1 crosswalk now maps all 11 findings and 3 cross-cutting notes to the 23-area Pre-A10 register. This resolves navigation, not implementation, Test Register authority or gate completion.
 
 ## 2. The three source anchors are already verified in exact R3 archive bytes
 
@@ -169,7 +173,7 @@ Next work:
 7. Keep Canon registry fail-closed; complete A3 editorial sources/UI/tests and the separate signal-present Note decision.
 8. Reconcile C3 commerce PRs #33-#36, Technical Contracts and official test oracle; distinguish account-scope uniqueness from daily service-credit semantics.
 9. D4 remains US-customer/USD-first: prescreen providers for exact astrology/Credits, true seller eligibility, US card acquiring, USD presentment/settlement, named acquirer and all fees/reserves before integration or paid onboarding.
-10. After official Test Register authority is established, build complete source-code-test crosswalk; only then proceed to separate Source Authority, Trusted Build, A10/runtime, release and SEAL gates.
+10. Resolve official full Test Register authority, then establish the complete source-code-test crosswalk for the intended successor. Source Authority and formal Trusted Build are already recorded as established for exact A9 HEAD c8dab3542d3d4725cf591630c07f76366f7949d0; any successor must have its own applicable identity-bound authority/build reconciliation. The current PR #5 implementation pointer versus PR #26 A9 lineage, Runtime Adoption, full runtime coverage, TZIF identity, production and SEAL remain separate open controls.
 
 ## 10. Completed and outstanding
 
@@ -216,7 +220,7 @@ Observed behavior:
 1. get_verified_semantic_conformance() explicitly returns None and comments that a controlled, independently verified semantic verifier is not yet established.
 2. validate_claim_output appends semantic_conformance_unavailable when no verifier is supplied; any conformance callback error becomes semantic_conformance_check_error, so this layer fails closed.
 3. evaluate_claim_release() uses the Canon registry to fetch the approved rule and validate the manifest against a registry digest; missing/unpopulated rule authority produces manifest_registry_binding_failed.
-4. The same claim-release function calls authorize_runtime(). At the exact A9 source reviewed, that function always appends source_authority_attestation_not_established and independent_runtime_identity_verification_not_established, returning NON_AUTHORIZED.
+4. The same claim-release function calls authorize_runtime(). At the exact A9 source reviewed, the gate unconditionally appends source_authority_attestation_not_established and independent_runtime_identity_verification_not_established, returning NON_AUTHORIZED. This is the runtime code’s receipt-verification state; it must not be misreported as absence of the later external A9 Source Authority record. The record exists, but the source gate does not yet consume a verified runtime-authority receipt and independent runtime-identity proof, so remaining fail-closed is correct.
 5. product.boundary.preserve_calculation_truth explicitly allows downstream signal processing after VALID calculation but continues to deny direct Canon claim, AI release and Quiet Sky; it requires downstream qualification.
 6. Existing tests verify non-VALID states cannot imply release and that runtime remains non-authorized without authority evidence.
 
@@ -369,7 +373,7 @@ A fresh read of the current retained harmonization records found:
 - PR #5 is still OPEN / DRAFT / NOT MERGED at that same exact HEAD, and its 11 changed files focus on the birth-time/calendar harmonization.
 - PR #26 is a separate OPEN / DRAFT / NOT MERGED A9 technical candidate at HEAD `c8dab3542d3d4725cf591630c07f76366f7949d0`, with 185 files including runtime, test, profile, schema and build-control content.
 
-This does **not** prove PR #26 is an authorized successor to the PR #5 implementation pointer, nor does it prove that PR #5 contains the full newer A9 engineering state. It proves the control documents still explicitly name PR #5 as the active candidate pointer, while later technical candidate work exists separately. Until a valid successor pointer/decision establishes supersession, treat the implementation lineage as **NOT RECONCILED**, and do not infer Source Authority from either candidate's existence or test success.
+This does **not** prove PR #26 is an authorized successor to the PR #5 implementation pointer, nor does it prove that PR #5 contains the full newer A9 engineering state. It proves the control documents still explicitly name PR #5 as the active candidate pointer, while later technical candidate work exists separately. Until a valid successor pointer/decision establishes supersession, treat the implementation lineage as **NOT RECONCILED**, and do not infer Source Authority from either candidate's existence or test success. Scope correction: this pointer-lineage finding must not be read as cancelling the separate R2/formal authorization records that explicitly establish Source Authority and formal Trusted Build for the exact A9 HEAD. It means the active implementation pointer and its supersession trail have not yet been reconciled to that A9 candidate.
 
 The prior harmonization apply/post-apply records (Box `2491700051951`, `2491702950277`) correctly state that their work applied Product Constitution v1.6.1, Implementation Plan v1.3.1, Technical Contracts v1.1, and Execution Profile v1.3/revision 4 through successor materialization, while explicitly preserving SOURCE_AUTHORITY=NOT_ESTABLISHED, TRUSTED_BUILD=NOT_ESTABLISHED, PRODUCTION_RUNTIME=NOT_AUTHORIZED and SEAL=NO. This application is not an implementation-pointer update and does not solve the active full Test Register conflict.
 
@@ -664,3 +668,36 @@ The [Source/UI Authority Discovery R1, Box 2515543958136](https://account.box.co
 The smallest defensible next artifact is a **candidate editorial-library manifest and lifecycle contract**, not a bulk import of the prototype’s `READINGS` object. It should define each item's stable ID, exact text, source/author or licensed origin, version, approval state, locale, reviewed-at/expiry, deterministic selection eligibility, and the rule that missing/expired/unapproved/wrong-locale content is omitted. The source must be reviewed independently for unsupported personal claims and must never imply an astronomical event or personal forecast. Create it only as a non-authoritative candidate; do not silently change Product Constitution, Implementation Plan, UI or code while the active Index/adoption route and official Test Register binding remain unresolved.
 
 This appendix changes no raw-inventory prototype, approved owner decision, normative source, official Test Register, Index, implementation, code, schema, Source Authority, Trusted Build, Runtime Adoption, A10, production or SEAL state.
+
+
+## 27. Runtime gate's hard-coded authority reason versus the later A9 authority record
+
+### 27.1 Exact source behavior
+
+At exact A9 HEAD `c8dab3542d3d4725cf591630c07f76366f7949d0`, `src/ce/runtime/gates.py` (blob SHA-1 `40a1874392af704cb1bd837a40275c27b5adbb87`) implements `authorize_runtime(identity)`. After identity-shape/profile/required-field checks, the function unconditionally appends both:
+- `source_authority_attestation_not_established`;
+- `independent_runtime_identity_verification_not_established`;
+
+and returns `RuntimeAuthority.NON_AUTHORIZED`. The same file describes its invariant: identity presence never constitutes authority.
+
+### 27.2 Reconciled interpretation
+
+The later [A9 Runtime / Trusted-Build Evidence Reconciliation R2, Box 2514341553097](https://account.box.com/file/2514341553097) and [formal Trusted Build authorization, Box 2513654771321](https://account.box.com/file/2513654771321) establish external Source Authority and formal Trusted Build for the exact A9 candidate. Therefore the reason token `source_authority_attestation_not_established` no longer accurately describes the status of the **external A9 authority record**.
+
+That does not make the runtime gate wrong to deny authorization. The source code is deliberately not wired to accept the presence of an external document, identity object or capture as runtime authority. It still lacks the separately verified receipt and independent runtime-identity check required for Runtime Adoption. So there are three different statements:
+1. **External Source Authority record:** ESTABLISHED for exact A9.
+2. **Runtime code receipt/identity verification:** NOT ESTABLISHED; the implementation does not yet consume a verified runtime-authority receipt.
+3. **Runtime Adoption / production:** NON_AUTHORIZED; fail-closed remains correct.
+
+This is a naming/state-reconciliation issue plus an expected missing runtime-authority mechanism; it is not permission to remove the guards.
+
+### 27.3 Required handling
+
+- Preserve A9 code and all formal authority records unchanged.
+- Do not change the gate's unconditional reasons in the pinned A9 tree.
+- In any controlled successor/A10 implementation, bind a separate verified receipt to exact candidate/source-tree/control-plane/dependency-lock, signed Source Authority, formal Trusted Build, runtime profile, native/Swiss/TZIF artifacts, environment and independent verification result.
+- Replace a generic “source authority not established” reason only after the receipt verifier determines the exact status from verified inputs; preserve NON_AUTHORIZED when the receipt or any required identity proof is absent, stale, malformed or mismatched.
+- Add acceptance tests for both states: external Source Authority/Trusted Build exists but Runtime Adoption receipt is absent ⇒ remain NON_AUTHORIZED; valid fully matched receipt plus independent identity verification ⇒ only then can the specific Runtime Adoption gate be evaluated.
+- Reconcile the reason-token language, implementation pointer and official test-oracle evidence in the controlled successor's change record. Do not alter official Test Register status through this audit report.
+
+This section corrects interpretation only. No code, manifest, Source Authority, Trusted Build, Runtime Adoption, Index, official Test Register, A10, production or SEAL state was changed.
