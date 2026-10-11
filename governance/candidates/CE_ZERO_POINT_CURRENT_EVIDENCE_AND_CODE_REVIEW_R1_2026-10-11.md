@@ -1071,3 +1071,39 @@ This is candidate-only integration evidence—not an official Test Register run,
 
 Finding 5 remains **PARTIAL — key policy choices recorded**. The cap premise, UTC boundary, D1-A purchase/debit point, D2-B same-date slot-release conditions and health-interlock principle are owner-disposed. The remaining block is controlled normative/test integration, pre-debit failure policy, health-control engineering, authorized implementation source and paid-market remedies. Sections 31–32 are superseded only to the extent that they suggested the D1/D2 choices were still merely proposals. No historic register, normative source, official Test Register, main branch, runtime, A10, production or SEAL status was changed.
 
+## 38. B1 — Canon registry, geometry applicability and semantic-release binding
+
+### 38.1 Exact implementation findings (A9 candidate only)
+
+At exact A9 PR #26 HEAD `c8dab3542d3d4725cf591630c07f76366f7949d0`, the following direct source blobs were inspected:
+
+- `src/ce/canon/registry.py`, `ae1bc1a83f712c8ca15a2d05b56310bec341332d`: rule shape/digest exist; empty/unmaterialized registry raises `CanonRegistryNotEstablished`.
+- `schemas/canon_rule.schema.json`, `770bfa661bdae89a569e8555155c97fe5b3ad2af`: `condition` is an object with `additionalProperties=true`, so schema validity alone does not guarantee executable selector support.
+- `src/ce/claim/authorization.py`, `59a88041cbf39c86faeffdef65a50dcb866b93d5`: the executable signal matcher supports only four broad fields—classification, kinematic phase, phase uniformity, and uncertainty-disclaimer flag. It rejects unknown condition fields, and the matcher does not directly consume evidence geometry records or enforce the rule's `applicability_scope`.
+- `src/ce/signal/record.py`, `b496ddc397cc28d4be18cdd468fa233e46e7c516`: derives a signal identity from an evidence packet; the signal record selector fields are broader than the packet's geometry identity.
+- `src/ce/calculation/evidence.py`, `933617491dfdb16f9d80f1a75131375558a40fb9`: validates geometry rows (transit, natal/scenario, aspect, directed branch, qualification, kinematics and orbital fields as applicable) and canonicalizes/hashes the evidence packet.
+- `src/ce/claim/manifest.py`, `e1b9f46cae1c584a46cf83eb1953ccd376b38028` is the JSON Schema (the implementation module is separately contained in the same source tree); the manifest binds rule ID, Canon registry digest/version, signal/evidence references and scope fields.
+- `src/ce/output/semantic.py`, `b33e37111770e55521c50f01ee6c7b699b5d9c61`: independent semantic-verifier accessor deliberately returns `None` pending controlled verification.
+- `tests/test_registry_r1.py`, `03efb7dd4609f070473a13fe8ac7c34ccdc38175`: tests numerical object/aspect/orb registries, not populated Canon applicability.
+- `tests/test_time_signal_boundaries.py`, `414b9089ab5e47e067907acb94b1650573530ca4`: does include a test that an unmaterialized Canon rule has no fallback.
+
+### 38.2 Status distinction
+
+- **Current behavior:** fail-closed when the Canon registry is absent/unmaterialized; semantic verifier is absent; runtime adoption remains unestablished; no user-facing production release authorized.
+- **Confirmed prospective gap:** the schema allows arbitrary nested selector keys, while the matcher executes only four keys; `applicability_scope` is not checked by that matcher. A future geometry-specific rule cannot rely on those unconsumed selector fields. A changed/unsupported selector currently rejects rather than silently matching, but this does not establish a complete selector/geometry contract.
+- **Not proven:** no populated/approved current V1 Canon registry was located in the inspected A9 tree; no specific bad personal reading or live production defect was established by this review.
+
+The governing Canon v1.2 §§4–7/13–20, Product Constitution v1.6.1 §§2–3/11–12 and Evidence/AI v1.4 §§7–13/19/24–25 require source-bound/versioned rules, bounded interpretation, evidence/manifest binding, semantic validation and fail-closed behavior. Code structure is not a substitute for a populated approved Canon source or an independent semantic verifier.
+
+### 38.3 Candidate control plan
+
+[ B1 Canon Rule Geometry Binding & Semantic Release Test Plan R0 ](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_B1_CANON_RULE_GEOMETRY_BINDING_AND_SEMANTIC_RELEASE_TEST_PLAN_R0_2026-10-11.md), blob `5551bcddf19baa0bff2962c3e87dfe3dafecbe6a`, defines:
+- typed, versioned executable selector schema;
+- exact binding to validated evidence/geometry and rule scope only where the approved Canon rule requires it;
+- conflict/ambiguity and stale digest rejection;
+- independent semantic verifier identity/validation requirements;
+- 14 proposed deterministic test cases, explicitly not official Test Register IDs and not executed;
+- preservation of empty-registry/no-fallback fail-closed behavior.
+
+This plan invents no Canon content and does not authorize populating a registry. B1 remains incomplete until approved rule source, supported geometry binding, independent semantic verifier, official test-register linkage, controlled successor identity and release-gate evidence are established. No source/code/schema/test register/runtime/A10/production/SEAL state was changed.
+
