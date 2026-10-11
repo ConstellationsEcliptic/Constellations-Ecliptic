@@ -1,0 +1,314 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constellations-ecliptic.invalid/candidates/CE_TODAYS_NOTE_EDITORIAL_LIBRARY_MANIFEST_SCHEMA_R0_2026-10-11.json",
+  "title": "CE Today's Note Editorial Library Manifest R0 — Candidate Only",
+  "description": "Non-authoritative candidate schema. Passing schema validation does not establish content authority, rights, approval, runtime, or production authorization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "catalog_id",
+    "catalog_version",
+    "classification",
+    "authority_effect",
+    "catalog_state",
+    "items",
+    "selection_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "catalog_id": {
+      "const": "CE-TODAYS-NOTE-EDITORIAL-LIBRARY"
+    },
+    "catalog_version": {
+      "type": "string",
+      "pattern": "^0\\.[0-9]+\\.[0-9]+$"
+    },
+    "classification": {
+      "const": "NON_AUTHORITATIVE_CANDIDATE"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "normative_effect": {
+      "const": "NONE"
+    },
+    "implementation_authorization": {
+      "const": "NONE"
+    },
+    "catalog_state": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "CANDIDATE_ONLY",
+        "APPROVED_FOR_CANDIDATE_REVIEW"
+      ]
+    },
+    "items": {
+      "type": "array",
+      "description": "May be empty. No current approved V1 item has been established by this candidate.",
+      "items": {
+        "$ref": "#/$defs/editorialItem"
+      },
+      "uniqueItems": true
+    },
+    "selection_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "deterministic",
+        "uses_personal_data",
+        "algorithm_id",
+        "locale_fallback_status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "NOT_ESTABLISHED",
+            "CANDIDATE_ONLY",
+            "APPROVED_THROUGH_VALID_ROUTE"
+          ]
+        },
+        "deterministic": {
+          "const": true
+        },
+        "uses_personal_data": {
+          "const": false
+        },
+        "algorithm_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "locale_fallback_status": {
+          "enum": [
+            "NOT_ESTABLISHED",
+            "NO_FALLBACK",
+            "APPROVED_EXPLICIT_FALLBACK"
+          ]
+        },
+        "policy_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "source_search_boundary": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "editorialItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "content_version",
+        "text",
+        "locale",
+        "source",
+        "rights_review_status",
+        "approval_status",
+        "reviewed_at",
+        "expires_at",
+        "non_personal"
+      ],
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "content_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "description": "Exact reviewed plain text; do not insert a prototype reading without item-level approval."
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 35,
+          "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*$"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_id",
+            "title",
+            "source_locator",
+            "provenance_reference"
+          ],
+          "properties": {
+            "source_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "source_locator": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "provenance_reference": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "author_or_origin": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 300
+            }
+          }
+        },
+        "rights_review_status": {
+          "enum": [
+            "NOT_REVIEWED",
+            "PENDING",
+            "CLEARED_FOR_INTENDED_USE",
+            "REJECTED"
+          ]
+        },
+        "rights_review_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "approval_status": {
+          "enum": [
+            "DRAFT",
+            "IN_REVIEW",
+            "APPROVED",
+            "REJECTED",
+            "EXPIRED"
+          ]
+        },
+        "approval_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "approved_by_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "approved_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "non_personal": {
+          "const": true
+        },
+        "review_notes_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "approval_status": {
+                "const": "APPROVED"
+              }
+            },
+            "required": [
+              "approval_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "approval_reference",
+              "approved_by_reference",
+              "approved_at"
+            ],
+            "properties": {
+              "approval_reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "approved_by_reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "approved_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "rights_review_status": {
+                "const": "CLEARED_FOR_INTENDED_USE"
+              }
+            },
+            "required": [
+              "rights_review_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "rights_review_reference"
+            ],
+            "properties": {
+              "rights_review_reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

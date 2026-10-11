@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1.0",
+  "catalog_id": "CE-TODAYS-NOTE-EDITORIAL-LIBRARY",
+  "catalog_version": "0.0.0",
+  "classification": "NON_AUTHORITATIVE_CANDIDATE",
+  "authority_effect": "NONE",
+  "normative_effect": "NONE",
+  "implementation_authorization": "NONE",
+  "catalog_state": "NOT_ESTABLISHED",
+  "items": [],
+  "selection_policy": {
+    "status": "NOT_ESTABLISHED",
+    "deterministic": true,
+    "uses_personal_data": false,
+    "algorithm_id": null,
+    "locale_fallback_status": "NOT_ESTABLISHED",
+    "policy_reference": null,
+    "notes": "No selection algorithm, locale fallback or display implementation is approved. Empty items means no Today’s Note is available. Do not generate filler."
+  },
+  "source_search_boundary": "Bounded source review through 2026-10-11 found historical hard-coded frontend demo content under Box raw-inventory intake but did not establish an approved current V1 editorial library."
+}
