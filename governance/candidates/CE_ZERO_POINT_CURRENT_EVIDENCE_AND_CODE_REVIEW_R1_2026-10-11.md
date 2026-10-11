@@ -910,3 +910,52 @@ This is a research/documentation step only. No provider message was sent, no fee
 
 The external pages above are vendor-authored current terms/help pages, not independent warranties. Provider eligibility may depend on a specific acquiring bank, legal seller entity, product wording, flow of funds and underwriting decision. This screen did not submit CE for underwriting or obtain individualized written approval; it does not settle whether CE Credits are legally “stored value” under a given law, nor whether the CE offer falls into any provider's prohibited category after individualized review.
 
+## 34. A3 — Today's Note / Quiet Sky source and approval reconciliation
+
+### 34.1 Owner decision recovered from the bounded source chain
+
+The owner decision itself is **not open**. [Owner Disposition — Today's Note × Valid Quiet Sky R0, Box 2515533522798](https://account.box.com/file/2515533522798) expressly approves, in limited semantic scope, that an optional, separate, non-personal editorial reflection may appear beside a valid `QUIET_SKY` result only when an approved item exists; if no approved item exists, omit it. Quiet Sky remains the real observation state. The note must not become a personal signal, Canon interpretation, prediction, proof of a signal, or cover for any failed/invalid observation. This disposition has no normative, implementation, runtime, production or SEAL effect.
+
+The [Today's Note × Quiet Sky Contract Recommendation R0, Box 2515537459111](https://account.box.com/file/2515537459111), [Voice / Today's Note Change-Control Packet R1, Box 2515541872217](https://account.box.com/file/2515541872217), and [Product / Voice / Today's Note Controlled Change Proposal R2, Box 2517767431094](https://account.box.com/file/2517767431094) refine that decision, but each remains proposal/change-control material. In particular, R2 says the normative and implementation changes have not been applied and keeps the source/library, selection rule, locale behavior, schema, exact copy and official test additions unapproved.
+
+### 34.2 Source-discovery evidence
+
+The [Source / UI Authority Discovery R1, Box 2515543958136](https://account.box.com/file/2515543958136) records a bounded search in the current-governing/documentation structure and connected repository. It found no separate approved V1 UI screen/component specification or approved Today's Note editorial library in the inspected locations. Its exact GitHub main finding is a one-file `README.md` tree (58 bytes, “Constellations Ecliptic Website”); the inspected A8/A9 calculation-core snapshots do not contain a consumer-facing frontend/UI surface. The source discovery explicitly warns that this is a bounded result and not proof that every external/private workspace, Figma board or local file is absent.
+
+Independent follow-up searches on 2026-10-11 using Box query variants for Today’s Note, Look Today, Quiet Sky, editorial library/catalog, approved UI/design, editorial source and related terms surfaced:
+- the owner disposition and candidate change-control records above;
+- older CE 1.0/1.3/1.4/2.0 editorial/visual prototype folders and ZIPs under `99_LOCAL_INVENTORY_INTAKE/.../00_RAW_UNSORTED`;
+- no authoritative catalog with identifiable V1 item approvals, locale versions, current effective status and deterministic-selection authority.
+
+These older prototype folders/ZIPs are historical/intake material, not approved sources simply because they contain editorial copy. The earlier reviewed prototype README at Box 2485684125139 calls its content deterministic demo content, not live astronomical calculation, and describes a placeholder `daily-reading.js` endpoint returning HTTP 501. Those artifacts must not be copied into the V1 editorial library without source rights/approval, version, locale and controlled adoption. The content-based library-cleanup records [R1, Box 2510417569369](https://account.box.com/file/2510417569369) and [R2, Box 2510932667258](https://account.box.com/file/2510932667258) concern housekeeping and duplicate preservation; they do not confer product authority on retained prototypes.
+
+### 34.3 Candidate artefacts created, current exact identities
+
+PR #39 currently contains three candidate-only artifacts:
+
+- [Editorial Library Contract R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_TODAYS_NOTE_EDITORIAL_LIBRARY_CONTRACT_R0_2026-10-11.md), blob SHA-1 `846fec5a9d5a8823c53e3b1801c6ca0adb7dcab5`, 9,292 extracted characters. It declares approved item count 0, library NOT ESTABLISHED, selection/locale fallback NOT ESTABLISHED and no normative adoption.
+- [Editorial Library Manifest Schema R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_TODAYS_NOTE_EDITORIAL_LIBRARY_MANIFEST_SCHEMA_R0_2026-10-11.json), blob SHA-1 `0b27d3b0d1f0801203c536a6921f5fc43d754cad`. Its metadata expressly says non-authoritative candidate; schema validity, if later proven, would not by itself prove content rights, editorial approval, runtime or production permission.
+- [Editorial Library Manifest R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_TODAYS_NOTE_EDITORIAL_LIBRARY_MANIFEST_R0_2026-10-11.json), blob SHA-1 `009ac64aa5a3c5e0329473f27577196896d8c49a`, 930 extracted characters. The manifest is deliberately empty: `items=[]`, `catalog_state=NOT_ESTABLISHED`, `selection_policy.status=NOT_ESTABLISHED`, `algorithm_id=null`, locale fallback NOT ESTABLISHED. It is not evidence of an empty normative production database; it is a bounded candidate manifest declaring the missing source state.
+
+The schema and manifest have passed only basic JSON parsing in the current review; a passing parse is not complete JSON Schema validation, editorial review or runtime test. No editorial item or user-facing copy was invented or added.
+
+### 34.4 Exact residual gaps
+
+| Component | Disposition |
+|---|---|
+| Owner semantic choice (optional, separate, non-personal note beside valid QUIET_SKY only when approved item exists) | **SETTLED — limited scope. Do not ask the owner to repeat this decision.** |
+| Approved, versioned editorial content and source/licensing/approver provenance | **NOT ESTABLISHED.** Current candidate manifest remains empty. |
+| Deterministic selection policy and effective-date/review/expiry rules | **NOT ESTABLISHED / PROPOSED.** |
+| Locale/translation policy and fallback | **NOT ESTABLISHED.** A note with no approved current-locale item should be omitted under the candidate fail-closed design. |
+| Canonical UI/source location, display separation and accessibility/text contract | **NOT ESTABLISHED in inspected source scope.** |
+| Product Constitution / Implementation Plan / privacy and AI boundary amendments | **Proposed only; not normatively applied.** |
+| Official Test Register binding and execution | Candidate N-TSN/VN cases only; no official IDs or executed authorized runtime evidence established here. |
+| Runtime-generated editorial text | Not approved. Do not add a free-form LLM fallback for V1. |
+| Voice boundary | Hard integrity gates are grounded; flexible voice/style matrix remains partly proposal. No blanket lexical ban on negative words is established. |
+
+### 34.5 Corrected A3 disposition and non-actions
+
+A3 is still incomplete for Pre-A10, but not because the owner has failed to decide whether a Note may accompany valid Quiet Sky. The limited semantic decision is evidenced. The open work is to establish an approved content source/items, deterministic selection/locale lifecycle, canonical UI binding, controlled normative updates, and official deterministic tests. Until that exists, the safe output is the valid personal signal/Quiet Sky alone; the Note is omitted. A technical/integrity/semantic failure must never be presented as Quiet Sky or disguised with editorial content.
+
+No historical prototype was promoted, no editorial text was copied into the manifest, no owner decision was repeated, and no Product Constitution, Implementation Plan, Privacy/Evidence-AI source, Index, official Test Register, UI/code, schema, runtime, A10, production or SEAL state was changed. This section records bounded evidence only.
+
