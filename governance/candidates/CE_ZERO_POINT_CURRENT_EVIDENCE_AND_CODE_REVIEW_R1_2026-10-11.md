@@ -995,3 +995,46 @@ The empty additional-event allowlist does **not** cancel the source-recorded per
 
 No log field, event, SDK, vendor, dashboard, retention value or telemetry pipeline was approved, added, configured or enabled. No guessed retention period or reader-role mapping was invented. No Technical Contracts, Privacy Architecture, Account/Commercial Specification, Index, official Test Register, code, schema, runtime, A10, production or SEAL state was changed.
 
+## 36. Finding 4 — Voice Boundary separated by authority class
+
+The primary sources were reviewed directly at clause level rather than treating the historical Voice Constitution or a preferred tone as if it were the full current normative boundary:
+
+- Product Constitution v1.6.1, Box [2491704535193](https://account.box.com/file/2491704535193), §§2–5, 8, 10–13.
+- Interpretive Canon v1.2, Box [2485337228722](https://account.box.com/file/2485337228722), §§4–9, 11, 16, 18–19.
+- Evidence, AI & Output Validation v1.4 / Release V1.6, Box [2485336395859](https://account.box.com/file/2485336395859), §§5–13, 19–25.
+- Account/Privacy/Commercial v1.7, Box [2485319995048](https://account.box.com/file/2485319995048); Business Model V1.5, Box [2485331476456](https://account.box.com/file/2485331476456).
+- Historical CE Voice Constitution v1.0, Box [2485698927915](https://account.box.com/file/2485698927915), is located under the V8 prototype's raw-inventory intake folder. Source Reconciliation R1 and Change-Control Packet R1 say its full adoption as current V1 normative policy has not been established.
+
+### 36.1 Source-backed hard boundaries
+
+1. No fabricated astronomical/geometry/event/history/personal facts or invented diagnosis.
+2. No certainty escalation beyond evidence/epistemic layer/manifest.
+3. No post-hoc narrative rescue after a mismatch.
+4. User feedback/resonance does not become objective validity, accuracy score or proof.
+5. No hidden psychological knowledge, unsupported traits or prohibited persistent personal context.
+6. No interpretation without an approved matching Canon rule; omission over “best guess”.
+7. Possibility does not become a guarantee, deterministic fate claim or guaranteed relationship result.
+8. A non-VALID calculation/failure state cannot be mapped to QUIET_SKY, a valid signal or stale result.
+9. Payment/Credits do not increase truth, certainty, qualification or manifest scope.
+10. Structurally valid language output is not enough; semantic/output validation and fail-closed release still apply.
+11. Today's Note cannot fill a missing signal or cover a failure; the owner's narrow Note direction is already settled, while content/UI source remains unestablished.
+
+These are grounded in the current Constitution/Canon/AI source clauses. The exact code/test coverage of every boundary remains a separate verification question.
+
+### 36.2 Flexible style versus unsupported hard gates
+
+Historical/style goals—warm, observant, non-fatalistic, avoiding clichés/filler, preserving meaningful tension—must not be elevated wholesale to blocking V1 rules without controlled adoption. Conversely, calling a matter “style” does not excuse lying, unsupported certainty, blame, fear manipulation or concealing failure.
+
+No reviewed current V1 source establishes a blanket negative-word blacklist or forces every answer to be positive. A word with negative connotation alone is not a violation; meaning, claim scope, modality, evidence, state truth, manipulation and context are what matter. A truthful message that calculation is unavailable must not be positivity-rewritten into QUIET_SKY.
+
+### 36.3 Candidate matrix prepared
+
+[Voice Boundary Matrix R0 — Source-Bound Hard Gates vs Editorial Style](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/audit/ce-zero-point-current-evidence-code-review-r1-2026-10-11/governance/candidates/CE_VOICE_BOUNDARY_MATRIX_R0_2026-10-11.md), blob SHA-1 `809ca7d536aeb5ddded9daf6097ad0195e28faa7`, now separates:
+- source-backed hard rules;
+- commercial/interaction boundaries requiring exact source/test mapping;
+- non-blocking style goals;
+- not-established propositions such as a universal negative-word ban; and
+- 14 candidate test scenarios with explicit status NOT OFFICIAL / NOT EXECUTED.
+
+This matrix does not adopt old V8 copy or create new lexical restrictions. Official test IDs must be cross-mapped only through a valid Test Register route. No current normative source or runtime was changed.
+
