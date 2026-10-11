@@ -827,3 +827,41 @@ Text extraction supports semantic comparison; it is not a raw-byte hash verifica
 
 The bounded review covered the six identified extracted documents and their visible contents. It did not prove that every Box/Dropbox copy, source archive, repository path, current runtime telemetry event, or legal/provider condition has been independently examined. No document source, retained archive, Index, official Test Register, production source, runtime, provider configuration, A10 or SEAL was modified. This section is a candidate-only evidence crosswalk with no authority effect.
 
+## 32. Daily Deep Sky cap source-chain correction — premise established, mechanics remain proposed
+
+This section refines §31.2's bounded result. The direct scan of the Business Model, Implementation Plan and historical Test Register did not locate a dedicated per-account/per-day cap clause in those three files; however, a separate owner-disposition and cap/remedy source chain exists. The earlier wording must not be read as saying the daily-cap premise itself is absent from all accessible sources.
+
+### 32.1 Direct source records
+
+- [Owner Disposition — Daily Deep Sky Service-Day Boundary R0, Box 2515555580794](https://account.box.com/file/2515555580794): the owner approved a fixed UTC Gregorian calendar date for the existing limit of at most one new Deep Sky reading purchase per account per CE service day, from 00:00:00 UTC inclusive to 00:00:00 UTC on the next day exclusive. The approval is expressly limited to the service-day boundary/timezone, not the complete slot/order/remedy state machine. The service-date choice is account-wide, not device-specific.
+- [Owner Disposition — U.S. Jurisdiction Investigation Direction R0, Box 2515610250498](https://account.box.com/file/2515610250498): U.S. federal and applicable state/territorial research is approved for this workstream; this records the one-new-reading-per-account/service-day premise but does not authorize normative change or implementation.
+- [DR-01 Decision-Evidence Reconciliation R0, Box 2515706725948](https://account.box.com/file/2515706725948): classifies the premise as owner-originated and evidenced by subsequent owner direction/history, while identifying that the older Human Decision Register R0, Box 2514894635417, still says DR-01 `NOT_RECORDED`.
+- [Daily Deep Sky Purchase Cap Contract Recommendation R3, Box 2515610293207](https://account.box.com/file/2515610293207) and [Proposed Normative Delta R3, Box 2515701908498](https://account.box.com/file/2515701908498): retain the one-new-reading-per-account/UTC-date premise and propose detailed order/slot/remedy handling, without approving it for application.
+- [Daily Cap / Order / Slot / Remedy State Table R0, Box 2515727457293](https://account.box.com/file/2515727457293), [Test Oracle Map R1, Box 2515723612065](https://account.box.com/file/2515723612065), and [R3 State/Test Consistency Audit R0, Box 2515738366976](https://account.box.com/file/2515738366976): present a source-consistent proposed state model and candidate test map, expressly not approved or executed.
+- [Commerce/Persistence Source-of-Record Identification R1, Box 2515691567942](https://account.box.com/file/2515691567942): authoritative commerce/persistence implementation remains NOT ESTABLISHED in connected/inspected scope; that is not proof that no local/private implementation exists.
+
+### 32.2 Reconciled status, separated by layer
+
+| Layer | Current disposition | Guardrail |
+|---|---|---|
+| Product premise | **OWNER-ORIGINATED / EVIDENCED**: at most one new Deep Sky reading purchase per authenticated account per CE service day | Do not ask the owner to repeat this settled premise. |
+| Service-date boundary | **OWNER-APPROVED, LIMITED SCOPE**: fixed UTC Gregorian date, `[00:00:00 UTC, next day 00:00:00 UTC)` | This does not approve every mechanism that consumes/releases a slot. |
+| Formal DR-01 register field | Historical R0 still literally says `NOT_RECORDED` | Preserve R0. Reconcile in a controlled successor register revision with separate fields for settled premise and unresolved detailed contract; do not silently backdate or rewrite the history. |
+| Quota consumption point | **PROPOSED / NOT FINALLY DISPOSED**: R3 recommends counting one newly fulfilled valid, output-validated reading made accessible by entitlement | Reservation and consumption must remain distinct; do not represent R3's proposal as a complete owner-approved contract. |
+| Atomic reservation/concurrency, stable logical order identity, retries and UTC rollover | **Operational contract proposed; implementation source unidentified** | Do not name schema/table/index or claim enforcement until the authorized persistence source is identified and inspected. |
+| Pending/unknown state, terminal non-delivery, same-date slot release, once-only Credits restoration, refund, replacement, post-delivery remedy | **Proposed / policy- and counsel-dependent where applicable** | Cash/card refund and Credits restoration are separate events; mandatory rights cannot be displaced by the cap. A timeout alone is not proof of terminal failure. |
+| Test coverage | Existing PAY/TIME/SEC/PRIV tests exist but do not prove this new cap by themselves. US-DCAP-01–28 and cap-specific oracle-map cases are **candidates only**, not official IDs and not executed | Register only after controlled contract approval and deterministic fixture/oracle review. |
+| Paid-market jurisdiction | U.S.-focused research direction is approved; formal initial launch jurisdiction / nationwide-vs-allowlist remains `NOT_RECORDED` or not established in the inspected decision register | Do not turn research direction, USD examples or the cap contract into launch permission. |
+| Normative / implementation authority | No normative amendment, official Test Register mutation, schema/code/runtime change, or implementation authorization appears in these cap source records | Continue source/control-plane work only; preserve fail-closed gates. |
+
+### 32.3 Corrected disposition for the §31 finding
+
+- The premise itself is not a blank or owner-undecided product choice: owner direction and continuity evidence exist.
+- The older DR-01 `NOT_RECORDED` status is a genuine governance-record inconsistency. Its resolution is documentary reconciliation in a successor register, not a request to the owner to repeat the premise and not permission to rewrite DR-01 R0 in place.
+- The UTC day boundary is approved only at the specified boundary scope. It does not approve the complete slot-reservation/remedy semantics.
+- The normative and operational additions R3 remain NOT APPROVED FOR APPLICATION; the Test Oracle Map remains NOT OFFICIAL / NOT EXECUTED.
+- The missing implementation/persistence source is still a bounded connected-scope limitation. A local/private worktree and any authoritative live commerce implementation were not proved absent globally.
+- This section supersedes any broader reading of §31 that the daily cap has no recorded owner premise. It leaves the narrow exact-text observation about the three baseline documents unchanged.
+
+No owner decision was requested again. No historical register, normative source, official Test Register, schema, code, runtime, A10, production or SEAL state was changed.
+
