@@ -1182,3 +1182,15 @@ This crosswalk compares the candidate B1-CANON cases in §38 with the historical
 
 No historical Test Register, Index, normative document, source code, official ID, runtime, A10, production or SEAL state was changed.
 
+## 42. Correction to §34 — exact A3 owner-decision boundary
+
+Section 34's phrase “The owner decision itself is not open” is too broad if read as all A3 product semantics being settled. The exact R3 register and the already-existing [A3 Source Reconciliation and Owner Decision Brief R1](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/549e53c0abccc3fb6d26f2cf0e32b7b3f7e00668/governance/candidates/CE_PRE_A10_A3_SOURCE_RECONCILIATION_AND_OWNER_DECISION_R1_2026-10-10.md) establish a narrower boundary:
+
+- **Settled and not to be asked again:** an optional, separate, non-personal TODAY'S NOTE may accompany a valid `QUIET_SKY` result when an approved item exists; if no approved item exists, omit the Note. The Note must not disguise a failed/incomplete observation.
+- **Still a material owner decision:** whether the same Note may also appear beside a valid `TESTABLE SKY SIGNAL` on a Look Today result with a qualifying signal, or whether the first permitted scope should be limited to valid `QUIET_SKY`.
+- **Not owner-approved by either answer:** a content library, exact editorial copy/UI, selection/cycle rule, locale/fallback, schema/code, runtime LLM generation, normative amendment, official Test Register additions, or deployment. These need their own source/control and approval path. The reviewed proposal recommends a reviewed CE-authored versioned library, deterministic selection, no personal selectors and `OMIT_NOTE` when no eligible item exists, but this remains a proposal.
+
+The Area Register R3 is therefore correct to retain A3 as `OWNER_DISCUSSION_REQUIRED` with `owner_decision_required=true`; it is not a stale owner decision and must not be closed based only on the Quiet Sky disposition. The A3 decision brief already contains the precise question, source evidence and preferred candidate design. No need to repeat the settled Quiet Sky choice. Once that specific display-scope choice is recorded, remaining library, locale/cycle, UI, normative and official-test work must still be completed through controlled routes. This corrects only the overly broad wording in §34; it does not change the register status or authorize implementation.
+
+No normative document, Area Register, official Test Register, UI/code, source authority, runtime, A10, production or SEAL state was changed.
+
