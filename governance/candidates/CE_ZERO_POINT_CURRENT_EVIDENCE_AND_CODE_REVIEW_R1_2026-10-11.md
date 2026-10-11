@@ -161,7 +161,7 @@ Three notes remain: old and later baseline discussions need version crosswalk; S
 
 Latest PR #27 exact head checked: 549e53c0abccc3fb6d26f2cf0e32b7b3f7e00668. Exact-head Actions run #38077875438 has 14 validator tests and structure checks R0-R3 PASS; strict gate remains blocked by A3/B1/D4. The gate is correctly fail-closed.
 
-Current 23-area snapshot: 13 CLOSED_PRESERVE; 6 OWNER_DECISION_RECORDED; 1 DEFERRED_BY_EXPLICIT_DISPOSITION; 1 OWNER_DISCUSSION_REQUIRED (A3); 2 RECOMMENDATION_READY (B1, D4). A3/B1/D4 remain open.
+Exact JSON Area Register R2 at the same PR #27 HEAD reports: 13 CLOSED_PRESERVE; 6 OWNER_DECISION_RECORDED; 1 DEFERRED_BY_EXPLICIT_DISPOSITION; 3 RECOMMENDATION_READY (A3, B1, D4). The PR #27 description still contains an older label of A3=OWNER_DISCUSSION_REQUIRED; treat that prose summary as stale where it conflicts with the exact-head JSON blob. A3/B1/D4 remain open and the strict gate remains blocked.
 
 Next work:
 1. Reconcile retained R3 archive/member -> embedded Index -> controlled successor -> Source Authority -> implementation -> official Test Register/fixture. Do not edit retained Index/R3 in place.
@@ -701,3 +701,31 @@ This is a naming/state-reconciliation issue plus an expected missing runtime-aut
 - Reconcile the reason-token language, implementation pointer and official test-oracle evidence in the controlled successor's change record. Do not alter official Test Register status through this audit report.
 
 This section corrects interpretation only. No code, manifest, Source Authority, Trusted Build, Runtime Adoption, Index, official Test Register, A10, production or SEAL state was changed.
+
+
+## 28. Pre-A10 Area Register status-label drift in PR #27 description
+
+### 28.1 Exact identity comparison
+
+At exact PR #27 HEAD `549e53c0abccc3fb6d26f2cf0e32b7b3f7e00668`, the file `governance/candidates/CE_PRE_A10_AREA_REGISTER_R2_2026-10-10.json` has blob SHA-1 `3dad17c41515f7104808dc1d199568e309f09b45`. Direct JSON parsing returns:
+- 13 `CLOSED_PRESERVE`;
+- 6 `OWNER_DECISION_RECORDED`;
+- 1 `DEFERRED_BY_EXPLICIT_DISPOSITION` (E4);
+- 3 `RECOMMENDATION_READY` (A3, B1, D4).
+
+It returns no `OWNER_DISCUSSION_REQUIRED` area. A3 is explicitly `RECOMMENDATION_READY` in that register version.
+
+The PR #27 description's opening summary still reads A3 as `OWNER_DISCUSSION_REQUIRED`, and older historic descriptions contain other counts from earlier registers. This is a **status-summary drift between the PR narrative and its exact-head area-register JSON**, not a change to the product semantics and not a gate bypass.
+
+### 28.2 Gate effect
+
+The exact-head strict gate still identifies A3/B1/D4 as the three incomplete areas and remains blocked at 20/23 completion. The stale label does not change which three areas remain open, nor the strict gate result. The 14 validator tests and structure checks can pass while the separate strict completion gate fails as designed.
+
+### 28.3 Required treatment
+
+- Use the exact-head JSON as the current declared status source for this candidate register.
+- Treat the PR description's older A3 status label as historical/stale where it conflicts with that JSON; record rather than silently erasing the discrepancy.
+- Do not set A3 to a completion status to harmonize the description. A3 still lacks an approved current editorial item/library and approved downstream implementation/test contract.
+- Preserve the PR history and register bytes. A later controlled status/handoff update may correct the prose summary; this report does not mutate the PR body or area register.
+
+No official Test Register, normative source, application code, schema, A10, runtime, Source Authority, Trusted Build, production or SEAL state was changed by this finding.
