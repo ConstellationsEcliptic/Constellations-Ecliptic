@@ -452,3 +452,33 @@ For the three named normative anchors, the separate R3 archive-member identity a
 ### 21.4 Operational consequence
 
 No additional request for the owner to restate the 11+3 is warranted merely because the historic source object remains missing. Use the preserved owner-supplied crosswalk for the substantive item map, retain the provenance limitation, and continue validating each present-day disposition against its own source and test evidence. Do not infer an unrecorded mapping from the initial labels alone. This reconciliation changes no normative source, official Test Register, production code, source authority, Trusted Build, runtime, A10 or SEAL state.
+
+
+## 22. H2 mapping-file identity — Box copies found; raw SHA-256 still unverified
+
+### 22.1 Matching objects found in Box and Dropbox
+
+A fresh Box search for `test_mapping_100.h2_provenance_reconciled.yaml` returned three Box files of the same reported size and SHA-1:
+
+| Box object | Name | Reported size | Box-reported SHA-1 |
+|---|---|---:|---|
+| [2506856840608](https://account.box.com/file/2506856840608) | `test_mapping_100.h2_provenance_reconciled.yaml` | 9,553 bytes | `c85d30641a57f19c3a921d62f4873abcecb24d5f` |
+| [2506877416506](https://account.box.com/file/2506877416506) | `test_mapping_100.h2_provenance_reconciled (2).yaml` | 9,553 bytes | `c85d30641a57f19c3a921d62f4873abcecb24d5f` |
+| [2506878150665](https://account.box.com/file/2506878150665) | `test_mapping_100.h2_provenance_reconciled (1).yaml` | 9,553 bytes | `c85d30641a57f19c3a921d62f4873abcecb24d5f` |
+
+Dropbox search also returns three same-name copies of 9,553 bytes in the H8 recursive extraction lineage. One record exposed Dropbox content hash `7fcec8db732ddfbb82112c6690158180e8c9770d2270cc96339f3f8be64ccb68`. The Dropbox content hash is a provider-specific value; it is not treated here as a raw-file SHA-256.
+
+The prior [H2 Raw Intake Verification R1](https://account.box.com/file/2506851548670) names the expected 64-hex SHA-256 as:
+
+`BABCCCF81636DF1E65EB92FE9119D474787FCF3801B547FA5703E9048993D441`
+
+That same verification record explicitly says that direct SHA-256 rehash of the original Box binary payload had not been performed. During this continuation, the catalogued Box raw-download helper returned “Tool get_download_url not found”; the raw binary bytes were therefore not recovered through that route. Extracted text and matching Box size/SHA-1 metadata are corroboration, not a substitute for a direct SHA-256 of the original bytes.
+
+### 22.2 Current disposition
+
+- **PROVEN:** three Box copies report the same 9,553-byte size and same Box SHA-1; multiple Dropbox copies of the same named payload also appear in the historical extraction tree.
+- **NOT PROVEN:** the expected 64-hex SHA-256 has not been independently computed from raw payload bytes in this continuation. Provider metadata/content hashes do not establish the SHA-256 value.
+- **CONFIRMED DEFECT IN A9 TEXT/JSON REFERENCES:** nine JSON fields and two Markdown references still carry 62- or 63-character strings where the field asserts a SHA-256 mapping digest. The malformed literals must not be silently replaced from visual guesswork, even though an expected 64-character value appears in prior provenance text.
+- **NEXT ADMISSIBLE STEP:** obtain the raw mapping file through an operational raw-byte download path; compute SHA-256 over those exact bytes; compare it with the provenance-recorded expected value; preserve original candidates and perform any correction only on a controlled successor branch with newly computed source identity. Do not rewrite the pinned A9 candidate or reuse its trust/build attestations.
+
+This is an evidence-retrieval boundary, not permission to waive digest validation. Source Authority, Trusted Build, runtime, production, A10 and SEAL remain unchanged.
