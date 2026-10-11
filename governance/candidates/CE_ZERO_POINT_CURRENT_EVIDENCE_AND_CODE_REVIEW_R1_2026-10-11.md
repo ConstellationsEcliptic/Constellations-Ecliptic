@@ -785,3 +785,45 @@ Section 29 used commit `242bc16ac7ad29a471239b736d5b3915a92d07be` as the current
 - A3/B1/D4 still block Pre-A10. The register is non-authoritative and does not authorize A10, runtime adoption, production or SEAL.
 - No PR merge, normative-source change, official Test Register change, implementation/runtime mutation or authority-state change was made by this audit correction.
 
+## 31. Source-first crosswalk — product, Credits, AI, privacy and test authority
+
+### 31.1 Exact source set re-read
+
+This crosswalk uses returned text representations for the following identified records; it does not promote any candidate or resolve the active Index/Test Register conflict:
+
+- Product Constitution v1.6.1, Box [2491704535193](https://account.box.com/file/2491704535193), 11,909 extracted characters.
+- Business Model file titled `BUSINESS MODEL — MINIMAL COMPLIANCE V1.5`, Document Reference `CE-BUSINESS-MINIMAL-2026-V1.5`, Box [2485331476456](https://account.box.com/file/2485331476456), 10,597 extracted characters.
+- Implementation Plan v1.3.1, Box [2491699264134](https://account.box.com/file/2491699264134), 40,938 extracted characters.
+- Evidence, AI & Output Validation v1.4 / Release V1.6, Box [2485336395859](https://account.box.com/file/2485336395859), 15,903 extracted characters.
+- Privacy Architecture Minimal Data v1.5 / Hardened V1.6 Release status, Box [2485335589220](https://account.box.com/file/2485335589220), 28,506 extracted characters.
+- Historical Execution Profile & Test Register v1.5, whose closing status says Hardened V1.6 Release, Box [2485336117840](https://account.box.com/file/2485336117840), 27,626 extracted characters.
+
+Text extraction supports semantic comparison; it is not a raw-byte hash verification of these individual Box objects. The v1.5 Test Register is cited below as historical content only because its active binding to the retained Clean Current Set R3 remains conflicted.
+
+### 31.2 Crosswalk and bounded dispositions
+
+| Topic | What the re-read sources actually support | What remains open / must not be inferred |
+|---|---|---|
+| Paid product boundary | Product Constitution §10 and Business Model §§2–3 specify Deep Sky as the sole paid core V1 product. Credits unlock depth, never truth. | Paid access does not establish authority to increase certainty or alter calculation, qualification, Canon meaning, uncertainty or claim scope. |
+| Credits and price | Business Model §3.1 says Credits are the sole V1 monetization unit, account-owned, device-independent, non-expiring, and unable to change evidence or uncertainty. §3.2 uses “4 Credits = US$2.99” as an expressly labelled example commercial configuration that can change. | This example is **not** evidence that a final launch SKU, final price, final checkout or final settlement/currency/provider has been approved. Do not erase the existence of the example, but do not elevate it into a lock. |
+| Payment processor | Business Model §4 states the architecture uses one payment processor with tokenized handling; CE does not store raw card credentials, and sensitive purchase/entitlement operations require server-issued idempotency. | A one-provider design principle does not select a provider or prove seller eligibility, merchant entity/jurisdiction, settlement, checkout availability, or legal readiness. D4 remains open. |
+| Purchase idempotency vs daily scope uniqueness | Business Model §4 and Implementation Plan §§7.8/16 plus the historical Test Register PAY-01/PAY-02 establish transaction idempotency, duplicate-webhook handling, and no duplicate Credits grant for one logical purchase. | A bounded exact-text scan of those three files found no explicit rule/test requiring **one reading scope per account per service day**. Transaction idempotency is a different invariant; it does not prove that scope uniqueness. If a separately approved daily-scope invariant exists elsewhere, its controlling identity, service-day definition, database key and test binding must be traced rather than inferred here. |
+| AI architecture | Evidence/AI §§5–6 and Implementation Plan §12 state: Core uses deterministic templates and does not require an LLM; Deep Sky may use one LLM processor with structured evidence and an Allowed Claim Manifest; constrained output is validated before release. | These sources do not establish a three-AI orchestration as the adopted V1 runtime. A historical proposal or architecture idea must not be treated as implemented/approved merely because it is remembered or present in older artifacts. No comparative measured benefit was established by this crosswalk. |
+| Claim and truth boundary | The Allowed Claim Manifest must descend from Canon-approved interpretation. AI cannot author/expand the manifest, create evidence/Canon rules, change qualification, escalate certainty, or rescue mismatches. Credits state cannot change language truth conditions. | No payment-tier, persona, hidden-profile or free-form prompt may be used to bypass these controls. Output-validator and runtime conformance still need exact active test-oracle binding. |
+| Privacy and Personal Context | Privacy Architecture §§5, 12, 15, 24 removes persistent Personal Context, persistent free-text, per-user behavioural analytics, identity graphs, ads/social-sharing paths, and unnecessary collection from V1. Deep Sky's single LLM boundary excludes username, real name, email, payment data, trusted-device identifiers, raw free text, account history and persistent Personal Context. | These normative restrictions do not by themselves prove every runtime payload, log, event, analytics SDK or vendor setting conforms. Any minimal telemetry must remain purpose-limited; exact event/field allowlist, purpose, access, retention and deletion proof remain implementation evidence to establish. The sources do not justify turning telemetry into user-level behavioural profiling. |
+| Historical full Test Register | The historical v1.5 artifact describes 100 test IDs and includes calculation, signal/failure, security, age-assurance, payment, AI, privacy, version/migration and load tests. It expressly says test count cannot substitute for mandatory invariant coverage and deterministic oracles. | The retained R3 set excludes this v1.5 artifact and its payload manifest has no Document 07, while the retained Index still labels v1.5 current. Therefore this content can inform a crosswalk but **cannot be asserted as the currently active full official V1 Test Register** until the Index/lineage/qualification conflict is resolved. |
+| Business Model version metadata | The file's front matter and Document Reference both identify V1.5, but §16 closes with the branded line “CE BUSINESS MODEL — MINIMAL COMPLIANCE V1.4” while the accompanying status says approved/hardened V1.5. | Treat this as an internal version-label discrepancy requiring a controlled version/Index crosswalk. Do not silently edit the normative source or decide that it is either harmless or a semantic change without the governing lineage evidence. |
+
+### 31.3 Practical consequences for the open findings
+
+1. **Product and monetization decisions are narrower than previously implied in some summaries.** Deep Sky / Credits-only and no subscription are established V1 principles; the sample price is documented but configurable, and provider/seller/checkout selection is not thereby settled.
+2. **Credit idempotency is not a substitute for daily scope uniqueness.** Keep the latter classified as not established by the source set examined here, not disproven globally.
+3. **The current normative language architecture is not a three-AI system.** Core deterministic templates plus one constrained Deep Sky LLM is the supported baseline. Any change to that boundary would require a controlled source and test disposition.
+4. **Privacy restrictions are clear; implementation proof is a separate layer.** Persistent Personal Context and user-level behavioural analytics stay out of V1. Audit telemetry only to the extent necessary to demonstrate safe operations and without constructing a user profile.
+5. **The historical 100-ID Test Register is useful evidence but not an active official oracle while its authority binding conflicts.** Do not claim either that its tests do not exist or that their presence establishes current release readiness.
+6. **Version/metadata cleanup is a lineage task.** In particular, preserve the Business Model file and record the V1.5-front-matter/V1.4-footer discrepancy for a controlled successor; do not normalize it in place.
+
+### 31.4 Scope and non-actions
+
+The bounded review covered the six identified extracted documents and their visible contents. It did not prove that every Box/Dropbox copy, source archive, repository path, current runtime telemetry event, or legal/provider condition has been independently examined. No document source, retained archive, Index, official Test Register, production source, runtime, provider configuration, A10 or SEAL was modified. This section is a candidate-only evidence crosswalk with no authority effect.
+
