@@ -419,3 +419,36 @@ Observed identity comparison:
 This gives a concrete conclusion: the later A9 candidate is neither a byte-identical copy of the PR #5 source tree nor an unrelated tree with no shared lineage. It shares selected implementation/baseline files but also has material source, test and manifest divergence. The older implementation pointer's SHA `3ff8c6fdd8e78a8466c4b556912de0a70b62624222d1ab52a990d7e648600898` and the A9 tree's `1a4004ac644331964ab9d540abf6b1631aed1cbbe0cbdd55316fe5356a0c7a8b` therefore cannot be substituted for each other.
 
 **Disposition:** source-lineage / active-pointer reconciliation remains open. Do not infer that A9 supersedes PR #5 solely because it is later, and do not infer PR #5 contains the A9 extension solely because some files match. A controlled successor must name the selected candidate basis, list the precise predecessor(s) and retained hashes, and update the active implementation pointer only through the valid source-authority route. PR #5 and PR #26 remain untouched and unmerged.
+
+
+## 21. Original “11 findings + 3 important notes” — content recovery versus historical artifact provenance
+
+A new cross-store reconciliation separates two states that were previously easy to conflate.
+
+### 21.1 Dated recovery records — historically correct within their cutoff
+
+The Box record **CE_ORIGINAL_11_FINDINGS_3_NOTES_SOURCE_RECOVERY_AUDIT_R0_2026-10-10.md** (Box file ID `2517866785521`, https://account.box.com/file/2517866785521) and **CE_11_FINDINGS_3_NOTES_SOURCE_RECOVERY_LOG_R0_2026-10-10.md** (Box file ID `2518016790491`, https://account.box.com/file/2518016790491) document the search completed on 2026-10-10. They explicitly distinguish the desired original list from later working registers and report that the exact original item-by-item source was not recovered in the searched stores. Those findings remain valid for that search window; they do not establish universal absence.
+
+### 21.2 Updated status from owner-supplied content — 2026-10-11
+
+The draft [PR #38 — 11 Findings + 3 Notes Crosswalk R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/38) preserves the substantive 11-area findings and three notes supplied by the owner in the current conversation. The crosswalk records the material as directly available/re-supplied and explicitly preserves the original historical artifact gap.
+
+Therefore the current status must be expressed as three distinct claims:
+
+| Recovery dimension | Current disposition | What the evidence supports |
+|---|---|---|
+| Substantive content of the 11 findings + 3 notes | **RECOVERED FROM OWNER RE-SUPPLY** | The supplied content has been preserved in the crosswalk; do not keep saying its substance is wholly unavailable. |
+| Original historical chat message/export/file/attachment and its original byte identity/hash/signature | **NOT INDEPENDENTLY RECOVERED** | The owner identifies the re-supplied material as the earlier content, but the old source object and its historical metadata have not been independently established. |
+| Historical status labels such as PROVEN / PARTIAL / HUMAN DECISION REQUIRED | **PRESERVED AS REPORTED, NOT AUTOMATICALLY RE-CERTIFIED** | Each current disposition still requires its own current source, authority and test evidence. |
+
+The undifferentiated sentence in the current PR #27 description that the original “11 findings + 3 important notes” are still NOT RECOVERED is now stale **with respect to substantive content availability**. It remains accurate only when narrowed to the independent recovery of the original historical source artifact and provenance. The dated Box records should remain unchanged as evidence of the earlier search result; this addendum does not rewrite their historical cutoff.
+
+### 21.3 The three notes and later source-specific correction
+
+The current crosswalk records three distinct notes: (1) historical versus current baseline differences; (2) Share Card retirement status must not be collapsed into a normative amendment; and (3) Calculation / Signal / Canon source anchors and the birth-time/calendar boundary. The notes are preserved as crosswalk items, not as automatic approvals or a replacement Constitution.
+
+For the three named normative anchors, the separate R3 archive-member identity audit linked in §2 already verified the archived bytes for Calculation Constitution v1.9, Signal Engine Core v1.4 and Interpretive Canon v1.2 as exact matches. That closes the **specific archived-byte identity check**; it does not close the distinct source-authority, retained Index pointer, active full Test Register or implementation/test-lineage questions. Any earlier crosswalk wording that the raw hash recomputation was pending should be read as a historical state superseded only for those specifically identified archived members.
+
+### 21.4 Operational consequence
+
+No additional request for the owner to restate the 11+3 is warranted merely because the historic source object remains missing. Use the preserved owner-supplied crosswalk for the substantive item map, retain the provenance limitation, and continue validating each present-day disposition against its own source and test evidence. Do not infer an unrecorded mapping from the initial labels alone. This reconciliation changes no normative source, official Test Register, production code, source authority, Trusted Build, runtime, A10 or SEAL state.
