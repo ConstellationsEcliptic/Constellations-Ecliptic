@@ -482,3 +482,34 @@ That same verification record explicitly says that direct SHA-256 rehash of the 
 - **NEXT ADMISSIBLE STEP:** obtain the raw mapping file through an operational raw-byte download path; compute SHA-256 over those exact bytes; compare it with the provenance-recorded expected value; preserve original candidates and perform any correction only on a controlled successor branch with newly computed source identity. Do not rewrite the pinned A9 candidate or reuse its trust/build attestations.
 
 This is an evidence-retrieval boundary, not permission to waive digest validation. Source Authority, Trusted Build, runtime, production, A10 and SEAL remain unchanged.
+
+
+## 23. Share Card — product scope closed; explicit retirement pointer awaits valid Index adoption
+
+### 23.1 Source anchors inspected
+
+| Source | Identity / location | Evidence and scope |
+|---|---|---|
+| Product Constitution v1.6.1 | Box [2491704535193](https://account.box.com/file/2491704535193), §13 (V1 Hard Exclusions) | Explicitly excludes public sharing and social-sharing workflow. |
+| Business Model material labelled v1.5 | Box [2485331476456](https://account.box.com/file/2485331476456), §§11 and 15 | Excludes public sharing and referral/sharing rewards from the V1 business baseline. The current Index / full-register lineage conflict remains separate; this row is not an assertion that every Index pointer is reconciled. |
+| Implementation Plan v1.3.1 | Box [2491699264134](https://account.box.com/file/2491699264134), §3.2 | Lists Share Card among features out of scope unless a later controlled change explicitly reopens it. |
+| V1.6 release validation | Box [2485336557011](https://account.box.com/file/2485336557011) | Reports no active Share Card feature headings and no Share Card/social-sharing activation in the validated bundle. |
+| Explicit owner product decision | Box [2510397781891](https://account.box.com/file/2510397781891), dated 2026-10-07 | Says Share Card is retired, not part of CE V1, and not to be implemented, activated, maintained or treated as an acquisition mechanism. The same record says its classification is **“NORMATIVE DECISION INPUT / NON-AUTHORITATIVE UNTIL DOCUMENT STACK IS VERSIONED.”** |
+| Follow-up global reconciliation | Box [2510417318335](https://account.box.com/file/2510417318335), G-022 | Records Share Card as closed for V1 product scope; no exception to no-public-sharing, no sharing acquisition/reward/social-sharing flow or public Share Card URL; historical references remain history. |
+| Proposed Index v2.0 candidate R3 | Box [2518414473182](https://account.box.com/file/2518414473182), §12.8 and §13 | Includes the explicit “Share Card is retired from V1” clause, but expressly remains a non-normative candidate; adoption route is not established. |
+
+### 23.2 Reconciled disposition
+
+**PRODUCT SCOPE: CLOSED — SHARE CARD RETIRED / EXCLUDED FROM V1.**
+
+This is not an open product choice and does not warrant asking the owner again. The specific retirement instruction is consistent with the inspected baseline exclusions of public/social sharing and sharing rewards. The available evidence does not show a current V1 semantic requirement to implement Share Card or to retain a Share Card exception. Historical mentions are provenance, not permission to build or reactivate the feature.
+
+A distinction remains at the governance-document layer: the 2026-10-07 decision record expressly says it is not authoritative until the document stack is versioned, while the proposed Index v2.0 R3 that carries the explicit retirement clause is still a candidate. The active retained Index has its own version/pointer and Test Register binding conflicts. Therefore the explicit decision-to-active-Index propagation is **NOT ESTABLISHED**. This is a controlled documentation/adoption gap; it does not reopen the already-closed product decision and must not be “fixed” by silently editing the current Index or by merging a candidate without the valid route.
+
+### 23.3 Cleanup and verification boundaries
+
+- Preserve the existing Share Card decision, historical references and prior reconciliation evidence.
+- Do not implement, activate, maintain or promote Share Card, its public URL, social-sharing path, sharing rewards or acquisition mechanism into V1.
+- Do not perform a blanket destructive deletion of every historical reference. Any additional cleanup must inspect the actual artifact, distinguish historical evidence from executable/current-scope material, and follow the applicable retention/change-control route.
+- If the valid Index adoption route is independently established later, the successor should carry the explicit retirement clause and its decision provenance. Until then, keep the active Index unchanged and the pointer gap open.
+- No Product Constitution, Business Model, Implementation Plan, official Test Register, Index, code, schema, runtime, Source Authority, Trusted Build, A10 or SEAL state was changed by this finding.
