@@ -513,3 +513,45 @@ A distinction remains at the governance-document layer: the 2026-10-07 decision 
 - Do not perform a blanket destructive deletion of every historical reference. Any additional cleanup must inspect the actual artifact, distinguish historical evidence from executable/current-scope material, and follow the applicable retention/change-control route.
 - If the valid Index adoption route is independently established later, the successor should carry the explicit retirement clause and its decision provenance. Until then, keep the active Index unchanged and the pointer gap open.
 - No Product Constitution, Business Model, Implementation Plan, official Test Register, Index, code, schema, runtime, Source Authority, Trusted Build, A10 or SEAL state was changed by this finding.
+
+
+## 24. Delegated autonomy versus one-off Index adoption — distinct approval boundary confirmed
+
+### 24.1 Approved mandate: routine work may proceed; Index adoption is not implied
+
+The owner decision record [CE_OWNER_DECISION_RECORD_AUTONOMOUS_EXECUTION_GOVERNANCE_MANDATE, Box 2517806798198](https://app.box.com/file/2517806798198) records the master autonomous-execution mandate as approved. It authorizes source discovery, reconciliation, audit, candidate preparation, permitted corrections and verification without step-by-step approval; the same record explicitly says this is not automatic approval of every GDE-01 clause or other substantive change. It identifies governance integration as pending a source-verified target and route.
+
+That boundary is explicit in §3 of the owner record:
+- the mandate does not itself amend or supersede a controlling normative source;
+- the assistant must verify the exact current governing instrument and valid change/adoption/promotion route;
+- if no valid route exists, prepare the narrow governance instrument as a candidate but do not declare it active merely because it was created.
+
+No repeat approval of the already-approved master mandate is warranted.
+
+### 24.2 Concrete one-off Index packet exists, but it asks for a different owner disposition
+
+The [GDE-01 one-off Document Index amendment decision packet, Box 2518435701566](https://app.box.com/file/2518435701566), is classified “OWNER DECISION PACKET / NON-NORMATIVE UNTIL EXPRESS DISPOSITION” and says in §§1–2 that no authority effect arises before an explicit disposition. Its single requested decision is whether to approve the exact Index v2.0 Candidate R3 identity and the proposed one-off successor route in §6.
+
+The packet states that:
+1. the retained Index §8 governs feature/schema/data change-control, but does not establish a general self-amendment route for its own delegation clauses;
+2. C3-3 is limited to Source Authority identity/authorization;
+3. an earlier harmonization route was specific to that transaction, not a proven universal Index amendment route;
+4. the owner-approved master mandate alone is not this missing route;
+5. no owner response had been recorded in that packet at its preparation cutoff (2026-10-10).
+
+The same distinction is repeated in the [proposed Index v2.0 Candidate R3, Box 2518414473182](https://app.box.com/file/2518414473182): the text is a non-normative candidate until exact target, route, owner-disposition scope, lineage and gates are evidenced.
+
+### 24.3 Current determination
+
+| Item | Status | Allowed next treatment |
+|---|---|---|
+| Autonomous routine investigation, source reconciliation, candidate drafting and evidence verification | **OWNER MANDATE APPROVED** | Continue without repeated approval, within actual access and existing gates. |
+| The exact Index v2.0 Candidate R3 text as active governing Index | **NOT APPROVED / NOT ADOPTED BY THE EVIDENCE INSPECTED** | Keep non-normative; preserve the retained Index and its history. |
+| The specific one-off successor/adoption route in GDE-01 packet §6 | **SEPARATE OWNER DISPOSITION REQUIRED; NOT RECORDED IN THE PACKET INSPECTED** | Do not execute adoption/promotion without the exact disposition. |
+| Source Authority, Trusted Build, A10 Runtime Adoption, production, release and SEAL | **SEPARATE PROTECTED GATES; NOT AUTHORIZED HERE** | Continue candidate-only investigation; do not infer these permissions from the master mandate or Index route. |
+
+This does not ask the owner to approve the mandate again. It records that one specific unresolved decision—adopting a named proposed Index and its unique one-off route—is different in scope from the already-approved general operating mandate. The assistant must not manufacture that owner disposition, assume silence is consent, or treat the existence of a prepared packet as approval.
+
+### 24.4 Immediate permissible work
+
+Continue source searches, candidate evidence, source/test-lineage reconciliation and non-authoritative audit records. Preserve current retained Index, archived sets, Test Register and normative documents unchanged. If the owner later provides the exact disposition, verify it against the candidate digest and §6 preconditions before following that route. Until then: no Index replacement, no in-place edits to the retained archive, no normative promotion, and no A10 start.
