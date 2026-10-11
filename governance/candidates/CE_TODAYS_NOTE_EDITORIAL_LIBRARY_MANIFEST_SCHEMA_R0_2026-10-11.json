@@ -265,7 +265,23 @@
               "approval_reference",
               "approved_by_reference",
               "approved_at"
-            ]
+            ],
+            "properties": {
+              "approval_reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "approved_by_reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "approved_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
           }
         },
         {
@@ -282,7 +298,14 @@
           "then": {
             "required": [
               "rights_review_reference"
-            ]
+            ],
+            "properties": {
+              "rights_review_reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            }
           }
         }
       ]
