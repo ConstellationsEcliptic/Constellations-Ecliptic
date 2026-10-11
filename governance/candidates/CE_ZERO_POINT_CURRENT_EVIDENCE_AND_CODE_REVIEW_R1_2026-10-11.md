@@ -610,3 +610,57 @@ The existence of a formal Trusted Build authorization is a **status fact for the
 ### 25.4 No authority promotion
 
 This appendix corrects the audit's record interpretation only. It does not alter the source tree, its manifests, Box authorization records, workflow runs, PR #26, runtime, protected branches, Index, official Test Register, A10 state or SEAL. Keep PR #26 OPEN / DRAFT / NOT MERGED. The defensible current boundary is: **A9 Source Authority and formal Trusted Build are established for the exact candidate; Runtime Adoption is not established; production remains unauthorized; new audit findings still require controlled disposition before any successor or use.**
+
+
+## 26. A3 — Today’s Note: historical editorial prototypes found, but no approved V1 source/library
+
+### 26.1 New bounded discovery in Box raw-inventory intake
+
+A wider second pass reached the historical visual-prototype folders under the Box intake area `99_LOCAL_INVENTORY_INTAKE_2026-09-24/00_RAW_UNSORTED`. These objects were not an approved current V1 UI/source chain; their parent path identifies them as raw intake.
+
+| Artifact | Box identity | Metadata / observed content | Authority implication |
+|---|---|---|---|
+| CE 1.4 Editorial Minimal prototype | [Folder 420937715067](https://account.box.com/folder/420937715067) | Contains hard-coded `app.js` [2485682769599](https://account.box.com/file/2485682769599), SHA-1 `fc00b4025b9996afe63ce47206cf121f8943ea1b`, 6,020 bytes; `README.md` [2485684125139](https://account.box.com/file/2485684125139), 2,698 bytes. | Historical prototype, not an approved V1 editorial library. |
+| CE 2.0 Editorial Recast prototype | [Folder 420933551087](https://account.box.com/folder/420933551087) | Contains hard-coded `app.js` [2485689820604](https://account.box.com/file/2485689820604), SHA-1 `15e428cec9dc6f9d34953d839ab64e95c42c270e`, 6,157 bytes; `README.md` [2485686200649](https://account.box.com/file/2485686200649), 3,328 bytes. | Later visual recast in the same raw-intake lineage, not approval or normative successor. |
+| Prototype API placeholder | `daily-reading.js` Box [2485691382652](https://account.box.com/file/2485691382652), also duplicated in the v2 folder at [2485683267619](https://account.box.com/file/2485683267619) | Returns HTTP 501 and explicitly says the visual preview contains no live AI endpoint. | Confirms that this is a static/demo prototype, not the current production reading service. |
+| Prototype context adapter | `frontend-context.js` Box [2485689760174](https://account.box.com/file/2485689760174), also present at [2485695577864](https://account.box.com/file/2485695577864) | States it performs no astronomical calculation and only forwards sign plus structured signal `ruleId/theme/provenance` values. | Not a calculation or approved editorial-source implementation. |
+| Structured-signal schema | Box [2485696088753](https://account.box.com/file/2485696088753) and [2485690659682](https://account.box.com/file/2485690659682) | Simple schema requiring `ruleId`, `theme` and `provenance`; no editorial content catalogue/library was present in the inspected `data` folder. | A signal schema is not a Today’s Note library or source-approval record. |
+
+### 26.2 What the prototype’s embedded content does
+
+The two inspected `app.js` files contain a hard-coded `READINGS` map keyed directly by zodiac sun sign, along with generated display values derived from a hash of the sign and current date:
+- “energy” metrics and score bars;
+- “lucky word”, stone and color;
+- reflection prose and a “tomorrow” message;
+- locally stored journal text through `localStorage`;
+- a signup/“quiet list” interaction.
+
+The score values are derived in the prototype from `hash(sign + current date)`, not from the CE astronomical calculation/geometry/signal pipeline. The embedded horoscope-style prose is selected by sign, rather than being a separately approved, versioned, source-accountable general editorial item. Its presence is therefore evidence that historical demonstration copy exists, not proof that those claims/content are approved for present CE V1.
+
+The README in both folders expressly calls the project a standalone visual prototype and says the daily content is deterministic demo content that **must not be represented as live astronomical calculation** until the CE Astrology Core and ephemeris are connected. The README also lists a private local Journal and an email-routine/signup placeholder. Those historical features must not be promoted into V1 by copying them across merely because the CSS/visual design is reusable.
+
+### 26.3 Cross-check against current owner disposition and source contract
+
+The [owner disposition for Today’s Note × valid Quiet Sky, Box 2515533522798](https://account.box.com/file/2515533522798), approves only this limited product-semantic direction:
+- an optional, separate and non-personal Note may accompany a **valid** `QUIET_SKY` result;
+- the Note is not a personal signal, Canon interpretation, prediction, or evidence that a signal exists;
+- if no approved item exists, omit the Note;
+- the Note must not mask a technical, calculation, integrity or semantic-validation failure.
+
+The same decision explicitly does **not** approve an editorial database, exact UI copy, selection algorithm, schema/code change, free-form runtime AI generation or deployment. The [Today’s Note contract recommendation R0, Box 2515537459111](https://account.box.com/file/2515537459111) and [controlled change proposal R2, Box 2517767431094](https://account.box.com/file/2517767431094) remain non-normative proposals. The latter explicitly says an accountable/versioned source, approval state, locale where relevant, review/expiry rule, and deterministic selection rule are still needed.
+
+The [Source/UI Authority Discovery R1, Box 2515543958136](https://account.box.com/file/2515543958136) remains valid within its original search boundary: it found no separate approved current UI specification or approved Today’s Note editorial library in the inspected current-governing/documentation and repository locations. This wider search refines that statement, rather than contradicting it: **historical demo prototypes exist in the raw-inventory intake, but no approved current V1 editorial source/library has been established by their existence.**
+
+### 26.4 Current A3 disposition and admissible next step
+
+| Question | Current status |
+|---|---|
+| Is the high-level product behavior already decided? | **YES, limited scope.** Optional non-personal Note beside valid `QUIET_SKY`, only when an approved item exists; otherwise omit; never mask failure. Do not ask for this choice again. |
+| Does an approved content source/library exist in the accessible examined chain? | **NOT ESTABLISHED.** Historical demo prose is available, but the source is hard-coded into legacy prototype code and lacks the necessary editorial provenance/version/approval/expiry/locale contract. |
+| Are exact copy, current item selection, locale fallback, UI/display contract and official tests approved? | **NOT ESTABLISHED.** They were expressly excluded from the owner’s limited disposition and remain open in the non-normative R2 proposal. |
+| May prototype readings/metrics be reused as Today’s Note or current personal readings? | **NO, not on the evidence inspected.** They are demo content; their apparent scores are not calculated CE signals. Any selected words would require separate content review, provenance, approval and controlled integration. |
+| Does A3 allow the A10 gate to pass? | **NO.** A3 remains open until the required current item source/library and controls are evidenced. |
+
+The smallest defensible next artifact is a **candidate editorial-library manifest and lifecycle contract**, not a bulk import of the prototype’s `READINGS` object. It should define each item's stable ID, exact text, source/author or licensed origin, version, approval state, locale, reviewed-at/expiry, deterministic selection eligibility, and the rule that missing/expired/unapproved/wrong-locale content is omitted. The source must be reviewed independently for unsupported personal claims and must never imply an astronomical event or personal forecast. Create it only as a non-authoritative candidate; do not silently change Product Constitution, Implementation Plan, UI or code while the active Index/adoption route and official Test Register binding remain unresolved.
+
+This appendix changes no raw-inventory prototype, approved owner decision, normative source, official Test Register, Index, implementation, code, schema, Source Authority, Trusted Build, Runtime Adoption, A10, production or SEAL state.
