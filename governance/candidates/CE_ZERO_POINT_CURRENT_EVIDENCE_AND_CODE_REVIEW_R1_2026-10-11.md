@@ -1038,3 +1038,36 @@ No reviewed current V1 source establishes a blanket negative-word blacklist or f
 
 This matrix does not adopt old V8 copy or create new lexical restrictions. Official test IDs must be cross-mapped only through a valid Test Register route. No current normative source or runtime was changed.
 
+## 37. Corrected daily-cap disposition — owner D1-A/D2-B choices and candidate evidence
+
+Sections 31–32 captured the initial bounded source scan but were not fully reconciled with the owner disposition now visible on current Pre-A10 R3 and commerce reference-model PR #33. This section supersedes any implication that D1/D2's principal policy choices remain wholly proposed.
+
+### 37.1 Recorded owner choices
+
+[PR #33 — CE Commerce Reference Model R0](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/33) is OPEN / DRAFT / NOT MERGED at HEAD `a0dcd466e28ca822a43ef86c172f7e1c91ea46a4`. Its durable owner-disposition file is [`owner-disposition-2026-10-10.md`](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/a0dcd466e28ca822a43ef86c172f7e1c91ea46a4/prototypes/commerce-reference-model-r0-2026-10-10/owner-disposition-2026-10-10.md), blob `003157fbf53860880340549003e7037882e29714`. The current Pre-A10 R3 register separately classifies C3 as `OWNER_DECISION_RECORDED`.
+
+- **D1-A — effective new purchase:** confirmed logical order bound to immutable server-derived UTC service date plus the committed one-time Deep Sky reading-Credits debit. Retry of the same logical purchase does not create a new purchase/debit/slot.
+- **D2-B — same-date slot after terminal non-delivery:** only after positive terminal-non-delivery evidence, no accessible valid reading, no live delivery-capable operation, no entitlement, all relevant operations closed, and exact once-only restoration of the reading debit. Reuse is allowed only while the original UTC date remains current; after expiry the old slot closes without transfer.
+- **Fulfillment-health interlock — approved principle:** new purchase/effective debit requires explicit current READY health attestation. UNKNOWN/BLOCKED/expired readiness fails closed for new purchases/debits but must not cancel or terminalize existing operations.
+- **UTC service day — limited-scope owner approval:** fixed Gregorian UTC date `[00:00:00 UTC, next day 00:00:00 UTC)`, account-wide rather than device-local.
+
+These policy choices are recorded. Do not ask the owner to repeat them. They do not on their own amend a normative source or the official Test Register.
+
+### 37.2 Exact candidate test evidence
+
+The exact current PR #33 head `a0dcd466e28ca822a43ef86c172f7e1c91ea46a4` has successful Actions run [#38036272045](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38036272045). The PostgreSQL 18.6 integration/test job log reports **67 tests passed in 2.573 seconds**. It includes concurrent account/date-slot uniqueness, atomic D1-A debit/slot consumption, required reservation evidence, D2-B terminal evidence/restoration, same-transaction release, expired-date no-transfer, and health-attestation admission.
+
+This is candidate-only integration evidence—not an official Test Register run, independent security review, production-database proof, live-provider/webhook proof or production runtime. The model and PostgreSQL schema remain a prototype. No provider, production database or deployment is approved.
+
+### 37.3 What remains open
+
+1. **Pre-debit reservation failure/release:** distinct from D2-B; the PR itself says the pre-debit branch derives from earlier cap material and is not an owner-approved complete normative contract.
+2. **Health attestation operations:** source/producer, thresholds, renewal, alerting/monitoring, operator controls, recovery and audit design remain open. The five-minute READY lease is a prototype guard, not an approved SLO.
+3. **Controlled source integration:** relevant Technical Contracts §21, Account/Commercial Specification, Business Model, Implementation Plan, Index and official Test Register need a controlled successor/adoption route. The older DR-01 Human Decision Register R0 (Box [2514894635417](https://account.box.com/file/2514894635417)) literally records `NOT_RECORDED`; preserve R0 and reconcile later evidence through a successor register, not by backdating it.
+4. **Official tests and implementation authority:** cap-specific tests are not official Test Register IDs. The authoritative deployed commerce/persistence source remains NOT ESTABLISHED within inspected connected scope; PR #33 does not prove production implementation or distributed correctness.
+5. **External remedies and paid launch:** cash/card refunds are separate from Credits restoration. Provider, seller entity/jurisdiction, final market scope, SKU/currency/price, and live checkout remain unresolved/not authorized.
+
+### 37.4 Corrected status
+
+Finding 5 remains **PARTIAL — key policy choices recorded**. The cap premise, UTC boundary, D1-A purchase/debit point, D2-B same-date slot-release conditions and health-interlock principle are owner-disposed. The remaining block is controlled normative/test integration, pre-debit failure policy, health-control engineering, authorized implementation source and paid-market remedies. Sections 31–32 are superseded only to the extent that they suggested the D1/D2 choices were still merely proposals. No historic register, normative source, official Test Register, main branch, runtime, A10, production or SEAL status was changed.
+
