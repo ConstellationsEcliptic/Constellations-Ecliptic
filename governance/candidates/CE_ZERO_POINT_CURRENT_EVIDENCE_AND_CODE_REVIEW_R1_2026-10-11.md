@@ -765,3 +765,23 @@ The concrete discrepancy is therefore the **R2 filename versus its internal R1 r
 - Retain the R2 filename/internal-revision mismatch as a distinct provenance/naming finding. If corrected, do so only as a separate candidate change with an explicit predecessor/successor identity and exact-head tests; do not rewrite historical candidate evidence in place.
 - No product semantics, owner disposition, normative Index, official Test Register, A9 authority, source code, runtime, A10, production, merge or SEAL state is altered by this correction.
 
+## 30. Correction to §29 — exact current PR #27 head and gate evidence
+
+Section 29 used commit `242bc16ac7ad29a471239b736d5b3915a92d07be` as the current PR #27 head based on a connector response and its associated workflow run. A subsequent direct GitHub REST response for the PR resource returns `head.sha=549e53c0abccc3fb6d26f2cf0e32b7b3f7e00668`, commit message “Correct D4 to global USD-first provider strategy”. The PR resource is the source used here to bind the current pull-request head; `242bc16...` is an earlier/intermediate exact commit, not the latest PR #27 head. This section supersedes §29's current-head designation.
+
+### 30.1 Exact latest PR / workflow evidence
+
+- Direct PR resource: [PR #27](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/pull/27), current `head.sha=549e53c0abccc3fb6d26f2cf0e32b7b3f7e00668`; OPEN / DRAFT / NOT MERGED.
+- Exact workflow run bound to that head: [run #38077875438](https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/actions/runs/38077875438).
+- Six jobs are present: validator unit tests succeeded; R0/R1/R2/R3 structure validation succeeded; strict Pre-A10 completion gate failed as designed.
+- Gate output: `area_count=23`, `complete_count=20`, `incomplete_count=3`, IDs `A3`, `B1`, `D4`, `pre_a10_area_review=INCOMPLETE`, `errors=[]`. A10/runtime, production, and SEAL are explicitly not authorized by the gate.
+- Combined-status API returned no independent status records for this check. The named workflow run is the exact-head evidence; no additional status is inferred.
+- At `549e53c...`, R3 remains blob `ab6e005bed107d8b909a16af9f24fc239b138ae8`, internal `revision=R3`: 13 `CLOSED_PRESERVE`, 6 `OWNER_DECISION_RECORDED`, E4 deferred, A3 `OWNER_DISCUSSION_REQUIRED`, B1/D4 `RECOMMENDATION_READY`. The R2-named file still has blob `3dad17c41515f7104808dc1d199568e309f09b45`, internal `revision=R1`, identical to the R1-named file; that naming/lineage anomaly remains open.
+
+### 30.2 Corrected disposition
+
+- The §29 register-content comparison remains valid where the exact blobs are identical; this correction changes the commit/run binding.
+- The current PR #27 A3 label is aligned to the R3 file targeted by the current workflow. Section 28's original accusation of current A3-label drift remains withdrawn.
+- A3/B1/D4 still block Pre-A10. The register is non-authoritative and does not authorize A10, runtime adoption, production or SEAL.
+- No PR merge, normative-source change, official Test Register change, implementation/runtime mutation or authority-state change was made by this audit correction.
+
