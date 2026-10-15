@@ -1,0 +1,737 @@
+{
+  "schema_version": "1.0",
+  "project": "CONSTELLATIONS ECLIPTIC",
+  "document_id": "CE-PRE-A10-ZERO-POINT-AREA-REGISTER-R0",
+  "date": "2026-10-09",
+  "classification": "WORKING_CONTROL_PLANE_CANDIDATE_NON_AUTHORITATIVE",
+  "authority_effect": "NONE",
+  "normative_effect": "NONE",
+  "runtime_authorization_effect": "NONE",
+  "a10_authorized": false,
+  "current_gate": "BLOCKED_PENDING_PRE_A10_AREA_REVIEW_AND_SEPARATE_RUNTIME_ADOPTION_GOVERNANCE",
+  "allowed_statuses": [
+    "NOT_STARTED",
+    "SOURCE_REVIEW_IN_PROGRESS",
+    "SOURCE_RECONCILED",
+    "RECOMMENDATION_READY",
+    "OWNER_DISCUSSION_REQUIRED",
+    "OWNER_DECISION_RECORDED",
+    "CLOSED_PRESERVE",
+    "DEFERRED_BY_EXPLICIT_DISPOSITION"
+  ],
+  "required_completion_statuses": [
+    "OWNER_DECISION_RECORDED",
+    "CLOSED_PRESERVE",
+    "DEFERRED_BY_EXPLICIT_DISPOSITION"
+  ],
+  "invariant": "Area review completion never authorizes Runtime Adoption, production, deployment, or SEAL. Those remain independent governance gates.",
+  "areas": [
+    {
+      "id": "A1",
+      "title": "Core product promise and epistemic boundaries",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Review the five epistemic layers, absolute integrity invariants, and the rule that lower layers cannot rewrite higher layers.",
+      "review_summary": "Source review and owner discussion completed in this conversation on 2026-10-09. Product Constitution v1.6.1 establishes CE's identity and absolute integrity invariants; Calculation Constitution v1.9 defines the numerical/geometric source-of-record boundary and prohibits invented/synthetic/stale state; Signal Engine v1.4 and Interpretive Canon v1.2 preserve downstream qualification/interpretive boundaries; Evidence, AI & Output Validation v1.4 limits AI to authorized language infrastructure and fail-closed claim validation. Preserve the core invariant: CE must never make the user believe CE knows more than CE actually knows. Normative and governance sources jointly constrain CE; working artifacts, convenience, commercial goals, or autonomous operation cannot override them.",
+      "evidence_refs": [
+        "Box:2491704535193 §§1-3, §§10-14 (Product Constitution v1.6.1)",
+        "Box:2485336984594 §§2-3, §§36-37 (Calculation Constitution v1.9)",
+        "Box:2485335414676 §§14-16, §22 (Signal Engine Core v1.4)",
+        "Box:2485337228722 §§2-6, §19 (Interpretive Canon v1.2)",
+        "Box:2485336395859 §§3-4, §§9-13, §25 (Evidence, AI & Output Validation v1.4)",
+        "Box:2515488894918 §§2-6 (Source-First Recommendation Protocol)"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "A2",
+      "title": "Look Back, Look Today, Tomorrow Check, Look Future and Quiet Sky",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485335414676",
+        "Box:2485336984594"
+      ],
+      "review_focus": "Review product time model and distinguish a valid no-signal observation from technical failure.",
+      "review_summary": "Source-level semantic review completed against the characterized V1 stack. Look Back is experience-first, controlled-category, session-only and not truth proof; Look Today may show only qualified Testable Sky Signal; Tomorrow Check receives the user's categorical report and compares it with yesterday's testable signal without forcing mismatch to match; Look Future is grounded in upcoming calculations, Canon, and only explicitly permitted current-session input, and remains possibility not guarantee. Quiet Sky is the aggregate result of a valid completed observation with zero qualifying signals. Any non-VALID technical state remains a separate failure/unavailable state: no signal, Canon claim, Quiet Sky promotion, or stale substitution. This is semantic/source reconciliation only, not runtime conformance or test execution; exact byte lineage of the characterized copies to the representative governing archive remains NOT_ESTABLISHED. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve source-level product time model and Quiet Sky/failure separation. This does not establish byte lineage or runtime/test conformance.",
+      "evidence_refs": [
+        "Box:2491704535193 §§2–6, 8.2–8.3, 14",
+        "Box:2485336984594 §§2–3, 29–30, 35–37",
+        "Box:2485335414676 §§1–3, 14–16, 19–22",
+        "Box:2485337228722 §§6–16, 18–20",
+        "Box:2485336395859 §§3–4, 9–12",
+        "Box:2491699264134 §§13.1–13.4",
+        "Box:2485336117840 §11, INT-01, ERR-06, AI-09, §21",
+        "Box:2515023681086 §3 area 1 and §6",
+        "Box:2515742713865 §§2, 5–6",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "A3",
+      "title": "Today's Note and Quiet Sky",
+      "status": "RECOMMENDATION_READY",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2491699264134",
+        "Box:2491704535193",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Locate an already-approved product/UI/copy decision before proposing behavior.",
+      "review_summary": "A prior owner disposition was found and read (Box 2515533522798): it approves only that an optional, separate, non-personal TODAY'S NOTE may accompany valid QUIET_SKY when an approved item exists; omit if no approved item and never let it disguise failure. The same disposition expressly does not approve editorial source/library, exact copy/UI, selection algorithm, schema/code, runtime AI generation, normative amendment or deployment. Source/UI Discovery R1 (Box 2515543958136) records a bounded Box/GitHub search with no separate approved UI specification or editorial library identified; this is not a universal non-existence finding. Recommendation: use a curated, versioned, reviewed non-personal editorial library with deterministic selection, no personal data/signal/account history/feedback/credits as selector inputs, no free-form runtime LLM in V1, separate display, exclude from Tomorrow Check, omit if no approved item/locale, and suppress on failed observation surface. Detailed contract and change-control remain proposal only; implementation and normative amendment are not authorized. Direct source-to-code reconciliation is now recorded in CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md. It binds the normative output boundary to exact A9 blobs and confirms that the verified semantic checker deliberately returns no implementation and the full release path fails closed when it is unavailable; this does not establish a populated approved Canon registry or production release path, and changes no disposition. Consolidated source-bound remaining-area review R0 (GitHub CE_PRE_A10_REMAINING_FOUR_AREA_RECONCILIATION_R0_2026-10-10.md) confirms the narrow scope of owner disposition Box 2515533522798 and the bounded source/UI discovery R1. Recommended curated/versioned/reviewed non-personal content with deterministic selector is still a proposed detailed contract, not approved. Do not generate a runtime stand-in. Owner must decide whether V1 ships an approved editorial note surface now or omits it until the source/content/display contract is approved.",
+      "evidence_refs": [
+        "Box:2515533522798 Owner Disposition R0 (limited semantic scope)",
+        "Box:2515543958136 Source/UI Authority Discovery R1 (bounded, non-authoritative)",
+        "Box:2515537459111 Today's Note × Quiet Sky Contract Recommendation R0 (proposal)",
+        "Box:2515541872217 Voice Integrity & Today's Note Change-Control Packet R1 (proposal)",
+        "Box:2491704535193 Product Constitution v1.6.1 §4.2, §§5, 8.2–8.3, §11",
+        "Box:2491699264134 Implementation Plan v1.3.1 §13.2",
+        "Box:2485337228722 Interpretive Canon v1.2 §§4–6",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–4, 9–12",
+        "Box:2485335589220 Privacy Architecture (V1 data boundary)",
+        "GitHub:governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md — source-to-code matrix for Product Constitution §§4.2/5/11/15, Canon v1.2 §§4–6/13–20, Evidence-AI v1.4 §§3–12/18–25 and exact A9 blobs; confirms absent verified semantic checker causes fail-closed release and does not authorize output.",
+        "GitHub:A9 src/ce/output/semantic.py blob b33e37111770e55521c50f01ee6c7b699b5d9c61 returns None until controlled semantic verifier independently established",
+        "GitHub:A9 src/ce/claim/authorization.py blob 59a88041cbf39c86faeffdef65a50dcb866b93d5 blocks release without verified semantic conformance and runtime authorization",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_REMAINING_FOUR_AREA_RECONCILIATION_R0_2026-10-10.md",
+        "Box:2485335589220 Privacy Architecture Minimal V1.5 (no persistent user-level behavioural profiles/history context)"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "A4",
+      "title": "Product voice, tone and consumer experience",
+      "status": "OWNER_DECISION_RECORDED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Reconcile source-backed claim limits with any owner-approved non-fatalistic/quiet language rules.",
+      "review_summary": "Current Product Constitution and Business Model establish truthful state/claim limits, the free-core-to-Deep-Sky funnel and qualified daily traffic as North Star, but no inspected CE source or first-party evidence proves the effect of Quiet Sky/Today’s Note on interest, return or conversion. Owner-approved Note disposition only permits optional, separate non-personal editorial alongside valid Quiet Sky if an approved item exists. A Jan 2026 mixed-method study of 57 astrology-app users reports trust/privacy/satisfaction concerns but does not study Quiet Sky or CE; a 2025 transparency study of 216 participants in AI decision scenarios is adjacent evidence only. Recommendation: treat consumer effects as a testable hypothesis, preserve Quiet Sky as the truthful result, make any Note optional/separate/approved, avoid filler or personal-sounding rescue, and validate usability/value proposition with consented qualitative research plus permitted aggregate measures, without identity-linked user profiling or letting engagement change signal/Canon behavior. This does not establish market demand or authorize any feature, telemetry, code or normative change. Bounded owner disposition recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md: include evidence-based consumer validation before launch, limited to comprehension/expectations/usability/value proposition through consented qualitative research and only already-permitted aggregate measures. This approves the validation direction; it does not claim the study has occurred, authorize new telemetry/personal profiling, or allow engagement to alter astronomy, qualification, Canon or uncertainty.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §§3–5, 8, 11–13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§1–6, 13",
+        "Box:2515533522798 Owner Disposition Today's Note × Valid Quiet Sky R0 (narrow semantics only)",
+        "Box:2515537459111 Today's Note × Quiet Sky Contract Recommendation R0 (non-normative proposal)",
+        "Box:2515505499720 Owner Disposition Account History / Personal Context and Voice R0",
+        "Web: https://www.jier.org/index.php/journal/article/view/4272 — 2026 mixed-method study; n=57; no direct Quiet Sky test",
+        "Web: https://journals.sagepub.com/doi/10.1177/10711813251369473 — 2025 transparency study; n=216; AI decision scenarios, indirect applicability",
+        "Web: https://interfaces.institute/patterns/empty-states/ — UX design guidance only, not CE consumer validation",
+        "Box:2515023681086 Source-Bound Matrix R0, areas 1–2",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md",
+        "Box:2515715498189 Paid Checkout Readiness Matrix R0 (consumer/product readiness and no blanket development gate)",
+        "Box:2515505499720 Owner disposition: Account History / Persistent Personal Context and Voice Boundary"
+      ],
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+      "owner_disposition": "APPROVE_PRE_LAUNCH_CONSUMER_VALIDATION_DIRECTION_ONLY: assess comprehension, expectations, usability and value proposition using consented qualitative research and only already-permitted aggregate measures. No new telemetry purpose, user-level behavioral profile, persistent personalization, or changes to astronomy/signal/Canon/uncertainty based on engagement are authorized. Actual study/results remain outstanding evidence."
+    },
+    {
+      "id": "B1",
+      "title": "Canon Rule Registry and allowed semantic coverage",
+      "status": "RECOMMENDATION_READY",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2485337228722",
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify whether approved populated current V1 rules exist, their lineage, and manifest binding; preserve fail-closed behavior.",
+      "review_summary": "The characterized Interpretive Canon v1.2 requires a provenance-bound, versioned Rule Registry as the source of semantic permission; absent/mismatching rules must produce no interpretation. In exact A9 candidate c8dab354…, src/ce/canon/registry.py provides schema-aware CanonRule/CanonRegistry parsing but module-level get_rule() deliberately raises CanonRegistryNotEstablished because the registry is not materialized; the inspected PR#26 tree has code/schema but no populated Canon data file. Similar-named test_registry_100/H2 artifacts are calculation-core test/coverage registers, and tests/test_registry_r1.py validates calculation object/aspect/orb registries, not interpretive rules. Historical CE_RULEBOOK_v1.0 is in the historical V8 intake and cannot be promoted by name/location. Bounded Box, Library, Dropbox and exact candidate-path searches did not identify a separately approved/populated current V1 Canon-rule registry or its authority/promotion record. This remains NOT_ESTABLISHED in the inspected scope, not universal non-existence. Recommendation: preserve fail-closed behavior; do not invent/promote Canon rules; prepare a source-backed, independently reviewed candidate rule set with provenance/conflict analysis and version/digest-bound claim-manifest tests before asking for a consolidated semantic disposition. Direct source-to-code reconciliation is now recorded in CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md. It binds the normative output boundary to exact A9 blobs and confirms that the verified semantic checker deliberately returns no implementation and the full release path fails closed when it is unavailable; this does not establish a populated approved Canon registry or production release path, and changes no disposition. Consolidated source-bound remaining-area review R0 adds a specific technical gap: at exact A9 c8dab354, authorization matcher src/ce/claim/authorization.py compares rule conditions only to broad QualifiedSignalRecord fields (classification, phase, phase uniformity, uncertainty-disclaimer flag), while geometry identity (transit, natal/scenario, aspect, directed branch) is present in evidence packet and not direct selector fields on that signal record. If rule scope uses a specific geometry, candidate implementation must bind rule applicability to that exact evidence and be independently tested. Also src/ce/output/semantic.py returns None until controlled independent verifier is established, so release fails closed. A current approved populated Canon registry was not established within searched scope. Do not invent rules. Prepare bounded sourced rule coverage + geometry condition-binding proposal + independent semantic-verifier plan before the material owner choice on initial V1 Canon scope.",
+      "evidence_refs": [
+        "Box:2485337228722 Interpretive Canon v1.2 §§4–6, 14–18",
+        "GitHub A9 commit c8dab3542d3d4725cf591630c07f76366f7949d0 src/ce/canon/registry.py blob ae1bc1a83f712c8ca15a2d05b56310bec341332d",
+        "GitHub A9 commit c8dab3542d3d4725cf591630c07f76366f7949d0 schemas/canon_rule.schema.json blob 770bfa661bdae89a569e8555155c97fe5b3ad2af",
+        "GitHub A9 commit c8dab3542d3d4725cf591630c07f76366f7949d0 schemas/allowed_claim_manifest.schema.json blob e1b9f46cae1c584a46cf83eb1953ccd376b38028",
+        "GitHub PR #26 changed-file inventory (185 paths; no populated Canon data registry in inspected tree)",
+        "GitHub A9 tests/test_registry_r1.py blob 03efb7dd4609f070473a13fe8ac7c34ccdc38175 (calculation registries, not Canon)",
+        "Box:2504549579690 H2 test-registry provenance/rebinding record (test register ≠ Canon rules)",
+        "Box:2485689424558 CE_RULEBOOK_v1.0.md (historical V8 intake, not current V1 authority)",
+        "Box:2515023681086 Source-Bound Matrix R0",
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "GitHub:governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md — source-to-code matrix for Product Constitution §§4.2/5/11/15, Canon v1.2 §§4–6/13–20, Evidence-AI v1.4 §§3–12/18–25 and exact A9 blobs; confirms absent verified semantic checker causes fail-closed release and does not authorize output.",
+        "GitHub:A9 src/ce/canon/registry.py blob ae1bc1a83f712c8ca15a2d05b56310bec341332d public get_rule deliberately raises because registry is not materialized",
+        "GitHub:A9 tests/test_time_signal_boundaries.py blob 414b9089ab5e47e067907acb94b1650573530ca4 test_bad_canon_rule_does_not_fallback asserts no fallback for unmaterialized rule",
+        "Box:2485337228722 Interpretive Canon v1.2 §§4–6, 13–20 reviewed directly; §18 says actual semantic rules only from separately versioned source-reviewed/approved registry",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_REMAINING_FOUR_AREA_RECONCILIATION_R0_2026-10-10.md",
+        "GitHub:A9 src/ce/signal/record.py blob b496ddc397cc28d4be18cdd468fa233e46e7c516",
+        "GitHub:A9 src/ce/claim/authorization.py blob 59a88041cbf39c86faeffdef65a50dcb866b93d5",
+        "GitHub:A9 src/ce/output/semantic.py blob b33e37111770e55521c50f01ee6c7b699b5d9c61"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "B2",
+      "title": "Historical three-AI architecture versus current V1",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Keep historic V8 orchestration separate from current V1 language architecture unless controlled scope change is decided.",
+      "review_summary": "Historical V8 Model Orchestration Contract (Box 2485683100092) sets Claude primary, GPT adversarial reviewer, Gemini secondary/fallback. Source-Lineage Update R1 (Box 2515019564821) classifies this as historical V8 design with no established promotion into current V1. Current Evidence, AI & Output Validation v1.4 §§3–6 (Box 2485336395859) says AI is bounded Language Infrastructure; V1 Core uses deterministic templates and does not require an LLM; Deep Sky may use one constrained LLM with structured authorized inputs, JSON output and mandatory validation. Recommendation/disposition: remove three-AI orchestration from current V1 assumptions while preserving the historical artifact unchanged. Future reintroduction would require a separate controlled architecture/privacy/product change. No implementation, code, vendor wiring or normative source changed.",
+      "evidence_refs": [
+        "Box:2485683100092 Historical Model Orchestration Contract (V8)",
+        "Box:2515019564821 Zero-Point Source-Lineage Update R1",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–6, 7–13, 25",
+        "Box:2491704535193 Product Constitution v1.6.1 §§3, 10–13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§1–6",
+        "Box:2515023681086 Zero-Point Source-Bound Matrix R0",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "B3",
+      "title": "Voice Boundary and negative-sounding language",
+      "status": "OWNER_DECISION_RECORDED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485336395859",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Find approved V1 voice disposition; distinguish honest limitations from unnecessary fear, fatalism, or demeaning language.",
+      "review_summary": "Owner disposition Box 2515505499720 expressly accepts the high-level direction that truth, evidence, Canon/claim authorization and accurate system state are hard constraints; flexible style should be clear, warm, considerate and non-fatalistic where truthful; no blanket ban on every negative-sounding word or forced positivity; the historical Voice Constitution is not silently promoted to V1 authority. Owner clarification Box 2515492744135 confirms a strict/formal Voice Boundary was not adopted for V1 and warns that rigid rules could undermine honesty. Voice Proposal Source Reconciliation R1 Box 2515526817086 classifies evidence/claim/certainty/failure/mismatch/hidden-knowledge controls as directly grounded in V1, while tone and lexical rules remain proposed style guidance. Recommendation: retain two layers—blocking structural/semantic integrity gates and non-blocking editorial style guidance; style becomes blocking only where the actual content causes a substantive truth, certainty, fear/fatalism, safety, privacy or commercial-integrity violation. No normative amendment or code gate is authorized; detailed combined Today’s Note + voice contract remains to be presented for a focused decision after review is consolidated. Direct source-to-code reconciliation is now recorded in CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md. It binds the normative output boundary to exact A9 blobs and confirms that the verified semantic checker deliberately returns no implementation and the full release path fails closed when it is unavailable; this does not establish a populated approved Canon registry or production release path, and changes no disposition. Existing limited owner direction reconfirmed and indexed in CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md, cross-referencing Box 2515505499720 and source-bound voice reconciliation Box 2515526817086. High-level voice review is now recorded; detailed Today's Note content/source/selection/UI remains separately open under A3, and no detailed style contract/code gate/normative amendment is authorized.",
+      "evidence_refs": [
+        "Box:2515505499720 Owner Disposition — Account History / Personal Context and Voice R0, §3",
+        "Box:2515492744135 Owner Clarification PC Tier1 Legal and Voice Boundary R0, §3B",
+        "Box:2515526817086 Voice Proposal Source Reconciliation R1, §§3–6",
+        "Box:2515504511937 Voice Integrity & Editorial Principles Proposal R0 (proposal only)",
+        "Box:2515019564821 Zero-Point Source-Lineage Update R1",
+        "Box:2515541872217 Voice Integrity & Today's Note Change-Control Packet R1 (proposal only)",
+        "Box:2491704535193 Product Constitution v1.6.1 §§3, 8, 11–13",
+        "Box:2485337228722 Interpretive Canon v1.2 §§6–16",
+        "Box:2485336395859 Evidence/AI Output Validation v1.4 §§3–12",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7",
+        "GitHub:governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md — source-to-code matrix for Product Constitution §§4.2/5/11/15, Canon v1.2 §§4–6/13–20, Evidence-AI v1.4 §§3–12/18–25 and exact A9 blobs; confirms absent verified semantic checker causes fail-closed release and does not authorize output.",
+        "Box:2485336395859 Evidence, AI & Output Validation Specification v1.4 §§3–12, 18–25 reviewed directly; core deterministic templates, Deep Sky constrained JSON, required semantic conformance, and failure/Quiet Sky boundary",
+        "GitHub:A9 src/ce/output/validation.py blob 7474c55c7323dc446e4799b3db4f6dc16a1b75a6 has structural/lexical checks but adds semantic_conformance_unavailable when verifier missing",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+        "Box:2515505499720 Owner disposition: Account History / Persistent Personal Context and Voice Boundary",
+        "Box:2515492744135 Owner clarification: Persistent Personal Context, Tier-1 legal-policy basis and Voice Boundary",
+        "Box:2515526817086 Voice Proposal Source Reconciliation R1"
+      ],
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+      "owner_disposition": "PRESERVE_EXISTING_LIMITED_OWNER-ACCEPTED_VOICE_DIRECTION: truth/evidence/state/claim boundaries are hard; no blanket lexical ban or forced positivity; use clear, warm, considerate, non-fatalistic style only where truthful; historical Voice Constitution is not silently promoted. Exact Today's Note content/UI/library and code/normative voice gate are not approved."
+    },
+    {
+      "id": "B4",
+      "title": "Feedback, mismatch, and anti-confirmation safeguards",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485335414676",
+        "Box:2485337228722"
+      ],
+      "review_focus": "Preserve session-scoped categorical feedback, no narrative rescue, and no feedback-to-accuracy conversion.",
+      "review_summary": "Current V1 source review confirms Look Back is experience-first with controlled categorical, session-only input; feedback is USER_REPORTED and cannot be accuracy proof, permanent trait/profile, Canon rule, or change to evidence/qualification. Tomorrow Check records balanced categories and compares only with yesterday's eligible Testable Sky Signal; mismatch must not be forced into a match. Canon v1.2 prohibits adding interpretations to rescue a mismatch, and AI/Output Validation requires mismatch-rescue rejection. Preserve this contract; no learning/accuracy loop or persistence for V1. Test Register contains ERR-06/INT-01/AI-09 for adjacent Quiet Sky/failure boundaries, but no tests were executed by this review. Runtime/UI conformance is not established by source review alone.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §§3.3–3.7, 4.1–4.4, 6",
+        "Box:2491699264134 Implementation Plan v1.3.1 §§13.1–13.3",
+        "Box:2485335414676 Signal Engine v1.4 §19",
+        "Box:2485337228722 Interpretive Canon v1.2 §§10–13",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§9–12, 21–22",
+        "Box:2485336117840 Test Register v1.5 ERR-06, INT-01, AI-09",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C1",
+      "title": "Deep Sky product and fulfillment contract",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify Deep Sky entitlement, constrained synthesis, validation, delivery, reread, and failure contracts.",
+      "review_summary": "Product Constitution §4.5 and §§10–13, Business Model Minimal V1 v1.5 §§2–7, Account/Privacy/Commercial v1.7 §§10–17 and Evidence/AI/Output Validation v1.4 §§3–13 establish Deep Sky as the sole paid core V1 product selling depth of synthesis—not truth, accuracy, certainty, guarantee or psychological authority. Core templates are deterministic; Deep Sky may use one constrained LLM with structured input/output and mandatory claim validation. Credits cannot change evidence, qualification, Canon, uncertainty or feedback. Paid-reading entitlement/reread is separate from active cross-reading AI context. Owner disposition Box 2515528652667 explicitly defers cross-reading continuity from active scope. B1 registry investigation finds approved populated Canon rules are not established in inspected A9/current source locations, so full semantic coverage/runtime readiness is not established. Close the product-promise semantics as PRESERVE; keep checkout/fulfillment, Credits mechanics, daily cap mechanics, jurisdictional readiness, Canon registry and runtime proof in their own areas. No code/spec/tests changed; no tests executed.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §4.5, §§10–13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2–7, §§9–15",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§10–17",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–13, 21–23",
+        "Box:2515528652667 Owner Disposition — Future Deep Sky Cross-Reading Continuity Deferred",
+        "Box:2515464255967 Proposed Deep Sky Continuity Change Map R0 (deferred; historical working artifact)",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_B1_CANON_RULE_REGISTRY_R0_2026-10-09.md",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C2",
+      "title": "Credits, ownership, entitlement and idempotency",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Reconcile balance ownership, non-expiry, reading entitlement, duplicate prevention, deletion and remedies.",
+      "review_summary": "Account/Privacy/Commercial v1.7 §§10–17 and Business Model v1.5 establish account-owned, device-independent, non-expiring Credits; reread of an already-opened retained paid reading without another debit; preview disclosure; server-issued idempotency; database-level uniqueness/atomic Credit grant; provider event deduplication; minimal transaction/fulfillment records; reconcilable unknown/failure state; and post-deletion financial purpose limitation/linkage severance. Test Register v1.5 includes INT-02, PAY-01–05, VERS-12, SCALE-04 and related deletion cases as expected test behavior, but no fresh test run was executed. Commerce Persistence Source-Discovery Finding R0 (Box 2515659021563) records that no live commerce/persistence source, DB migration, provider or Credits ledger is established in the inspected GitHub main/A9 and active Box scope; this is bounded and does not exclude a separate unindexed/private worktree. Recommendation: preserve normative contract, do not invent a schema/provider, and identify the authoritative commerce source before implementation. Daily purchase cap trigger/remedy mechanics remain separate C3. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve Credits/entitlement/idempotency contract; live commerce persistence remains NOT_ESTABLISHED in inspected scope.",
+      "evidence_refs": [
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§10–17",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2–10, 15",
+        "Box:2491699264134 Implementation Plan v1.3.1 §7.8 and Phase 10",
+        "Box:2485336117840 Execution Profile & Test Register v1.5 INT-02, PAY-01–05, VERS-12, SCALE-04, PRIV deletion cases",
+        "Box:2515659021563 Commerce/Persistence Source-Discovery Finding R0",
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C3",
+      "title": "One new Deep Sky purchase per CE service day",
+      "status": "RECOMMENDATION_READY",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2515555580794",
+        "Box:2515706725948",
+        "Box:2515747060613",
+        "Box:2515757204983",
+        "Box:2515659021563",
+        "Box:2491700051951",
+        "Box:2491702950277",
+        "Box:2491704535193",
+        "Box:2491699264134",
+        "Box:2492008789300",
+        "Box:2515745492938",
+        "Box:2515750096004",
+        "Box:421216268864",
+        "Box:421217348513",
+        "Box:425695746871",
+        "Box:2485336117840",
+        "Box:2485323796025",
+        "Box:2485752397623",
+        "Box:2504532906216",
+        "Box:2504536826366",
+        "Box:2515691567942"
+      ],
+      "review_focus": "Resolve only protected D1/D2 product decisions and keep Test Register/Technical Contracts pointer bindings explicit; commerce implementation is treated as not implemented within the owner-defined five-source universe, so plan from zero rather than continue source-hunting.",
+      "review_summary": "C3 remains RECOMMENDATION_READY and owner decision is required only for D1 effective purchase event and D2 slot effect after fully reversed terminal non-delivery. Source lineage is now more precise: operator evidence verifies the Clean Current Set R3 archive and six member identities within that archive; controlled application/post-apply records identify Product Constitution v1.6.1 and Implementation Plan v1.3.1 as applied successor materialization. A further active-pointer search found CE Active Implementation Pointer R7 (Box 2492023501528) and Current Decision Register R7 (Box 2492022563209) explicitly naming Technical Contracts v1.1 hardened R2 (Box 2491799121573), while the later 2026-10-04 non-authoritative Stack Index/Manifest still list the earlier v1.1 identity (Box 2491699792103); this is a bounded cross-index discrepancy, not absence of pointer evidence or global Source Authority. Fresh Test Register reconciliation directly read legacy v1.5 (Box 2485336117840): PAY-01 same-idempotency-key retry; PAY-02 duplicate provider callback; PAY-03 payment success + synthesis failure/reconciliation; PAY-04 deletion during fulfillment; PAY-05 chargeback after deletion. They do not establish same-account/UTC-day slot uniqueness, terminal Credits-restoration/slot-release replay or cap behavior. The full v1.5 copies at Box 2485336117840 / 2485323796025 share SHA-1 but are located in excluded raw-intake staging; a distinct 9,773-byte v1.5-named file at Box 2485752397623 is also unbound. Clean Current Set R3 omits Document 07 while Index v1.9 lists it (R3-PKG-INDEX-001); active implementation folder has only calendar test matrices, and active Stack Index/Manifest do not bind a full successor register. The A9 convergent_test_register_r3.json explicitly labels itself CURRENT_IMPLEMENTATION_CANDIDATE and is limited to 28 Calculation-Core-owned IDs with authoritative coverage/source authority/trusted build/runtime/full coverage all NOT_ESTABLISHED. Current official full Test Register identity/pointer therefore remains NOT_ESTABLISHED. Commerce source search extended: connected main root only README; prior exact A9 tree (213 entries, not truncated) has no commerce/payment/Credits/order/refund/persistence or SQL migrations; fresh branch-name queries for commerce/credits/payment/checkout/deep-sky/shop/stripe/purchase returned no match; active Box implementation/core folder immediate inventories (130 and 60 items) have no commerce/persistence match, and current C3 working folder consists of review/design artifacts. This remains a bounded finding, not proof against any local/unconnected private worktree. Commerce/persistence source of record is NOT ESTABLISHED in connected/inspected scope. Product recommendations remain D1-A/D2-B only; neither is owner-approved, and D2-B requires a defined service-level fulfillment-health interlock before implementation. Candidate test oracles remain unregistered and unexecuted. No normative file, official Test Register, schema, code, runtime, authority state, A10 or production state was changed.\n\nOwner clarified the closed CE source universe as Box, Dropbox, ChatGPT Library (Pustaka), GitHub, and the owner's laptop. The targeted record review across these sources did not identify an implementable commerce/persistence service; inspected website candidates cover reading AI/newsletter/affiliate placeholders or interpretation, and the connected calculation/runtime candidates are not commerce. Project-planning status is therefore COMMERCE IMPLEMENTATION = NOT IMPLEMENTED / START FROM ZERO within this defined universe. Do not continue looking for a sixth source unless the owner changes the boundary. This updates planning classification only; it does not establish global Source Authority, select a provider/persistence system, authorize code/schema/Test Register changes, or alter C3's open product decisions.",
+      "evidence_refs": [
+        "Box:2515555580794 Owner UTC service-day boundary disposition (limited scope)",
+        "Box:2515706725948 DR-01 decision-evidence reconciliation; historical register is preserved",
+        "Box:2515747060613 Purchase vs fulfillment semantic finding",
+        "Box:2515757204983 Cap semantic options and test consequences",
+        "Box:2485715303669 Clean Current Set R3 archive; six member SHA-256 values are scoped to this archive",
+        "Box:2491700051951 Constitutional Harmonization Application Record (applied successor materialization)",
+        "Box:2491702950277 Constitutional Harmonization Post-Apply Verification",
+        "Box:2491704535193 Product Constitution v1.6.1 characterized successor",
+        "Box:2491699264134 Implementation Plan v1.3.1 characterized successor",
+        "Box:2504532906216 Normative Stack Index R1; non-authoritative pointer, Technical Contracts v1.1 identity listed",
+        "Box:2492008789300 Current Decision Register R6; later Technical Contracts v1.1 hardened R2 identity",
+        "Box:2515745492938 Daily Cap Normative Source-Lineage Boundary R0",
+        "Box:2515750096004 Normative Source-Lineage Boundary Update R1",
+        "Box:2515659021563 Commerce/Persistence Source-Discovery Finding R0",
+        "Box:2485336117840 raw-intake Test Register v1.5 copy; not established as current official register",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_SOURCE_LINEAGE_RECONCILIATION_R0_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_SOURCE_BOUND_CONTRACT_CROSSWALK_R1_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_PURCHASE_CAP_CONTRACT_CANDIDATE_R1_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_TEST_ORACLE_MAP_CANDIDATE_R0_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_TERMINAL_NONDELIVERY_OWNER_DECISION_BRIEF_R2_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_TEST_REGISTER_BINDING_RECONCILIATION_R0_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_COMMERCE_PERSISTENCE_SOURCE_DISCOVERY_R1_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_SOURCE_POINTER_DISCOVERY_ADDENDUM_R0_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_SOURCE_RECONCILIATION_HANDOFF_R0_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_C3_COMMERCE_FROM_ZERO_IMPLEMENTATION_ROADMAP_R0_2026-10-10.md (commit b95c6e8c53ffcbd27e64fcd2f40953a6c16b2396; non-normative, no implementation authorization)"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "C4",
+      "title": "Paid-market readiness and payment/legal boundaries",
+      "status": "OWNER_DECISION_RECORDED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Separate internal US research baseline from market-specific launch approval and unresolved payment/consumer issues.",
+      "review_summary": "Owner disposition Box 2515620798775 establishes U.S. federal plus relevant state/territorial law as an internal research/policy baseline, not a public U.S.-only position or nationwide paid launch approval. Owner disposition Box 2515610250498 approves U.S.-focused research for Credits/daily cap/remedies, not a state allowlist or definitive Credits legal classification. Paid Checkout Readiness Matrix R0 (Box 2515715498189), U.S. Counsel Intake Pack (Box 2515650508253) and Product/Transaction Fact Schedule (Box 2515660036686) state seller, processor/MoR, final SKU/currency/price/terms, actual commerce persistence and final market scope remain not established, and Regulation E §1005.20 classification remains unresolved. Current official CFPB §1005.20 and Interpretation indicate coverage depends on exact card/code/device structure, specified/denominated amount, reloadability, marketing and exceptions; name 'Credits' or illustrative 4 Credits/USD pricing is insufficient. FTC official guidance identifies FTC Act §45 as broad anti-deception baseline and distinguishes Cooling-Off Rule/off-premises scope and Merchandise Rule/service exclusion. Recommendation: continue CE development and conditional policy/design/test work, but make no paid-checkout readiness claim and do not enable checkout in a jurisdiction until actual transaction facts, applicable-market review, final consumer disclosure/remedy contract, authorized commerce implementation and separate release gates are evidenced. No legal conclusion or test pass is claimed. Bounded disposition recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_C4_R0_2026-10-10.md. The owner-approved U.S. internal-law research baseline and U.S.-focused investigation direction are preserved. No general CE development halt is inferred from counsel unavailability; conversely no Credits legal classification, market-specific paid-checkout readiness, nationwide/state enablement, final seller/processor/SKU/currency, or final remedy conclusion is inferred. Those remain separate pre-paid-launch conditions.",
+      "evidence_refs": [
+        "Box:2515620798775 Owner Disposition U.S. Legal Framework as Internal Policy Baseline R0",
+        "Box:2515610250498 Owner Disposition U.S. Jurisdiction Investigation Direction R0",
+        "Box:2515715498189 Paid Checkout Readiness Matrix R0",
+        "Box:2515650508253 U.S. Counsel Review Intake Pack R0",
+        "Box:2515660036686 Product & Transaction Fact Schedule for U.S. Counsel R0",
+        "Box:2515659021563 Commerce/Persistence Source-Discovery Finding R0",
+        "https://www.consumerfinance.gov/rules-policy/regulations/1005/20/",
+        "https://www.consumerfinance.gov/rules-policy/regulations/1005/interp-20/",
+        "https://www.ftc.gov/legal-library/browse/rules/cooling-period-sales-made-home-or-other-locations",
+        "https://www.ftc.gov/business-guidance/resources/business-guide-ftcs-mail-internet-or-telephone-order-merchandise-rule",
+        "https://uscode.house.gov/view.xhtml?req=%28title%3A15+section%3A45+edition%3Aprelim%29",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_C4_R0_2026-10-10.md",
+        "Box:2515620798775 Owner disposition U.S. internal legal-policy baseline",
+        "Box:2515610250498 Owner disposition U.S.-focused jurisdiction investigation direction",
+        "Box:2515715498189 Paid Checkout Readiness Matrix R0",
+        "Box:2515660036686 Product & Transaction Fact Schedule for Qualified U.S. Counsel R0",
+        "Box:2515730623159 Daily Deep Sky Cap/Remedy Change-Control Packet R4"
+      ],
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_C4_R0_2026-10-10.md",
+      "owner_disposition": "ACCEPT THE BOUNDED RESEARCH/READINESS BOUNDARY ONLY: U.S. federal and relevant state/territorial law is the internal baseline for this research stream; legal counsel is not a blanket blocker on CE development; paid checkout remains not authorized until market and transaction configuration, Credits classification and applicable requirements are sufficiently reviewed. No paid market, seller, processor, SKU, currency, counsel conclusion or remedy semantics are selected by this disposition."
+    },
+    {
+      "id": "D1",
+      "title": "Account identity, trusted devices and recovery",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2491704535193"
+      ],
+      "review_focus": "Verify account ownership, device security, recovery, birth-data versioning and deletion boundaries.",
+      "review_summary": "Product Constitution v1.6.1 §§7–9, Account/Privacy/Commercial v1.7 §§1–6, Privacy Architecture V1 v1.5 and Test Register v1.5 establish a pseudonymous account with username/password/birth date/birth city/recovery mechanism (no mandatory email/real-name/phone/social login), account-owned Personal Sky/profile versions/retained readings/Credits, device as security layer, user-controlled 12-word recovery phrase with no plaintext server storage, server-issued challenge/one-use nonce/server time, max five active trusted devices, passkey preferred, 30-minute default idle re-auth, recovery revokes previous sessions/devices, no alternate/manual support ownership bypass, separate age eligibility + authentication + current user verification, and historical profile-version binding. Test Register specifies SEC-01–12, PRIV-03, PRIV-08/VERS-02, but no test execution was performed here. Normative semantic contract can be preserved; actual deployed account/auth/recovery service is not established in the inspected connected main/A9 source scope, a bounded implementation-source gap. Recommendation: PRESERVE contract, do not invent email/identity/override/device-ownership paths, and verify actual implementation only after its authorized source/worktree identity is identified. Area review closed on 2026-10-10 with bounded CLOSED_PRESERVE disposition: preserve account/trusted-device/recovery contract; deployed service remains NOT_ESTABLISHED in inspected scope.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §§7–9",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§1–6",
+        "Box:2485335589220 Privacy Architecture Minimal V1 v1.5 §§1–3, 8",
+        "Box:2485336117840 Execution Profile & Test Register v1.5 SEC-01–12, PRIV-03, PRIV-08, VERS-02",
+        "Box:2491699264134 Implementation Plan v1.3.1 account/security/migration sections",
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "D2",
+      "title": "Personal Context and data-minimization boundary",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2485319995048",
+        "Box:2485336395859"
+      ],
+      "review_focus": "Preserve persistent Personal Context/free-text exclusion from V1 AI input unless a controlled change reopens it.",
+      "review_summary": "Privacy Architecture Minimal V1 v1.5 §§1–6, 12–15, 18–19; Account/Privacy/Commercial v1.7 §§1, 6–8, 14, 20; and Evidence/AI Output Validation v1.4 §§3–4, 14, 17–18, 25 establish exclusion of persistent Personal Context, raw free-text, account history and prior reading from the V1 AI input path. Current-session categories remain ephemeral. Retained paid-reading content is allowed for same-reading reread under entitlement but may not be used as context/training/personalization for a new reading. Account deletion purges personal/reading records under lifecycle, retaining only legitimately required minimal financial records with purpose limitation and unnecessary linkage severance; birth correction creates a new profile version and does not rewrite old reading. Owner dispositions Box 2515505499720 and 2515528652667 confirm preserve current exclusion and explicitly defer future cross-reading continuity until owner reopens it; no active continuity design should proceed now. Test Register specifies PRIV-01–08/PRIV-09–13 and VERS-02, but no tests executed here; actual product runtime conformance remains unverified. Recommendation: CLOSE / PRESERVE V1 boundary; no data-path changes.",
+      "evidence_refs": [
+        "Box:2485335589220 Privacy Architecture Minimal V1 v1.5 §§1–6, 12–15, 18–19",
+        "Box:2485319995048 Account, Privacy & Commercial Specification v1.7 §§1, 6–8, 14, 20",
+        "Box:2485336395859 Evidence, AI & Output Validation v1.4 §§3–4, 14, 17–18, 25",
+        "Box:2515505499720 Owner Disposition Account History / Persistent Personal Context and Voice Boundary R0",
+        "Box:2515528652667 Owner Disposition Future Deep Sky Cross-Reading Continuity Deferred",
+        "Box:2485336117840 Test Register v1.5 PRIV-01–08, PRIV-09–13, VERS-02",
+        "Box:2515488894918 Source-First Recommendation Protocol"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "D3",
+      "title": "Share Card retirement from V1",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Preserve current V1 removal and historical artifacts; do not reopen as an active feature decision.",
+      "review_summary": "Explicit owner decision CE PRODUCT DECISION — SHARE CARD RETIRED (Box 2510397781891) states Share Card is retired, not V1, not to be implemented/activated/maintained as an acquisition mechanism. Current Product Constitution v1.6.1 §13 and Business Model v1.5 §§2, 3, 14–15 exclude public sharing/social-sharing/sharing rewards/public UGC. Global Reconciliation R5 (Box 2510417318335) corroborates G-022 CLOSED and emphasizes history does not grant authority. Recommendation/disposition: CLOSE / PRESERVE. Keep historical artifacts intact as historical evidence; no public-share URL, social path, reward or acquisition workflow in V1. No implementation/cleanup/test was done by this review.",
+      "evidence_refs": [
+        "Box:2510397781891 Owner Share Card Retirement Decision",
+        "Box:2510417318335 Global Reconciliation R5 (governance support)",
+        "Box:2491704535193 Product Constitution v1.6.1 §13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2, 3, 14–15",
+        "Box:2515023681086 Source-Bound Matrix R0"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "D4",
+      "title": "Locale, currency and market assumptions",
+      "status": "RECOMMENDATION_READY",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2485319995048",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify prior owner decisions; do not infer English-only, en-US-only, USD-only or US-first from examples.",
+      "review_summary": "Owner U.S. legal-baseline disposition Box 2515620798775 establishes a U.S. internal legal-policy/research baseline but explicitly does not establish U.S.-exclusive positioning, governing law for every transaction, state allowlist, nationwide paid checkout, currency or launch market. Zero-Point Human Decision Register R0 Box 2514894635417 has DR-04 initial jurisdiction, DR-05 locale and DR-06 currency/price as NOT_RECORDED in that working register; the record itself is non-authoritative, so this is a scoped planning gap, not universal proof of no decision anywhere. Business Model v1.5 treats 4 Credits = US$2.99 as configurable illustrative value. No inspected characterized source establishes English-only/en-US-only, USD-only or U.S.-first launch policy. Recommendation: keep initial paid-enabled jurisdiction, UI locale, and currency/SKU price as separate owner choices ordered by dependency; select and review the actual market first, then configure locale and prices explicitly and verify checkout/legal controls. No code, checkout, pricing or normative source changed. Consolidated source-bound remaining-area review R0 adds up-to-date provider eligibility evidence checked 2026-10-10. Stripe lists Indonesia as Preview/invite-only; Stripe's Indonesia policy says IDR settlement and no cross-border/international transactions for Indonesia-located accounts. Stripe U.S. business account has actual entity/physical-presence verification requirements. Its restricted-business policy notes seller-maintained stored credits may be limited/reviewed in some cases. Paddle's official AUP expressly prohibits digital services associated with pseudo-science including horoscopes and virtual currency/stored value including store credit, vouchers/gift cards, so it must not be assumed suitable for CE's current product/Credits model absent explicit written eligibility confirmation. None of these sources by itself establishes a market decision; seller entity remains unset. Recommended sequence is seller jurisdiction → provider eligibility for accurately described CE/Credits → supported paid-customer market/allowlist → UI locale → price/currency/SKU. No provider has been approved and no checkout is authorized.",
+      "evidence_refs": [
+        "Box:2515620798775 Owner Disposition U.S. Legal Framework as Internal Policy Baseline",
+        "Box:2514894635417 Zero-Point Human Decision Register R0, DR-04/DR-05/DR-06",
+        "Box:2485331476456 Business Model Minimal V1 v1.5",
+        "Box:2491704535193 Product Constitution v1.6.1",
+        "Box:2515715498189 Paid Checkout Readiness Matrix R0",
+        "Box:2515023681086 Source-Bound Matrix R0",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_REMAINING_FOUR_AREA_RECONCILIATION_R0_2026-10-10.md",
+        "Web:https://stripe.com/global (official availability; Indonesia Preview / U.S. listing)",
+        "Web:https://support.stripe.com/questions/requirements-to-open-a-stripe-account-in-indonesia?locale=en-GB",
+        "Web:https://support.stripe.com/questions/supported-payment-methods-currencies-and-businesses-for-stripe-accounts-in-indonesia",
+        "Web:https://support.stripe.com/questions/requirements-for-having-a-us-stripe-account?locale=en-GB",
+        "Web:https://stripe.com/legal/restricted-businesses?tp=1",
+        "Web:https://www.paddle.com/help/start/intro-to-paddle/what-am-i-not-allowed-to-sell-on-paddle"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "E1",
+      "title": "Normative stack, source lineage and document metadata",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491702000320",
+        "Box:2491699792103",
+        "Box:2491699264134",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Verify exact source identity, hierarchy, supersession and bounded metadata discrepancies.",
+      "review_summary": "Normative Stack Index/Manifest R1 are non-authoritative pointers identifying Product Constitution v1.6.1, Calculation v1.9, Technical Contracts v1.1, Implementation Plan v1.3.1, Execution Profile v1.3/rev4 and Data Lock rev4. Fresh byte audit on 2026-10-10 materialized Clean Current Set R3 from the ChatGPT Library and verified exact outer identity against Box boundary: size 2,654,872 bytes, SHA-1 58f8c3dcccc0ccb2e79a79ddd46ab0014c2783d6, SHA-256 d9c2f4abbe0a482e982488d5d2e332202c0c0dc8fceca3b5faaceb3d2c4a8abc, ZIP test PASS, and 72/72 internal SHA256SUMS entries match. Seven current-characterized document copies (Calculation Constitution v1.9, Signal Engine Core v1.4, Interpretive Canon v1.2, Evidence/AI Output Validation v1.4, Account/Privacy/Commercial v1.7, Business Model v1.5, Privacy Architecture v1.5) are exact member matches by SHA-1+size. Product Constitution v1.6.1, Implementation Plan v1.3.1 and Technical Contracts v1.1 are different bytes from archive v1.6/1.3/1.0 members; this is documented successor materialization per Application Record Box 2491700051951 and Post-Apply Verification Box 2491702950277, which preserve historical bytes. Execution Profile v1.3/rev4 is a separate successor artifact, not a member of R3. Test Register v1.5 is not in R3 and is expressly excluded as legacy in EXCLUDED_SUPERSEDED_FILES_R3.md; an old document index still references it, creating candidate finding R3-PKG-INDEX-001. Current CE behavior-test oracle is NOT_ESTABLISHED within the characterized current pointer set. NORM-META-001/002 remain OPEN. Area disposition closes only the preserve/hold decision; it does not close these findings, establish semantic authority, or authorize normative redlines. No normative artifact changed.",
+      "evidence_refs": [
+        "Box:2504532906216 Normative Stack Index R1",
+        "Box:2504536826366 Normative Stack Manifest R1",
+        "Box:2504532765287 Normative Stack Metadata Audit R1",
+        "Box:2514999615917 Source-First Findings R2",
+        "Box:2514994691354 Source-Pointer Reconciliation R3",
+        "Box:2488649984668 Box Governance Baseline",
+        "Box:2488628002810 Box Current Read First",
+        "Box:2515750096004 Source-Lineage Update R1",
+        "Box:2485715303669 governing archive; exact outer identity and 72/72 internal SHA256 entries verified 2026-10-10",
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md",
+        "Box:2485721889298 Current Governing Boundary",
+        "Box:2491700051951 Constitutional Harmonization Application Record — successor materialization",
+        "Box:2491702950277 Constitutional Harmonization Post-Apply Verification",
+        "GitHub:governance/candidates/CE_PRE_A10_GOVERNING_ARCHIVE_MEMBER_IDENTITY_AUDIT_R0_2026-10-10.md"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "E2",
+      "title": "Autonomous operating mandate and delegated authority",
+      "status": "OWNER_DECISION_RECORDED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2515488894918",
+        "Box:2491704535193",
+        "Box:2491699264134"
+      ],
+      "review_focus": "Reconcile mandate with current governance; distinguish autonomous work from policy/authority transitions.",
+      "review_summary": "Owner explicitly delegated broad operating autonomy for research, diagnostics, candidate implementation, testing, documentation and routine follow-through while requiring CE principles and owner discussion for material changes. Source-First Recommendation Protocol Box 2515488894918 is a non-normative working method requiring source-first review, explicit evidence classifications, preferred recommendation and portable records. Candidate mandate and pre-A10 plan/register/validator are on branch governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09 and PR #27 (DRAFT/DO NOT MERGE); they have no authority/normative effect. 21-area register is populated with source refs; validator/test sources were executed by GitHub Actions in runs #54 and #66: the validator/register-integrity job passed 14 unit tests (OK), while the separate strict completion gate exited 2 as intended because ten areas remain incomplete. The validator test pass does not establish adoption of this mandate or make its workflow a required main-branch check. Daily scheduled CE Autonomous Review task was created; this is a scheduled task, not evidence of a continuous agent backend. A9 provenance records a live 2026-10-08 observation that main was protected with six required platform checks; current settings were not freshly queried, and the new pre-A10 validator is not among the six recorded required checks. Complete repository ruleset/branch-protection state remains not freshly re-verified through available connected operations; 2 guessed workflow file paths returned 404, not proof all workflows are absent. Recommendation: stage autonomy—read-only/source reconciliation first, isolated candidate engineering plus independently verified tests next, then pre-authorized low-risk automation with least privilege/logging/rollback; keep all semantic/authority/production changes behind their existing governance boundaries. Formal mandate adoption and always-running backend remain NOT ESTABLISHED. A later read-only static structural revalidation parsed the exact current register blob 303e19bb160c948bf25d7c6eb3aaeaeca7dd5f21 and found zero structural errors across its 23 fixed IDs, control flags, allowed statuses, owner-disposition requirements, source refs and completed-status evidence. Portable report: CE_PRE_A10_CURRENT_REGISTER_STATIC_REVALIDATION_R0_2026-10-10.md. This is not execution of the project Python validator, unit suite or CI, and it does not adopt the mandate or make its workflow a required main-branch check. The latest branch head still has no fresh Actions result confirmed by the connected lookup. Owner disposition recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md: approve the autonomy direction and source-first completeness work, with owner discussion required before treating new material principles or protected-boundary changes as approved. This closes only the E2 review disposition; the operating mandate remains a non-authoritative candidate, and a persistent runner, continuous execution, implementation and corresponding proof are not established. No merge, A10, Runtime Adoption, production authorization or SEAL is authorized by this decision.",
+      "evidence_refs": [
+        "Box:2515488894918 Source-First Recommendation Protocol",
+        "Box:2491704535193 Product Constitution v1.6.1",
+        "Box:2491699264134 Implementation Plan v1.3.1",
+        "GitHub:PR-27 draft autonomy mandate",
+        "GitHub:governance/candidates/CE_AUTONOMOUS_OPERATING_MANDATE_CANDIDATE_R0_2026-10-09.md",
+        "GitHub:governance/candidates/CE_PRE_A10_ZERO_POINT_AREA_REVIEW_PLAN_R0_2026-10-09.md",
+        "GitHub:governance/candidates/CE_PRE_A10_AREA_REGISTER_R0_2026-10-09.json",
+        "GitHub:scripts/governance/pre_a10_area_gate.py (test source not executed)",
+        "GitHub:scripts/governance/test_pre_a10_area_gate.py (test source not executed)",
+        "GitHub:Actions-run-37964115953 run #66 — validator job 14 unit tests OK; strict completion gate blocked with ten areas incomplete",
+        "GitHub:governance/candidates/CE_PRE_A10_REPOSITORY_GOVERNANCE_OBSERVATION_RECONCILIATION_R0_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_CURRENT_REGISTER_STATIC_REVALIDATION_R0_2026-10-10.md — current 23-ID register blob parsed with separate read-only structural check, zero errors; explicitly not CI/unit-test execution",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md"
+      ],
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md",
+      "owner_disposition": "APPROVE_DIRECTION_ONLY: broaden autonomous source-first research, diagnosis, isolated candidate engineering, tests, evidence, and routine follow-through; discuss novel material principles/protected boundaries with owner. Formal mandate adoption, persistent runner, automatic promotion, Runtime Adoption, production, and SEAL remain unestablished/not authorized."
+    },
+    {
+      "id": "E3",
+      "title": "Independent testing, expected-value oracle and release controls",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2485336984594",
+        "Box:2491699792103",
+        "Box:2491702000320",
+        "Box:2485336117840"
+      ],
+      "review_focus": "Check candidate identity, oracle validity, CI enforcement, independent verification and rollback.",
+      "review_summary": "Preserve independent-oracle/reproducibility controls and strict separation between tests passing and release authority. Exact A9 HEAD c8dab3542d3d4725cf591630c07f76366f7949d0 has actual CE R0 Full Boundary CI run #141 and Remediation CI run #145; each reports 261 tests OK on Ubuntu, Windows and macOS. A9 Trusted Build run #25 completed reproducibility steps; separate owner/governance records establish Source Authority and formal Trusted Build for that exact candidate only. Additionally, the historical B8 cumulative archive was freshly materialized and verified locally on 2026-10-10: 15,563,329 bytes; SHA-1 4b1b45134d22936eb2b2cf45c115b9f7a1492b1e; SHA-256 5c245f91d7efed1b32aba6f89508252959f58b5df5052ef892fb51510d05a61b; ZIP CRC PASS; 666 internal checksum entries and 667 package-manifest entries verified; embedded B7 exact SHA-256 9f8ec942b093d8b67b37529170f110d4217d48404255a70416f17f08049ceb67; B7's 655 checksum entries/656 manifest entries verified; direct B7 verifier PASS with 31 tests, plus separate 9/9 B7 golden tests; B8 verifier PASS with 43 tests. B7 is a real, partially independent historical oracle; its strongest reusable functions cover Gregorian Julian Day, circular wrapping/branch selection, geometry/orb and midpoint lattice. However its solver/timezone layers are not fully independent/current-bound, its DST tests rely on host ZoneInfo rather than policy-bound TZIF, and its astronomical runtime still fail-closes because canonical .se1 inputs and SWIEPH runtime proof are missing. The 2026-10-04 R4 bound-coverage mismatch matrix is explicitly bound to older HEAD 77cc615be55e0eaec446ad53913865d34c1cc9f6; directly inspected later A9 HEAD has corrected WIN-02 one-segment/three-events and WIN-03 tangential-contact/no-segment assertions. The A9 28-ID register remains CURRENT_IMPLEMENTATION_CANDIDATE and declares authoritative_coverage/runtime_adoption/full_runtime_coverage NOT_ESTABLISHED. Clean Set R3 excludes the legacy v1.5 full Execution Profile/Test Register even though an old package document index still references it (candidate finding R3-PKG-INDEX-001); current Stack Index/Manifest do not bind a full active successor register. The active R4 Gregorian-only historical-calendar matrix (Box 2491701673391) is a scoped CAL-G/CAL-N matrix, not a substitute for the full Calculation Core/product/security/commercial test register. Thus full current normative fixture-identical coverage and an independently qualified, source-bound oracle across the whole current Rev.4 contract remain NOT_ESTABLISHED, although real candidate test suites and historical oracle artifacts exist. A9 candidate note says WIN-02/WIN-03/architecture choices are owner-approved but the primary hash-bound disposition for those specific items was not located in the inspected set; do not silently promote that note to the primary decision record. Main was observed protected with six required CE R0 platform checks on 2026-10-08; current settings were not freshly queried, and the pre-A10 validator is not among those six recorded checks. Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/SEAL remain unestablished/unauthorized. CLOSED_PRESERVE applies only to the review/control disposition, not closure of those technical findings. New candidate-only source crosswalk R0 now binds all 28 current A9 named-rebinding IDs to exact test files/methods at A9 HEAD c8dab354...; it preserves the distinction between an executable surface mapping and an authoritative complete register/oracle. The crosswalk identifies a traceability inconsistency: TIME-02/TIME-03 are method-name-derived but lack their own adjacent explicit comment markers, while an extra ephemeris integrity method falls within the EPH-01 comment scope without its own stable ID. Supplemental independent-oracle tests include explicit toy expected values, but the window checks use the candidate solver and TZIF checks use the candidate parser; full independent solver/parser/oracle coverage is not established. A9 remains frozen; no code was changed. This added mapping sharpens the open gaps but does not close authoritative coverage, complete cross-domain oracle, full runtime coverage or test-register lineage findings. Direct source-to-code reconciliation is now recorded in CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md. It binds the normative output boundary to exact A9 blobs and confirms that the verified semantic checker deliberately returns no implementation and the full release path fails closed when it is unavailable; this does not establish a populated approved Canon registry or production release path, and changes no disposition.",
+      "evidence_refs": [
+        "Box:2485336984594 Calculation Constitution v1.9 §36",
+        "Box:2491699792103 Technical Contracts v1.1 §§26.2–26.4",
+        "Box:2491699264134 Implementation Plan v1.3.1 §§7.6/Phases 3,12,18–19",
+        "Box:2514341553097 A9 Runtime / Trusted-Build Reconciliation R2",
+        "Box:2513654771321 A9 Trusted Build Formal Authorization",
+        "Box:2513607899386 A9 GitHub Governance Observation R2",
+        "GitHub:PR-26 open draft DO NOT MERGE",
+        "GitHub:governance/candidates/scripts/governance/pre_a10_area_gate.py (not executed)",
+        "GitHub:governance/candidates/scripts/governance/test_pre_a10_area_gate.py (not executed)",
+        "GitHub:PR-27 autonomous mandate candidate",
+        "GitHub:governance/candidates/CE_PRE_A10_AUTONOMOUS_AREA_CLOSURE_NOTE_R0_2026-10-10.md",
+        "GitHub:Actions-run-37958688461 (validator job success; 14 tests OK; strict completeness job blocked)",
+        "Box:2485336117840 legacy Test Register v1.5; not included in Clean Current Set R3 and not established as current authoritative oracle",
+        "Box:2485715303669 Clean Current Set R3 internal members 00_START_HERE/EXCLUDED_SUPERSEDED_FILES_R3.md and 01_NORMATIVE/00_DOCUMENT_INDEX.md; old index reference conflicts with explicit legacy exclusion",
+        "Box:2504536826366 Normative Stack Manifest R1 — does not bind a current successor test register",
+        "GitHub:Actions-run-37960238191 — validator success/14 tests and strict completeness gate blocked",
+        "GitHub:governance/candidates/CE_PRE_A10_GOVERNING_ARCHIVE_MEMBER_IDENTITY_AUDIT_R0_2026-10-10.md",
+        "GitHub:Actions-run-37765045306 Full Boundary CI on exact A9 c8dab354; 261 tests OK on Ubuntu/Windows/macOS",
+        "GitHub:Actions-run-37765045314 Remediation CI on exact A9 c8dab354; 261 tests OK on Ubuntu/Windows/macOS",
+        "GitHub:Actions-run-37765045328 Trusted Build A9 run #25 on exact c8dab354",
+        "GitHub:PR-26 manifests/convergent_test_register_r3.json; CURRENT_IMPLEMENTATION_CANDIDATE; authoritative_coverage NOT_ESTABLISHED",
+        "GitHub:governance/candidates/CE_PRE_A10_TEST_REGISTER_ORACLE_LINEAGE_AUDIT_R0_2026-10-10.md",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_E3_TEST_ORACLE_REPRODUCIBILITY_R1_2026-10-10.md",
+        "GitHub:Actions-run-37961645479 register validator job success/14 tests; separate strict completion gate exits 2 with ten areas incomplete",
+        "Library:CE_V1_CURRENT_28_TEST_SEMANTIC_REBINDING_AUDIT_R1_2026-10-04.md; historical candidate head 77cc615 only",
+        "GitHub:A9 provenance/github_platform_governance_observation_r2.json blob a7ea88234ce9958bb19efa7f7a772db24fd3ffce; live observation 2026-10-08 protected main/six required checks",
+        "GitHub:governance/candidates/CE_PRE_A10_REPOSITORY_GOVERNANCE_OBSERVATION_RECONCILIATION_R0_2026-10-10.md",
+        "Library: exact B8 archive materialized 2026-10-10; SHA-256 5c245f91d7efed1b32aba6f89508252959f58b5df5052ef892fb51510d05a61b; independent local ZIP/integrity verification",
+        "Library: direct extraction/reverification of embedded B7 exact SHA-256 9f8ec942b093d8b67b37529170f110d4217d48404255a70416f17f08049ceb67; 31 tests PASS; test_b7_golden.py 9 tests PASS",
+        "Library: direct exact B8 verifier execution from fresh archive extraction; 43 tests PASS; fail-closed human/dual approval markers preserved",
+        "Box:2491701673391 active Gregorian-only historical-calendar matrix R4; scoped CAL-G/CAL-N tests only",
+        "Library: 07_EXECUTION_PROFILE_TEST_REGISTER(3).md size 27592 SHA-256 97a977feb051999dcefec7ee9322c5980ba73ed961608bc021a4b889ed659de0; legacy v1.5, not bound by current characterized Stack Index/Manifest",
+        "Box:2485323796025 and Box:2485336117840 full test register v1.5 copies are under 99_LOCAL_INVENTORY_INTAKE/00_RAW_UNSORTED; exact SHA-1 973749ba88112a7b4202c807bcc7635d286a5ea9; excluded from Clean Set R3 active authority",
+        "GitHub:governance/candidates/CE_PRE_A10_TEST_REGISTER_ORACLE_LINEAGE_AUDIT_R1_2026-10-10.md",
+        "GitHub:governance/candidates/CE_PRE_A10_A9_28_ID_TEST_SURFACE_CROSSWALK_R0_2026-10-10.md — exact 28-ID to file/method binding at A9 c8dab354; notes TIME-02/TIME-03 label consistency and limitations of independent oracle scope",
+        "GitHub:A9 tests/test_planned_core_controls_r1.py blob 3924453239e09e85c7250e6311eb40e6177c40bc",
+        "GitHub:A9 tests/test_retry_and_range_r1.py blob 1febd3a934ad4e49b1774ec3ca90933e123f5983",
+        "GitHub:A9 tests/test_core_golden_r1.py blob 201640bd652af6a67e8b4d102ba61348cff3f4cc",
+        "GitHub:A9 tests/test_independent_oracle_current_r1.py blob 5919cfc606c8378cb140c555d30909cba68e706a",
+        "GitHub:governance/candidates/CE_PRE_A10_CANON_CLAIM_LANGUAGE_RELEASE_BOUNDARY_RECONCILIATION_R0_2026-10-10.md — source-to-code matrix for Product Constitution §§4.2/5/11/15, Canon v1.2 §§4–6/13–20, Evidence-AI v1.4 §§3–12/18–25 and exact A9 blobs; confirms absent verified semantic checker causes fail-closed release and does not authorize output.",
+        "GitHub:A9 src/ce/output/validation.py blob 7474c55c7323dc446e4799b3db4f6dc16a1b75a6",
+        "GitHub:A9 src/ce/output/semantic.py blob b33e37111770e55521c50f01ee6c7b699b5d9c61",
+        "GitHub:A9 src/ce/claim/authorization.py blob 59a88041cbf39c86faeffdef65a50dcb866b93d5",
+        "GitHub:A9 tests/test_ce_r0_full_boundary_r1.py blob c39b2d5aa55edcc0a77fa6451b2d911dc12ab59d — release intentionally rejects when semantic verifier unavailable"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "E4",
+      "title": "A9/A10 and current runtime authority state",
+      "status": "DEFERRED_BY_EXPLICIT_DISPOSITION",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2514341553097",
+        "Box:2514347022237",
+        "Box:2514357714954",
+        "GitHub:PR-26"
+      ],
+      "review_focus": "Keep A9 and A10 scopes separate; do not treat Trusted Build as Runtime Adoption or production authorization.",
+      "review_summary": "A9 R2 (Box 2514341553097) and formal authorization record (Box 2513654771321) establish Source Authority and formal Trusted Build only for exact candidate c8dab3542d3d4725cf591630c07f76366f7949d0 bound to source-tree 1a4004…, control-plane 0bc4… and lock ef8ace…. Dual full-range capture parity PASS is 201/201 shards within that capture scope, not full runtime coverage. Runtime Adoption, full runtime coverage, TZIF runtime identity, production/deployment/merge authorization and SEAL remain NOT ESTABLISHED/NOT AUTHORIZED; PR #26 remains OPEN/DRAFT/DO NOT MERGE. A10 R0 is DESIGN_ONLY and R1 PRE-IMPLEMENTATION; A9 is frozen. A10 requires a separate candidate, receipt validation, independent runtime identity verification, and a fresh human Runtime Adoption disposition. Canonical semantics for the A10 trusted-build digest field are explicitly unresolved and cannot be guessed. Owner-directed pre-A10 area review must finish before A10 proceeds beyond read-only boundary inspection. No A10 implementation or authority change occurred. Explicit bounded deferral recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md based on the owner's approved direction to complete the source-first/pre-launch review before advancing and to discuss material protected principles. A10 implementation/Runtime Adoption work is deferred until this review is complete and its separate governance conditions are admissible. The canonical trusted_build_digest meaning remains unresolved and must not be guessed; it is not decided by this deferral.",
+      "evidence_refs": [
+        "Box:2514341553097 A9 Runtime/Trusted-Build Reconciliation R2",
+        "Box:2513654771321 A9 Trusted Build Formal Authorization",
+        "Box:2513664076345 A9 Runtime Adoption Capture Handoff",
+        "Box:2514347022237 A10 Runtime Adoption Boundary Candidate R0",
+        "Box:2514357714954 A10 Implementation Change Specification R1",
+        "GitHub:PR-26 OPEN/DRAFT/DO NOT MERGE",
+        "GitHub:governance/candidates/CE_ZERO_POINT_E4_CANDIDATE_STATE_R0_2026-10-09.md",
+        "GitHub:governance/candidates/CE_PRE_A10_ZERO_POINT_AREA_REVIEW_PLAN_R0_2026-10-09.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md",
+        "Box:2514341553097 A9 Runtime/Trusted-Build Reconciliation R2",
+        "Box:2514347022237 A10 Runtime Adoption Boundary Candidate R0",
+        "Box:2514357714954 A10 Implementation Change Specification R1"
+      ],
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_A4_B3_E4_R0_2026-10-10.md",
+      "owner_disposition": "DEFER A10 IMPLEMENTATION AND RUNTIME-ADOPTION DECISION UNTIL PRE-A10 REVIEW IS COMPLETE AND A SEPARATE GOVERNANCE PATH IS ADMISSIBLE. Keep trusted_build_digest semantics unresolved for a future source-backed owner decision; do not guess. No Runtime Adoption, production/deployment, merge, or SEAL authorized."
+    },
+    {
+      "id": "F1",
+      "title": "Other previously discussed areas discovered during review",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2515742713865",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Add any prior-discussion topic uncovered by source search; do not treat this list as permission to omit unlisted areas.",
+      "review_summary": "Current Product Constitution v1.6.1 §13 and Business Model Minimal V1 v1.5 §§2, 3, 11, 14–15 explicitly exclude public/social sharing and rewards, affiliate, advertising, subscription/recurring billing, public UGC, comments/messaging, relationship matching/profiles, third-party personal profiles/calculations, persistent free text/Personal Context and user-level behavioral profiles. Account/Privacy specs reinforce One Account = One Personal Sky and no support/manual ownership-recovery override. Credits-only monetization is preserve; sample US$2.99 price does not decide currency/market. Cross-cutting extra items from this pass have dedicated F2 (birth time/Gregorian/TZDB) and F3 (relationship/third-party exclusions). This is a bounded scope inventory, not a universal completeness/runtime claim. No source/code/schema/Test Register changed.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2,3,11,14–15",
+        "Box:2485319995048 Account Privacy Commercial v1.7",
+        "Box:2485335589220 Privacy Architecture Minimal V1 v1.5",
+        "Box:2510397781891 Share Card retirement",
+        "Box:2515528652667 cross-reading continuity deferred",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_F1_CROSS_CUTTING_V1_SCOPE_LOCKS_R0_2026-10-09.md"
+      ],
+      "disposition_ref": "",
+      "owner_disposition": ""
+    },
+    {
+      "id": "F2",
+      "title": "Birth-time input, Gregorian policy and pinned timezone-data release",
+      "status": "OWNER_DECISION_RECORDED",
+      "owner_decision_required": true,
+      "source_refs": [
+        "Box:2491386800755",
+        "Box:2491385407120",
+        "Box:2485336984594",
+        "Box:2491702000320",
+        "Web:https://www.iana.org/time-zones/releases/2026e"
+      ],
+      "review_focus": "Preserve the owner-recorded policy that CE V1 does not use birth-time input and Gregorian-only is the sole supported calendar; inspect the technical zero-birth interval and historical timezone conversion separately. IANA 2026e supersedes external latest status of pinned 2026d, but no automatic in-place update is authorized; identify affected behavior and required profile/candidate verification.",
+      "review_summary": "Product Constitution v1.6.1 §15: birth-time user input NOT_USED, Gregorian-only; engine uses ZERO_BIRTH_TIME_INTERVAL and does not substitute noon/midnight/arbitrary hour. Calculation Constitution v1.9 and Execution Profile v1.3/rev4 pin IANA 2026d, require bundled/versioned TZDB and prohibit in-place updates. Official IANA 2026e release (2026-09-29) documents Manitoba permanent UTC−05 modeled from 2026-11-01 02:00 and Ireland's 1925 rollback correction to 1925-09-20. Exact upstream tagged-source reconciliation R1 now binds this to specific Git blob identities: northamerica changed from 2026d blob e5f858272c8b9a9faa0953b7fe01252c140f54fb to 2026e blob e3a4bd6d5332b901961381432a6f53cc95ce530f; europe changed from 0dc31d9d85e62bd252aabf8a1ff4b7a67de39dca to c29d1f53db337aa9b5fffe3911bf93136b7cec61; backward alias source is identical at both tags (blob 2971d038b9e615111c5ce077acd005315c222d07). These source-level facts do not prove the compiled CE bundle's exact alias membership or full output delta. A9 candidate source pins the 2026d bundle at SHA-256 f3edd74a1bb77d092d6c2ed3eead8ebea9657954f5bb30b0ac031a08a5eed942, 597 entries, manifest SHA-256 a12881024bee3b801d63b0d9cb74118b6329512f63020f36c42412de1e0a6205; TZIF authority remains NOT_ESTABLISHED and upgrade NOT_ADOPTED. Official archives could not be downloaded in the present container, so no local archive checksum/signature verification, same-toolchain compilation, full 597-entry path/hash/transition comparison, exact UTC fixture generation, or affected CE regression is claimed. Preserve 2026d and its historical capture identity; any upgrade requires a separate candidate profile, complete diff, independently reviewed fixtures and later authority disposition. Owner disposition recorded 2026-10-10 in CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md: evaluate IANA 2026e as a separate candidate before launch rather than defer evaluation until after launch. Preserve the current 2026d profile, bundle and historical captures until full archive/package verification, same-toolchain build, complete 597-entry path/hash/alias/transition comparison, precise affected fixtures, downstream regression and independent review are complete. The owner approved evaluation—not adoption; 2026e remains NOT_ADOPTED and separate Runtime Adoption/production gates remain unchanged. The review disposition is recorded, while technical qualification is still an open engineering task.",
+      "evidence_refs": [
+        "Box:2491386800755 Birth-Time Input Policy Correction R4",
+        "Box:2491385407120 Historical Calendar Policy Decision R3",
+        "Box:2491704535193 Product Constitution v1.6.1 §15",
+        "Box:2485336984594 Calculation Constitution v1.9",
+        "Box:2491702000320 Execution Profile v1.3/rev4",
+        "https://www.iana.org/time-zones/releases/2026e",
+        "https://www.iana.org/time-zones/releases",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_F2_BIRTH_TIME_CALENDAR_TZDB_R0_2026-10-09.md",
+        "GitHub:A9 profiles/tzif_rev4_candidate.json blob d7e69cc9d161d422bc29e7e499ac4491335288da; 2026d bundle 597 entries, SHA-256 f3edd74a1bb77d092d6c2ed3eead8ebea9657954f5bb30b0ac031a08a5eed942",
+        "GitHub:A9 provenance/tzif_dependency_qualification_r1.json blob 9affc8feb09e011673cae4487a01c0763aa2b4d7; external latest 2026e, not adopted, no silent upgrade",
+        "GitHub:governance/candidates/CE_PRE_A10_TZDB_2026D_TO_2026E_IMPACT_QUALIFICATION_R0_2026-10-10.md",
+        "IANA:https://www.iana.org/time-zones/releases/2026e — Manitoba and Ireland release changes",
+        "IANA:https://lists.iana.org/hyperkitty/list/tz%40iana.org/thread/VXIA4AU73OQL3OZ3ZBZHWIASIIVBGUJV/ — upstream commit/date and 2026e archive SHA-512",
+        "GitHub:upstream eggert/tz tag 2026d northamerica blob e5f858272c8b9a9faa0953b7fe01252c140f54fb",
+        "GitHub:upstream eggert/tz tag 2026e northamerica blob e3a4bd6d5332b901961381432a6f53cc95ce530f",
+        "GitHub:upstream eggert/tz tag 2026d europe blob 0dc31d9d85e62bd252aabf8a1ff4b7a67de39dca",
+        "GitHub:upstream eggert/tz tag 2026e europe blob c29d1f53db337aa9b5fffe3911bf93136b7cec61",
+        "GitHub:upstream eggert/tz backward source identical at 2026d/2026e blob 2971d038b9e615111c5ce077acd005315c222d07",
+        "GitHub:governance/candidates/CE_PRE_A10_TZDB_SOURCE_TAG_DELTA_RECONCILIATION_R1_2026-10-10.md (candidate source-level reconciliation; no compiled bundle claim)",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_OWNER_DECISION_AUTONOMOUS_EVOLUTION_AND_CHANGE_CONTROL_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TZDB_2026D_TO_2026E_IMPACT_QUALIFICATION_R0_2026-10-10.md",
+        "GitHub:https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_TZDB_SOURCE_TAG_DELTA_RECONCILIATION_R1_2026-10-10.md"
+      ],
+      "disposition_ref": "https://github.com/ConstellationsEcliptic/Constellations-Ecliptic/blob/governance/candidates/ce-autonomous-evolution-charter-r0-2026-10-09/governance/candidates/CE_PRE_A10_OWNER_DISPOSITION_E2_F2_R0_2026-10-10.md",
+      "owner_disposition": "APPROVE_PRE_LAUNCH_EVALUATION_OF_IANA_2026E_AS_A_SEPARATE_CANDIDATE; preserve 2026d profile/bundle/captures until official package identity, same-toolchain compilation, complete 597-entry/alias/transition comparison, exact fixtures, downstream regression, and independent review pass. This is not Runtime Adoption; 2026e remains NOT_ADOPTED."
+    },
+    {
+      "id": "F3",
+      "title": "Relationship matching, relationship profiles and third-party personal calculations",
+      "status": "CLOSED_PRESERVE",
+      "owner_decision_required": false,
+      "source_refs": [
+        "Box:2491704535193 §13",
+        "Box:2485331476456 §§2,14-15",
+        "Box:2485319995048 §8",
+        "Box:2515023681086"
+      ],
+      "review_focus": "Reconcile prior relationship-profile ideas/historical drafts against current V1 hard exclusions; preserve the exclusion unless explicit controlled change reopens it. Third-party birth data/profile must not be inferred from the existence of two accounts or marketing narratives.",
+      "review_summary": "Current Product Constitution v1.6.1 §13, Business Model v1.5 §§2/14–15 and Account/Privacy/Commercial v1.7 §8 exclude relationship matching/profiles, third-party personal profiles and third-party birth calculations. A Look Back categorical response such as Relationships remains only current-session user-reported context and does not authorize another person's birth data, compatibility scoring, cross-account history linking or persistent relationship memory. Preserve historical artifacts; do not reopen feature design absent a new explicit scope decision. No code/schema/Test Register change or tests executed.",
+      "evidence_refs": [
+        "Box:2491704535193 Product Constitution v1.6.1 §13",
+        "Box:2485331476456 Business Model Minimal V1 v1.5 §§2,14–15",
+        "Box:2485319995048 Account Privacy Commercial v1.7 §8",
+        "Box:2515023681086 Source-Bound Matrix R0",
+        "GitHub:governance/candidates/CE_ZERO_POINT_AREA_F3_RELATIONSHIP_AND_THIRD_PARTY_EXCLUSIONS_R0_2026-10-09.md"
+      ]
+    }
+  ]
+}
