@@ -148,5 +148,15 @@ class PortableSourceIdentityVerifierTests(unittest.TestCase):
             require("Git bundle SHA-256 does not match external pin" in result.stdout, f"unexpected rejection: {result.stdout}")
 
 
+    def test_executed_fixture_is_byte_identical_to_candidate_tool(self):
+        candidate_tool = HERE.parents[1] / "scripts" / "governance" / "verify_portable_source_identity_candidate.py"
+        require(candidate_tool.is_file(), "candidate tool file missing")
+        require(
+            candidate_tool.read_bytes() == VERIFIER.read_bytes(),
+            "test fixture differs from candidate tool source",
+        )
+
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
