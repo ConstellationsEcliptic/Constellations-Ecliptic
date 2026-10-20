@@ -1,0 +1,25 @@
+name: CE C1-R3 Source Authority Hardened Regression
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tests/audit_c1_r3_source_authority/**"
+      - ".github/workflows/ce-c1-r3-source-authority-regression.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-authority-hardening-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Run hash-pinned hardening regression suite
+        run: python -m unittest discover -s tests/audit_c1_r3_source_authority -p "test_*.py" -v
