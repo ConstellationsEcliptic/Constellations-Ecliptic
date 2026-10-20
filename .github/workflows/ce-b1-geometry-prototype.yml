@@ -17,6 +17,7 @@ on:
     branches:
       - main
       - research/b1-geometry-binding-single-identity-r0-2026-10-10
+      - candidate/b1-profile-runtime-consistency-r0-2026-10-20
     paths:
       - src/ce/**
       - schemas/**
