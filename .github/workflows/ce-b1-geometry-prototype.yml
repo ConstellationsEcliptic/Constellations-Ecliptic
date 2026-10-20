@@ -94,7 +94,10 @@ jobs:
             tests.test_registry_r1 \
             tests.test_geometry \
             tests.test_core_golden_r1 \
-            tests.test_b1_runtime_profile_consistency_candidate_r0
+            tests.test_no_commercial_dependency \
+            tests.test_signal_no_recomputation_r1 \
+            tests.test_b1_runtime_profile_consistency_candidate_r0 \
+            tests.test_b1_int02_int03_contract_candidate_r0
 
       - name: Verify no Python bytecode artifacts remain
         shell: bash
