@@ -63,6 +63,11 @@ class CanonRule:
         for key in ("condition","allowed_interpretation","confidence_language_boundary"):
             if not isinstance(value[key], Mapping):
                 raise CanonRuleInvalid(f"canon_rule_invalid:{key}")
+        applicability_scope = _string_sequence(
+            value["applicability_scope"], "applicability_scope"
+        )
+        if not applicability_scope:
+            raise CanonRuleInvalid("canon_rule_invalid:applicability_scope")
         return cls(
             rule_id=value["rule_id"], canon_version=value["canon_version"],
             tradition_track=value["tradition_track"], source_reference=value["source_reference"],
@@ -70,7 +75,7 @@ class CanonRule:
             allowed_interpretation=dict(value["allowed_interpretation"]),
             forbidden_extrapolation=_string_sequence(value["forbidden_extrapolation"], "forbidden_extrapolation"),
             confidence_language_boundary=dict(value["confidence_language_boundary"]),
-            applicability_scope=_string_sequence(value["applicability_scope"], "applicability_scope"),
+            applicability_scope=applicability_scope,
         )
 
     def canonical_payload(self) -> dict[str, Any]:
