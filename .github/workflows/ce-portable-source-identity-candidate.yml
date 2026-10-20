@@ -1,0 +1,26 @@
+name: CE Portable Source Identity Verifier Candidate
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/governance/verify_portable_source_identity_candidate.py"
+      - "tests/audit_source_identity_portable/**"
+      - ".github/workflows/ce-portable-source-identity-candidate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable-source-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Run synthetic offline-bundle verification tests
+        run: python -m unittest discover -s tests/audit_source_identity_portable -p "test_*.py" -v
