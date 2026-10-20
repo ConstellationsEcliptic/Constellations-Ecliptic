@@ -5,15 +5,15 @@ from unittest.mock import patch
 
 from ce.calculation.engine import CalculationEngine
 from ce.signal.engine import SignalEngine
-from tests.test_no_commercial_dependency import CommercialIndependenceTests
-from tests.test_signal_no_recomputation_r1 import SignalNoRecomputationR1Tests
+import tests.test_no_commercial_dependency as commercial_test_module
+import tests.test_signal_no_recomputation_r1 as no_recomputation_test_module
 
 
 class B1Int02Int03ContractCandidateTests(unittest.TestCase):
     """Candidate-only oracle-strengthening checks; not an official ID rebinding."""
 
     def test_int02_evidence_reference_and_qualification_are_identical(self) -> None:
-        helper = CommercialIndependenceTests()
+        helper = commercial_test_module.CommercialIndependenceTests()
         zero_credits = helper._evaluate_fixture(commercial_state="ZERO_CREDITS")
         purchased_credits = helper._evaluate_fixture(commercial_state="CREDITS_PURCHASED")
 
@@ -26,7 +26,7 @@ class B1Int02Int03ContractCandidateTests(unittest.TestCase):
         self.assertTrue(purchased_credits.canon_input_valid)
 
     def test_int03_signal_uses_issued_packet_without_calculation_engine_reentry(self) -> None:
-        helper = SignalNoRecomputationR1Tests()
+        helper = no_recomputation_test_module.SignalNoRecomputationR1Tests()
         packet, source = helper._packet()
         issued_ref = f"{packet.evidence_packet_id}:{packet.content_sha256()}"
         issued_digest = packet.content_sha256()
