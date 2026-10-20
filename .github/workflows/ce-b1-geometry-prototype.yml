@@ -5,6 +5,7 @@ on:
     branches:
       - research/b1-geometry-rule-binding-r0-2026-10-10
       - research/b1-geometry-binding-single-identity-r0-2026-10-10
+      - candidate/b1-profile-runtime-consistency-r0-2026-10-20
     paths:
       - src/ce/**
       - schemas/**
@@ -73,7 +74,7 @@ jobs:
           digest="$(python -B tools/compute_source_identity_v2.py)"
           echo "B1_PROTOTYPE_SOURCE_TREE_SHA256_V2=$digest"
 
-      - name: Run B1 and adjacent boundary regression tests
+      - name: Run B1, runtime/profile consistency, and adjacent boundary tests
         shell: bash
         env:
           PYTHONPATH: src
@@ -88,7 +89,11 @@ jobs:
             tests.test_qualified_signal_record_r1 \
             tests.test_time_signal_boundaries \
             tests.test_evidence_contract_r1 \
-            tests.test_product_boundary_fail_closed_r1
+            tests.test_product_boundary_fail_closed_r1 \
+            tests.test_registry_r1 \
+            tests.test_geometry \
+            tests.test_core_golden_r1 \
+            tests.test_b1_runtime_profile_consistency_candidate_r0
 
       - name: Verify no Python bytecode artifacts remain
         shell: bash
