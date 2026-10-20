@@ -6,6 +6,7 @@ on:
       - research/b1-geometry-rule-binding-r0-2026-10-10
       - research/b1-geometry-binding-single-identity-r0-2026-10-10
       - candidate/b1-profile-runtime-consistency-r0-2026-10-20
+      - candidate/b1-applicability-scope-nonempty-r0-2026-10-20
     paths:
       - src/ce/**
       - schemas/**
@@ -16,6 +17,7 @@ on:
     branches:
       - main
       - research/b1-geometry-binding-single-identity-r0-2026-10-10
+      - candidate/b1-profile-runtime-consistency-r0-2026-10-20
     paths:
       - src/ce/**
       - schemas/**
@@ -94,7 +96,8 @@ jobs:
             tests.test_registry_r1 \
             tests.test_geometry \
             tests.test_core_golden_r1 \
-            tests.test_b1_runtime_profile_consistency_candidate_r0
+            tests.test_b1_runtime_profile_consistency_candidate_r0 \
+            tests.test_b1_applicability_scope_validation_candidate_r0
 
       - name: Verify no Python bytecode artifacts remain
         shell: bash
