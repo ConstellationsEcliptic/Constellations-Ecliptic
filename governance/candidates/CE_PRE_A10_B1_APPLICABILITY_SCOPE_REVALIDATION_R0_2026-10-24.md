@@ -72,13 +72,13 @@ PR #32's own record reports that its research source-tree digest `fbc77e72587114
 
 ## 5. VERIFIED — official Test Register lineage conflict
 
-The clean-current-set exclusion inventory explicitly excludes the legacy Execution Profile/Test Register v1.5 and other Rev.1 implementation manifests. At the same time, Document Index v1.9 still lists Document 07 v1.5 in its ten-document stack. The clean current `01_NORMATIVE` path inspected in the decision packet does not contain the corresponding v1.5 file.
+The retained Clean Current Set R3 exclusion inventory explicitly excludes the legacy Execution Profile/Test Register v1.5 and other Rev.1 implementation manifests, while its embedded Document Index v1.9 still lists Document 07 v1.5. A later, separately verified one-off documentation-governance successor is now active: Box 2537512845526, `CE_DOCUMENTATION_GOVERNANCE_INDEX_V2.0_ACTIVE_SUCCESSOR_FINAL_R0_2026-10-20.md`, SHA-256 `b4664997618e45e96fb5bfa5cc87175f25a260a35bc8dad0f9021b5ccbad35c6`; its external Post-Apply Adoption Receipt is Box 2537509430090 and records PASS for final read-back/identity verification under decision `CE-OD-GDE01-INDEX-V2.0-2026-10-20-001`. The adopted v2.0 successor explicitly labels Document 07 v1.5 as historical/excluded from R3 and states that active full-register binding remains NOT ESTABLISHED / directly conflicted. This resolves the documentation-index wording for the bounded v2.0 successor, **not** the active full Test Register identity/authority gap.
 
 Therefore:
 - historical v1.5 IDs and the 100-ID crosswalk remain lineage evidence only;
-- the conflict must be reconciled through the controlled documentation-governance route;
+- do not reopen the already-approved one-off Index v2.0 disposition or ask for it again;
 - no replacement/current official full Test Register identity or binding may be invented or inferred from a raw-intake copy; and
-- passing synthetic/candidate tests does not allocate official IDs or close this governance issue.
+- passing synthetic/candidate tests does not allocate official IDs or close the full-register authority issue.
 
 The earlier Box decision `CE_HUMAN_DECISION_A1_B1_2026-10-04_R1` (Box 2504543582233) selected B1 for **calculation-core test-registry provenance and controlled rebinding**. It is not a decision approving an astrological Canon corpus or the semantic meaning of `applicability_scope`. The overloaded label must not be misread as a Canon disposition.
 
